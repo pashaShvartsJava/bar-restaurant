@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Регистрация администратора | Bar & Lounge</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: "Segoe UI", sans-serif;
+            background: url('https://images.unsplash.com/photo-1514933651103-005eec06c04b?auto=format&fit=crop&w=1350&q=80') no-repeat center center fixed;
+            background-size: cover;
+            color: #fff;
+        }
+
+        .overlay {
+            background: rgba(0, 0, 0, 0.55);
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .register-card {
+            background: rgba(20, 20, 20, 0.75);
+            border-radius: 14px;
+            padding: 40px 45px;
+            width: 420px;
+            box-sizing: border-box;
+            box-shadow: 0 12px 45px rgba(0, 0, 0, 0.5);
+        }
+
+        .register-card h1 {
+            text-align: center;
+            font-size: 30px;
+            margin-bottom: 10px;
+            letter-spacing: 1px;
+        }
+
+        .register-card p {
+            text-align: center;
+            font-size: 15px;
+            opacity: 0.9;
+            margin-bottom: 25px;
+        }
+
+        .register-card input {
+            width: 100%;
+            padding: 11px 14px;
+            margin-bottom: 14px;
+            border-radius: 6px;
+            border: none;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .register-card input::placeholder {
+            color: #999;
+        }
+
+        .register-card label {
+            font-size: 13px;
+            opacity: 0.85;
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 12px;
+            background: #c59d5f;
+            border: none;
+            border-radius: 6px;
+            color: #fff;
+            font-size: 17px;
+            cursor: pointer;
+            transition: 0.3s;
+            margin-top: 10px;
+        }
+
+        .btn:hover {
+            background: #a8844d;
+        }
+
+        .footer-links {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+            opacity: 0.85;
+        }
+
+        .footer-links a {
+            color: #c59d5f;
+            text-decoration: none;
+            margin-left: 5px;
+        }
+
+        .footer-links a:hover {
+            text-decoration: underline;
+        }
+
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 18px;
+            font-size: 13px;
+            opacity: 0.7;
+            color: #fff;
+            text-decoration: none;
+        }
+
+        .back-link:hover {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+
+<div class="overlay">
+    <div class="register-card">
+        <h1>Регистрация администратора</h1>
+        <p>Доступ к административной панели Bar & Lounge</p>
+
+        <form method="post" action="/admin/register">
+            <label>Имя</label>
+            <input type="text" name="first_name" placeholder="Имя" required>
+
+            <label>Фамилия</label>
+            <input type="text" name="last_name" placeholder="Фамилия" required>
+
+            <label>Email</label>
+            <input type="email" name="email" placeholder="email@example.com" required>
+
+            <label>Номер телефона</label>
+            <input type="tel" name="phone" placeholder="номер телефона" required>
+
+            <label>Дата рождения</label>
+            <input type="date" name="birth_date" required>
+
+            <label>Пароль</label>
+            <input type="password" name="password" placeholder="Минимум 8 символов" required>
+
+            <label>Кодовое слово (для восстановления доступа)</label>
+            <input type="text" name="secret_word" placeholder="Ваше кодовое слово" required>
+
+            <button type="submit" class="btn">Зарегистрироваться</button>
+        </form>
+
+        <div class="footer-links">
+            Уже есть аккаунт?
+            <a href="/admin/login">Войти</a>
+        </div>
+
+        <a href="http://localhost:8001/bar_name" class="back-link">← Вернуться на главную</a>
+    </div>
+</div>
+
+</body>
+</html>

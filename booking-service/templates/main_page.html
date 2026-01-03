@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Bar & Lounge</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: "Segoe UI", sans-serif;
+            background: url('https://images.unsplash.com/photo-1514933651103-005eec06c04b?auto=format&fit=crop&w=1350&q=80') no-repeat center center fixed;
+            background-size: cover;
+            color: #fff;
+        }
+
+        /* Навигационное меню */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 20px 40px;
+            background: rgba(0, 0, 0, 0.55);
+            backdrop-filter: blur(6px);
+            box-sizing: border-box;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-left {
+            font-size: 20px;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        .nav-right {
+            display: flex;
+            gap: 18px;
+            align-items: center;
+        }
+
+        .nav-btn {
+            color: #fff;
+            text-decoration: none;
+            font-size: 16px;
+            padding: 8px 18px;
+            border-radius: 5px;
+            transition: 0.3s;
+        }
+
+        .nav-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .nav-btn.primary {
+            background: #c59d5f;
+        }
+
+        .nav-btn.primary:hover {
+            background: #a8844d;
+        }
+
+        /* Кнопка администратора */
+        .admin-btn {
+            font-size: 14px;
+            opacity: 0.75;
+            padding: 6px 14px;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 5px;
+        }
+
+        .admin-btn:hover {
+            opacity: 1;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Основной контент */
+        .overlay {
+            background: rgba(0, 0, 0, 0.65);
+            width: 100%;
+            height: 100vh;
+            padding: 40px;
+            box-sizing: border-box;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: 160px auto 0 auto;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 48px;
+            margin-bottom: 20px;
+            letter-spacing: 2px;
+        }
+
+        p {
+            font-size: 20px;
+            line-height: 1.6;
+            margin-bottom: 25px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 28px;
+            background: #c59d5f;
+            color: #fff;
+            text-decoration: none;
+            font-size: 18px;
+            border-radius: 6px;
+            transition: 0.3s;
+        }
+
+        .btn:hover {
+            background: #a8844d;
+        }
+    </style>
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="nav-container">
+        <div class="nav-left">Bar & Lounge</div>
+
+        <div class="nav-right">
+            <a href="/menu" class="nav-btn">Меню</a>
+            <a href="/delivery" class="nav-btn">Доставка</a>
+            <a href="/contacts" class="nav-btn">Контакты</a>
+            <a href="/support" class="nav-btn">Техподдержка</a>
+            <a href="http://localhost:8002/admin/login" class="nav-btn admin-btn">Вы администратор?</a>
+        </div>
+    </div>
+</nav>
+
+<div class="overlay">
+    <div class="container">
+        <h1>Добро пожаловать в Bar & Lounge</h1>
+
+        <p>
+            Мы — место, где каждый гость чувствует себя как дома.
+            Наш бар сочетает атмосферу уюта, стильный интерьер и авторские напитки,
+            созданные с любовью и вниманием к деталям.
+        </p>
+
+        <p>
+            Здесь вы можете расслабиться после рабочего дня, встретиться с друзьями,
+            попробовать уникальные коктейли и насладиться живой музыкой.
+            Мы ценим каждого гостя и делаем всё, чтобы ваш вечер стал особенным.
+        </p>
+
+        <a href="/booking" class="btn">Забронировать столик</a>
+    </div>
+</div>
+
+</body>
+</html>
+

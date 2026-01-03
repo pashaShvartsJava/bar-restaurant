@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Админ-панель | Bar & Lounge</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: "Segoe UI", sans-serif;
+            background: url('https://images.unsplash.com/photo-1514933651103-005eec06c04b?auto=format&fit=crop&w=1350&q=80') no-repeat center center fixed;
+            background-size: cover;
+            color: #fff;
+        }
+
+        .overlay {
+            background: rgba(0, 0, 0, 0.7);
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .auth-card {
+            background: rgba(0, 0, 0, 0.75);
+            border-radius: 12px;
+            padding: 40px 45px;
+            width: 380px;
+            box-sizing: border-box;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+            text-align: center;
+        }
+
+        .auth-card h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+            letter-spacing: 1px;
+        }
+
+        .auth-card p {
+            font-size: 16px;
+            opacity: 0.85;
+            margin-bottom: 30px;
+        }
+
+        .auth-card input {
+            width: 100%;
+            padding: 12px 14px;
+            margin-bottom: 16px;
+            border-radius: 6px;
+            border: none;
+            font-size: 15px;
+            outline: none;
+        }
+
+        .auth-card input::placeholder {
+            color: #999;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 12px;
+            background: #c59d5f;
+            border: none;
+            border-radius: 6px;
+            color: #fff;
+            font-size: 17px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .btn:hover {
+            background: #a8844d;
+        }
+
+        .divider {
+            margin: 25px 0;
+            height: 1px;
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .register-link {
+            font-size: 14px;
+            opacity: 0.85;
+        }
+
+        .register-link a {
+            color: #c59d5f;
+            text-decoration: none;
+            margin-left: 5px;
+        }
+
+        .register-link a:hover {
+            text-decoration: underline;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 25px;
+            font-size: 14px;
+            opacity: 0.7;
+            color: #fff;
+            text-decoration: none;
+        }
+
+        .back-link:hover {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+
+<div class="overlay">
+    <div class="auth-card">
+        <h1>Админ-вход</h1>
+        <p>Только для администраторов Bar & Lounge</p>
+
+        <form method="post" action="/admin/login">
+            <input type="email" name="email" placeholder="Email администратора" required>
+            <input type="password" name="password" placeholder="Пароль" required>
+
+            <button type="submit" class="btn">Войти</button>
+        </form>
+
+        <div class="divider"></div>
+
+        <div class="register-link">
+            Нет аккаунта?
+            <a href="/admin/registration">Зарегистрироваться как администратор</a>
+        </div>
+
+        <a href="http://localhost:8001/bar_name" class="back-link">← Вернуться на главную</a>
+    </div>
+</div>
+
+</body>
+</html>
