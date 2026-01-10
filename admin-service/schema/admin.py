@@ -13,7 +13,7 @@ class AdminBase(BaseModel):
     password: str= Field(..., min_length=8, max_length=64, description="password")
 
 class AdminRegistrationCreate(AdminBase):
-    id: Integer = Field(..., description="admin id")
+    pass
 
 class AdminRegistrationUpdate(AdminBase):
     pass

@@ -122,21 +122,21 @@
         <h1>Регистрация администратора</h1>
         <p>Доступ к административной панели Bar & Lounge</p>
 
-        <form method="post" action="/admin/register">
+        <form method="post" action="/admin/registration">
             <label>Имя</label>
-            <input type="text" name="first_name" placeholder="Имя" required>
+            <input type="text" name="name" placeholder="Имя" required>
 
             <label>Фамилия</label>
-            <input type="text" name="last_name" placeholder="Фамилия" required>
-
-            <label>Email</label>
-            <input type="email" name="email" placeholder="email@example.com" required>
+            <input type="text" name="surname" placeholder="Фамилия" required>
 
             <label>Номер телефона</label>
             <input type="tel" name="phone" placeholder="номер телефона" required>
 
+            <label>Email</label>
+            <input type="email" name="email" placeholder="email@example.com" required>
+
             <label>Дата рождения</label>
-            <input type="date" name="birth_date" required>
+            <input type="date" name="birthday" required>
 
             <label>Пароль</label>
             <input type="password" name="password" placeholder="Минимум 8 символов" required>
@@ -146,7 +146,7 @@
 
         <div class="footer-links">
             Уже есть аккаунт?
-            <a href="/admin/login">Войти</a>
+            <a href="http://localhost:8003/admin/login">Войти</a>
         </div>
 
         <a href="http://localhost:8001/bar_name" class="back-link">← Вернуться на главную</a>
