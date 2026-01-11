@@ -1,16 +1,20 @@
 from datetime import datetime
+from fastapi import Request, APIRouter,Form
+from starlette.responses import HTMLResponse
+from starlette.templating import Jinja2Templates
 
-from fastapi import Form
+from admin_service.repository.admin_repository import AdminRepository
+from admin_service.schema.admin import AdminRegistrationCreate
 
-from ..main import *
-from ..schema.admin import AdminRegistrationCreate
-from ..repository.admin_repository import AdminRepository
 
-@app.get("/admin/registration", response_class=HTMLResponse)
+templates = Jinja2Templates(directory="templates_admin")
+router = APIRouter()
+
+@router.get("/admin/registration", response_class=HTMLResponse)
 def registration(request: Request):
     return templates.TemplateResponse("registration.html", {"request" : request})
 
-@app.post("/admin/registration", response_class=HTMLResponse)
+@router.post("/admin/registration", response_class=HTMLResponse)
 def registration(request: Request,
                  name: str = Form(...),
                  surname: str = Form(...),
