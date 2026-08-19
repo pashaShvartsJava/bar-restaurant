@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Admin Panel__bar_name</title>
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+
+        /* =========================
+           BODY
+        ========================== */
+
+        body {
+            min-height: 100vh;
+
+            background: #101012;
+
+            color: #ffffff;
+
+            font-family: Arial, sans-serif;
+
+            position: relative;
+        }
+
+
+        /* =========================
+           ФОНОВАЯ КАРТИНКА
+        ========================== */
+
+        body::before {
+            content: "";
+
+            position: fixed;
+
+            inset: 0;
+
+            z-index: -2;
+
+            background-image:
+                url("https://images.unsplash.com/photo-1515003197210-e0cd71810b5f?auto=format&fit=crop&w=2000&q=70");
+
+            background-size: cover;
+
+            background-position: center;
+
+            background-repeat: no-repeat;
+
+            filter: blur(3px);
+
+            transform: scale(1.03);
+        }
+
+
+        /* =========================
+           ТЁМНЫЙ СЛОЙ ПОВЕРХ КАРТИНКИ
+        ========================== */
+
+        body::after {
+            content: "";
+
+            position: fixed;
+
+            inset: 0;
+
+            z-index: -1;
+
+            background:
+                linear-gradient(
+                    rgba(10, 10, 12, 0.88),
+                    rgba(10, 10, 12, 0.94)
+                );
+        }
+
+
+        /* =========================
+           ОСНОВНОЙ КОНТЕЙНЕР
+        ========================== */
+
+        .container {
+            width: 100%;
+
+            max-width: 1100px;
+
+            margin: 0 auto;
+
+            padding: 70px 35px;
+        }
+
+
+        /* =========================
+           ЗАГОЛОВОК
+        ========================== */
+
+        .header {
+            text-align: center;
+
+            margin-bottom: 65px;
+        }
+
+        .header h1 {
+            font-family: Georgia, serif;
+
+            font-size: 42px;
+
+            font-weight: normal;
+
+            letter-spacing: 3px;
+        }
+
+        .header h1 span {
+            color: #d5a65b;
+        }
+
+        .header p {
+            margin-top: 12px;
+
+            color: #77777d;
+
+            font-size: 13px;
+        }
+
+
+        /* =========================
+           РАЗДЕЛ
+        ========================== */
+
+        .section {
+            margin-bottom: 50px;
+        }
+
+        .section-title {
+            display: flex;
+
+            align-items: center;
+
+            gap: 15px;
+
+            margin-bottom: 18px;
+        }
+
+        .section-title h2 {
+            color: #aaa9ae;
+
+            font-size: 11px;
+
+            font-weight: 600;
+
+            letter-spacing: 2px;
+
+            text-transform: uppercase;
+        }
+
+        .section-line {
+            height: 1px;
+
+            flex: 1;
+
+            background: #29292d;
+        }
+
+
+        /* =========================
+           КНОПКИ
+        ========================== */
+
+        .buttons {
+            display: grid;
+
+            gap: 14px;
+        }
+
+        .buttons-main {
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        .buttons-secondary {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .buttons-management {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+
+        .button {
+            position: relative;
+
+            min-height: 125px;
+
+            display: flex;
+
+            flex-direction: column;
+
+            align-items: center;
+
+            justify-content: center;
+
+            text-align: center;
+
+            padding: 25px;
+
+            /*
+                Полупрозрачный фон.
+                Благодаря этому немного видно изображение сзади.
+            */
+
+            background: rgba(25, 25, 28, 0.88);
+
+            border: 1px solid rgba(255, 255, 255, 0.08);
+
+            border-radius: 14px;
+
+            color: #ffffff;
+
+            text-decoration: none;
+
+            backdrop-filter: blur(8px);
+
+            transition:
+                background 0.2s,
+                border-color 0.2s,
+                transform 0.2s;
+        }
+
+        .button:hover {
+            background: rgba(32, 32, 36, 0.94);
+
+            border-color: #d5a65b;
+
+            transform: translateY(-3px);
+        }
+
+
+        /* =========================
+           ИКОНКА
+        ========================== */
+
+        .icon {
+            width: 48px;
+
+            height: 48px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            margin-bottom: 13px;
+
+            background: #242427;
+
+            border-radius: 11px;
+
+            font-size: 20px;
+
+            transition: 0.2s;
+        }
+
+        .button:hover .icon {
+            background: #d5a65b;
+        }
+
+
+        /* =========================
+           ТЕКСТ КНОПКИ
+        ========================== */
+
+        .button h3 {
+            font-size: 14px;
+
+            font-weight: 600;
+        }
+
+        .button p {
+            margin-top: 6px;
+
+            color: #77777d;
+
+            font-size: 10px;
+        }
+
+
+        /* =========================
+           БОЛЬШИЕ КНОПКИ
+        ========================== */
+
+        .button-large {
+            min-height: 155px;
+        }
+
+        .button-large .icon {
+            width: 56px;
+
+            height: 56px;
+
+            font-size: 24px;
+        }
+
+        .button-large h3 {
+            font-size: 16px;
+        }
+
+
+        /* =========================
+           FOOTER
+        ========================== */
+
+        .footer {
+            padding-top: 15px;
+
+            text-align: center;
+
+            color: #4f4f54;
+
+            font-size: 9px;
+
+            letter-spacing: 1px;
+        }
+
+
+        /* =========================
+           АДАПТИВ
+        ========================== */
+
+        @media (max-width: 800px) {
+
+            .container {
+                padding: 45px 25px;
+            }
+
+            .buttons-main {
+                grid-template-columns: 1fr;
+            }
+
+            .buttons-secondary,
+            .buttons-management {
+                grid-template-columns: 1fr;
+            }
+
+            .header {
+                margin-bottom: 45px;
+            }
+
+            .header h1 {
+                font-size: 34px;
+            }
+        }
+
+
+        @media (max-width: 500px) {
+
+            .container {
+                padding: 35px 18px;
+            }
+
+            .button {
+                min-height: 110px;
+            }
+
+            .button-large {
+                min-height: 125px;
+            }
+        }
+
+    </style>
+</head>
+
+
+<body>
+
+    <main class="container">
+
+        <header class="header">
+
+            <h1>
+                ADMIN<span>.</span> PANEL
+            </h1>
+
+            <p>
+                Панель управления заведением
+            </p>
+
+        </header>
+
+        <section class="section">
+
+            <div class="section-title">
+
+                <h2>
+                    Работа заведения
+                </h2>
+
+                <div class="section-line"></div>
+
+            </div>
+
+
+            <div class="buttons buttons-main">
+
+
+                <a href="http://127.0.0.1:8004/menu_page" class="button button-large">
+
+                    <div class="icon">
+                        🍸
+                    </div>
+
+                    <h3>
+                        Меню
+                    </h3>
+
+                    <p>
+                        Управление меню
+                    </p>
+
+                </a>
+
+
+                <a href="orders.html" class="button button-large">
+
+                    <div class="icon">
+                        🛵
+                    </div>
+
+                    <h3>
+                        Заказы
+                    </h3>
+
+                    <p>
+                        Заказы на доставку
+                    </p>
+
+                </a>
+
+
+                <a href="reservations.html" class="button button-large">
+
+                    <div class="icon">
+                        ▦
+                    </div>
+
+                    <h3>
+                        Бронь
+                    </h3>
+
+                    <p>
+                        Столики и бронирования
+                    </p>
+
+                </a>
+
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =========================
+             КЛИЕНТЫ
+        ========================== -->
+
+        <section class="section">
+
+            <div class="section-title">
+
+                <h2>
+                    Клиенты
+                </h2>
+
+                <div class="section-line"></div>
+
+            </div>
+
+
+            <div class="buttons buttons-secondary">
+
+
+                <a href="support.html" class="button">
+
+                    <div class="icon">
+                        💬
+                    </div>
+
+                    <h3>
+                        Поддержка
+                    </h3>
+
+                    <p>
+                        Общение с клиентами
+                    </p>
+
+                </a>
+
+
+                <a href="customers.html" class="button">
+
+                    <div class="icon">
+                        ♙
+                    </div>
+
+                    <h3>
+                        Клиенты
+                    </h3>
+
+                    <p>
+                        Зарегистрированные клиенты
+                    </p>
+
+                </a>
+
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =========================
+             УПРАВЛЕНИЕ
+        ========================== -->
+
+        <section class="section">
+
+            <div class="section-title">
+
+                <h2>
+                    Управление
+                </h2>
+
+                <div class="section-line"></div>
+
+            </div>
+
+
+            <div class="buttons buttons-management">
+
+
+                <a href="admins.html" class="button">
+
+                    <div class="icon">
+                        ♙
+                    </div>
+
+                    <h3>
+                        Администраторы
+                    </h3>
+
+                    <p>
+                        Управление администраторами
+                    </p>
+
+                </a>
+
+
+                <a href="order-history.html" class="button">
+
+                    <div class="icon">
+                        ↺
+                    </div>
+
+                    <h3>
+                        История заказов
+                    </h3>
+
+                    <p>
+                        Архив выполненных заказов
+                    </p>
+
+                </a>
+
+
+            </div>
+
+        </section>
+
+
+
+        <footer class="footer">
+
+            BAR. ADMIN PANEL
+
+        </footer>
+
+
+    </main>
+
+</body>
+</html>

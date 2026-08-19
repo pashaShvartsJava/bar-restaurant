@@ -2,12 +2,13 @@ from datetime import datetime
 from fastapi import Request, APIRouter,Form
 from starlette.responses import HTMLResponse
 from starlette.templating import Jinja2Templates
+from urllib3 import request
 
-from admin_service.repository.admin_repository import AdminRepository
-from admin_service.schema.admin import AdminRegistrationCreate
+from ..repository.admin_repository import AdminRepository
+from ..schema.admin import AdminRegistrationCreate
 
 
-templates = Jinja2Templates(directory="templates_admin")
+templates = Jinja2Templates(directory="admin_service/templates_admin")
 router = APIRouter()
 
 @router.get("/admin/registration", response_class=HTMLResponse)
@@ -32,3 +33,8 @@ def registration(request: Request,
                                     )
     AdminRepository.create_admin(admin)
     return templates.TemplateResponse("login.html", {"request" : request})
+
+@router.get("/admin_panel", response_class=HTMLResponse)
+def show_admin_panel(request: Request):
+    print("user ip: " + request.client.host)
+    return templates.TemplateResponse("admin_panel.html", {"request" : request})

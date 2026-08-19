@@ -2,7 +2,7 @@ from fastapi import Request, APIRouter
 from starlette.responses import HTMLResponse
 from starlette.templating import Jinja2Templates
 
-templates = Jinja2Templates(directory="templates_auth")
+templates = Jinja2Templates(directory="authentication_service/templates_auth")
 router = APIRouter()
 
 
