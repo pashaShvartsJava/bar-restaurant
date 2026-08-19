@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Добавить администратора — BAR</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            background:
+                radial-gradient(circle at 50% 0%, #29231a 0%, #111113 45%, #0c0c0e 100%);
+            color: #fff;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: auto;
+            padding: 40px 30px;
+        }
+
+        .top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 45px;
+        }
+
+        .back {
+            color: #77777d;
+            text-decoration: none;
+            font-size: 12px;
+        }
+
+        .back:hover {
+            color: #d5a65b;
+        }
+
+        .brand {
+            color: #55555a;
+            font-size: 10px;
+            letter-spacing: 2px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header span {
+            color: #d5a65b;
+            font-size: 9px;
+            letter-spacing: 3px;
+        }
+
+        .header h1 {
+            margin-top: 8px;
+            font-family: Georgia, serif;
+            font-size: 34px;
+            font-weight: normal;
+        }
+
+        .header p {
+            margin-top: 8px;
+            color: #77777d;
+            font-size: 11px;
+        }
+
+        .form {
+            padding: 25px;
+            background: #18181b;
+            border: 1px solid #29292d;
+            border-radius: 12px;
+        }
+
+        .row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .field {
+            margin-bottom: 18px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 7px;
+            color: #aaa9ae;
+            font-size: 10px;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 11px 12px;
+
+            background: #222225;
+            border: 1px solid #333338;
+            border-radius: 7px;
+
+            color: #fff;
+            font-family: Arial, sans-serif;
+            font-size: 11px;
+
+            outline: none;
+        }
+
+        input:focus,
+        select:focus {
+            border-color: #d5a65b;
+        }
+
+        select {
+            cursor: pointer;
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+            margin-top: 10px;
+            padding-top: 20px;
+            border-top: 1px solid #29292d;
+        }
+
+        .button {
+            padding: 10px 17px;
+            border-radius: 7px;
+            text-decoration: none;
+            font-size: 10px;
+            cursor: pointer;
+        }
+
+        .cancel {
+            color: #99999f;
+            background: #222225;
+            border: 1px solid #333338;
+        }
+
+        .cancel:hover {
+            color: #fff;
+        }
+
+        .save {
+            border: none;
+            background: #d5a65b;
+            color: #111;
+            font-weight: bold;
+        }
+
+        .save:hover {
+            background: #e4b971;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 25px 15px;
+            }
+
+            .row {
+                grid-template-columns: 1fr;
+                gap: 0;
+            }
+
+            .form {
+                padding: 20px;
+            }
+
+            .buttons {
+                flex-direction: column-reverse;
+            }
+
+            .button {
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <main class="container">
+
+        <div class="top">
+            <a href="http://localhost:8002/admin_panel/all_admins" class="back">← Назад</a>
+            <span class="brand">BAR. ADMIN</span>
+        </div>
+
+        <header class="header">
+            <span>MANAGEMENT</span>
+            <h1>Новый администратор</h1>
+            <p>Заполните данные сотрудника</p>
+        </header>
+
+        <form class="form" action="/admin_panel/all_admins/add_admin" method="post">
+
+            <div class="row">
+
+                <div class="field">
+                    <label for="first-name">Имя</label>
+                    <input
+                        type="text"
+                        id="first-name"
+                        name="name"
+                        placeholder="Имя"
+                        required>
+                </div>
+
+                <div class="field">
+                    <label for="last-name">Фамилия</label>
+                    <input
+                        type="text"
+                        id="last-name"
+                        name="surname"
+                        placeholder="Фамилия"
+                        required>
+                </div>
+
+            </div>
+
+            <div class="row">
+
+                <div class="field">
+                    <label for="birth-date">Дата рождения</label>
+                    <input
+                        type="date"
+                        id="birth-date"
+                        name="birthday"
+                        required>
+                </div>
+
+                <div class="field">
+                    <label for="phone">Номер телефона</label>
+                    <input
+                        type="tel"
+                        id="phone"
+                        name="phone"
+                        placeholder="+49..."
+                        required>
+                </div>
+
+            </div>
+
+            <div class="field">
+                <label for="email">Почта</label>
+                <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    placeholder="example@mail.com"
+                    required>
+            </div>
+
+            <div class="field">
+                <label for="password">Пароль</label>
+                <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    placeholder="Пароль"
+                    required>
+            </div>
+
+            <div class="field">
+                <label for="role">Статус</label>
+
+                <select id="role" name="role" required>
+                    <option value="" disabled selected>
+                        Выберите статус
+                    </option>
+
+                    <option value="admin">
+                        Администратор
+                    </option>
+
+                    <option value="moderator">
+                        Модератор
+                    </option>
+                </select>
+            </div>
+
+            <div class="buttons">
+
+                <a href="all_admins.html" class="button cancel">
+                    Отмена
+                </a>
+
+                <button type="submit" class="button save">
+                    Создать
+                </button>
+
+            </div>
+
+        </form>
+
+    </main>
+
+</body>
+</html>

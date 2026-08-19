@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Администраторы — BAR</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            background:
+                radial-gradient(circle at 50% 0%, #29231a 0%, #111113 45%, #0c0c0e 100%);
+            color: #fff;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            max-width: 950px;
+            margin: auto;
+            padding: 40px 30px;
+        }
+
+        .top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 50px;
+        }
+
+        .back {
+            color: #77777d;
+            text-decoration: none;
+            font-size: 12px;
+        }
+
+        .back:hover {
+            color: #d5a65b;
+        }
+
+        .brand {
+            color: #55555a;
+            font-size: 10px;
+            letter-spacing: 2px;
+        }
+
+        .header {
+            display: flex;
+            align-items: end;
+            justify-content: space-between;
+            margin-bottom: 25px;
+        }
+
+        .header span {
+            color: #d5a65b;
+            font-size: 9px;
+            letter-spacing: 3px;
+        }
+
+        .header h1 {
+            margin-top: 7px;
+            font-family: Georgia, serif;
+            font-size: 36px;
+            font-weight: normal;
+        }
+
+        .add {
+            padding: 10px 16px;
+            background: #d5a65b;
+            color: #111;
+            border-radius: 7px;
+            text-decoration: none;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        .add:hover {
+            background: #e4b971;
+        }
+
+        .admins {
+            overflow: hidden;
+            background: #18181b;
+            border: 1px solid #29292d;
+            border-radius: 12px;
+        }
+
+        .admin {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            padding: 18px 20px;
+            border-bottom: 1px solid #29292d;
+        }
+
+        .admin:last-child {
+            border-bottom: none;
+        }
+
+        .admin-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .avatar {
+            width: 42px;
+            height: 42px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #252529;
+            border-radius: 50%;
+            color: #d5a65b;
+            font-size: 14px;
+        }
+
+        .admin-name {
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .admin-role {
+            margin-top: 4px;
+            color: #77777d;
+            font-size: 10px;
+        }
+
+        .actions {
+            display: flex;
+            gap: 7px;
+        }
+
+        .action {
+            padding: 7px 11px;
+            border: 1px solid #333338;
+            border-radius: 6px;
+            color: #aaa9ae;
+            background: #222225;
+            text-decoration: none;
+            font-size: 10px;
+        }
+
+        .action:hover {
+            border-color: #d5a65b;
+            color: #fff;
+        }
+
+        .delete:hover {
+            border-color: #9b5555;
+            color: #d98282;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 25px 15px;
+            }
+
+            .header {
+                align-items: stretch;
+                flex-direction: column;
+                gap: 18px;
+            }
+
+            .add {
+                text-align: center;
+            }
+
+            .admin {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .actions {
+                width: 100%;
+            }
+
+            .action {
+                flex: 1;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <main class="container">
+
+        <div class="top">
+            <a href="/admin_panel" class="back">← Назад</a>
+            <span class="brand">BAR. ADMIN</span>
+        </div>
+
+        <header class="header">
+            <div>
+                <span>MANAGEMENT</span>
+                <h1>Администраторы</h1>
+            </div>
+
+            <a
+                href="/admin_panel/all_admins/add_admin"
+                class="add"
+            >
+                + Добавить администратора
+            </a>
+        </header>
+
+        <section class="admins">
+
+            {% for admin in admins %}
+
+            <div class="admin">
+
+                <div class="admin-info">
+
+                    <div class="avatar">
+                        {{ admin.name[0] }}
+                    </div>
+
+                    <div>
+                        <div class="admin-name">
+                            {{ admin.name }} {{ admin.surname }}
+                        </div>
+
+                        <div class="admin-role">
+                            {{ admin.role.value }}
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="actions">
+
+                    <!-- Изменение -->
+                    <a
+                        href="/admin_panel/edit/{{ admin.id }}"
+                        class="action"
+                    >
+                        Изменить
+                    </a>
+
+                    <!-- Удаление -->
+                    <form
+                        action="/admin_panel/delete_admin/{{ admin.id }}"
+                        method="post"
+                        onsubmit="return confirm('Вы действительно хотите удалить этого администратора?');"
+                    >
+                        <button
+                            type="submit"
+                            class="action delete"
+                        >
+                            Удалить
+                        </button>
+                    </form>
+
+                </div>
+
+            </div>
+
+            {% endfor %}
+
+        </section>
+
+    </main>
+
+</body>
+</html>

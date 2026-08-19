@@ -5,6 +5,6 @@ from fastapi import Depends
 from sqlalchemy.orm import Session
 
 
-def get_menu_service(db: Session = Depends(get_db)):
+def get_service_dependency(db: Session = Depends(get_db)):
     menu_repository = MenuRepository(db)
     return MenuService(menu_repository)
