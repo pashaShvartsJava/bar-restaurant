@@ -3,7 +3,7 @@ from fastapi import Request, APIRouter,Form
 from fastapi.params import Depends
 from starlette.responses import HTMLResponse, RedirectResponse
 from starlette.templating import Jinja2Templates
-from admin_service.schema.admin import AdminRegistrationDTO
+from admin_service.schema.admin import AdminRegistrationDTO, AdminUpdateDTO
 
 from admin_service.dependencies.dependencies import get_service_dependency
 from admin_service.service.admin_service import AdminService
@@ -46,4 +46,28 @@ def add_admin(admin_service : AdminService = Depends(get_service_dependency),
 def delete_admin(admin_id : int, admin_service : AdminService = Depends(get_service_dependency)):
     admin_service.delete_admin(admin_id)
     return RedirectResponse(url="/admin_panel/all_admins", status_code=303)
+
+@router.get("/admin_panel/edit/{admin_id}")
+def show_edit_page(request : Request, admin_id : int, service : AdminService = Depends(get_service_dependency)):
+    admin = service.find_by_id(admin_id)
+    return templates.TemplateResponse("edit_admin.html", {"request" : request, "admin" : admin})
+
+@router.patch("/admin_panel/edit/{admin_id}")
+def edit_admin(admin_id : int, service : AdminService = Depends(get_service_dependency),
+               name : str = Form(),
+               surname : str = Form(),
+               birthday: date = Form(),
+               phone: str = Form(),
+               email: str = Form(),
+               role: AdminRole = Form()
+               ):
+    updated_admin = AdminUpdateDTO(name = name,
+                                   surname = surname,
+                                   birthday=birthday,
+                                   phone=phone,
+                                   email=email,
+                                   role = role)
+    service.update_admin(admin_id, updated_admin)
+    return RedirectResponse(url="/admin_panel/all_admins", status_code=303)
+
 

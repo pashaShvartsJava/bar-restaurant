@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Изменение администратора</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            background: #0c0c0e;
+            color: #fff;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            max-width: 650px;
+            margin: auto;
+            padding: 40px 25px;
+        }
+
+        .top {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 40px;
+        }
+
+        .back {
+            color: #777;
+            text-decoration: none;
+            font-size: 12px;
+        }
+
+        .back:hover {
+            color: #d5a65b;
+        }
+
+        .brand {
+            color: #555;
+            font-size: 10px;
+            letter-spacing: 2px;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            text-align: center;
+            font-family: Georgia, serif;
+            font-weight: normal;
+        }
+
+        .current {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 15px;
+            padding: 15px;
+            background: #18181b;
+            border: 1px solid #29292d;
+            border-radius: 10px;
+        }
+
+        .avatar {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: #252529;
+            color: #d5a65b;
+        }
+
+        .current-name {
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        .current-info {
+            margin-top: 4px;
+            color: #777;
+            font-size: 10px;
+        }
+
+        form {
+            padding: 25px;
+            background: #18181b;
+            border: 1px solid #29292d;
+            border-radius: 10px;
+        }
+
+        .row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .field {
+            margin-bottom: 16px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            color: #aaa;
+            font-size: 10px;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 10px;
+            background: #222225;
+            border: 1px solid #333338;
+            border-radius: 6px;
+            color: #fff;
+            outline: none;
+        }
+
+        input:focus,
+        select:focus {
+            border-color: #d5a65b;
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .button {
+            padding: 10px 16px;
+            border-radius: 6px;
+            font-size: 10px;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .cancel {
+            color: #aaa;
+            background: #222225;
+            border: 1px solid #333338;
+        }
+
+        .save {
+            background: #d5a65b;
+            color: #111;
+            border: none;
+            font-weight: bold;
+        }
+
+        @media (max-width: 600px) {
+            .row {
+                grid-template-columns: 1fr;
+                gap: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="top">
+        <a href="/admin_panel/all_admins" class="back">
+            ← Назад
+        </a>
+
+        <span class="brand">
+            BAR. ADMIN
+        </span>
+    </div>
+
+    <h1>Изменение данных</h1>
+
+    <div class="current">
+
+        <div class="avatar">
+            {{ admin.name[0] }}
+        </div>
+
+        <div>
+            <div class="current-name">
+                {{ admin.name }} {{ admin.surname }}
+            </div>
+
+            <div class="current-info">
+                {{ admin.email }} · {{ admin.role }}
+            </div>
+        </div>
+
+    </div>
+
+    <form id="editAdminForm">
+
+        <div class="row">
+
+            <div class="field">
+                <label>Имя</label>
+
+                <input
+                    type="text"
+                    name="name"
+                    value="{{ admin.name }}"
+                    required>
+            </div>
+
+            <div class="field">
+                <label>Фамилия</label>
+
+                <input
+                    type="text"
+                    name="surname"
+                    value="{{ admin.surname }}"
+                    required>
+            </div>
+
+        </div>
+
+        <div class="row">
+
+            <div class="field">
+                <label>Дата рождения</label>
+
+                <input
+                    type="date"
+                    name="birthday"
+                    value="{{ admin.birthday }}"
+                    required>
+            </div>
+
+            <div class="field">
+                <label>Номер телефона</label>
+
+                <input
+                    type="tel"
+                    name="phone"
+                    value="{{ admin.phone }}"
+                    required>
+            </div>
+
+        </div>
+
+        <div class="field">
+            <label>Почта</label>
+
+            <input
+                type="email"
+                name="email"
+                value="{{ admin.email }}"
+                required>
+        </div>
+
+        <div class="field">
+            <label>Статус</label>
+
+            <select name="role" id="role" required>
+
+                <option value="admin">
+                    Администратор
+                </option>
+
+                <option value="moderator">
+                    Модератор
+                </option>
+
+            </select>
+        </div>
+
+        <div class="buttons">
+
+            <a
+                href="/admin_panel/all_admins"
+                class="button cancel">
+                Отмена
+            </a>
+
+            <button
+                type="submit"
+                class="button save">
+                Изменить
+            </button>
+
+        </div>
+
+    </form>
+
+</div>
+
+<script>
+
+    const form = document.getElementById("editAdminForm");
+
+    document.getElementById("role").value = "{{ admin.role }}";
+
+    form.addEventListener("submit", async function(event) {
+
+        event.preventDefault();
+
+        const formData = new FormData(form);
+
+        await fetch(
+            "/admin_panel/edit/{{ admin.id }}",
+            {
+                method: "PATCH",
+                body: formData
+            }
+        );
+
+        window.location.href = "/admin_panel/all_admins";
+
+    });
+
+</script>
+
+</body>
+</html>

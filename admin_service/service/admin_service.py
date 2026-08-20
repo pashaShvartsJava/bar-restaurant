@@ -1,7 +1,7 @@
 from admin_service.repository.admin_repository import AdminRepository
 from admin_service.model.admin import Admin
 from typing import List
-from admin_service.schema.admin import AdminRegistrationDTO
+from admin_service.schema.admin import AdminRegistrationDTO, AdminUpdateDTO
 
 class AdminService:
 
@@ -20,8 +20,8 @@ class AdminService:
     def create_new_admin(self, adminDTO : AdminRegistrationDTO) -> AdminRegistrationDTO:
         return self.admin_repository.create_admin(adminDTO)
 
-    def update_admin(self, id : int, admin : Admin) -> Admin:
-        return self.admin_repository.update_admin(id, admin)
+    def update_admin(self, updated_admin_id : int, updated_admin : AdminUpdateDTO) -> AdminUpdateDTO:
+        return self.admin_repository.update_admin(updated_admin_id, updated_admin)
 
-    def delete_admin(self, id : int) -> Admin:
-        return self.admin_repository.delete_admin(id)
+    def delete_admin(self, delete_admin_id : int) -> Admin:
+        return self.admin_repository.delete_admin(delete_admin_id)

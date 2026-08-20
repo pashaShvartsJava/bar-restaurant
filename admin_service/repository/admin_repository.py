@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from ..model.admin import Admin
-from ..schema.admin import AdminRegistrationDTO, AdminRegistrationUpdate
+from ..schema.admin import AdminRegistrationDTO, AdminUpdateDTO
 from sqlalchemy import or_
 
 class AdminRepository:
@@ -23,28 +23,27 @@ class AdminRepository:
                           birthday=admin.birthday,
                           phone = admin.phone,
                           email=admin.email,
-                          password=admin.password,
+                          password = admin.password,
                           role = admin.role)
         self.db.add(new_admin)
         self.db.commit()
         self.db.refresh(new_admin)
         return new_admin
 
-    def update_admin(self, id: int, updated_admin: Admin) -> Admin:
-        admin = self.get_by_id(id)
+    def update_admin(self, updated_admin_id: int, updated_admin: AdminUpdateDTO) -> Admin:
+        admin = self.get_by_id(updated_admin_id)
         admin.name = updated_admin.name
         admin.surname = updated_admin.surname
         admin.birthday = updated_admin.birthday
         admin.phone = updated_admin.phone
         admin.email = updated_admin.email
-        admin.password = updated_admin.password
         admin.role = updated_admin.role
         self.db.commit()
         self.db.refresh(admin)
         return admin
 
-    def delete_admin(self, id : int) -> Admin:
-        old_admin = self.get_by_id(id)
+    def delete_admin(self, deleted_admin_id : int) -> Admin:
+        old_admin = self.get_by_id(deleted_admin_id)
         self.db.delete(old_admin)
         self.db.commit()
         return old_admin
