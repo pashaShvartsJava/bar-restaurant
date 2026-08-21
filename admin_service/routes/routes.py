@@ -32,12 +32,10 @@ def add_admin(admin_service : AdminService = Depends(get_service_dependency),
               surname: str = Form(),
               birthday: date = Form(),
               phone: str = Form(),
-              email : str = Form(),
-              password : str = Form(),
               role : AdminRole = Form()
             ):
     new_admin = AdminRegistrationDTO(
-        name=name, surname=surname, birthday=birthday, phone=phone, email=email, password=password, role = role
+        name=name, surname=surname, birthday=birthday, phone=phone, role = role
     )
     admin_service.create_new_admin(new_admin)
     return RedirectResponse(url="/admin_panel/all_admins", status_code=303)
@@ -57,15 +55,11 @@ def edit_admin(admin_id : int, service : AdminService = Depends(get_service_depe
                name : str = Form(),
                surname : str = Form(),
                birthday: date = Form(),
-               phone: str = Form(),
-               email: str = Form(),
                role: AdminRole = Form()
                ):
     updated_admin = AdminUpdateDTO(name = name,
                                    surname = surname,
                                    birthday=birthday,
-                                   phone=phone,
-                                   email=email,
                                    role = role)
     service.update_admin(admin_id, updated_admin)
     return RedirectResponse(url="/admin_panel/all_admins", status_code=303)
