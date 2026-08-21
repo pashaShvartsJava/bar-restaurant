@@ -15,7 +15,7 @@ class MenuRepository:
         return self.db.query(Menu).get(id)
 
     def get_dish_by_name(self, name : str) -> Menu:
-        return self.db.query(Menu).get(name)
+        return self.db.query(Menu).filter(Menu.dish_name==name)
 
     def create_dish(self, dish_name : str, price : float, description : str) -> Menu:
         new_dish = Menu(

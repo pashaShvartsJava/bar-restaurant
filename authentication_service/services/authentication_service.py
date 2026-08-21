@@ -1,0 +1,52 @@
+from ..repositories.authentication_repository import AuthenticationRepository
+from ..schemas.schema import LoginSchema, RegisterIdentitySchema, RegisterRequestDTO
+from ..security.password.password import hash_password, verify_password
+from ..security.jwt.jwt import create_access_token
+from datetime import date
+from ..model.identity_model import IdentityRole, Identity
+from ..exceptions.exceptions import PasswordError, LoginError
+
+
+def send_new_user_dto(name : str,
+                     surname : str,
+                     birthday : date,
+                     phone : str,
+                     role : IdentityRole) -> RegisterRequestDTO:
+    new_user = RegisterRequestDTO(
+        name=name,
+        surname=surname,
+        birthday=birthday,
+        phone=phone,
+        role=role
+    )
+    return new_user
+
+
+class AuthenticationService:
+
+    def __init__(self, authentication_repository : AuthenticationRepository):
+        self.authentication_repository = authentication_repository
+
+    def find_by_email(self, email : str) -> Identity:
+        try:
+            email = self.authentication_repository.get_by_email(email)
+        except Exception:
+            raise LoginError("Such user was not found")
+        return email
+
+    def verify_credentials(self, email : str, password : str) -> Identity | None:
+        identity = self.find_by_email(email)
+        if verify_password(password, identity.password_hash):
+            return identity
+        else:
+            raise PasswordError("You entered invalid password")
+
+    def login(self, data : LoginSchema) -> str | None:
+        identity = self.verify_credentials(data.email, data.password)
+        token = create_access_token(identity.id, identity.role)
+        return token
+
+    def create_identity(self, email : str, password : str) -> RegisterIdentitySchema:
+        return self.authentication_repository.create_identity(email, hash_password(password))
+
+

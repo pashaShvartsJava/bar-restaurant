@@ -9,7 +9,7 @@ class IdentityRole(str, Enum):
     ADMIN = "admin"
     MODERATOR = "moderator"
 
-class IdentityBase(Base):
+class Identity(Base):
 
     __tablename__ = 'identity'
 
