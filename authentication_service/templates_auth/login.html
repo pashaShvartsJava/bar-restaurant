@@ -2,14 +2,17 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Форма регистрации | Bar & Lounge</title>
+    <title>Вход | Bar & Lounge</title>
     <style>
         body {
             margin: 0;
             padding: 0;
             font-family: "Segoe UI", sans-serif;
-            background: url('https://images.unsplash.com/photo-1514933651103-005eec06c04b?auto=format&fit=crop&w=1350&q=80') no-repeat center center fixed;
-            background-size: cover;
+            background:
+    linear-gradient(rgba(10, 8, 12, 0.68), rgba(10, 8, 12, 0.78)),
+    url('https://images.unsplash.com/photo-1572116469696-31de0f17cc34?auto=format&fit=crop&w=1920&q=85')
+    no-repeat center center fixed;
+background-size: cover;
             color: #fff;
         }
 
@@ -113,10 +116,10 @@
 
 <div class="overlay">
     <div class="auth-card">
-        <h1>Админ-вход</h1>
+        <h1>Вход</h1>
         <p>Только для администраторов Bar & Lounge</p>
 
-        <form method="post" action="/admin/login">
+        <form method="post" action="/login">
             <input type="email" name="email" placeholder="Email администратора" required>
             <input type="password" name="password" placeholder="Пароль" required>
 
@@ -127,7 +130,7 @@
 
         <div class="register-link">
             Нет аккаунта?
-            <a href="http://localhost:8002/admin/registration">Зарегистрироваться как администратор</a>
+            <a href="http://localhost:8000/registration">Зарегистрироваться как администратор</a>
         </div>
 
         <a href="http://localhost:8000/bar_name" class="back-link">← Вернуться на главную</a>
