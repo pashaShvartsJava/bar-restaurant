@@ -22,8 +22,6 @@ class AdminRepository:
                           surname = admin.surname,
                           birthday=admin.birthday,
                           phone = admin.phone,
-                          email=admin.email,
-                          password = admin.password,
                           role = admin.role)
         self.db.add(new_admin)
         self.db.commit()
@@ -36,7 +34,6 @@ class AdminRepository:
         admin.surname = updated_admin.surname
         admin.birthday = updated_admin.birthday
         admin.phone = updated_admin.phone
-        admin.email = updated_admin.email
         admin.role = updated_admin.role
         self.db.commit()
         self.db.refresh(admin)

@@ -15,8 +15,6 @@ class Admin(Base):
     surname  = Column(String, index=True, nullable=False)
     birthday = Column(Date, index=True, nullable=False)
     phone = Column(String, index=True, nullable=False)
-    email = Column(String, index=True, nullable=False, unique=True)
-    password = Column(String, nullable=False, unique=True)
     role = Column(
         SQLEnum(AdminRole),
         nullable=False,
