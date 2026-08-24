@@ -31,7 +31,7 @@ def authentication(response : Response,
         token = service.login(data)
     except HTTPException:
         raise HTTPException(status_code=401, detail="Authentication failed: invalid login or password")
-    response.set_cookie(key="jwt", value=token, httponly=True, secure=False, max_age=3600, samesite="lax")
+    response.set_cookie(key="access_token", value=token, httponly=True, secure=False, max_age=3600, samesite="lax")
     return RedirectResponse(url="http://localhost:8005/users/my_profile/{identity_id}", status_code=303)
 
 @router.post("/registration")
