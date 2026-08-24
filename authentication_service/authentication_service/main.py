@@ -1,7 +1,7 @@
-from authx  import AuthX, AuthXConfig
+from authx  import AuthXConfig
 
 from fastapi import FastAPI
-from authentication_service.routes.routes import router as auth_router
+from .routes.routes import router as auth_router
 
 app = FastAPI()
 config = AuthXConfig()

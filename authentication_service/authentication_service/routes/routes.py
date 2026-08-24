@@ -1,11 +1,9 @@
-from http.client import responses
-
-from fastapi import Request, APIRouter, Form, HTTPException, Response
+from fastapi import Request, APIRouter, HTTPException, Response
 from fastapi.params import Depends
 from starlette.responses import HTMLResponse, RedirectResponse
 from starlette.templating import Jinja2Templates
-from ..dependencies.dependency import get_service_dependency
 from ..schemas.schema import LoginSchema, RegistrationSchema, RegisterRequestDTO
+from ..dependencies.dependency import get_service_dependency
 from ..services.authentication_service import AuthenticationService, send_new_user_dto
 import httpx
 
@@ -37,7 +35,7 @@ def authentication(response : Response,
     return RedirectResponse(url="http://localhost:8005/users/my_profile/{identity_id}", status_code=303)
 
 @router.post("/registration")
-async def registration(data : RegistrationSchema, service : AuthenticationService = Depends(get_service_dependency())):
+async def registration(data : RegistrationSchema, service : AuthenticationService = Depends(get_service_dependency)):
     service.create_identity(data.email, data.password)
     user_request_dto : RegisterRequestDTO = send_new_user_dto(data.name, data.surname,data.birthday, data.phone, data.role)
     async with httpx.AsyncClient() as client:

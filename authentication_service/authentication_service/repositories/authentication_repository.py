@@ -1,6 +1,5 @@
 from sqlalchemy.orm import Session
 from ..model.identity_model import Identity
-from ..security.password.password import verify_password
 
 
 class AuthenticationRepository:
