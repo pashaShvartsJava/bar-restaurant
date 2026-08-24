@@ -1,7 +1,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
-from authentication_service.config.config import settings
+from ..config.config import settings
 
 URL_DATABASE = settings.database_url
 
