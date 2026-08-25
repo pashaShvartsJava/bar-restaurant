@@ -2,9 +2,9 @@ from fastapi import Request, APIRouter, HTTPException, Response
 from fastapi.params import Depends
 from starlette.responses import HTMLResponse, RedirectResponse
 from starlette.templating import Jinja2Templates
-from ..schemas.schema import LoginSchema, RegistrationSchema, RegisterRequestDTO
+from ..schemas.schema import LoginSchema, RegisterRequest, RegisterRequestDTO, AddressResponseDTO
 from ..dependencies.dependency import get_service_dependency
-from ..services.authentication_service import AuthenticationService, send_new_user_dto
+from ..services.authentication_service import AuthenticationService, send_new_user_dto, send_address
 import httpx
 
 templates = Jinja2Templates(directory="authentication_service/templates_auth")
@@ -35,9 +35,17 @@ def authentication(response : Response,
     return RedirectResponse(url="http://localhost:8005/users/my_profile/{identity_id}", status_code=303)
 
 @router.post("/registration")
-async def registration(data : RegistrationSchema, service : AuthenticationService = Depends(get_service_dependency)):
+async def registration(data : RegisterRequest, service : AuthenticationService = Depends(get_service_dependency)):
     service.create_identity(data.email, data.password)
-    user_request_dto : RegisterRequestDTO = send_new_user_dto(data.name, data.surname,data.birthday, data.phone, data.role)
+    created_user = service.find_by_email(data.email)
+    user_request_dto : RegisterRequestDTO = send_new_user_dto(created_user.id, data.user_data.name,
+                                                              data.user_data.surname, data.user_data.email,
+                                                              data.user_data.birthday, data.user_data.phone,
+                                                              created_user.role)
+    address_request_dto : AddressResponseDTO = send_address(data.address_data.city, data.address_data.postal_code,
+                                                                 data.address_data.street, data.address_data.house,
+                                                                 data.address_data.apartment)
+    register_dto = RegisterRequest(user_data=user_request_dto, address_data=address_request_dto)
     async with httpx.AsyncClient() as client:
-        await client.post("http://localhost:8005/users/add_user", json=user_request_dto.model_dump(mode="json"))
+        await client.post("http://localhost:8005/users/add_user", json=register_dto.model_dump(mode="json"))
     return RedirectResponse(url="http//:localhost:8002/login", status_code=303)

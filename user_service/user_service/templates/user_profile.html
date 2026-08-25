@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Профиль — BAR</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            background:
+                radial-gradient(
+                    circle at 15% 20%,
+                    rgba(213, 166, 91, 0.12),
+                    transparent 30%
+                ),
+                radial-gradient(
+                    circle at 85% 75%,
+                    rgba(130, 80, 120, 0.12),
+                    transparent 32%
+                ),
+                linear-gradient(
+                    135deg,
+                    #0b0b0e,
+                    #151417 50%,
+                    #0d0d10
+                );
+            color: #fff;
+            font-family: Arial, sans-serif;
+        }
+
+        .page {
+            min-height: 100vh;
+            padding: 30px 45px;
+        }
+
+        .top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-bottom: 25px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+        }
+
+        .logo {
+            color: #d5a65b;
+            font-family: Georgia, serif;
+            font-size: 20px;
+            letter-spacing: 4px;
+        }
+
+        .top-menu {
+            display: flex;
+            gap: 10px;
+        }
+
+        .top-button {
+            padding: 11px 18px;
+            border-radius: 7px;
+            border: 1px solid #333338;
+            background: #19191c;
+            color: #aaa;
+            text-decoration: none;
+            font-size: 11px;
+            transition: 0.25s;
+        }
+
+        .top-button:hover {
+            color: #fff;
+            border-color: #d5a65b;
+            transform: translateY(-2px);
+        }
+
+        .content {
+            max-width: 1150px;
+            margin: 55px auto 0;
+            animation: show 0.6s ease;
+        }
+
+        .heading {
+            margin-bottom: 35px;
+        }
+
+        .heading-label {
+            color: #d5a65b;
+            font-size: 10px;
+            letter-spacing: 4px;
+            margin-bottom: 10px;
+        }
+
+        .heading h1 {
+            font-family: Georgia, serif;
+            font-size: 34px;
+            font-weight: normal;
+        }
+
+        .heading p {
+            margin-top: 9px;
+            color: #777;
+            font-size: 12px;
+        }
+
+        .layout {
+            display: grid;
+            grid-template-columns: 330px 1fr;
+            gap: 25px;
+        }
+
+        .profile-card {
+            padding: 27px;
+            background: rgba(24, 24, 27, 0.92);
+            border: 1px solid #29292d;
+            border-radius: 14px;
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding-bottom: 22px;
+            border-bottom: 1px solid #29292d;
+        }
+
+        .avatar {
+            width: 55px;
+            height: 55px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            border-radius: 50%;
+            background: #252529;
+            color: #d5a65b;
+            font-family: Georgia, serif;
+            font-size: 21px;
+        }
+
+        .user-name {
+            font-family: Georgia, serif;
+            font-size: 21px;
+            line-height: 1.2;
+        }
+
+        .user-status {
+            margin-top: 5px;
+            color: #777;
+            font-size: 10px;
+        }
+
+        .data {
+            margin-top: 22px;
+        }
+
+        .data-item {
+            padding: 13px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .data-item:last-child {
+            border-bottom: none;
+        }
+
+        .data-label {
+            margin-bottom: 5px;
+            color: #666;
+            font-size: 9px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .data-value {
+            color: #ddd;
+            font-family: Georgia, serif;
+            font-size: 13px;
+        }
+
+        /* Адрес */
+
+        .address {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px 15px;
+            margin-top: 8px;
+        }
+
+        .address-item {
+            padding: 8px 10px;
+            border-radius: 6px;
+            background: #1d1d20;
+        }
+
+        .address-label {
+            margin-bottom: 4px;
+            color: #666;
+            font-size: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .address-value {
+            color: #ddd;
+            font-family: Georgia, serif;
+            font-size: 11px;
+        }
+
+        .address-street {
+            grid-column: span 2;
+        }
+
+        .edit-profile {
+            display: block;
+            margin-top: 18px;
+            padding: 12px;
+            border: 1px solid #444448;
+            border-radius: 7px;
+            background: #202023;
+            color: #d5a65b;
+            text-align: center;
+            text-decoration: none;
+            font-size: 10px;
+            transition: 0.25s;
+        }
+
+        .edit-profile:hover {
+            border-color: #d5a65b;
+            background: #29292d;
+            transform: translateY(-2px);
+        }
+
+        .actions-card {
+            padding: 30px;
+            background: rgba(24, 24, 27, 0.92);
+            border: 1px solid #29292d;
+            border-radius: 14px;
+        }
+
+        .actions-title {
+            margin-bottom: 22px;
+        }
+
+        .actions-title h2 {
+            font-family: Georgia, serif;
+            font-size: 23px;
+            font-weight: normal;
+        }
+
+        .actions-title p {
+            margin-top: 6px;
+            color: #666;
+            font-size: 11px;
+        }
+
+        .actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+
+        .action {
+            min-height: 115px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 20px;
+            border: 1px solid #303035;
+            border-radius: 10px;
+            background: #1e1e21;
+            color: #ddd;
+            text-decoration: none;
+            transition: 0.3s;
+        }
+
+        .action:hover {
+            transform: translateY(-4px);
+            border-color: #d5a65b;
+            background: #242428;
+        }
+
+        .action-icon {
+            color: #d5a65b;
+            font-size: 21px;
+        }
+
+        .action-name {
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .action-description {
+            margin-top: 5px;
+            color: #666;
+            font-size: 9px;
+        }
+
+        .main-action {
+            grid-column: span 2;
+            min-height: 125px;
+            background: linear-gradient(
+                135deg,
+                #d5a65b,
+                #b9863e
+            );
+            border-color: #d5a65b;
+            color: #111;
+        }
+
+        .main-action:hover {
+            background: linear-gradient(
+                135deg,
+                #e4b971,
+                #c9954a
+            );
+            border-color: #e4b971;
+        }
+
+        .main-action .action-icon {
+            color: #111;
+        }
+
+        .main-action .action-description {
+            color: #493817;
+        }
+
+        /* Активные заказы */
+
+        .active-orders {
+            margin-top: 25px;
+            padding-top: 22px;
+            border-top: 1px solid #29292d;
+        }
+
+        .active-orders-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+
+        .active-orders-header h3 {
+            font-family: Georgia, serif;
+            font-size: 18px;
+            font-weight: normal;
+        }
+
+        .active-orders-header p {
+            margin-top: 5px;
+            color: #666;
+            font-size: 10px;
+        }
+
+        .active-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #70a870;
+            box-shadow: 0 0 9px #70a870;
+        }
+
+        .order-empty {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-height: 60px;
+            padding: 13px 15px;
+            border: 1px solid #29292d;
+            border-radius: 8px;
+            background: #1b1b1e;
+            color: #666;
+            font-size: 10px;
+        }
+
+        .order-icon {
+            color: #777;
+            font-size: 18px;
+        }
+
+        .bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 30px;
+        }
+
+        .support {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            padding: 11px 16px;
+            border-radius: 7px;
+            border: 1px solid #333338;
+            background: #18181b;
+            color: #aaa;
+            text-decoration: none;
+            font-size: 10px;
+            transition: 0.25s;
+        }
+
+        .support::before {
+            content: "";
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: #70a870;
+            box-shadow: 0 0 8px #70a870;
+        }
+
+        .support:hover {
+            color: #fff;
+            border-color: #d5a65b;
+        }
+
+        .logout {
+            padding: 11px 16px;
+            border-radius: 7px;
+            border: 1px solid #333338;
+            background: #18181b;
+            color: #888;
+            text-decoration: none;
+            font-size: 10px;
+            transition: 0.25s;
+        }
+
+        .logout:hover {
+            color: #d98282;
+            border-color: #704848;
+        }
+
+        @keyframes show {
+            from {
+                opacity: 0;
+                transform: translateY(15px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 850px) {
+
+            .page {
+                padding: 25px 20px;
+            }
+
+            .content {
+                margin-top: 35px;
+            }
+
+            .layout {
+                grid-template-columns: 1fr;
+            }
+
+            .actions {
+                grid-template-columns: 1fr;
+            }
+
+            .main-action {
+                grid-column: span 1;
+            }
+        }
+
+        @media (max-width: 550px) {
+
+            .top-menu {
+                display: none;
+            }
+
+            .heading h1 {
+                font-size: 28px;
+            }
+
+            .profile-card,
+            .actions-card {
+                padding: 20px;
+            }
+
+            .address {
+                grid-template-columns: 1fr;
+            }
+
+            .address-street {
+                grid-column: span 1;
+            }
+
+            .bottom {
+                align-items: stretch;
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .support,
+            .logout {
+                text-align: center;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="page">
+
+    <header class="top">
+
+        <div class="logo">
+            BAR.
+        </div>
+
+        <nav class="top-menu">
+
+            <a href="/cart" class="top-button">
+                Корзина
+            </a>
+
+        </nav>
+
+    </header>
+
+
+    <main class="content">
+
+        <div class="heading">
+
+            <div class="heading-label">
+                PERSONAL AREA
+            </div>
+
+            <h1>
+                Личный кабинет
+            </h1>
+
+            <p>
+                Управляйте заказами и своим профилем
+            </p>
+
+        </div>
+
+
+        <div class="layout">
+
+            <!-- Профиль -->
+
+            <section class="profile-card">
+
+                <div class="profile-header">
+
+                    <div class="avatar">
+                        {{ user.name[0] }}
+                    </div>
+
+                    <div>
+
+                        <div class="user-name">
+                            {{ user.name }} {{ user.surname }}
+                        </div>
+
+                        <div class="user-status">
+                            Зарегистрированный клиент
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="data">
+
+                    <div class="data-item">
+
+                        <div class="data-label">
+                            Email
+                        </div>
+
+                        <div class="data-value">
+                            {{ user.email }}
+                        </div>
+
+                    </div>
+
+
+                    <div class="data-item">
+
+                        <div class="data-label">
+                            Телефон
+                        </div>
+
+                        <div class="data-value">
+                            {{ user.phone }}
+                        </div>
+
+                    </div>
+
+
+                    <div class="data-item">
+
+                        <div class="data-label">
+                            Дата рождения
+                        </div>
+
+                        <div class="data-value">
+                            {{ user.birthday }}
+                        </div>
+
+                    </div>
+
+
+                    <!-- Адрес -->
+
+                    <div class="data-item">
+
+                        <div class="data-label">
+                            Адрес
+                        </div>
+
+                        <div class="address">
+
+                            <div class="address-item">
+
+                                <div class="address-label">
+                                    Город
+                                </div>
+
+                                <div class="address-value">
+                                    {{ address.address_city }}
+                                </div>
+
+                            </div>
+
+
+                            <div class="address-item">
+
+                                <div class="address-label">
+                                    Индекс
+                                </div>
+
+                                <div class="address-value">
+                                    {{ address.address_postal_code }}
+                                </div>
+
+                            </div>
+
+
+                            <div class="address-item address-street">
+
+                                <div class="address-label">
+                                    Улица
+                                </div>
+
+                                <div class="address-value">
+                                    {{ address.address_street }}
+                                </div>
+
+                            </div>
+
+
+                            <div class="address-item">
+
+                                <div class="address-label">
+                                    Дом
+                                </div>
+
+                                <div class="address-value">
+                                    {{ address.address_house }}
+                                </div>
+
+                            </div>
+
+
+                            <div class="address-item">
+
+                                <div class="address-label">
+                                    Квартира
+                                </div>
+
+                                <div class="address-value">
+                                    {{ address.address_apartment }}
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <a href="/profile/edit" class="edit-profile">
+                    Изменить личные данные
+                </a>
+
+            </section>
+
+
+            <!-- Действия -->
+
+            <section class="actions-card">
+
+                <div class="actions-title">
+
+                    <h2>
+                        Что хотите сделать?
+                    </h2>
+
+                    <p>
+                        Выберите необходимый раздел
+                    </p>
+
+                </div>
+
+
+                <div class="actions">
+
+                    <a href="/order" class="action main-action">
+
+                        <div class="action-icon">
+                            +
+                        </div>
+
+                        <div>
+
+                            <div class="action-name">
+                                Сделать заказ
+                            </div>
+
+                            <div class="action-description">
+                                Выбрать напитки и оформить заказ
+                            </div>
+
+                        </div>
+
+                    </a>
+
+
+                    <a href="/menu" class="action">
+
+                        <div class="action-icon">
+                            ☰
+                        </div>
+
+                        <div>
+
+                            <div class="action-name">
+                                Меню
+                            </div>
+
+                            <div class="action-description">
+                                Посмотреть напитки и блюда
+                            </div>
+
+                        </div>
+
+                    </a>
+
+
+                    <a href="/orders/history" class="action">
+
+                        <div class="action-icon">
+                            ◷
+                        </div>
+
+                        <div>
+
+                            <div class="action-name">
+                                История заказов
+                            </div>
+
+                            <div class="action-description">
+                                Ваши предыдущие заказы
+                            </div>
+
+                        </div>
+
+                    </a>
+
+                </div>
+
+
+                <!-- Активные заказы -->
+
+                <div class="active-orders">
+
+                    <div class="active-orders-header">
+
+                        <div>
+
+                            <h3>
+                                Активные заказы
+                            </h3>
+
+                            <p>
+                                Ваши текущие заказы
+                            </p>
+
+                        </div>
+
+                        <span class="active-dot"></span>
+
+                    </div>
+
+
+                    <div class="order-empty">
+
+                        <div class="order-icon">
+                            ◷
+                        </div>
+
+                        <span>
+                            Сейчас нет активных заказов
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+        </div>
+
+
+        <!-- Нижняя панель -->
+
+        <div class="bottom">
+
+            <a href="/logout" class="logout">
+                Выйти из аккаунта
+            </a>
+
+            <a href="/support" class="support">
+                Техподдержка
+            </a>
+
+        </div>
+
+    </main>
+
+</div>
+
+</body>
+</html>

@@ -7,5 +7,5 @@ from .jwt import get_payload
 
 def required_role(role : IdentityRole, payload : dict = Depends(get_payload)):
     if payload["role"] != role.value:
-        raise HTTPException(status_code=403)
+        raise HTTPException(status_code=403, detail="Forbidden")
     return payload

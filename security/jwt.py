@@ -1,4 +1,5 @@
 import jwt
+from fastapi import HTTPException
 from jwt import InvalidTokenError
 from starlette.requests import Request
 
@@ -17,4 +18,6 @@ def decode_access_token(token : str) -> dict:
 
 def get_payload(request : Request):
     token = request.cookies.get("access_token")
+    if token is None:
+        raise HTTPException(status_code=401, detail="Authorization required")
     return decode_access_token(token)
