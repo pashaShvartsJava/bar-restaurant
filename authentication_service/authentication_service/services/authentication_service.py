@@ -1,5 +1,5 @@
 from ..repositories.authentication_repository import AuthenticationRepository
-from ..schemas.schema import LoginSchema, RegisterIdentitySchema, RegisterRequestDTO
+from ..schemas.schema import LoginSchema, RegisterIdentitySchema, RegisterRequestDTO, AddressResponseDTO
 from ..security.password.password import hash_password, verify_password
 from ..security.jwt.jwt import create_access_token
 from datetime import date
@@ -7,20 +7,33 @@ from ..model.identity_model import IdentityRole, Identity
 from ..exceptions.exceptions import PasswordError, LoginError
 
 
-def send_new_user_dto(name : str,
+def send_new_user_dto(identity_id: str,
+                     name : str,
                      surname : str,
+                     email: str,
                      birthday : date,
                      phone : str,
                      role : IdentityRole) -> RegisterRequestDTO:
     new_user = RegisterRequestDTO(
+        identity_id=identity_id,
         name=name,
         surname=surname,
+        email=email,
         birthday=birthday,
         phone=phone,
         role=role
     )
     return new_user
 
+def send_address(city: str, postal_code : int, street : str, house : int, apartment : int) -> AddressResponseDTO:
+    created_address = AddressResponseDTO(
+        city=city,
+        postal_code=postal_code,
+        street=street,
+        house=house,
+        apartment=apartment
+    )
+    return created_address
 
 class AuthenticationService:
 
