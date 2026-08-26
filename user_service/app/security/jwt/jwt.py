@@ -3,11 +3,10 @@ from fastapi import HTTPException
 from jwt import InvalidTokenError
 from starlette.requests import Request
 
-from authentication_service.authentication_service.config.config import settings
-from authentication_service.authentication_service.model.identity_model import IdentityRole
+import os
 
-PUBLIC_SECRET_KEY = settings.jwt_public_key_path
-ALGORITHM = settings.jwt_algorithm
+PUBLIC_SECRET_KEY = os.getenv("JWT_PUBLIC_KEY_PATH")
+ALGORITHM = os.getenv("JWT_ALGORITHM")
 
 def decode_access_token(token : str) -> dict:
     try:

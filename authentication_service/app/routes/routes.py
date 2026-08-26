@@ -7,7 +7,7 @@ from ..dependencies.dependency import get_service_dependency
 from ..services.authentication_service import AuthenticationService, send_new_user_dto, send_address
 import httpx
 
-templates = Jinja2Templates(directory="authentication_service/templates_auth")
+templates = Jinja2Templates(directory="authentication_service/app/templates_auth")
 router = APIRouter()
 
 
