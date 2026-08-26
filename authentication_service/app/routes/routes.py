@@ -1,4 +1,5 @@
-from fastapi import Request, APIRouter, HTTPException, Response
+from fastapi import Request, APIRouter, HTTPException, Response, Form
+from datetime import date
 from fastapi.params import Depends
 from starlette.responses import HTMLResponse, RedirectResponse
 from starlette.templating import Jinja2Templates
@@ -7,7 +8,7 @@ from ..dependencies.dependency import get_service_dependency
 from ..services.authentication_service import AuthenticationService, send_new_user_dto, send_address
 import httpx
 
-templates = Jinja2Templates(directory="authentication_service/app/templates_auth")
+templates = Jinja2Templates(directory="app/templates_auth")
 router = APIRouter()
 
 
@@ -24,28 +25,40 @@ def registration(request: Request):
     return templates.TemplateResponse("registration.html", {"request" : request})
 
 @router.post("/login", response_class=HTMLResponse)
-def authentication(response : Response,
+async def authentication(response : Response,
                    data : LoginSchema,
                    service : AuthenticationService = Depends(get_service_dependency)):
     try:
-        token = service.login(data)
+        token = await service.login(data)
     except HTTPException:
         raise HTTPException(status_code=401, detail="Authentication failed: invalid login or password")
     response.set_cookie(key="access_token", value=token, httponly=True, secure=False, max_age=3600, samesite="lax")
-    return RedirectResponse(url="http://localhost:8005/users/my_profile/{identity_id}", status_code=303)
+    return RedirectResponse(url="http://localhost:8005/users/my_profile", status_code=303)
 
 @router.post("/registration")
-async def registration(data : RegisterRequest, service : AuthenticationService = Depends(get_service_dependency)):
-    service.create_identity(data.email, data.password)
-    created_user = service.find_by_email(data.email)
-    user_request_dto : RegisterRequestDTO = send_new_user_dto(created_user.id, data.user_data.name,
-                                                              data.user_data.surname, data.user_data.email,
-                                                              data.user_data.birthday, data.user_data.phone,
+async def registration( name: str = Form(...),
+                        surname: str = Form(...),
+                        phone: str = Form(...),
+                        birthday: date = Form(...),
+                        city: str = Form(...),
+                        postal_code: int = Form(...),
+                        street: str = Form(...),
+                        house: int = Form(...),
+                        apartment: int = Form(...),
+                        email: str = Form(...),
+                        password: str = Form(...),
+                        service: AuthenticationService = Depends(get_service_dependency)):
+    await service.create_identity(email, password)
+    created_user = await service.find_by_email(email)
+    user_request_dto : RegisterRequestDTO = send_new_user_dto(created_user.id,
+                                                              name,
+                                                              surname, email,
+                                                              birthday, phone,
                                                               created_user.role)
-    address_request_dto : AddressResponseDTO = send_address(data.address_data.city, data.address_data.postal_code,
-                                                                 data.address_data.street, data.address_data.house,
-                                                                 data.address_data.apartment)
+    address_request_dto : AddressResponseDTO = send_address(city, postal_code,
+                                                                 street, house,
+                                                                 apartment)
     register_dto = RegisterRequest(user_data=user_request_dto, address_data=address_request_dto)
     async with httpx.AsyncClient() as client:
         await client.post("http://localhost:8005/users/add_user", json=register_dto.model_dump(mode="json"))
-    return RedirectResponse(url="http//:localhost:8002/login", status_code=303)
+    return RedirectResponse(url="http://localhost:8002/login", status_code=303)

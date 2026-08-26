@@ -1,30 +1,32 @@
-from sqlalchemy.orm import Session
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 from ..model.identity_model import Identity
 
 
 class AuthenticationRepository:
 
-    def __init__ (self, db : Session):
+    def __init__ (self, db : AsyncSession):
         self.db = db
 
 ################################################
     # authentication process #
 ################################################
 
-    def get_by_email(self, email : str) -> Identity:
-        return self.db.query(Identity).filter(Identity.email==email)
+    async def get_by_email(self, email : str) -> Identity:
+        result = await self.db.execute(select(Identity).where(Identity.email == email))
+        return result.scalar_one_or_none()
 
 
 #################################################
         # registration process #
 #################################################
 
-    def create_identity(self, email : str, hashed_password : str) -> Identity:
+    async def create_identity(self, email : str, hashed_password : str) -> Identity:
         new_identity = Identity(
             email = email,
-            hashed_password = hashed_password
+            password_hash = hashed_password
         )
         self.db.add(new_identity)
-        self.db.commit()
-        self.db.refresh(new_identity)
+        await self.db.commit()
+        await self.db.refresh(new_identity)
         return new_identity

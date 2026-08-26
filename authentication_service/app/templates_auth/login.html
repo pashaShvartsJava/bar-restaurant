@@ -2,96 +2,301 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Вход | Bar & Lounge</title>
+
     <style>
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: "Segoe UI", sans-serif;
-            background:
-    linear-gradient(rgba(10, 8, 12, 0.68), rgba(10, 8, 12, 0.78)),
-    url('https://images.unsplash.com/photo-1572116469696-31de0f17cc34?auto=format&fit=crop&w=1920&q=85')
-    no-repeat center center fixed;
-background-size: cover;
-            color: #fff;
+        * {
+            box-sizing: border-box;
         }
 
-        .overlay {
-            background: rgba(0, 0, 0, 0.7);
-            width: 100%;
-            height: 100vh;
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: "Segoe UI", sans-serif;
+            color: #fff;
+
+            background:
+                radial-gradient(
+                    circle at 10% 20%,
+                    rgba(213, 166, 91, 0.20),
+                    transparent 28%
+                ),
+                radial-gradient(
+                    circle at 90% 80%,
+                    rgba(155, 65, 95, 0.22),
+                    transparent 30%
+                ),
+                linear-gradient(
+                    125deg,
+                    #171216,
+                    #302126 45%,
+                    #21171e 70%,
+                    #121014
+                );
+
             display: flex;
             align-items: center;
             justify-content: center;
+            padding: 35px;
         }
 
+        .page {
+            width: 1050px;
+
+            display: grid;
+            grid-template-columns: 230px 420px 230px;
+
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 35px;
+        }
+
+        /* Боковые блоки */
+
+        .side {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .side-card {
+            padding: 20px;
+
+            background: rgba(31, 26, 31, 0.72);
+            border: 1px solid rgba(255, 255, 255, 0.09);
+            border-radius: 13px;
+
+            backdrop-filter: blur(8px);
+        }
+
+        .side-label {
+            display: block;
+
+            margin-bottom: 9px;
+
+            color: #756d72;
+            font-size: 9px;
+            letter-spacing: 2px;
+        }
+
+        .side-card h3 {
+            margin: 0 0 10px;
+
+            color: #d5a65b;
+            font-family: Georgia, serif;
+            font-size: 17px;
+            font-weight: normal;
+        }
+
+        .side-card p {
+            margin: 0;
+
+            color: #aaa1a6;
+            font-size: 11px;
+            line-height: 1.6;
+        }
+
+        .quote {
+            color: #ddd !important;
+            font-family: Georgia, serif;
+            font-size: 14px !important;
+        }
+
+        .drink {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .drink-icon {
+            width: 42px;
+            height: 42px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 10px;
+
+            background: rgba(213, 166, 91, 0.12);
+            border: 1px solid rgba(213, 166, 91, 0.2);
+
+            color: #d5a65b;
+            font-size: 20px;
+        }
+
+        .drink-name {
+            color: #ddd;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .drink-description {
+            margin-top: 3px;
+
+            color: #777;
+            font-size: 9px;
+        }
+
+        /* Карточка входа */
+
         .auth-card {
-            background: rgba(0, 0, 0, 0.75);
-            border-radius: 12px;
-            padding: 40px 45px;
-            width: 380px;
-            box-sizing: border-box;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+            width: 420px;
+            padding: 40px 42px;
+
+            background: rgba(39, 34, 39, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 18px;
+
+            box-shadow:
+                0 25px 70px rgba(0, 0, 0, 0.45),
+                0 0 45px rgba(213, 166, 91, 0.07);
+
+            backdrop-filter: blur(14px);
+
+            animation: appear 0.5s ease;
+        }
+
+        .logo {
             text-align: center;
+
+            color: #d5a65b;
+            font-family: Georgia, serif;
+            font-size: 13px;
+            letter-spacing: 5px;
+
+            margin-bottom: 18px;
         }
 
         .auth-card h1 {
-            font-size: 32px;
-            margin-bottom: 10px;
-            letter-spacing: 1px;
+            margin: 0;
+
+            text-align: center;
+
+            font-family: Georgia, serif;
+            font-size: 30px;
+            font-weight: normal;
         }
 
-        .auth-card p {
-            font-size: 16px;
-            opacity: 0.85;
-            margin-bottom: 30px;
+        .subtitle {
+            margin: 10px 0 28px;
+
+            text-align: center;
+
+            color: #aaa2a7;
+            font-size: 12px;
+            line-height: 1.5;
         }
 
-        .auth-card input {
-            width: 100%;
-            padding: 12px 14px;
+        .field {
             margin-bottom: 16px;
-            border-radius: 6px;
-            border: none;
-            font-size: 15px;
-            outline: none;
         }
 
-        .auth-card input::placeholder {
-            color: #999;
+        .field label {
+            display: block;
+
+            margin-bottom: 7px;
+
+            color: #d8d1d5;
+            font-size: 11px;
         }
+
+        .required {
+            color: #d5a65b;
+        }
+
+        input {
+            width: 100%;
+            padding: 13px 14px;
+
+            border: 1px solid #4a4148;
+            border-radius: 8px;
+
+            background: #302b30;
+            color: #fff;
+
+            font-size: 13px;
+            outline: none;
+
+            transition: 0.25s;
+        }
+
+        input::placeholder {
+            color: #827b80;
+        }
+
+        input:focus {
+            border-color: #d5a65b;
+            background: #373137;
+
+            box-shadow:
+                0 0 0 3px rgba(213, 166, 91, 0.08);
+        }
+
+        /* Кнопка */
 
         .btn {
             width: 100%;
-            padding: 12px;
-            background: #c59d5f;
+
+            margin-top: 8px;
+            padding: 14px;
+
             border: none;
-            border-radius: 6px;
-            color: #fff;
-            font-size: 17px;
+            border-radius: 8px;
+
+            background: linear-gradient(
+                135deg,
+                #dfb46c,
+                #bd8842
+            );
+
+            color: #211a15;
+
+            font-size: 14px;
+            font-weight: 600;
+
             cursor: pointer;
+
             transition: 0.3s;
         }
 
         .btn:hover {
-            background: #a8844d;
+            transform: translateY(-2px);
+
+            background: linear-gradient(
+                135deg,
+                #ebc17d,
+                #cf9951
+            );
+
+            box-shadow:
+                0 8px 22px rgba(213, 166, 91, 0.22);
         }
 
+        /* Разделитель */
+
         .divider {
-            margin: 25px 0;
             height: 1px;
-            background: rgba(255, 255, 255, 0.2);
+
+            margin: 25px 0;
+
+            background: rgba(255, 255, 255, 0.09);
         }
 
         .register-link {
-            font-size: 14px;
-            opacity: 0.85;
+            text-align: center;
+
+            color: #aaa2a7;
+            font-size: 11px;
+            line-height: 1.6;
         }
 
         .register-link a {
-            color: #c59d5f;
+            color: #d5a65b;
             text-decoration: none;
-            margin-left: 5px;
         }
 
         .register-link a:hover {
@@ -99,42 +304,269 @@ background-size: cover;
         }
 
         .back-link {
-            display: inline-block;
-            margin-top: 25px;
-            font-size: 14px;
-            opacity: 0.7;
-            color: #fff;
+            display: block;
+
+            margin-top: 18px;
+
+            color: #777;
+            text-align: center;
             text-decoration: none;
+
+            font-size: 10px;
+
+            transition: 0.2s;
         }
 
         .back-link:hover {
-            opacity: 1;
+            color: #fff;
+        }
+
+        /* Анимация */
+
+        @keyframes appear {
+            from {
+                opacity: 0;
+                transform: translateY(12px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Адаптация */
+
+        @media (max-width: 950px) {
+
+            .page {
+                width: 420px;
+                grid-template-columns: 1fr;
+            }
+
+            .side {
+                display: none;
+            }
+        }
+
+        @media (max-width: 500px) {
+
+            body {
+                padding: 15px;
+            }
+
+            .page {
+                width: 100%;
+            }
+
+            .auth-card {
+                width: 100%;
+                padding: 32px 23px;
+            }
         }
     </style>
 </head>
+
 <body>
 
-<div class="overlay">
-    <div class="auth-card">
-        <h1>Вход</h1>
-        <p>Только для администраторов Bar & Lounge</p>
+<div class="page">
 
-        <form method="post" action="/login">
-            <input type="email" name="email" placeholder="Email администратора" required>
-            <input type="password" name="password" placeholder="Пароль" required>
+    <!-- Левая часть -->
 
-            <button type="submit" class="btn">Войти</button>
+    <aside class="side">
+
+        <div class="side-card">
+
+            <span class="side-label">
+                BAR & LOUNGE
+            </span>
+
+            <h3>
+                С возвращением
+            </h3>
+
+            <p>
+                Войдите в свой аккаунт,
+                чтобы продолжить пользоваться
+                возможностями Bar & Lounge.
+            </p>
+
+        </div>
+
+
+        <div class="side-card">
+
+            <span class="side-label">
+                АТМОСФЕРА
+            </span>
+
+            <p class="quote">
+                «Каждый хороший вечер
+                с чего-то начинается»
+            </p>
+
+        </div>
+
+    </aside>
+
+
+    <!-- Центральная карточка -->
+
+    <main class="auth-card">
+
+        <div class="logo">
+            BAR & LOUNGE
+        </div>
+
+        <h1>
+            Вход
+        </h1>
+
+        <div class="subtitle">
+            Войдите в свой аккаунт,
+            чтобы продолжить
+        </div>
+
+
+        <form
+            method="post"
+            action="/login"
+        >
+
+            <div class="field">
+
+                <label>
+                    Email
+                    <span class="required">*</span>
+                </label>
+
+                <input
+                    type="email"
+                    name="email"
+                    placeholder="email@example.com"
+                    required
+                >
+
+            </div>
+
+
+            <div class="field">
+
+                <label>
+                    Пароль
+                    <span class="required">*</span>
+                </label>
+
+                <input
+                    type="password"
+                    name="password"
+                    placeholder="Введите пароль"
+                    required
+                >
+
+            </div>
+
+
+            <button
+                type="submit"
+                class="btn"
+            >
+                Войти
+            </button>
+
         </form>
+
 
         <div class="divider"></div>
 
+
         <div class="register-link">
+
             Нет аккаунта?
-            <a href="http://localhost:8000/registration">Зарегистрироваться как администратор</a>
+
+            <a href="http://localhost:8000/registration">
+                Зарегистрироваться
+            </a>
+
         </div>
 
-        <a href="http://localhost:8000/bar_name" class="back-link">← Вернуться на главную</a>
-    </div>
+
+        <a
+            href="http://localhost:8000/bar_name"
+            class="back-link"
+        >
+            ← Вернуться на главную
+        </a>
+
+    </main>
+
+
+    <!-- Правая часть -->
+
+    <aside class="side">
+
+        <div class="side-card">
+
+            <span class="side-label">
+                ДЛЯ ГОСТЕЙ
+            </span>
+
+            <div class="drink">
+
+                <div class="drink-icon">
+                    ◇
+                </div>
+
+                <div>
+
+                    <div class="drink-name">
+                        Ваши заказы
+                    </div>
+
+                    <div class="drink-description">
+                        Всё необходимое в одном месте
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="side-card">
+
+            <span class="side-label">
+                BAR SPIRIT
+            </span>
+
+            <h3>
+                Хороший вечер
+            </h3>
+
+            <p>
+                Меню, заказы, история покупок
+                и связь с техподдержкой —
+                всё доступно после входа.
+            </p>
+
+        </div>
+
+
+        <div class="side-card">
+
+            <span class="side-label">
+                НАСТРОЕНИЕ
+            </span>
+
+            <p class="quote">
+                Напитки. Музыка. Люди.
+            </p>
+
+        </div>
+
+    </aside>
+
 </div>
 
 </body>

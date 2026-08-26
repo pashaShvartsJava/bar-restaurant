@@ -1,160 +1,1119 @@
 <!DOCTYPE html>
 <html lang="ru">
+
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Регистрация | Bar & Lounge</title>
+
     <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
         body {
             margin: 0;
-            padding: 0;
+            min-height: 100vh;
             font-family: "Segoe UI", sans-serif;
+
             background:
-    linear-gradient(rgba(10, 8, 12, 0.68), rgba(10, 8, 12, 0.78)),
-    url('https://images.unsplash.com/photo-1572116469696-31de0f17cc34?auto=format&fit=crop&w=1920&q=85')
-    no-repeat center center fixed;
-            background-size: cover;
-            color: #fff;
-        }
+                radial-gradient(
+                    circle at 15% 20%,
+                    rgba(213, 166, 91, 0.25),
+                    transparent 30%
+                ),
+                radial-gradient(
+                    circle at 85% 80%,
+                    rgba(180, 70, 110, 0.20),
+                    transparent 30%
+                ),
+                linear-gradient(
+                    135deg,
+                    #24191f,
+                    #3a252b,
+                    #24191f
+                );
 
-        .overlay {
-            background: rgba(0, 0, 0, 0.55);
-            width: 100%;
-            height: 100vh;
+            color: white;
+
             display: flex;
-            align-items: center;
             justify-content: center;
+            align-items: center;
+
+            padding: 30px;
         }
 
-        .register-card {
-            background: rgba(20, 20, 20, 0.75);
+
+        .page {
+            width: 1100px;
+
+            display: grid;
+            grid-template-columns: 220px 440px 220px;
+
+            justify-content: center;
+            align-items: center;
+
+            gap: 40px;
+        }
+
+
+        .side {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+
+        .side-box {
+            padding: 20px;
+
+            background: rgba(30, 25, 30, 0.75);
+
+            border: 1px solid rgba(255,255,255,0.1);
+
             border-radius: 14px;
-            padding: 40px 45px;
-            width: 420px;
-            box-sizing: border-box;
-            box-shadow: 0 12px 45px rgba(0, 0, 0, 0.5);
         }
 
-        .register-card h1 {
+
+        .side-label {
+            color: #d5a65b;
+
+            font-size: 9px;
+
+            letter-spacing: 2px;
+        }
+
+
+        .side-box h3 {
+            margin: 10px 0;
+
+            font-family: Georgia, serif;
+
+            font-weight: normal;
+
+            font-size: 18px;
+        }
+
+
+        .side-box p {
+            margin: 0;
+
+            color: #aaa;
+
+            font-size: 11px;
+
+            line-height: 1.6;
+        }
+
+
+        .card {
+            width: 440px;
+
+            padding: 35px 40px;
+
+            background: rgba(39, 32, 38, 0.97);
+
+            border: 1px solid rgba(255,255,255,0.12);
+
+            border-radius: 18px;
+
+            box-shadow:
+                0 25px 60px rgba(0,0,0,0.45);
+        }
+
+
+        .logo {
             text-align: center;
+
+            color: #d5a65b;
+
+            font-family: Georgia, serif;
+
+            letter-spacing: 5px;
+
+            font-size: 13px;
+
+            margin-bottom: 15px;
+        }
+
+
+        h1 {
+            margin: 0;
+
+            text-align: center;
+
+            font-family: Georgia, serif;
+
             font-size: 30px;
-            margin-bottom: 10px;
-            letter-spacing: 1px;
+
+            font-weight: normal;
         }
 
-        .register-card p {
+
+        .subtitle {
             text-align: center;
-            font-size: 15px;
-            opacity: 0.9;
+
+            color: #aaa;
+
+            font-size: 12px;
+
+            margin: 10px 0 25px;
+        }
+
+
+        /* ШАГИ */
+
+        .steps {
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
             margin-bottom: 25px;
         }
 
-        .register-card input {
+
+        .step-number {
+            width: 30px;
+            height: 30px;
+
+            border-radius: 50%;
+
+            display: flex;
+
+            justify-content: center;
+            align-items: center;
+
+            background: #352f34;
+
+            border: 1px solid #51484e;
+
+            color: #888;
+
+            font-size: 11px;
+        }
+
+
+        .step-number.active {
+            background: #d5a65b;
+
+            border-color: #d5a65b;
+
+            color: #211a15;
+        }
+
+
+        .step-line {
+            width: 35px;
+
+            height: 1px;
+
+            background: #51484e;
+        }
+
+
+        /* ФОРМЫ */
+
+        .form-step {
+            display: none;
+        }
+
+
+        .form-step.active {
+            display: block;
+        }
+
+
+        .step-title {
+            margin-bottom: 20px;
+
+            font-family: Georgia, serif;
+
+            font-size: 20px;
+        }
+
+
+        .row {
+            display: grid;
+
+            grid-template-columns: 1fr 1fr;
+
+            gap: 12px;
+        }
+
+
+        .field {
+            margin-bottom: 15px;
+        }
+
+
+        label {
+            display: block;
+
+            margin-bottom: 6px;
+
+            font-size: 11px;
+
+            color: #ddd;
+        }
+
+
+        .required {
+            color: #d5a65b;
+        }
+
+
+        .optional {
+            color: #777;
+
+            font-size: 9px;
+        }
+
+
+        input {
             width: 100%;
-            padding: 11px 14px;
-            margin-bottom: 14px;
-            border-radius: 6px;
-            border: none;
-            font-size: 14px;
+
+            padding: 12px;
+
+            border-radius: 8px;
+
+            border: 1px solid #50464d;
+
+            background: #302a30;
+
+            color: white;
+
+            font-size: 13px;
+
             outline: none;
         }
 
-        .register-card input::placeholder {
+
+        input:focus {
+            border-color: #d5a65b;
+
+            box-shadow:
+                0 0 0 3px rgba(213,166,91,0.08);
+        }
+
+
+        input::placeholder {
+            color: #777;
+        }
+
+
+        /* КНОПКИ */
+
+        .next-button,
+        .register-button {
+            width: 100%;
+
+            margin-top: 5px;
+
+            padding: 13px;
+
+            border: none;
+
+            border-radius: 8px;
+
+            background: #d5a65b;
+
+            color: #211a15;
+
+            font-size: 14px;
+
+            font-weight: 600;
+
+            cursor: pointer;
+
+            transition: 0.2s;
+        }
+
+
+        .next-button:hover,
+        .register-button:hover {
+            background: #e5b970;
+
+            transform: translateY(-1px);
+        }
+
+
+        .back-button {
+            width: 100%;
+
+            margin-top: 9px;
+
+            padding: 10px;
+
+            border-radius: 8px;
+
+            border: 1px solid #50464d;
+
+            background: transparent;
+
+            color: #999;
+
+            cursor: pointer;
+
+            font-size: 11px;
+        }
+
+
+        .back-button:hover {
+            color: white;
+
+            border-color: #777;
+        }
+
+
+        .footer {
+            text-align: center;
+
+            margin-top: 20px;
+
+            font-size: 11px;
+
             color: #999;
         }
 
-        .register-card label {
-            font-size: 13px;
-            opacity: 0.85;
-            display: block;
-            margin-bottom: 6px;
-        }
 
-        .btn {
-            width: 100%;
-            padding: 12px;
-            background: #c59d5f;
-            border: none;
-            border-radius: 6px;
-            color: #fff;
-            font-size: 17px;
-            cursor: pointer;
-            transition: 0.3s;
-            margin-top: 10px;
-        }
+        .footer a {
+            color: #d5a65b;
 
-        .btn:hover {
-            background: #a8844d;
-        }
-
-        .footer-links {
-            text-align: center;
-            margin-top: 20px;
-            font-size: 14px;
-            opacity: 0.85;
-        }
-
-        .footer-links a {
-            color: #c59d5f;
             text-decoration: none;
-            margin-left: 5px;
         }
 
-        .footer-links a:hover {
+
+        .footer a:hover {
             text-decoration: underline;
         }
 
-        .back-link {
-            display: block;
-            text-align: center;
-            margin-top: 18px;
-            font-size: 13px;
-            opacity: 0.7;
-            color: #fff;
-            text-decoration: none;
+
+        @media (max-width: 900px) {
+
+            .page {
+                grid-template-columns: 1fr;
+
+                width: 440px;
+            }
+
+            .side {
+                display: none;
+            }
+
         }
 
-        .back-link:hover {
-            opacity: 1;
+
+        @media (max-width: 500px) {
+
+            body {
+                padding: 15px;
+            }
+
+            .page {
+                width: 100%;
+            }
+
+            .card {
+                width: 100%;
+
+                padding: 30px 22px;
+            }
+
+            .row {
+                grid-template-columns: 1fr;
+            }
+
         }
+
     </style>
 </head>
+
+
 <body>
 
-<div class="overlay">
-    <div class="register-card">
-        <h1>Регистрация</h1>
-        <p>Создайте аккаунт для расширенных возможностей Bar & Lounge</p>
 
-        <form method="post" action="/registration">
-            <label>Имя</label>
-            <input type="text" name="name" placeholder="Имя" required>
+<div class="page">
 
-            <label>Фамилия</label>
-            <input type="text" name="surname" placeholder="Фамилия" required>
 
-            <label>Номер телефона</label>
-            <input type="tel" name="phone" placeholder="номер телефона" required>
+    <!-- ЛЕВАЯ ЧАСТЬ -->
 
-            <label>Email</label>
-            <input type="email" name="email" placeholder="email@example.com" required>
+    <div class="side">
 
-            <label>Дата рождения</label>
-            <input type="date" name="birthday" required>
+        <div class="side-box">
 
-            <label>Пароль</label>
-            <input type="password" name="password" placeholder="Минимум 8 символов" required>
+            <div class="side-label">
+                BAR & LOUNGE
+            </div>
 
-            <button type="submit" class="btn">Зарегистрироваться</button>
-        </form>
+            <h3>
+                Добро пожаловать
+            </h3>
 
-        <div class="footer-links">
-            Уже есть аккаунт?
-            <a href="http://localhost:8000/login">Войти</a>
+            <p>
+                Создайте аккаунт,
+                чтобы пользоваться
+                всеми возможностями
+                нашего бара.
+            </p>
+
         </div>
 
-        <a href="http://localhost:8000/bar_name" class="back-link">← Вернуться на главную</a>
+
+        <div class="side-box">
+
+            <div class="side-label">
+                ATMOSPHERE
+            </div>
+
+            <p>
+                Хорошая музыка,
+                авторские коктейли
+                и приятная компания.
+            </p>
+
+        </div>
+
     </div>
+
+
+
+    <!-- ЦЕНТР -->
+
+    <div class="card">
+
+
+        <div class="logo">
+            BAR & LOUNGE
+        </div>
+
+
+        <h1>
+            Регистрация
+        </h1>
+
+
+        <div class="subtitle">
+            Создайте аккаунт в несколько шагов
+        </div>
+
+
+        <!-- ИНДИКАТОР -->
+
+        <div class="steps">
+
+            <div
+                class="step-number active"
+                id="indicator1"
+            >
+                1
+            </div>
+
+            <div class="step-line"></div>
+
+            <div
+                class="step-number"
+                id="indicator2"
+            >
+                2
+            </div>
+
+            <div class="step-line"></div>
+
+            <div
+                class="step-number"
+                id="indicator3"
+            >
+                3
+            </div>
+
+        </div>
+
+
+
+        <!-- ОДНА ФОРМА -->
+
+        <form
+            id="registrationForm"
+            method="post"
+            action="/registration"
+        >
+
+
+            <!-- ========================= -->
+            <!-- ШАГ 1 -->
+            <!-- ========================= -->
+
+            <div
+                id="step1"
+                class="form-step active"
+            >
+
+                <div class="step-title">
+                    Личные данные
+                </div>
+
+
+                <div class="row">
+
+
+                    <div class="field">
+
+                        <label>
+                            Имя
+                            <span class="required">*</span>
+                        </label>
+
+                        <input
+                            type="text"
+                            name="name"
+                            placeholder="Имя"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label>
+                            Фамилия
+                            <span class="required">*</span>
+                        </label>
+
+                        <input
+                            type="text"
+                            name="surname"
+                            placeholder="Фамилия"
+                            required
+                        >
+
+                    </div>
+
+
+                </div>
+
+
+                <div class="field">
+
+                    <label>
+                        Номер телефона
+                        <span class="required">*</span>
+                    </label>
+
+                    <input
+                        type="tel"
+                        name="phone"
+                        placeholder="+49 000 000000"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="field">
+
+                    <label>
+                        Дата рождения
+                        <span class="required">*</span>
+                    </label>
+
+                    <input
+                        type="date"
+                        name="birthday"
+                        required
+                    >
+
+                </div>
+
+
+                <!-- ВОТ ЭТА КНОПКА ПЕРЕКЛЮЧАЕТ ШАГ -->
+
+                <button
+                    type="button"
+                    class="next-button"
+                    id="buttonStep2"
+                >
+                    Перейти ко второму шагу →
+                </button>
+
+
+            </div>
+
+
+
+            <!-- ========================= -->
+            <!-- ШАГ 2 -->
+            <!-- ========================= -->
+
+            <div
+                id="step2"
+                class="form-step"
+            >
+
+                <div class="step-title">
+                    Адрес
+                </div>
+
+
+                <div class="field">
+
+                    <label>
+                        Город
+                        <span class="required">*</span>
+                    </label>
+
+                    <input
+                        type="text"
+                        name="city"
+                        placeholder="Город"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="field">
+
+                    <label>
+                        Почтовый индекс
+                        <span class="required">*</span>
+                    </label>
+
+                    <input
+                        type="text"
+                        name="postal_code"
+                        placeholder="Почтовый индекс"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="field">
+
+                    <label>
+                        Улица
+                        <span class="required">*</span>
+                    </label>
+
+                    <input
+                        type="text"
+                        name="street"
+                        placeholder="Улица"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="row">
+
+
+                    <div class="field">
+
+                        <label>
+                            Номер дома
+                            <span class="required">*</span>
+                        </label>
+
+                        <input
+                            type="text"
+                            name="house"
+                            placeholder="Дом"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label>
+                            Номер квартиры
+                            <span class="optional">
+                                (необязательно)
+                            </span>
+                        </label>
+
+                        <input
+                            type="text"
+                            name="apartment"
+                            placeholder="Квартира"
+                        >
+
+                    </div>
+
+
+                </div>
+
+
+                <button
+                    type="button"
+                    class="next-button"
+                    id="buttonStep3"
+                >
+                    Перейти к третьему шагу →
+                </button>
+
+
+                <button
+                    type="button"
+                    class="back-button"
+                    id="buttonBack1"
+                >
+                    ← Назад
+                </button>
+
+
+            </div>
+
+
+
+            <!-- ========================= -->
+            <!-- ШАГ 3 -->
+            <!-- ========================= -->
+
+            <div
+                id="step3"
+                class="form-step"
+            >
+
+                <div class="step-title">
+                    Данные аккаунта
+                </div>
+
+
+                <div class="field">
+
+                    <label>
+                        Email
+                        <span class="required">*</span>
+                    </label>
+
+                    <input
+                        type="email"
+                        name="email"
+                        placeholder="email@example.com"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="field">
+
+                    <label>
+                        Пароль
+                        <span class="required">*</span>
+                    </label>
+
+                    <input
+                        type="password"
+                        name="password"
+                        placeholder="Минимум 8 символов"
+                        minlength="8"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="field">
+
+                    <label>
+                        Подтверждение пароля
+                        <span class="required">*</span>
+                    </label>
+
+                    <input
+                        type="password"
+                        id="passwordConfirm"
+                        placeholder="Повторите пароль"
+                        minlength="8"
+                        required
+                    >
+
+                </div>
+
+
+                <button
+                    type="submit"
+                    class="register-button"
+                    id="registerButton"
+                >
+                    Зарегистрироваться
+                </button>
+
+
+                <button
+                    type="button"
+                    class="back-button"
+                    id="buttonBack2"
+                >
+                    ← Назад
+                </button>
+
+
+            </div>
+
+
+        </form>
+
+
+        <div class="footer">
+
+            Уже есть аккаунт?
+
+            <a href="http://localhost:8000/login">
+                Войти
+            </a>
+
+        </div>
+
+
+    </div>
+
+
+
+    <!-- ПРАВАЯ ЧАСТЬ -->
+
+    <div class="side">
+
+        <div class="side-box">
+
+            <div class="side-label">
+                ДЛЯ ГОСТЕЙ
+            </div>
+
+            <h3>
+                Всё в одном месте
+            </h3>
+
+            <p>
+                После регистрации
+                вам будут доступны
+                заказы, история заказов
+                и поддержка.
+            </p>
+
+        </div>
+
+
+        <div class="side-box">
+
+            <div class="side-label">
+                BAR SPIRIT
+            </div>
+
+            <p>
+                Напитки.
+                Музыка.
+                Люди.
+                Хороший вечер.
+            </p>
+
+        </div>
+
+    </div>
+
+
 </div>
 
+
+
+<script>
+
+    /*
+     * Получаем три шага
+     */
+
+    const step1 = document.getElementById("step1");
+    const step2 = document.getElementById("step2");
+    const step3 = document.getElementById("step3");
+
+
+    /*
+     * Получаем кнопки
+     */
+
+    const buttonStep2 =
+        document.getElementById("buttonStep2");
+
+    const buttonStep3 =
+        document.getElementById("buttonStep3");
+
+    const buttonBack1 =
+        document.getElementById("buttonBack1");
+
+    const buttonBack2 =
+        document.getElementById("buttonBack2");
+
+
+    /*
+     * Индикаторы
+     */
+
+    const indicator1 =
+        document.getElementById("indicator1");
+
+    const indicator2 =
+        document.getElementById("indicator2");
+
+    const indicator3 =
+        document.getElementById("indicator3");
+
+
+
+    /*
+     * ПЕРВЫЙ ШАГ → ВТОРОЙ
+     */
+
+    buttonStep2.onclick = function () {
+
+        const fields =
+            step1.querySelectorAll(
+                "input[required]"
+            );
+
+
+        for (let field of fields) {
+
+            if (!field.checkValidity()) {
+
+                field.reportValidity();
+
+                return;
+            }
+
+        }
+
+
+        step1.classList.remove("active");
+
+        step2.classList.add("active");
+
+
+        indicator1.classList.remove("active");
+
+        indicator2.classList.add("active");
+
+    };
+
+
+
+    /*
+     * ВТОРОЙ ШАГ → ТРЕТИЙ
+     */
+
+    buttonStep3.onclick = function () {
+
+        const fields =
+            step2.querySelectorAll(
+                "input[required]"
+            );
+
+
+        for (let field of fields) {
+
+            if (!field.checkValidity()) {
+
+                field.reportValidity();
+
+                return;
+            }
+
+        }
+
+
+        step2.classList.remove("active");
+
+        step3.classList.add("active");
+
+
+        indicator2.classList.remove("active");
+
+        indicator3.classList.add("active");
+
+    };
+
+
+
+    /*
+     * ВТОРОЙ ШАГ → ПЕРВЫЙ
+     */
+
+    buttonBack1.onclick = function () {
+
+        step2.classList.remove("active");
+
+        step1.classList.add("active");
+
+
+        indicator2.classList.remove("active");
+
+        indicator1.classList.add("active");
+
+    };
+
+
+
+    /*
+     * ТРЕТИЙ ШАГ → ВТОРОЙ
+     */
+
+    buttonBack2.onclick = function () {
+
+        step3.classList.remove("active");
+
+        step2.classList.add("active");
+
+
+        indicator3.classList.remove("active");
+
+        indicator2.classList.add("active");
+
+    };
+
+
+
+    /*
+     * ПРОВЕРКА ПАРОЛЕЙ
+     * происходит только при отправке
+     */
+
+    document
+        .getElementById("registrationForm")
+        .addEventListener("submit", function(event) {
+
+            const password =
+                document.querySelector(
+                    'input[name="password"]'
+                ).value;
+
+            const confirm =
+                document.getElementById(
+                    "passwordConfirm"
+                ).value;
+
+
+            if (password !== confirm) {
+
+                event.preventDefault();
+
+                alert("Пароли не совпадают");
+
+                return;
+            }
+
+        });
+
+</script>
+
+
 </body>
+
 </html>
