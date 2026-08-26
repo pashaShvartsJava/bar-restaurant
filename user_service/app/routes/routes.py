@@ -7,7 +7,7 @@ from ..dependencies.dependency import get_service_dependency
 from ..services.user_service import UserService
 from ..schema.user_schema import RegisterRequest
 
-templates = Jinja2Templates(directory="user_service/app/templates")
+templates = Jinja2Templates(directory="app/templates")
 router = APIRouter()
 
 @router.get("/user/my_profile")

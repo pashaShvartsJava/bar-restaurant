@@ -40,26 +40,25 @@ class AuthenticationService:
     def __init__(self, authentication_repository : AuthenticationRepository):
         self.authentication_repository = authentication_repository
 
-    def find_by_email(self, email : str) -> Identity:
-        try:
-            email = self.authentication_repository.get_by_email(email)
-        except Exception:
+    async def find_by_email(self, email : str) -> Identity:
+        identity = await self.authentication_repository.get_by_email(email)
+        if identity is None:
             raise LoginError("Such user was not found")
-        return email
+        return identity
 
-    def verify_credentials(self, email : str, password : str) -> Identity | None:
-        identity = self.find_by_email(email)
+    async def verify_credentials(self, email : str, password : str) -> Identity | None:
+        identity = await self.find_by_email(email)
         if verify_password(password, identity.password_hash):
             return identity
         else:
             raise PasswordError("You entered invalid password")
 
-    def login(self, data : LoginSchema) -> str | None:
-        identity = self.verify_credentials(data.email, data.password)
+    async def login(self, data : LoginSchema) -> str | None:
+        identity = await self.verify_credentials(data.email, data.password)
         token = create_access_token(identity.id, identity.role)
         return token
 
-    def create_identity(self, email : str, password : str) -> RegisterIdentitySchema:
-        return self.authentication_repository.create_identity(email, hash_password(password))
+    async def create_identity(self, email : str, password : str) -> RegisterIdentitySchema:
+        return await self.authentication_repository.create_identity(email, hash_password(password))
 
 

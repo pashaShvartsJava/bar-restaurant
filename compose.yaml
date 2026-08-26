@@ -10,7 +10,7 @@ services:
     env_file:
       - ./authentication_service/.env
     volumes:
-      - ./authentication_service:/user_service
+      - ./authentication_service:/authentication_service
     command:
       - uvicorn
       - app.main:app
@@ -40,3 +40,28 @@ services:
       - --port
       - "8005"
       - --reload
+  db-authentication:
+    image: postgres:16
+    container_name: db-authentication
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: authentication_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_auth_data:/var/lib/postgresql/data
+  db-user:
+    image: postgres:16
+    container_name: db-user
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: user_db
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_user_data:/var/lib/postgresql/data
+volumes:
+  postgres_auth_data:
+  postgres_user_data:
