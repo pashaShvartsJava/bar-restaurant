@@ -1,11 +1,10 @@
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
+
 from ...config.config import settings
 from ...model.identity_model import IdentityRole
 
 import jwt
-
-BASE_DIR = Path(__file__).resolve().parents[2]
 
 PRIVATE_KEY_PATH = settings.jwt_private_key_path
 PUBLIC_KEY_PATH = settings.jwt_public_key_path
@@ -16,15 +15,17 @@ def create_access_token(identity_id : str, role : IdentityRole) -> str:
     expire = datetime.now(timezone.utc) + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
 
     payload ={
-        "sub" : identity_id,
-        "role" : role,
-        "expire" : expire
+        "sub" : str(identity_id),
+        "role" : role.value,
+        "exp" : expire
     }
+    private_key = Path(PRIVATE_KEY_PATH).read_text()
 
-    token = jwt.encode(payload, PRIVATE_KEY_PATH, ALGORITHM)
+    token = jwt.encode(payload, private_key, ALGORITHM)
 
     return token
 
 def decode_access_token(token : str) -> dict:
-    payload = jwt.decode(token, PUBLIC_KEY_PATH, [ALGORITHM])
+    public_key = Path(PUBLIC_KEY_PATH).read_text()
+    payload = jwt.decode(token, public_key, [ALGORITHM])
     return payload

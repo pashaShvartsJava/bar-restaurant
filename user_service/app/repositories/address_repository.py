@@ -1,14 +1,14 @@
 from ..model.address_model import Address
 from ..schema.AdressSchema import AddressResponseDTO
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
 
 class AddressRepository:
 
-    def __init__(self, db : Session):
+    def __init__(self, db : AsyncSession):
         self.db = db
 
-    def create_address(self, addressDTO : AddressResponseDTO) -> Address:
+    async def create_address(self, addressDTO : AddressResponseDTO) -> Address:
         new_address = Address(
             city=addressDTO.city,
             postal_code=addressDTO.postal_code,
@@ -17,6 +17,6 @@ class AddressRepository:
             apartment=addressDTO.apartment
         )
         self.db.add(new_address)
-        self.db.commit()
-        self.db.refresh(new_address)
+        await self.db.commit()
+        await self.db.refresh(new_address)
         return new_address

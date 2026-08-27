@@ -4,6 +4,7 @@
     <content url="file://$MODULE_DIR$">
       <excludeFolder url="file://$MODULE_DIR$/.venv" />
       <excludeFolder url="file://$MODULE_DIR$/authentication_service/venv" />
+      <excludeFolder url="file://$MODULE_DIR$/user_service/.venv" />
     </content>
     <orderEntry type="jdk" jdkName="Python 3.12 (user-service)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />

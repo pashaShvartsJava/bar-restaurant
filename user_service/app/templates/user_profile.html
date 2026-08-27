@@ -630,7 +630,7 @@
                                 </div>
 
                                 <div class="address-value">
-                                    {{ address.address_city }}
+                                    {{ address.city }}
                                 </div>
 
                             </div>
@@ -643,7 +643,7 @@
                                 </div>
 
                                 <div class="address-value">
-                                    {{ address.address_postal_code }}
+                                    {{ address.postal_code }}
                                 </div>
 
                             </div>
@@ -656,7 +656,7 @@
                                 </div>
 
                                 <div class="address-value">
-                                    {{ address.address_street }}
+                                    {{ address.street }}
                                 </div>
 
                             </div>
@@ -669,7 +669,7 @@
                                 </div>
 
                                 <div class="address-value">
-                                    {{ address.address_house }}
+                                    {{ address.house }}
                                 </div>
 
                             </div>
@@ -682,7 +682,7 @@
                                 </div>
 
                                 <div class="address-value">
-                                    {{ address.address_apartment }}
+                                    {{ address.apartment }}
                                 </div>
 
                             </div>
@@ -826,15 +826,13 @@
 
         </div>
 
-
-        <!-- Нижняя панель -->
-
         <div class="bottom">
 
-            <a href="/logout" class="logout">
-                Выйти из аккаунта
-            </a>
-
+            <form method="post" action="/logout">
+                <button type="submit" class="logout">
+                    Выйти из аккаунта
+                </button>
+            </form>
             <a href="/support" class="support">
                 Техподдержка
             </a>

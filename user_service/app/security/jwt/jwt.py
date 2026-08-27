@@ -1,16 +1,19 @@
+from pathlib import Path
+
 import jwt
 from fastapi import HTTPException
 from jwt import InvalidTokenError
 from starlette.requests import Request
+from ...config.config import settings
 
-import os
+PUBLIC_SECRET_KEY = Path(settings.jwt_public_key_path).read_text()
+ALGORITHM = settings.jwt_algorithm
 
-PUBLIC_SECRET_KEY = os.getenv("JWT_PUBLIC_KEY_PATH")
-ALGORITHM = os.getenv("JWT_ALGORITHM")
+print("algorithm is: ----->>>>>", ALGORITHM)
 
 def decode_access_token(token : str) -> dict:
     try:
-        payload = jwt.decode(token, PUBLIC_SECRET_KEY, ALGORITHM)
+        payload = jwt.decode(token, PUBLIC_SECRET_KEY,  algorithms=ALGORITHM)
         return payload
     except InvalidTokenError:
         raise ValueError("Authentication required")

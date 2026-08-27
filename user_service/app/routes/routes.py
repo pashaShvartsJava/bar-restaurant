@@ -11,12 +11,18 @@ templates = Jinja2Templates(directory="app/templates")
 router = APIRouter()
 
 @router.get("/user/my_profile")
-def get_user_profile(request : Request, service : UserService = Depends(get_service_dependency)):
+async def get_user_profile(request : Request, service : UserService = Depends(get_service_dependency)):
     payload = get_payload(request)
-    user = service.find_by_identity_id(payload["sub"])
+    user = await service.find_by_identity_id(payload["sub"])
     return templates.TemplateResponse("user_profile.html", context={"request": request, "user": user, "address": user.address})
 
-@router.post("http://localhost:8005/users/add_user")
-def register_user(data : RegisterRequest, service : UserService = Depends(get_user_profile)):
-    service.create_user(data.user_data, data.address_data)
-    return RedirectResponse(url="http://localhost:8000/login", status_code=303)
+@router.post("/users/add_user")
+async def register_user(data : RegisterRequest, service : UserService = Depends(get_service_dependency)):
+    await service.create_user(data.user_data, data.address_data)
+    return {"message": "User created successfully"}
+
+@router.post("/logout")
+async def logout():
+    redirect = RedirectResponse(url="/login", status_code=303)
+    redirect.delete_cookie("access_token")
+    return redirect
