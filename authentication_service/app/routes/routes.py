@@ -25,15 +25,20 @@ def registration(request: Request):
     return templates.TemplateResponse("registration.html", {"request" : request})
 
 @router.post("/login", response_class=HTMLResponse)
-async def authentication(response : Response,
-                   data : LoginSchema,
-                   service : AuthenticationService = Depends(get_service_dependency)):
+async def authentication(email: str = Form(...),
+                         password: str = Form(...),
+                         service : AuthenticationService = Depends(get_service_dependency)):
+    data = LoginSchema(email=email, password=password)
     try:
         token = await service.login(data)
     except HTTPException:
         raise HTTPException(status_code=401, detail="Authentication failed: invalid login or password")
-    response.set_cookie(key="access_token", value=token, httponly=True, secure=False, max_age=3600, samesite="lax")
-    return RedirectResponse(url="http://localhost:8005/users/my_profile", status_code=303)
+
+    redirect = RedirectResponse(url="/user/my_profile", status_code=303)
+    redirect.set_cookie(key="access_token", value=token, httponly=True, secure=False, max_age=3600, samesite="lax")
+    print("REDIRECT LOCATION:", redirect.headers.get("location"))
+    print("SET COOKIE:", redirect.headers.get("set-cookie"))
+    return redirect
 
 @router.post("/registration")
 async def registration( name: str = Form(...),
@@ -49,7 +54,10 @@ async def registration( name: str = Form(...),
                         password: str = Form(...),
                         service: AuthenticationService = Depends(get_service_dependency)):
     await service.create_identity(email, password)
-    created_user = await service.find_by_email(email)
+    try:
+        created_user = await service.find_by_email(email)
+    except HTTPException:
+        raise HTTPException(detail="Such user already exists", status_code=401)
     user_request_dto : RegisterRequestDTO = send_new_user_dto(created_user.id,
                                                               name,
                                                               surname, email,
@@ -60,5 +68,8 @@ async def registration( name: str = Form(...),
                                                                  apartment)
     register_dto = RegisterRequest(user_data=user_request_dto, address_data=address_request_dto)
     async with httpx.AsyncClient() as client:
-        await client.post("http://localhost:8005/users/add_user", json=register_dto.model_dump(mode="json"))
-    return RedirectResponse(url="http://localhost:8002/login", status_code=303)
+        response = await client.post("http://user-service:8005/users/add_user", json=register_dto.model_dump(mode="json"))
+        print("USER _SERVICE STATUS CODE: ", response.status_code)
+        print("USER _SERVICE STATUS TEXT: ", response.text)
+        response.raise_for_status()
+    return RedirectResponse(url="/login", status_code=303)

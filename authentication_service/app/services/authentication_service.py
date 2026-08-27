@@ -5,9 +5,10 @@ from ..security.jwt.jwt import create_access_token
 from datetime import date
 from ..model.identity_model import IdentityRole, Identity
 from ..exceptions.exceptions import PasswordError, LoginError
+from uuid import UUID
 
 
-def send_new_user_dto(identity_id: str,
+def send_new_user_dto(identity_id: UUID,
                      name : str,
                      surname : str,
                      email: str,

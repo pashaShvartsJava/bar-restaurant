@@ -1,6 +1,7 @@
 from pydantic import BaseModel, Field
 from datetime import date
 from ..model.identity_model import IdentityRole
+from uuid import UUID
 
 class LoginSchema(BaseModel):
 
@@ -9,7 +10,7 @@ class LoginSchema(BaseModel):
 
 class RegisterRequestDTO(BaseModel):
 
-    identity_id: str = Field(..., description="identity_id")
+    identity_id: UUID = Field(..., description="identity_id")
     name: str = Field(..., min_length=2, max_length=50, description="name")
     surname: str = Field(..., min_length=2, max_length=50, description="surname")
     email: str = Field(..., min_length=6, max_length=64, description="email")

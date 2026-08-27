@@ -19,6 +19,7 @@ class User(Base):
     id = Column(Integer, primary_key=True, index=True)
     identity_id = Column(UUID, unique=True, index=True)
     name = Column(String, nullable=False, index=True)
+    surname = Column(String, nullable=False, index=True)
     email = Column(String, unique=True, nullable=False)
     birthday = Column(Date, nullable=False, index=True)
     phone = Column(String, nullable=False)
