@@ -59,10 +59,3 @@ class UserService:
     async def delete_user(self, user : User):
         return await self.user_repository.delete_user(user)
 
-    async def check_new_passwords(self, old_password : str, new_password : str, confirmed_password : str,
-                              accepted_password : PasswordResponse) -> bool:
-        if old_password != jwt.decode(accepted_password.password):
-            return False
-        if new_password != confirmed_password:
-            await self.check_new_passwords(old_password, new_password, confirmed_password, accepted_password)
-        return new_password == confirmed_password

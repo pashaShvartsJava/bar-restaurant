@@ -1,9 +1,10 @@
+from http.client import HTTPException
 from typing import Optional
 
 import httpx
-from fastapi import Request, APIRouter, Form
+from fastapi import Request, APIRouter, Form, HTTPException
 from fastapi.params import Depends
-from starlette.responses import RedirectResponse
+from starlette.responses import RedirectResponse, JSONResponse
 from starlette.templating import Jinja2Templates
 from ..security.jwt.jwt import get_payload
 from ..dependencies.dependency import get_service_dependency
@@ -84,32 +85,53 @@ async def edit_password(request: Request,  service : UserService = Depends(get_s
     return templates.TemplateResponse("edit_password.html", context={"request" : request, "user" : user})
 
 @router.patch("/user/password")
-async def edit_password(request: Request,
-                        service : UserService = Depends(get_service_dependency),
-                        old_password : str = Form(),
-                        new_password : str = Form(),
-                        confirmed_password : str = Form()):
+async def edit_password(
+    request: Request,
+    service: UserService = Depends(get_service_dependency),
+    old_password: str = Form(),
+    new_password: str = Form(),
+    confirmed_password: str = Form()
+):
     payload = get_payload(request)
     user = await service.find_by_identity_id(payload["sub"])
 
     if new_password != confirmed_password:
-        return RedirectResponse(url="/user/password", status_code=303)
+        raise HTTPException(
+            status_code=400,
+            detail="Пароли не совпадают"
+        )
 
-    async with httpx.AsyncClient() as client:
-        response = await client.get(url="http://authentication-service:8000/get_identity", params={"identity_id" : user.identity_id,
-                                                                                                   "old_password" : old_password})
-        response.raise_for_status()
-    user_password_response = PasswordResponse(**response.json())
+    try:
+        async with httpx.AsyncClient() as client:
+            response = await client.get(
+                url="http://authentication-service:8000/get_identity",
+                params={
+                    "identity_id": user.identity_id,
+                    "old_password": old_password,
+                    "new_password": new_password
+                }
+            )
 
-    checked_passwords = await service.check_new_passwords(old_password, new_password, confirmed_password, user_password_response)
+            response.raise_for_status()
 
-    if not checked_passwords:
-        return RedirectResponse(url="/user/password", status_code=303)
-    new_password_dto = PasswordDTO(identity_id=user.identity_id, new_password=new_password)
-    async with httpx.AsyncClient() as client:
-        response = await client.patch("http://authentication-service:8000/edit_password", json=new_password_dto.model_dump(mode="json"))
-        response.raise_for_status()
+    except httpx.HTTPStatusError as e:
+        if e.response.status_code == 401:
+            raise HTTPException(
+                status_code=401,
+                detail="Неверный старый пароль"
+            )
 
-    await logout()
+        raise HTTPException(
+            status_code=500,
+            detail="Ошибка при смене пароля"
+        )
+
+    response = JSONResponse({
+        "success": True
+    })
+
+    response.delete_cookie("access_token")
+
+    return response
 
 

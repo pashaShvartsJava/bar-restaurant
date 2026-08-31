@@ -1,5 +1,6 @@
 from ..repositories.authentication_repository import AuthenticationRepository
 from ..schemas.schema import LoginSchema, RegisterIdentitySchema, RegisterRequestDTO, AddressResponseDTO
+from ..security.jwt import jwt
 from ..security.password.password import hash_password, verify_password
 from ..security.jwt.jwt import create_access_token
 from datetime import date
