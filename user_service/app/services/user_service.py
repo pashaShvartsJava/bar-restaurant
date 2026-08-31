@@ -1,8 +1,13 @@
+import jwt
+from watchfiles import awatch
+
 from ..repositories.user_repository import UserRepository
 from ..repositories.address_repository import AddressRepository
 from ..model.user_model import User
-from ..schema.AdressSchema import AddressResponseDTO
-from ..schema.user_schema import RegisterResponseDTO
+from ..schema.address_schema import AddressResponseDTO
+from ..schema.user_schema import RegisterResponseDTO, UserEditSchema, PasswordResponse
+from uuid import UUID
+
 
 class UserService:
 
@@ -16,3 +21,48 @@ class UserService:
     async def create_user(self, registerDTO : RegisterResponseDTO, addressDTO : AddressResponseDTO) -> User:
         accepted_address = await self.address_repository.create_address(addressDTO)
         return await self.user_repository.create_user(registerDTO, accepted_address)
+
+    async def update_user(self, user: User, data: UserEditSchema):
+
+        if data.name is not None:
+            user.name = data.name
+
+        if data.surname is not None:
+            user.surname = data.surname
+
+        if data.birthday is not None:
+            user.birthday = data.birthday
+
+        if data.phone is not None:
+            user.phone = data.phone
+
+        if data.email is not None:
+            user.email = data.email
+
+        if data.city is not None:
+            user.address.city = data.city
+
+        if data.street is not None:
+            user.address.street = data.street
+
+        if data.postal_code is not None:
+            user.address.postal_code = data.postal_code
+
+        if data.house is not None:
+            user.address.house = data.house
+
+        if data.apartment is not None:
+            user.address.apartment = data.apartment
+
+        return await self.user_repository.update_user(user)
+
+    async def delete_user(self, user : User):
+        return await self.user_repository.delete_user(user)
+
+    async def check_new_passwords(self, old_password : str, new_password : str, confirmed_password : str,
+                              accepted_password : PasswordResponse) -> bool:
+        if old_password != jwt.decode(accepted_password.password):
+            return False
+        if new_password != confirmed_password:
+            await self.check_new_passwords(old_password, new_password, confirmed_password, accepted_password)
+        return new_password == confirmed_password

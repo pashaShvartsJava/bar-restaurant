@@ -37,9 +37,23 @@ class AddressResponseDTO(BaseModel):
     postal_code : int = Field(..., description="postal code")
     street : str = Field(..., description="street")
     house : int = Field(..., description="house number")
-    apartment : int = Field(..., description="apartment number; not necessary")
+    apartment : int | None = Field(None, description="apartment number; not necessary")
 
 
 class RegisterRequest(BaseModel):
     user_data: RegisterRequestDTO
     address_data: AddressResponseDTO
+
+class PasswordRequest(BaseModel):
+    identity_id : UUID = Field(..., description="identity_id")
+
+class PasswordResponse(BaseModel):
+    password : str = Field(..., min_length=8, description="password")
+
+class PasswordUpdateDTO(BaseModel):
+    identity_id: UUID = Field(..., description="identity_id")
+    new_password: str = Field(..., min_length=8, max_length=64, description="password")
+
+class EmailRequest(BaseModel):
+    old_email: str | None = Field(..., min_length=6, max_length=64, description="email")
+    new_email: str | None = Field(..., min_length=6, max_length=64, description="email")

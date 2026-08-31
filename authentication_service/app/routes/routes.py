@@ -1,12 +1,17 @@
 from fastapi import Request, APIRouter, HTTPException, Response, Form
 from datetime import date
 from fastapi.params import Depends
+from jinja2.runtime import identity
 from starlette.responses import HTMLResponse, RedirectResponse
 from starlette.templating import Jinja2Templates
-from ..schemas.schema import LoginSchema, RegisterRequest, RegisterRequestDTO, AddressResponseDTO
+
+from ..model.identity_model import Identity
+from ..schemas.schema import LoginSchema, RegisterRequest, RegisterRequestDTO, AddressResponseDTO, PasswordRequest, \
+    PasswordResponse, PasswordUpdateDTO, EmailRequest
 from ..dependencies.dependency import get_service_dependency
 from ..services.authentication_service import AuthenticationService, send_new_user_dto, send_address
 import httpx
+from uuid import UUID
 
 templates = Jinja2Templates(directory="app/templates_auth")
 router = APIRouter()
@@ -69,7 +74,28 @@ async def registration( name: str = Form(...),
     register_dto = RegisterRequest(user_data=user_request_dto, address_data=address_request_dto)
     async with httpx.AsyncClient() as client:
         response = await client.post("http://user-service:8005/users/add_user", json=register_dto.model_dump(mode="json"))
-        print("USER _SERVICE STATUS CODE: ", response.status_code)
-        print("USER _SERVICE STATUS TEXT: ", response.text)
         response.raise_for_status()
     return RedirectResponse(url="/login", status_code=303)
+
+@router.get("/get_identity")
+async def send_password_dto(identity_id : UUID, old_password : str, service: AuthenticationService = Depends(get_service_dependency)):
+    identity = await service.find_by_identity(identity_id)
+    user_password_response = PasswordResponse(password=identity.password_hash)
+    async with httpx.AsyncClient() as client:
+        response = await client.patch("http://user-service:8005/user/password", json=user_password_response.model_dump(mode="json"))
+        response.raise_for_status()
+
+@router.patch("/edit_password")
+async def update_password(data : PasswordUpdateDTO, service: AuthenticationService = Depends(get_service_dependency)):
+    await service.update_password(data.identity_id, data.new_password)
+
+@router.patch("/edit_email")
+async def edit_email(data : EmailRequest, service: AuthenticationService = Depends(get_service_dependency)):
+    identity = await service.find_by_email(data.old_email)
+    await service.update_email(identity, data.new_email)
+
+@router.delete("/delete_identity")
+async def delete_identity(identity_id : UUID, service: AuthenticationService = Depends(get_service_dependency)):
+    await service.delete_identity(identity_id)
+
+

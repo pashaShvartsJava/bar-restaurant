@@ -9,8 +9,6 @@ from ...config.config import settings
 PUBLIC_SECRET_KEY = Path(settings.jwt_public_key_path).read_text()
 ALGORITHM = settings.jwt_algorithm
 
-print("algorithm is: ----->>>>>", ALGORITHM)
-
 def decode_access_token(token : str) -> dict:
     try:
         payload = jwt.decode(token, PUBLIC_SECRET_KEY,  algorithms=ALGORITHM)

@@ -41,6 +41,9 @@ class AuthenticationService:
     def __init__(self, authentication_repository : AuthenticationRepository):
         self.authentication_repository = authentication_repository
 
+    async def find_by_identity(self, identity_id : UUID) -> Identity:
+        return await self.authentication_repository.get_by_identity(identity_id)
+
     async def find_by_email(self, email : str) -> Identity:
         identity = await self.authentication_repository.get_by_email(email)
         if identity is None:
@@ -61,5 +64,14 @@ class AuthenticationService:
 
     async def create_identity(self, email : str, password : str) -> RegisterIdentitySchema:
         return await self.authentication_repository.create_identity(email, hash_password(password))
+
+    async  def update_password(self, identity_id : UUID, new_password : str):
+        return await self.authentication_repository.update_password(identity_id, new_password)
+
+    async def update_email(self, identity : Identity, new_email : str):
+        return await self.authentication_repository.update_email(identity, new_email)
+
+    async def delete_identity(self, identity_id : UUID):
+        return await self.authentication_repository.delete_identity(identity_id)
 
 
