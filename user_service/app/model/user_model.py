@@ -28,4 +28,4 @@ class User(Base):
     created_at = Column(DateTime(timezone=True), nullable=False, default=lambda : datetime.now(timezone.utc))
     updated_at = Column(DateTime(timezone=True), nullable=False, default=lambda: datetime.now(timezone.utc))
 
-    address = relationship("Address")
+    address = relationship("Address", back_populates="users")

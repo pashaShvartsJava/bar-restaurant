@@ -1,0 +1,443 @@
+```html
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Настройки профиля | Bar & Lounge</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: "Segoe UI", sans-serif;
+            background:
+                radial-gradient(circle at 15% 15%, rgba(213,166,91,.2), transparent 30%),
+                radial-gradient(circle at 85% 85%, rgba(180,70,110,.16), transparent 30%),
+                linear-gradient(135deg, #24191f, #39252c, #21191e);
+            color: #fff;
+            padding: 40px 20px;
+        }
+
+        .page {
+            width: 900px;
+            max-width: 100%;
+            margin: auto;
+        }
+
+        .top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .back {
+            color: #aaa;
+            text-decoration: none;
+            font-size: 12px;
+        }
+
+        .back:hover {
+            color: #d5a65b;
+        }
+
+        .brand {
+            color: #d5a65b;
+            font-family: Georgia, serif;
+            letter-spacing: 3px;
+            font-size: 11px;
+        }
+
+        .card {
+            background: rgba(39,32,38,.96);
+            border: 1px solid rgba(255,255,255,.1);
+            border-radius: 18px;
+            padding: 35px;
+            box-shadow: 0 25px 60px rgba(0,0,0,.4);
+        }
+
+        .header {
+            margin-bottom: 30px;
+        }
+
+        .header-label {
+            color: #d5a65b;
+            font-size: 9px;
+            letter-spacing: 3px;
+            margin-bottom: 7px;
+        }
+
+        h1 {
+            margin: 0;
+            font-family: Georgia, serif;
+            font-size: 30px;
+            font-weight: normal;
+        }
+
+        .description {
+            color: #999;
+            font-size: 12px;
+            margin-top: 8px;
+        }
+
+        .content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+        }
+
+        .section {
+            background: rgba(255,255,255,.025);
+            border: 1px solid #40383e;
+            border-radius: 14px;
+            padding: 22px;
+        }
+
+        .section-title {
+            color: #d5a65b;
+            font-size: 10px;
+            letter-spacing: 2px;
+            margin-bottom: 20px;
+        }
+
+        .field {
+            margin-bottom: 15px;
+        }
+
+        .field:last-child {
+            margin-bottom: 0;
+        }
+
+        .row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            color: #ccc;
+            font-size: 11px;
+        }
+
+        input {
+            width: 100%;
+            padding: 11px 12px;
+            background: #302a30;
+            border: 1px solid #51484e;
+            border-radius: 8px;
+            color: white;
+            font-size: 13px;
+            outline: none;
+            transition: .2s;
+        }
+
+        input:focus {
+            border-color: #d5a65b;
+            box-shadow: 0 0 0 3px rgba(213,166,91,.07);
+        }
+
+        .account-actions {
+            grid-column: 1 / -1;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .action-card {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 18px;
+            border-radius: 12px;
+            border: 1px solid #40383e;
+            background: rgba(255,255,255,.025);
+            color: white;
+            text-decoration: none;
+            transition: .2s;
+        }
+
+        .action-card:hover {
+            border-color: #d5a65b;
+            background: rgba(213,166,91,.06);
+            transform: translateY(-2px);
+        }
+
+        .action-info strong {
+            display: block;
+            font-size: 13px;
+            margin-bottom: 5px;
+        }
+
+        .action-info span {
+            color: #888;
+            font-size: 10px;
+        }
+
+        .arrow {
+            color: #d5a65b;
+            font-size: 18px;
+        }
+
+        .bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 25px;
+            padding-top: 22px;
+            border-top: 1px solid #40383e;
+        }
+
+        .cancel {
+            color: #999;
+            text-decoration: none;
+            font-size: 12px;
+        }
+
+        .cancel:hover {
+            color: white;
+        }
+
+        .bottom-right {
+            display: flex;
+            gap: 12px;
+        }
+
+        .save,
+        .delete {
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: .2s;
+        }
+
+        .save {
+            border: none;
+            background: #d5a65b;
+            color: #211a15;
+            font-weight: 600;
+        }
+
+        .save:hover {
+            background: #e5b970;
+        }
+
+        .delete {
+            border: 1px solid #714449;
+            background: rgba(130,55,65,.12);
+            color: #d98282;
+        }
+
+        .delete:hover {
+            background: rgba(150,60,70,.22);
+            border-color: #a85c64;
+        }
+
+        @media (max-width: 700px) {
+            .card {
+                padding: 25px 18px;
+            }
+
+            .content,
+            .account-actions {
+                grid-template-columns: 1fr;
+            }
+
+            .account-actions {
+                grid-column: auto;
+            }
+
+            .row {
+                grid-template-columns: 1fr;
+            }
+
+            .bottom {
+                flex-direction: column;
+                gap: 15px;
+                align-items: stretch;
+            }
+
+            .bottom-right {
+                flex-direction: column-reverse;
+            }
+
+            .save,
+            .delete {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="page">
+
+    <div class="top">
+        <a href="/user/my_profile" class="back">← Вернуться в профиль</a>
+        <div class="brand">BAR & LOUNGE</div>
+    </div>
+
+    <div class="card">
+
+        <div class="header">
+            <div class="header-label">PROFILE SETTINGS</div>
+            <h1>Настройки профиля</h1>
+            <div class="description">
+                Изменение личных данных и настроек аккаунта
+            </div>
+        </div>
+
+        <form id="profileForm">
+
+            <div class="content">
+
+                <div class="section">
+                    <div class="section-title">ЛИЧНЫЕ ДАННЫЕ</div>
+
+                    <div class="row">
+                        <div class="field">
+                            <label>Имя</label>
+                            <input type="text" name="name" value="{{ user.name }}">
+                        </div>
+
+                        <div class="field">
+                            <label>Фамилия</label>
+                            <input type="text" name="surname" value="{{ user.surname }}">
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <label>Email</label>
+                        <input type="email" name="email" value="{{ user.email }}">
+                    </div>
+
+                    <div class="field">
+                        <label>Номер телефона</label>
+                        <input type="tel" name="phone" value="{{ user.phone }}">
+                    </div>
+
+                    <div class="field">
+                        <label>Дата рождения</label>
+                        <input type="date" name="birthday" value="{{ user.birthday }}">
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">АДРЕС</div>
+
+                    <div class="field">
+                        <label>Город</label>
+                        <input type="text" name="city" value="{{ address.city }}">
+                    </div>
+
+                    <div class="field">
+                        <label>Почтовый индекс</label>
+                        <input type="text" name="postal_code" value="{{ address.postal_code }}">
+                    </div>
+
+                    <div class="field">
+                        <label>Улица</label>
+                        <input type="text" name="street" value="{{ address.street }}">
+                    </div>
+
+                    <div class="row">
+                        <div class="field">
+                            <label>Дом</label>
+                            <input type="text" name="house" value="{{ address.house }}">
+                        </div>
+
+                        <div class="field">
+                            <label>Квартира</label>
+                            <input type="text" name="apartment" value="{{ address.apartment }}">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="account-actions">
+
+                    <a href="/user/password" class="action-card">
+                        <div class="action-info">
+                            <strong>Изменить пароль</strong>
+                            <span>Обновить пароль аккаунта</span>
+                        </div>
+                        <div class="arrow">→</div>
+                    </a>
+
+                    <a href="/profile/account" class="action-card">
+                        <div class="action-info">
+                            <strong>Банковские данные</strong>
+                            <span>Добавить или изменить данные счета</span>
+                        </div>
+                        <div class="arrow">→</div>
+                    </a>
+
+                </div>
+
+            </div>
+
+            <div class="bottom">
+
+                <a href="/user/my_profile" class="cancel">
+                    Отмена
+                </a>
+
+                <div class="bottom-right">
+
+                    <button
+                        type="button"
+                        class="delete"
+                        onclick="deleteAccount()">
+                        Удалить аккаунт
+                    </button>
+
+                    <button
+                        type="submit"
+                        class="save">
+                        Сохранить изменения
+                    </button>
+
+                </div>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+<script>
+    document.getElementById("profileForm").addEventListener("submit", async function(event) {
+        event.preventDefault();
+
+        await fetch("/user/edit", {
+            method: "PATCH",
+            body: new FormData(this)
+        });
+
+        window.location.href = "/user/my_profile";
+    });
+
+    async function deleteAccount() {
+        if (!confirm("Вы действительно хотите удалить аккаунт?")) {
+            return;
+        }
+
+        await fetch("/user/delete", {
+            method: "DELETE"
+        });
+
+        window.location.href = "/bar_name";
+    }
+</script>
+
+</body>
+</html>

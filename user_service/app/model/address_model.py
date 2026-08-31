@@ -14,4 +14,4 @@ class Address(Base):
     house = Column(Integer, nullable=False)
     apartment = Column(Integer)
 
-    users = relationship("User")
+    users = relationship("User", back_populates="address")
