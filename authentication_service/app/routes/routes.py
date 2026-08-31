@@ -9,6 +9,7 @@ from ..model.identity_model import Identity
 from ..schemas.schema import LoginSchema, RegisterRequest, RegisterRequestDTO, AddressResponseDTO, PasswordRequest, \
     PasswordResponse, PasswordUpdateDTO, EmailRequest
 from ..dependencies.dependency import get_service_dependency
+from ..security.password.password import verify_password
 from ..services.authentication_service import AuthenticationService, send_new_user_dto, send_address
 import httpx
 from uuid import UUID
@@ -78,12 +79,29 @@ async def registration( name: str = Form(...),
     return RedirectResponse(url="/login", status_code=303)
 
 @router.get("/get_identity")
-async def send_password_dto(identity_id : UUID, old_password : str, service: AuthenticationService = Depends(get_service_dependency)):
+async def update_password(
+    identity_id: UUID,
+    old_password: str,
+    new_password: str,
+    service: AuthenticationService = Depends(get_service_dependency)
+):
     identity = await service.find_by_identity(identity_id)
-    user_password_response = PasswordResponse(password=identity.password_hash)
-    async with httpx.AsyncClient() as client:
-        response = await client.patch("http://user-service:8005/user/password", json=user_password_response.model_dump(mode="json"))
-        response.raise_for_status()
+
+    checked_passwords = verify_password(
+        old_password,
+        identity.password_hash
+    )
+
+    if not checked_passwords:
+        raise HTTPException(
+            status_code=401,
+            detail="Incorrect old password"
+        )
+
+    return await service.update_password(
+        identity_id,
+        new_password
+    )
 
 @router.patch("/edit_password")
 async def update_password(data : PasswordUpdateDTO, service: AuthenticationService = Depends(get_service_dependency)):
