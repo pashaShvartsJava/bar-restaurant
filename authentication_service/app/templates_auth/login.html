@@ -54,8 +54,6 @@
             gap: 35px;
         }
 
-        /* Боковые блоки */
-
         .side {
             display: flex;
             flex-direction: column;
@@ -140,8 +138,6 @@
             color: #777;
             font-size: 9px;
         }
-
-        /* Карточка входа */
 
         .auth-card {
             width: 420px;
@@ -236,7 +232,12 @@
                 0 0 0 3px rgba(213, 166, 91, 0.08);
         }
 
-        /* Кнопка */
+        .field-error {
+            margin-top: 5px;
+
+            color: #d98282;
+            font-size: 11px;
+        }
 
         .btn {
             width: 100%;
@@ -275,8 +276,6 @@
             box-shadow:
                 0 8px 22px rgba(213, 166, 91, 0.22);
         }
-
-        /* Разделитель */
 
         .divider {
             height: 1px;
@@ -321,8 +320,6 @@
             color: #fff;
         }
 
-        /* Анимация */
-
         @keyframes appear {
             from {
                 opacity: 0;
@@ -335,10 +332,7 @@
             }
         }
 
-        /* Адаптация */
-
         @media (max-width: 950px) {
-
             .page {
                 width: 420px;
                 grid-template-columns: 1fr;
@@ -350,7 +344,6 @@
         }
 
         @media (max-width: 500px) {
-
             body {
                 padding: 15px;
             }
@@ -371,12 +364,9 @@
 
 <div class="page">
 
-    <!-- Левая часть -->
-
     <aside class="side">
 
         <div class="side-card">
-
             <span class="side-label">
                 BAR & LOUNGE
             </span>
@@ -390,12 +380,9 @@
                 чтобы продолжить пользоваться
                 возможностями Bar & Lounge.
             </p>
-
         </div>
 
-
         <div class="side-card">
-
             <span class="side-label">
                 АТМОСФЕРА
             </span>
@@ -404,13 +391,9 @@
                 «Каждый хороший вечер
                 с чего-то начинается»
             </p>
-
         </div>
 
     </aside>
-
-
-    <!-- Центральная карточка -->
 
     <main class="auth-card">
 
@@ -427,11 +410,7 @@
             чтобы продолжить
         </div>
 
-
-        <form
-            method="post"
-            action="/login"
-        >
+        <form id="loginForm">
 
             <div class="field">
 
@@ -449,7 +428,6 @@
 
             </div>
 
-
             <div class="field">
 
                 <label>
@@ -466,7 +444,6 @@
 
             </div>
 
-
             <button
                 type="submit"
                 class="btn"
@@ -476,20 +453,15 @@
 
         </form>
 
-
         <div class="divider"></div>
 
-
         <div class="register-link">
-
             Нет аккаунта?
 
             <a href="/registration">
                 Зарегистрироваться
             </a>
-
         </div>
-
 
         <a
             href="/bar_name"
@@ -500,13 +472,9 @@
 
     </main>
 
-
-    <!-- Правая часть -->
-
     <aside class="side">
 
         <div class="side-card">
-
             <span class="side-label">
                 ДЛЯ ГОСТЕЙ
             </span>
@@ -530,9 +498,7 @@
                 </div>
 
             </div>
-
         </div>
-
 
         <div class="side-card">
 
@@ -552,7 +518,6 @@
 
         </div>
 
-
         <div class="side-card">
 
             <span class="side-label">
@@ -568,6 +533,115 @@
     </aside>
 
 </div>
+
+<script>
+    const form = document.getElementById("loginForm");
+
+    function clearError(input) {
+        input.style.borderColor = "";
+
+        const error = input.parentElement.querySelector(".field-error");
+
+        if (error) {
+            error.remove();
+        }
+    }
+
+    function showError(input, message) {
+        clearError(input);
+
+        input.style.borderColor = "#d98282";
+
+        const error = document.createElement("div");
+        error.className = "field-error";
+        error.textContent = message;
+
+        error.style.color = "#d98282";
+        error.style.fontSize = "11px";
+        error.style.marginTop = "5px";
+
+        input.parentElement.appendChild(error);
+    }
+
+    function clearAllErrors() {
+        form.querySelectorAll(".field-error").forEach(error => {
+            error.remove();
+        });
+
+        form.querySelectorAll("input").forEach(input => {
+            input.style.borderColor = "";
+        });
+    }
+
+    async function handleFieldErrors(response) {
+        const data = await response.json();
+
+        data.detail.forEach(error => {
+            const field = error.loc?.at(-1);
+            const input = form.querySelector(`[name="${field}"]`);
+
+            if (input) {
+                showError(input, error.msg);
+            }
+        });
+    }
+
+    async function handleResponse(response) {
+        if (response.ok) {
+            return true;
+        }
+
+        if (response.status === 422 || response.status === 401) {
+            await handleFieldErrors(response);
+            return false;
+        }
+
+        if (response.status === 403) {
+            alert("У вас нет доступа к этому действию.");
+            return false;
+        }
+
+        if (response.status === 404) {
+            alert("Страница не найдена.");
+            return false;
+        }
+
+        if (response.status >= 500) {
+            alert("Ошибка сервера. Попробуйте позже.");
+            return false;
+        }
+
+        alert("Произошла ошибка.");
+        return false;
+    }
+
+    form.addEventListener("submit", async function(event) {
+        event.preventDefault();
+
+        clearAllErrors();
+
+        try {
+            const response = await fetch("/login", {
+                method: "POST",
+                body: new FormData(form)
+            });
+
+            if (!await handleResponse(response)) {
+                return;
+            }
+
+            window.location.href = "/user/my_profile";
+
+        } catch (error) {
+            console.error(error);
+
+            alert(
+                "Не удалось подключиться к серверу. " +
+                "Проверьте соединение."
+            );
+        }
+    });
+</script>
 
 </body>
 </html>

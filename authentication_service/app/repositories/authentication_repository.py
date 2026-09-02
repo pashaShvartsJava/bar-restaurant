@@ -1,3 +1,4 @@
+from pydantic import EmailStr
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from ..security.password.password import hash_password
@@ -15,7 +16,7 @@ class AuthenticationRepository:
     # authentication process #
 ################################################
 
-    async def get_by_email(self, email : str) -> Identity:
+    async def get_by_email(self, email : EmailStr) -> Identity | None:
         result = await self.db.execute(select(Identity).where(Identity.email == email))
         return result.scalar_one_or_none()
 
@@ -24,7 +25,7 @@ class AuthenticationRepository:
         # registration process #
 #################################################
 
-    async def create_identity(self, email : str, hashed_password : str) -> Identity:
+    async def create_identity(self, email : EmailStr, hashed_password : str) -> Identity:
         new_identity = Identity(
             email = email,
             password_hash = hashed_password
@@ -44,7 +45,7 @@ class AuthenticationRepository:
         await self.db.commit()
         await self.db.refresh(identity)
 
-    async def update_email(self, identity : Identity, new_email : str):
+    async def update_email(self, identity : Identity, new_email : EmailStr):
         identity.email = new_email
         await self.db.commit()
         await self.db.refresh(identity)

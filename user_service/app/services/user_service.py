@@ -15,7 +15,7 @@ class UserService:
         self.user_repository = user_repository
         self.address_repository = address_repository
 
-    async def find_by_identity_id(self, identity_id : int) -> User:
+    async def find_by_identity_id(self, identity_id : UUID) -> User:
         return await self.user_repository.get_by_identity_id(identity_id)
 
     async def create_user(self, registerDTO : RegisterResponseDTO, addressDTO : AddressResponseDTO) -> User:

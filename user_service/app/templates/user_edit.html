@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -413,17 +412,117 @@
     </div>
 
 </div>
-
 <script>
-    document.getElementById("profileForm").addEventListener("submit", async function(event) {
+    const form = document.getElementById("profileForm");
+
+    function clearError(input) {
+        input.style.borderColor = "";
+
+        const error = input.parentElement.querySelector(".field-error");
+        if (error) {
+            error.remove();
+        }
+    }
+
+    function showError(input, message) {
+        clearError(input);
+
+        input.style.borderColor = "#d98282";
+
+        const error = document.createElement("div");
+        error.className = "field-error";
+        error.textContent = message;
+        error.style.color = "#d98282";
+        error.style.fontSize = "11px";
+        error.style.marginTop = "5px";
+
+        input.parentElement.appendChild(error);
+    }
+
+    function clearAllErrors() {
+        form.querySelectorAll(".field-error").forEach(error => error.remove());
+
+        form.querySelectorAll("input").forEach(input => {
+            input.style.borderColor = "";
+        });
+    }
+
+    async function handleFieldErrors(response) {
+        try {
+            const data = await response.json();
+
+            if (!Array.isArray(data.detail)) {
+                alert(data.detail || "Произошла ошибка.");
+                return;
+            }
+
+            data.detail.forEach(error => {
+                const field = error.loc?.at(-1);
+                const input = form.querySelector(`[name="${field}"]`);
+
+                if (input) {
+                    showError(input, error.msg);
+                }
+            });
+        } catch {
+            alert("Произошла ошибка.");
+        }
+    }
+
+    async function handleResponse(response) {
+        if (response.ok) {
+            return true;
+        }
+
+        if (response.status === 422 || response.status === 409) {
+            await handleFieldErrors(response);
+            return false;
+        }
+
+        if (response.status === 401) {
+            window.location.href = "/login";
+            return false;
+        }
+
+        if (response.status === 403) {
+            alert("У вас нет доступа к этому действию.");
+            return false;
+        }
+
+        if (response.status === 404) {
+            alert("Данные не найдены.");
+            return false;
+        }
+
+        if (response.status >= 500) {
+            alert("Ошибка сервера. Попробуйте позже.");
+            return false;
+        }
+
+        alert("Произошла ошибка.");
+        return false;
+    }
+
+    form.addEventListener("submit", async function(event) {
         event.preventDefault();
 
-        await fetch("/user/edit", {
-            method: "PATCH",
-            body: new FormData(this)
-        });
+        clearAllErrors();
 
-        window.location.href = "/user/my_profile";
+        try {
+            const response = await fetch("/user/edit", {
+                method: "PATCH",
+                body: new FormData(form)
+            });
+
+            if (!await handleResponse(response)) {
+                return;
+            }
+
+            window.location.href = "/user/my_profile";
+        } catch (error) {
+            console.error(error);
+            alert("Не удалось подключиться к серверу. Проверьте соединение.");
+        }
     });
 
     async function deleteAccount() {
@@ -431,13 +530,26 @@
             return;
         }
 
-        await fetch("/user/delete", {
-            method: "DELETE"
-        });
+        try {
+            const response = await fetch("/user/delete", {
+                method: "DELETE"
+            });
 
-        window.location.href = "/bar_name";
+            if (!await handleResponse(response)) {
+                return;
+            }
+
+            window.location.href = "/bar_name";
+        } catch (error) {
+            console.error(error);
+            alert("Не удалось подключиться к серверу. Проверьте соединение.");
+        }
     }
 </script>
+
+
+
+
 
 </body>
 </html>

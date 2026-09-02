@@ -1,5 +1,5 @@
 from http.client import HTTPException
-from typing import Optional
+from typing import Annotated
 
 import httpx
 from fastapi import Request, APIRouter, Form, HTTPException
@@ -9,8 +9,7 @@ from starlette.templating import Jinja2Templates
 from ..security.jwt.jwt import get_payload
 from ..dependencies.dependency import get_service_dependency
 from ..services.user_service import UserService
-from ..schema.user_schema import RegisterRequest, IdentityRequest, PasswordResponse, PasswordDTO, EmailRequest
-from datetime import date
+from ..schema.user_schema import RegisterRequest, EmailRequest
 from ..schema.user_schema import UserEditSchema
 
 templates = Jinja2Templates(directory="app/templates")
@@ -41,28 +40,18 @@ async def edit(request : Request, service : UserService = Depends(get_service_de
 
 
 @router.patch("/user/edit")
-async def edit_user(request : Request, service : UserService = Depends(get_service_dependency),
-                    name: Optional[str] = Form(None),
-                    surname: Optional[str] = Form(None),
-                    birthday: Optional[date] = Form(None),
-                    phone: Optional[str] = Form(None),
-                    email: Optional[str] = Form(None),
-                    city: Optional[str] = Form(None),
-                    street: Optional[str] = Form(None),
-                    postal_code: Optional[int] = Form(None),
-                    house: Optional[int] = Form(None),
-                    apartment: Optional[int] = Form(None)):
+async def edit_user(request : Request, data : Annotated[UserEditSchema, Form()], service : UserService = Depends(get_service_dependency)):
     payload  = get_payload(request)
     user = await service.find_by_identity_id(payload["sub"])
-    data = UserEditSchema(name=name, surname=surname,
-                          birthday=birthday, phone=phone,
-                          email=email, city=city, street=street, postal_code=postal_code,
-                          house=house, apartment=apartment)
-    if email is not None and email != user.email:
-        request_email = EmailRequest(old_email=user.email, new_email=email)
+    if data.email is not None and data.email != user.email:
+        request_email = EmailRequest(old_email=user.email, new_email=data.email)
         async with httpx.AsyncClient() as client:
-            response = await client.patch(url="http://authentication-service:8000/edit_email", json=request_email.model_dump(mode="json"))
-            response.raise_for_status()
+            try:
+                response = await client.patch(url="http://authentication-service:8000/edit_email", json=request_email.model_dump(mode="json"))
+                response.raise_for_status()
+            except httpx.HTTPStatusError as error:
+                if error.response.status_code == 409:
+                    raise HTTPException(status_code=409, detail=[{"loc": ["body", "email"],"msg": "Этот логин уже занят"}])
 
     await service.update_user(user, data)
 

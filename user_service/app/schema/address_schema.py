@@ -1,18 +1,33 @@
-from pydantic import BaseModel, Field
-from datetime import date
+import re
 
+from pydantic import BaseModel, Field, field_validator
 
 
 class AddressResponseDTO(BaseModel):
-    city : str = Field(..., description="city")
-    postal_code : int = Field(..., description="postal code")
-    street : str = Field(..., description="street")
-    house : int = Field(..., description="house number")
-    apartment : int | None= Field(..., description="apartment number; not necessary")
+    city: str= Field(..., min_length=2, max_length=100)
+    postal_code: str = Field(..., description="postal code")
+    street: str = Field(..., min_length=2, max_length=100, description="street")
+    house: int = Field(..., gt=0, description="house number")
+    apartment: int | None = Field(default=None, gt=0, description="apartment number; not necessary")
+
+    @field_validator("postal_code")
+    @classmethod
+    def validate_postal_code(cls, value: str):
+        if not re.fullmatch(r"[0-9]{5}", value):
+            raise ValueError("Некорректный почтовый индекс")
+        return value
+
 
 class AddressEditSchema(BaseModel):
-    city: str | None = Field(..., description="city")
-    postal_code: int | None= Field(..., description="postal code")
-    street: str | None = Field(..., description="street")
-    house: int | None = Field(..., description="house number")
-    apartment: int | None = Field(..., description="apartment number; not necessary")
+    city: str | None = Field(None, min_length=2, max_length=100)
+    postal_code: str | None = Field(None, description="postal code")
+    street: str | None = Field(None, min_length=2, max_length=100, description="street")
+    house: int | None = Field(None, gt=0, description="house number")
+    apartment: int | None = Field(default=None, gt=0, description="apartment number; not necessary")
+
+    @field_validator("postal_code")
+    @classmethod
+    def validate_postal_code(cls, value: str):
+        if not re.fullmatch(r"[0-9]{5}", value):
+            raise ValueError("Некорректный почтовый индекс")
+        return value

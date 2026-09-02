@@ -1,5 +1,5 @@
 from ..model.address_model import Address
-from ..schema.address_schema import AddressResponseDTO, AddressEditSchema
+from ..schema.address_schema import AddressResponseDTO
 from sqlalchemy.ext.asyncio import AsyncSession
 
 
