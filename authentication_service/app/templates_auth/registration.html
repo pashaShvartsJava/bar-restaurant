@@ -163,8 +163,6 @@
         }
 
 
-        /* ШАГИ */
-
         .steps {
             display: flex;
 
@@ -214,8 +212,6 @@
             background: #51484e;
         }
 
-
-        /* ФОРМЫ */
 
         .form-step {
             display: none;
@@ -305,7 +301,42 @@
         }
 
 
-        /* КНОПКИ */
+        .field-error {
+            color: #d98282;
+
+            font-size: 11px;
+
+            margin-top: 5px;
+
+            line-height: 1.4;
+        }
+
+
+        .form-error {
+            display: none;
+
+            margin-bottom: 15px;
+
+            padding: 10px 12px;
+
+            border: 1px solid rgba(217, 130, 130, 0.4);
+
+            border-radius: 8px;
+
+            background: rgba(217, 130, 130, 0.08);
+
+            color: #d98282;
+
+            font-size: 11px;
+
+            line-height: 1.5;
+        }
+
+
+        .form-error.show {
+            display: block;
+        }
+
 
         .next-button,
         .register-button {
@@ -439,8 +470,6 @@
 <div class="page">
 
 
-    <!-- ЛЕВАЯ ЧАСТЬ -->
-
     <div class="side">
 
         <div class="side-box">
@@ -480,9 +509,6 @@
     </div>
 
 
-
-    <!-- ЦЕНТР -->
-
     <div class="card">
 
 
@@ -500,8 +526,6 @@
             Создайте аккаунт в несколько шагов
         </div>
 
-
-        <!-- ИНДИКАТОР -->
 
         <div class="steps">
 
@@ -533,8 +557,8 @@
         </div>
 
 
+        <div id="formError" class="form-error"></div>
 
-        <!-- ОДНА ФОРМА -->
 
         <form
             id="registrationForm"
@@ -542,10 +566,6 @@
             action="/registration"
         >
 
-
-            <!-- ========================= -->
-            <!-- ШАГ 1 -->
-            <!-- ========================= -->
 
             <div
                 id="step1"
@@ -558,7 +578,6 @@
 
 
                 <div class="row">
-
 
                     <div class="field">
 
@@ -592,7 +611,6 @@
                         >
 
                     </div>
-
 
                 </div>
 
@@ -630,8 +648,6 @@
                 </div>
 
 
-                <!-- ВОТ ЭТА КНОПКА ПЕРЕКЛЮЧАЕТ ШАГ -->
-
                 <button
                     type="button"
                     class="next-button"
@@ -640,14 +656,8 @@
                     Перейти ко второму шагу →
                 </button>
 
-
             </div>
 
-
-
-            <!-- ========================= -->
-            <!-- ШАГ 2 -->
-            <!-- ========================= -->
 
             <div
                 id="step2"
@@ -712,7 +722,6 @@
 
                 <div class="row">
 
-
                     <div class="field">
 
                         <label>
@@ -747,7 +756,6 @@
 
                     </div>
 
-
                 </div>
 
 
@@ -768,14 +776,8 @@
                     ← Назад
                 </button>
 
-
             </div>
 
-
-
-            <!-- ========================= -->
-            <!-- ШАГ 3 -->
-            <!-- ========================= -->
 
             <div
                 id="step3"
@@ -816,6 +818,7 @@
                         name="password"
                         placeholder="Минимум 8 символов"
                         minlength="8"
+                        maxlength="64"
                         required
                     >
 
@@ -834,6 +837,7 @@
                         id="passwordConfirm"
                         placeholder="Повторите пароль"
                         minlength="8"
+                        maxlength="64"
                         required
                     >
 
@@ -857,7 +861,6 @@
                     ← Назад
                 </button>
 
-
             </div>
 
 
@@ -877,9 +880,6 @@
 
     </div>
 
-
-
-    <!-- ПРАВАЯ ЧАСТЬ -->
 
     <div class="side">
 
@@ -924,21 +924,13 @@
 </div>
 
 
-
 <script>
 
-    /*
-     * Получаем три шага
-     */
+    const form = document.getElementById("registrationForm");
 
     const step1 = document.getElementById("step1");
     const step2 = document.getElementById("step2");
     const step3 = document.getElementById("step3");
-
-
-    /*
-     * Получаем кнопки
-     */
 
     const buttonStep2 =
         document.getElementById("buttonStep2");
@@ -952,11 +944,6 @@
     const buttonBack2 =
         document.getElementById("buttonBack2");
 
-
-    /*
-     * Индикаторы
-     */
-
     const indicator1 =
         document.getElementById("indicator1");
 
@@ -966,150 +953,516 @@
     const indicator3 =
         document.getElementById("indicator3");
 
+    const formError =
+        document.getElementById("formError");
 
 
-    /*
-     * ПЕРВЫЙ ШАГ → ВТОРОЙ
-     */
+    function clearFieldError(input) {
 
-    buttonStep2.onclick = function () {
+        input.style.borderColor = "";
+
+        const error =
+            input.parentElement.querySelector(".field-error");
+
+        if (error) {
+            error.remove();
+        }
+    }
+
+
+    function showFieldError(input, message) {
+
+        clearFieldError(input);
+
+        input.style.borderColor = "#d98282";
+
+        const error =
+            document.createElement("div");
+
+        error.className = "field-error";
+
+        error.textContent = message;
+
+        input.parentElement.appendChild(error);
+    }
+
+
+    function clearAllErrors() {
+
+        form
+            .querySelectorAll(".field-error")
+            .forEach(error => {
+                error.remove();
+            });
+
+        form
+            .querySelectorAll("input")
+            .forEach(input => {
+                input.style.borderColor = "";
+            });
+
+        clearGeneralError();
+    }
+
+
+    function showGeneralError(message) {
+
+        formError.textContent = message;
+
+        formError.classList.add("show");
+    }
+
+
+    function clearGeneralError() {
+
+        formError.textContent = "";
+
+        formError.classList.remove("show");
+    }
+
+
+    function getValidationMessage(input) {
+
+        if (input.validity.valueMissing) {
+            return "Заполните это поле.";
+        }
+
+        if (input.validity.typeMismatch) {
+            return "Введите корректный email.";
+        }
+
+        if (input.validity.tooShort) {
+            return `Минимум ${input.minLength} символов.`;
+        }
+
+        if (input.validity.tooLong) {
+            return `Максимум ${input.maxLength} символов.`;
+        }
+
+        if (input.validity.rangeUnderflow) {
+            return "Значение должно быть больше нуля.";
+        }
+
+        return "Некорректное значение.";
+    }
+
+
+    function validateStep(step) {
 
         const fields =
-            step1.querySelectorAll(
-                "input[required]"
-            );
+            step.querySelectorAll("input[required]");
 
 
-        for (let field of fields) {
+        for (const field of fields) {
+
+            clearFieldError(field);
+
 
             if (!field.checkValidity()) {
 
-                field.reportValidity();
+                showFieldError(
+                    field,
+                    getValidationMessage(field)
+                );
 
-                return;
+                field.focus();
+
+                return false;
             }
-
         }
 
+
+        return true;
+    }
+
+
+    function activateStep(stepNumber) {
 
         step1.classList.remove("active");
-
-        step2.classList.add("active");
-
+        step2.classList.remove("active");
+        step3.classList.remove("active");
 
         indicator1.classList.remove("active");
-
-        indicator2.classList.add("active");
-
-    };
+        indicator2.classList.remove("active");
+        indicator3.classList.remove("active");
 
 
+        if (stepNumber === 1) {
 
-    /*
-     * ВТОРОЙ ШАГ → ТРЕТИЙ
-     */
+            step1.classList.add("active");
+            indicator1.classList.add("active");
 
-    buttonStep3.onclick = function () {
+        } else if (stepNumber === 2) {
 
-        const fields =
-            step2.querySelectorAll(
-                "input[required]"
+            step2.classList.add("active");
+            indicator2.classList.add("active");
+
+        } else if (stepNumber === 3) {
+
+            step3.classList.add("active");
+            indicator3.classList.add("active");
+        }
+    }
+
+
+    buttonStep2.addEventListener(
+        "click",
+        function () {
+
+            clearGeneralError();
+
+
+            if (!validateStep(step1)) {
+                return;
+            }
+
+
+            activateStep(2);
+        }
+    );
+
+
+    buttonStep3.addEventListener(
+        "click",
+        function () {
+
+            clearGeneralError();
+
+
+            if (!validateStep(step2)) {
+                return;
+            }
+
+
+            activateStep(3);
+        }
+    );
+
+
+    buttonBack1.addEventListener(
+        "click",
+        function () {
+
+            clearAllErrors();
+
+            activateStep(1);
+        }
+    );
+
+
+    buttonBack2.addEventListener(
+        "click",
+        function () {
+
+            clearAllErrors();
+
+            activateStep(2);
+        }
+    );
+
+
+    form
+        .querySelectorAll("input")
+        .forEach(input => {
+
+            input.addEventListener(
+                "input",
+                function () {
+
+                    clearFieldError(input);
+                    clearGeneralError();
+                }
             );
 
+        });
 
-        for (let field of fields) {
 
-            if (!field.checkValidity()) {
+    async function handleFieldErrors(response) {
 
-                field.reportValidity();
+        try {
+
+            const data =
+                await response.json();
+
+
+            if (!Array.isArray(data.detail)) {
+
+                showGeneralError(
+                    data.detail ||
+                    "Проверьте введённые данные."
+                );
 
                 return;
             }
 
+
+            data.detail.forEach(error => {
+
+                const fieldName =
+                    error.loc?.at(-1);
+
+
+                if (!fieldName) {
+                    return;
+                }
+
+
+                const input =
+                    form.querySelector(
+                        `[name="${fieldName}"]`
+                    );
+
+
+                if (input) {
+
+                    showFieldError(
+                        input,
+                        translateError(error.msg)
+                    );
+
+
+                    /*
+                     * Если ошибка пришла
+                     * с другого шага,
+                     * автоматически переходим
+                     * на нужный шаг.
+                     */
+
+                    if (step1.contains(input)) {
+                        activateStep(1);
+                    }
+
+                    if (step2.contains(input)) {
+                        activateStep(2);
+                    }
+
+                    if (step3.contains(input)) {
+                        activateStep(3);
+                    }
+
+                } else {
+
+                    showGeneralError(
+                        translateError(error.msg)
+                    );
+                }
+
+            });
+
+
+        } catch (error) {
+
+            console.error(error);
+
+            showGeneralError(
+                "Не удалось обработать ответ сервера."
+            );
+        }
+    }
+
+
+    async function handleResponse(response) {
+
+        if (response.ok) {
+            return true;
         }
 
 
-        step2.classList.remove("active");
+        if (response.status === 422) {
 
-        step3.classList.add("active");
+            await handleFieldErrors(response);
 
-
-        indicator2.classList.remove("active");
-
-        indicator3.classList.add("active");
-
-    };
+            return false;
+        }
 
 
+        if (response.status === 409) {
 
-    /*
-     * ВТОРОЙ ШАГ → ПЕРВЫЙ
-     */
+            await handleFieldErrors(response);
 
-    buttonBack1.onclick = function () {
-
-        step2.classList.remove("active");
-
-        step1.classList.add("active");
+            return false;
+        }
 
 
-        indicator2.classList.remove("active");
+        if (response.status === 401) {
 
-        indicator1.classList.add("active");
+            await handleFieldErrors(response);
 
-    };
-
-
-
-    /*
-     * ТРЕТИЙ ШАГ → ВТОРОЙ
-     */
-
-    buttonBack2.onclick = function () {
-
-        step3.classList.remove("active");
-
-        step2.classList.add("active");
+            return false;
+        }
 
 
-        indicator3.classList.remove("active");
+        if (response.status === 403) {
 
-        indicator2.classList.add("active");
+            showGeneralError(
+                "У вас нет доступа к этому действию."
+            );
 
-    };
+            return false;
+        }
 
 
+        if (response.status === 404) {
 
-    /*
-     * ПРОВЕРКА ПАРОЛЕЙ
-     * происходит только при отправке
-     */
+            showGeneralError(
+                "Страница не найдена."
+            );
 
-    document
-        .getElementById("registrationForm")
-        .addEventListener("submit", function(event) {
+            return false;
+        }
+
+
+        if (response.status >= 500) {
+
+            showGeneralError(
+                "Ошибка сервера. Попробуйте позже."
+            );
+
+            return false;
+        }
+
+
+        showGeneralError(
+            "Не удалось выполнить регистрацию."
+        );
+
+        return false;
+    }
+
+
+    form.addEventListener(
+        "submit",
+        async function (event) {
+
+            event.preventDefault();
+
+
+            clearAllErrors();
+
 
             const password =
-                document.querySelector(
+                form.querySelector(
                     'input[name="password"]'
-                ).value;
+                );
+
 
             const confirm =
                 document.getElementById(
                     "passwordConfirm"
-                ).value;
+                );
 
 
-            if (password !== confirm) {
+            if (!password.value) {
 
-                event.preventDefault();
+                showFieldError(
+                    password,
+                    "Введите пароль."
+                );
 
-                alert("Пароли не совпадают");
+                password.focus();
 
                 return;
             }
 
-        });
+
+            if (password.value.length < password.minLength) {
+
+                showFieldError(
+                    password,
+                    `Минимум ${password.minLength} символов.`
+                );
+
+                password.focus();
+
+                return;
+            }
+
+
+            if (password.value !== confirm.value) {
+
+                showFieldError(
+                    confirm,
+                    "Пароли не совпадают."
+                );
+
+                confirm.focus();
+
+                return;
+            }
+
+
+            try {
+
+                const response =
+                    await fetch(
+                        form.action,
+                        {
+                            method: "POST",
+                            body: new FormData(form)
+                        }
+                    );
+
+
+                if (!await handleResponse(response)) {
+                    return;
+                }
+
+
+                /*
+                 * Успешная регистрация.
+                 */
+
+                window.location.href = "/login";
+
+            } catch (error) {
+
+                console.error(
+                    "Registration error:",
+                    error
+                );
+
+
+                showGeneralError(
+                    "Не удалось подключиться к серверу. Проверьте соединение."
+                );
+            }
+
+        }
+    );
+
+
+    function translateError(message) {
+
+        const translations = {
+
+            "Field required":
+                "Поле обязательно для заполнения",
+
+            "value is not a valid email address":
+                "Введите корректный email",
+
+            "value is not a valid email":
+                "Введите корректный email",
+
+            "String should have at least 2 characters":
+                "Минимум 2 символа",
+
+            "String should have at least 8 characters":
+                "Пароль должен содержать минимум 8 символов",
+
+            "String should have at most 64 characters":
+                "Пароль должен содержать максимум 64 символа",
+
+            "Input should be a valid integer":
+                "Введите целое число",
+
+            "Input should be greater than 0":
+                "Значение должно быть больше нуля"
+        };
+
+
+        return translations[message] || message;
+    }
 
 </script>
 
