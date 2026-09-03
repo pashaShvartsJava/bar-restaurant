@@ -1,5 +1,5 @@
 from sqlalchemy import Column, Integer, String, Date, Enum as SQLEnum
-from ..database import Base
+from admin_service.app.database import Base
 from enum import Enum
 
 class AdminRole(str, Enum):

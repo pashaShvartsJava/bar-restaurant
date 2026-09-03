@@ -1,14 +1,12 @@
 from typing import Annotated
 
-from fastapi import Request, APIRouter, HTTPException, Response, Form
-from datetime import date
+from fastapi import Request, APIRouter, HTTPException, Form
 from fastapi.params import Depends
-from jinja2.runtime import identity
 from pydantic import EmailStr
 from starlette.responses import HTMLResponse, RedirectResponse
 from starlette.templating import Jinja2Templates
 
-from ..exceptions.exceptions import InvalidCredentialsError, EmailError
+from ..exceptions.exceptions import InvalidCredentialsError
 from ..schemas.schema import LoginSchema, RegisterRequest, RegisterRequestDTO, AddressResponseDTO, PasswordUpdateDTO, \
     EmailRequest, RegistrationSchema
 from ..dependencies.dependency import get_service_dependency
@@ -55,11 +53,10 @@ async def authentication(email: EmailStr = Form(...),
 @router.post("/registration")
 async def registration( data : Annotated[RegistrationSchema, Form()],
                         service: AuthenticationService = Depends(get_service_dependency)):
-    await service.create_identity(data.email, data.password)
-    try:
-        created_user = await service.find_by_email(data.email)
-    except EmailError:
+    existing_user = await service.find_by_email(data.email)
+    if existing_user is not None:
         raise HTTPException(detail="Такой пользователь уже существует", status_code=409)
+    created_user = await service.create_identity(data.email, data.password)
     user_request_dto : RegisterRequestDTO = send_new_user_dto(created_user.id,
                                                               data.name,
                                                               data.surname, data.email,

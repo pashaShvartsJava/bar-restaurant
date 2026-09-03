@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from typing import List, Optional
-from ..model.admin import Admin
-from ..schema.admin import AdminRegistrationDTO, AdminUpdateDTO
+from admin_service.app.model.admin import Admin
+from admin_service.app.schema.admin import AdminRegistrationDTO, AdminUpdateDTO
 from sqlalchemy import or_
 
 class AdminRepository:

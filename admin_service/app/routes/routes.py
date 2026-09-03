@@ -3,12 +3,12 @@ from fastapi import Request, APIRouter,Form
 from fastapi.params import Depends
 from starlette.responses import HTMLResponse, RedirectResponse
 from starlette.templating import Jinja2Templates
-from admin_service.schema.admin import AdminRegistrationDTO, AdminUpdateDTO
+from admin_service.app.schema.admin import AdminRegistration, AdminUpdateDTO, AdminRegistrationDTO
 
-from admin_service.dependencies.dependencies import get_service_dependency
-from admin_service.service.admin_service import AdminService
+from admin_service.app.dependencies.dependencies import get_service_dependency
+from admin_service.app.service.admin_service import AdminService
 
-from admin_service.model.admin import AdminRole
+from ..model.admin import AdminRole
 
 templates = Jinja2Templates(directory="admin_service/templates_admin")
 router = APIRouter()
@@ -34,7 +34,7 @@ def add_admin(admin_service : AdminService = Depends(get_service_dependency),
               phone: str = Form(),
               role : AdminRole = Form()
             ):
-    new_admin = AdminRegistrationDTO(
+    new_admin = AdminRegistration(
         name=name, surname=surname, birthday=birthday, phone=phone, role = role
     )
     admin_service.create_new_admin(new_admin)
@@ -64,4 +64,7 @@ def edit_admin(admin_id : int, service : AdminService = Depends(get_service_depe
     service.update_admin(admin_id, updated_admin)
     return RedirectResponse(url="/admin_panel/all_admins", status_code=303)
 
+@router.post("/admins/add_admin")
+def add_admin(data : AdminRegistrationDTO, service : AdminService = Depends(get_service_dependency) ):
+    pass
 
