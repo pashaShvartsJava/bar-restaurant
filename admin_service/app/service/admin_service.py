@@ -1,7 +1,7 @@
-from admin_service.repository.admin_repository import AdminRepository
-from admin_service.model.admin import Admin
+from admin_service.app.repository import AdminRepository
+from admin_service.app.model import Admin
 from typing import List
-from admin_service.schema.admin import AdminRegistrationDTO, AdminUpdateDTO
+from admin_service.app.schema import AdminRegistrationDTO, AdminUpdateDTO
 
 class AdminService:
 

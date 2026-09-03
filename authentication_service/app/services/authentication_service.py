@@ -1,4 +1,5 @@
 from pydantic import EmailStr
+from watchfiles import awatch
 
 from ..repositories.authentication_repository import AuthenticationRepository
 from ..schemas.schema import LoginSchema, RegisterIdentitySchema, RegisterRequestDTO, AddressResponseDTO
@@ -62,7 +63,7 @@ class AuthenticationService:
         token = create_access_token(identity.id, identity.role)
         return token
 
-    async def create_identity(self, email : EmailStr, password : str) -> RegisterIdentitySchema:
+    async def create_identity(self, email : EmailStr, password : str):
         return await self.authentication_repository.create_identity(email, hash_password(password))
 
     async  def update_password(self, identity_id : UUID, new_password : str):
@@ -73,5 +74,14 @@ class AuthenticationService:
 
     async def delete_identity(self, identity_id : UUID):
         return await self.authentication_repository.delete_identity(identity_id)
+
+    async def create_admin_identity(self, email : EmailStr, password : str):
+        return await self.authentication_repository.create_admin_identity(email, hash_password(password))
+
+    async def verify_registration_key(self, key : str) -> str | None:
+        return await self.authentication_repository.verify_registration_key(key)
+
+    async def verify_authentication_key(self, key : str) -> str | None:
+        return await self.authentication_repository.verify_authentication_key(key)
 
 
