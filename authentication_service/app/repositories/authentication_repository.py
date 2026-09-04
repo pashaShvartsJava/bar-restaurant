@@ -2,7 +2,7 @@ from pydantic import EmailStr
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from ..model.identity_model import IdentityRole
+from ..model.identity_model import IdentityRole, Status
 from ..model.key_model import Key
 from ..security.password.password import hash_password
 
@@ -77,3 +77,7 @@ class AuthenticationRepository:
         result = await self.db.execute(select(Key).where(Key.authentication_key==key))
         return result.scalar_one_or_none()
 
+    async def update_status_identity(self, identity : Identity, status : Status):
+        identity.status = status
+        await self.db.commit()
+        await self.db.refresh(identity)

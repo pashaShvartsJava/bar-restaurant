@@ -50,6 +50,25 @@ services:
       - --port
       - "8005"
       - --reload
+  admin-service:
+    build:
+      context: ./admin_service
+    container_name: admin-service
+    ports:
+      - "8002:8002"
+    env_file:
+      - ./admin_service/.env
+    volumes:
+      - ./admin_service:/admin_service
+    command:
+      - uvicorn
+      - app.main:app
+      - --host
+      - 0.0.0.0
+      - --port
+      - "8002"
+      - --reload
+
   db-authentication:
     image: postgres:16
     container_name: db-authentication
@@ -72,6 +91,18 @@ services:
       - "5433:5432"
     volumes:
       - postgres_user_data:/var/lib/postgresql/data
+  db-admin:
+    image: postgres:16
+    container_name: db-admin
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: admin_bar_db
+    ports:
+      - "5434:5432"
+    volumes:
+      - postgres_admin_data:/var/lib/postgresql/data
 volumes:
   postgres_auth_data:
   postgres_user_data:
+  postgres_admin_data:

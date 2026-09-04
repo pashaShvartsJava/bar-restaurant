@@ -6,7 +6,7 @@ from ..schemas.schema import LoginSchema, RegisterIdentitySchema, RegisterReques
 from ..security.password.password import hash_password, verify_password
 from ..security.jwt.jwt import create_access_token
 from datetime import date
-from ..model.identity_model import IdentityRole, Identity
+from ..model.identity_model import IdentityRole, Identity, Status
 from ..exceptions.exceptions import PasswordError, LoginError, InvalidCredentialsError, EmailError
 from uuid import UUID
 
@@ -83,5 +83,8 @@ class AuthenticationService:
 
     async def verify_authentication_key(self, key : str) -> str | None:
         return await self.authentication_repository.verify_authentication_key(key)
+
+    async def update_status_identity(self, identity : Identity, status : Status):
+        return await self.authentication_repository.update_status_identity(identity, status)
 
 

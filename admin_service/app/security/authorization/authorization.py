@@ -3,7 +3,7 @@ from fastapi import HTTPException
 from fastapi.params import Depends
 
 from ..role.role import IdentityRole
-from admin_service.app.security.jwt.jwt import get_payload
+from ...security.jwt.jwt import get_payload
 
 def required_role(role : IdentityRole, payload : dict = Depends(get_payload)):
     if payload["role"] != role.value:
