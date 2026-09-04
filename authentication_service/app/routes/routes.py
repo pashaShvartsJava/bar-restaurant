@@ -7,6 +7,7 @@ from starlette.responses import HTMLResponse, RedirectResponse
 from starlette.templating import Jinja2Templates
 
 from ..exceptions.exceptions import InvalidCredentialsError
+from ..model.identity_model import Status
 from ..schemas.schema import LoginSchema, RegisterRequest, RegisterRequestDTO, AddressResponseDTO, PasswordUpdateDTO, \
     EmailRequest, RegistrationSchema
 from ..dependencies.dependency import get_service_dependency
@@ -54,8 +55,25 @@ async def authentication(email: EmailStr = Form(...),
 async def registration( data : Annotated[RegistrationSchema, Form()],
                         service: AuthenticationService = Depends(get_service_dependency)):
     existing_user = await service.find_by_email(data.email)
-    if existing_user is not None:
+    if existing_user is not None and (existing_user.status==Status.ACTIVE or existing_user.status==Status.BLOCKED):
         raise HTTPException(detail="Такой пользователь уже существует", status_code=409)
+    if existing_user is not None and (existing_user.status == Status.PENDING or existing_user.status == Status.FAILED):
+        old_user_request_dto: RegisterRequestDTO = send_new_user_dto(existing_user.id,
+                                                                 data.name,
+                                                                 data.surname, data.email,
+                                                                 data.birthday, data.phone,
+                                                                 existing_user.role)
+        old_address_request_dto: AddressResponseDTO = send_address(data.city, data.postal_code,
+                                                               data.street, data.house,
+                                                               data.apartment)
+
+        old_register_dto = RegisterRequest(user_data=old_user_request_dto, address_data=old_address_request_dto)
+        async with httpx.AsyncClient() as client:
+            response = await client.post("http://user-service:8005/users/add_user",
+                                         json=old_register_dto.model_dump(mode="json"))
+            response.raise_for_status()
+        return RedirectResponse(url="/login", status_code=303)
+
     created_user = await service.create_identity(data.email, data.password)
     user_request_dto : RegisterRequestDTO = send_new_user_dto(created_user.id,
                                                               data.name,

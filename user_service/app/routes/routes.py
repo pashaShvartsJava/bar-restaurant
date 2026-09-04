@@ -2,10 +2,13 @@ from http.client import HTTPException
 from typing import Annotated
 
 import httpx
+from asyncpg import InternalClientError
 from fastapi import Request, APIRouter, Form, HTTPException
 from fastapi.params import Depends
 from starlette.responses import RedirectResponse, JSONResponse
 from starlette.templating import Jinja2Templates
+
+from ..model.user_model import Status
 from ..security.jwt.jwt import get_payload
 from ..dependencies.dependency import get_service_dependency
 from ..services.user_service import UserService
@@ -23,7 +26,13 @@ async def get_user_profile(request : Request, service : UserService = Depends(ge
 
 @router.post("/users/add_user")
 async def register_user(data : RegisterRequest, service : UserService = Depends(get_service_dependency)):
-    await service.create_user(data.user_data, data.address_data)
+    try:
+        await service.create_user(data.user_data, data.address_data)
+    except Exception:
+        async with httpx.AsyncClient() as client:
+            response = await client.patch("http://authentication-service:8000/edit_status", params={"status" : Status.FAILED, "email" : str(data.email)})
+            response.raise_for_status()
+        raise InternalClientError("Ошибка регистрации")
     return {"message": "User created successfully"}
 
 @router.post("/logout")

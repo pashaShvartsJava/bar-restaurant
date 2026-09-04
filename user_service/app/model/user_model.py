@@ -12,6 +12,12 @@ class IdentityRole(str, Enum):
     ADMIN = "admin"
     MODERATOR = "moderator"
 
+class Status(str, Enum):
+    ACTIVE = "active"
+    PENDING = "pending"
+    FAILED = "failed"
+    BLOCKED = "blocked"
+
 class User(Base):
 
     __tablename__ = "users"
