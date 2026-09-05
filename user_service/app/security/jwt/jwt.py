@@ -14,7 +14,7 @@ def decode_access_token(token : str) -> dict:
         payload = jwt.decode(token, PUBLIC_SECRET_KEY,  algorithms=ALGORITHM)
         return payload
     except InvalidTokenError:
-        raise ValueError("Authentication required")
+        raise HTTPException(status_code=401,detail="Authentication required")
 
 def get_payload(request : Request):
     token = request.cookies.get("access_token")
