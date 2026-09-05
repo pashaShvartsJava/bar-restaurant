@@ -11,7 +11,7 @@ from ..model.identity_model import Status
 from ..schemas.admin_schema import AdminRegistration, AdminRegistrationDTO, AdminLogin
 from ..schemas.schema import LoginSchema
 from ..dependencies.dependency import get_service_dependency
-from ..services.authentication_service import AuthenticationService, send_new_user_dto, send_address
+from ..services.authentication_service import AuthenticationService
 import httpx
 
 templates = Jinja2Templates(directory="app/templates_auth")
@@ -72,6 +72,9 @@ async def admin_login(data : Annotated[AdminLogin, Form()], service : Authentica
     authentication_key = await service.verify_authentication_key(data.authentication_key)
     if authentication_key is None:
         raise HTTPException(detail="Доступ запрещен", status_code=403)
+    admin = await service.find_by_email(data.email)
+    if admin.status != Status.ACTIVE:
+        raise HTTPException(detail="Этот аккаунт в состоянии незавершенной регистрации или заблокирован", status_code=403)
     redirect = RedirectResponse(url="/admin_panel", status_code=303)
     redirect.set_cookie(key="access_token", value=token, httponly=True, secure=False, max_age=3600, samesite="lax")
     return redirect

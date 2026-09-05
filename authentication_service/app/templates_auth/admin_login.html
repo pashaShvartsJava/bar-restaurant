@@ -453,13 +453,14 @@
 
             <input
                 type="password"
-                name="special_key"
+                name="authentication_key"
                 placeholder="Введите специальный ключ"
                 required
             >
 
         </div>
 
+        <div id="form-error" class="field-error"></div>
         <button
             type="submit"
             class="btn"
@@ -554,11 +555,14 @@
 
 <script>
     const form = document.getElementById("adminLoginForm");
+    const formError = document.getElementById("form-error");
 
     function clearError(input) {
         input.style.borderColor = "";
 
-        const error = input.parentElement.querySelector(".field-error");
+        const error = input.parentElement.querySelector(
+            ".field-error:not(#form-error)"
+        );
 
         if (error) {
             error.remove();
@@ -578,23 +582,23 @@
     }
 
     function clearAllErrors() {
-        form.querySelectorAll(".field-error").forEach(error => {
+        form.querySelectorAll(".field-error:not(#form-error)").forEach(error => {
             error.remove();
         });
 
         form.querySelectorAll("input").forEach(input => {
             input.style.borderColor = "";
         });
+
+        formError.textContent = "";
     }
 
     async function handleFieldErrors(response) {
-        try {
-            const data = await response.json();
+        const data = await response.json();
 
-            if (!Array.isArray(data.detail)) {
-                return;
-            }
+        console.log("ERROR RESPONSE:", data);
 
+        if (Array.isArray(data.detail)) {
             data.detail.forEach(error => {
                 const field = error.loc?.at(-1);
                 const input = form.querySelector(`[name="${field}"]`);
@@ -603,9 +607,16 @@
                     showError(input, error.msg);
                 }
             });
-        } catch (error) {
-            console.error(error);
+
+            return;
         }
+
+        if (typeof data.detail === "string") {
+            formError.textContent = data.detail;
+            return;
+        }
+
+        formError.textContent = "Произошла ошибка.";
     }
 
     async function handleResponse(response) {
@@ -613,17 +624,21 @@
             return true;
         }
 
-        if (response.status === 422 || response.status === 401 || response.status === 403) {
+        if (
+            response.status === 422 ||
+            response.status === 401 ||
+            response.status === 403
+        ) {
             await handleFieldErrors(response);
             return false;
         }
 
         if (response.status >= 500) {
-            alert("Ошибка сервера. Попробуйте позже.");
+            formError.textContent = "Ошибка сервера. Попробуйте позже.";
             return false;
         }
 
-        alert("Произошла ошибка.");
+        formError.textContent = "Произошла ошибка.";
         return false;
     }
 
@@ -642,14 +657,13 @@
                 return;
             }
 
-            window.location.href = "/admin";
+            window.location.href = "/admin_panel";
+
         } catch (error) {
             console.error(error);
 
-            alert(
-                "Не удалось подключиться к серверу. " +
-                "Проверьте соединение."
-            );
+            formError.textContent =
+                "Не удалось подключиться к серверу. Проверьте соединение.";
         }
     });
 </script>

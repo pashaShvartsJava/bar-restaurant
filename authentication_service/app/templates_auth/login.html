@@ -443,6 +443,7 @@
                 >
 
             </div>
+            <div id="form-error" class="field-error"></div>
 
             <button
                 type="submit"
@@ -546,11 +547,14 @@
 
 <script>
     const form = document.getElementById("loginForm");
+    const formError = document.getElementById("form-error");
 
     function clearError(input) {
         input.style.borderColor = "";
 
-        const error = input.parentElement.querySelector(".field-error");
+        const error = input.parentElement.querySelector(
+            ".field-error:not(#form-error)"
+        );
 
         if (error) {
             error.remove();
@@ -566,34 +570,50 @@
         error.className = "field-error";
         error.textContent = message;
 
-        error.style.color = "#d98282";
-        error.style.fontSize = "11px";
-        error.style.marginTop = "5px";
-
         input.parentElement.appendChild(error);
     }
 
     function clearAllErrors() {
-        form.querySelectorAll(".field-error").forEach(error => {
+        form.querySelectorAll(
+            ".field-error:not(#form-error)"
+        ).forEach(error => {
             error.remove();
         });
 
         form.querySelectorAll("input").forEach(input => {
             input.style.borderColor = "";
         });
+
+        formError.textContent = "";
     }
 
     async function handleFieldErrors(response) {
         const data = await response.json();
 
-        data.detail.forEach(error => {
-            const field = error.loc?.at(-1);
-            const input = form.querySelector(`[name="${field}"]`);
+        // Ошибки валидации FastAPI
+        if (Array.isArray(data.detail)) {
+            data.detail.forEach(error => {
+                const field = error.loc?.at(-1);
+                const input = form.querySelector(
+                    `[name="${field}"]`
+                );
 
-            if (input) {
-                showError(input, error.msg);
-            }
-        });
+                if (input) {
+                    showError(input, error.msg);
+                }
+            });
+
+            return;
+        }
+
+        // Обычная ошибка backend:
+        // {"detail": "Неверный email или пароль"}
+        if (typeof data.detail === "string") {
+            formError.textContent = data.detail;
+            return;
+        }
+
+        formError.textContent = "Произошла ошибка.";
     }
 
     async function handleResponse(response) {
@@ -601,27 +621,27 @@
             return true;
         }
 
-        if (response.status === 422 || response.status === 401) {
+        if (
+            response.status === 422 ||
+            response.status === 401 ||
+            response.status === 403
+        ) {
             await handleFieldErrors(response);
             return false;
         }
 
-        if (response.status === 403) {
-            alert("У вас нет доступа к этому действию.");
-            return false;
-        }
-
         if (response.status === 404) {
-            alert("Страница не найдена.");
+            formError.textContent = "Страница не найдена.";
             return false;
         }
 
         if (response.status >= 500) {
-            alert("Ошибка сервера. Попробуйте позже.");
+            formError.textContent =
+                "Ошибка сервера. Попробуйте позже.";
             return false;
         }
 
-        alert("Произошла ошибка.");
+        formError.textContent = "Произошла ошибка.";
         return false;
     }
 
@@ -645,10 +665,9 @@
         } catch (error) {
             console.error(error);
 
-            alert(
+            formError.textContent =
                 "Не удалось подключиться к серверу. " +
-                "Проверьте соединение."
-            );
+                "Проверьте соединение.";
         }
     });
 </script>
