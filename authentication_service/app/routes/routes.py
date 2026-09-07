@@ -114,11 +114,7 @@ async def update_password(
             status_code=401,
             detail="Incorrect old password"
         )
-
-    return await service.update_password(
-        identity_id,
-        new_password
-    )
+    return await service.update_password(identity_id, new_password)
 
 @router.patch("/edit_password")
 async def update_password(data : PasswordUpdateDTO, service: AuthenticationService = Depends(get_service_dependency)):

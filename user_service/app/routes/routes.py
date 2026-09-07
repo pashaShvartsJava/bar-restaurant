@@ -83,53 +83,27 @@ async def edit_password(request: Request,  service : UserService = Depends(get_s
     return templates.TemplateResponse("edit_password.html", context={"request" : request, "user" : user})
 
 @router.patch("/user/password")
-async def edit_password(
-    request: Request,
-    service: UserService = Depends(get_service_dependency),
-    old_password: str = Form(),
-    new_password: str = Form(),
-    confirmed_password: str = Form()
-):
+async def edit_password(request: Request,service: UserService = Depends(get_service_dependency),
+                        old_password: str = Form(), new_password: str = Form(), confirmed_password: str = Form()):
     payload = get_payload(request)
     user = await service.find_by_identity_id(payload["sub"])
 
     if new_password != confirmed_password:
-        raise HTTPException(
-            status_code=400,
-            detail="Пароли не совпадают"
-        )
+        raise HTTPException(status_code=400,detail="Пароли не совпадают")
 
     try:
         async with httpx.AsyncClient() as client:
             response = await client.get(
                 url="http://authentication-service:8000/get_identity",
-                params={
-                    "identity_id": user.identity_id,
-                    "old_password": old_password,
-                    "new_password": new_password
-                }
-            )
-
+                params={"identity_id": user.identity_id,"old_password": old_password,"new_password": new_password})
             response.raise_for_status()
 
     except httpx.HTTPStatusError as e:
         if e.response.status_code == 401:
-            raise HTTPException(
-                status_code=401,
-                detail="Неверный старый пароль"
-            )
-
-        raise HTTPException(
-            status_code=500,
-            detail="Ошибка при смене пароля"
-        )
-
-    response = JSONResponse({
-        "success": True
-    })
-
+            raise HTTPException(status_code=401,detail="Неверный старый пароль")
+        raise HTTPException(status_code=500,detail="Ошибка при смене пароля")
+    response = JSONResponse({"success": True})
     response.delete_cookie("access_token")
-
     return response
 
 

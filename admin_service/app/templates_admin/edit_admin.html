@@ -230,6 +230,7 @@
             color 0.2s;
     }
 
+
     .cancel {
         color: #b99c91;
 
@@ -259,6 +260,23 @@
     .save:hover {
         background: #e4b971;
     }
+    .password {
+    background: rgba(105, 45, 50, 0.85);
+
+    color: #b88f8f;
+
+    border: 1px solid rgba(180, 75, 85, 0.45);
+
+    font-weight: bold;
+}
+
+.password:hover {
+    background: rgba(125, 50, 55, 0.9);
+
+    color: #c8a0a0;
+
+    border-color: rgba(205, 90, 100, 0.65);
+}
 
     @media (max-width: 600px) {
         .row {
@@ -407,7 +425,14 @@
         <div id="form-error" class="field-error"></div>
 
 
+
+
         <div class="buttons">
+            <a
+                href="/admin_panel/edit/password/{{ admin.id }}"
+                class="button password">
+                Изменить пароль
+            </a>
 
             <a
                 href="/admin_panel/all_admins"
