@@ -19,6 +19,10 @@ class AdminRepository:
         result = await self.db.execute(select(Admin).where(Admin.id == id))
         return result.scalar_one_or_none()
 
+    async def get_by_identity_id(self, identity_id : UUID):
+        result = await self.db.execute(select(Admin).where(Admin.identity_id == identity_id))
+        return result.scalar_one_or_none()
+
     async def get_by_name(self, admin_name: str) -> Optional[Admin]:
         result = await self.db.execute(
             select(Admin).where(or_(Admin.name == admin_name,Admin.surname == admin_name)))

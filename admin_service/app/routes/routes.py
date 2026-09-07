@@ -7,7 +7,7 @@ from fastapi import Request, APIRouter, Form, HTTPException
 from fastapi.params import Depends
 from jinja2.runtime import identity
 from pydantic import EmailStr
-from starlette.responses import HTMLResponse, RedirectResponse
+from starlette.responses import HTMLResponse, RedirectResponse, JSONResponse
 from starlette.templating import Jinja2Templates
 from ..schema.admin import AdminUpdateDTO, AdminRegistrationDTO, IdentityEdit, AdminRegistrationForm, AddAdminRequest
 from typing import Annotated
@@ -126,7 +126,7 @@ async def edit_admin(request : Request, admin_id : int, service : AdminService =
     return RedirectResponse(url="/admin_panel/all_admins", status_code=303)
 
 @router.post("/admins/add_admin")
-async def add_admin(data : AdminRegistrationDTO, service : AdminService = Depends(get_service_dependency) ):
+async def add_admin(data : AdminRegistrationDTO, service : AdminService = Depends(get_service_dependency)):
     try:
         await service.create_new_admin(data)
     except Exception:
@@ -134,4 +134,40 @@ async def add_admin(data : AdminRegistrationDTO, service : AdminService = Depend
             response = await client.patch("http://authentication-service:8000/edit_status", params={"status" : Status.FAILED.value, "str_email" : str(data.email)})
             response.raise_for_status()
         raise InternalClientError("Ошибка регистрации")
+
+@router.get("/admin_panel/edit/password/{id}")
+async def edit_password_page(request : Request, id : int, service : AdminService = Depends(get_service_dependency)):
+    payload = get_payload(request)
+    required_roles(IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
+    admin = await service.find_by_identity(payload["sub"])
+    if admin.id != id:
+        raise HTTPException(status_code=403, detail="Доступ запрещен")
+    return templates.TemplateResponse("edit_password.html", {"request" : request, "admin" : admin})
+
+@router.patch("/admin_panel/edit/password/{id}")
+async def edit_password(request: Request, service: AdminService = Depends(get_service_dependency),
+                        old_password: str = Form(..., min_length=8, description="password"),
+                        new_password: str = Form(..., min_length=8, description="password"),
+                        confirmed_password: str = Form(..., min_length=8, description="password")):
+    payload = get_payload(request)
+    required_roles(IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
+    admin = await service.find_by_identity(payload["sub"])
+
+    if new_password != confirmed_password:
+        raise HTTPException(status_code=400,detail="Пароли не совпадают")
+
+    try:
+        async with httpx.AsyncClient() as client:
+            response = await client.get(
+                url="http://authentication-service:8000/get_identity",
+                params={"identity_id": admin.identity_id,"old_password": old_password,"new_password": new_password})
+            response.raise_for_status()
+
+    except httpx.HTTPStatusError as e:
+        if e.response.status_code == 401:
+            raise HTTPException(status_code=401,detail="Неверный старый пароль")
+        raise HTTPException(status_code=500,detail="Ошибка при смене пароля")
+    response = JSONResponse({"success": True})
+    response.delete_cookie("access_token")
+    return response
 

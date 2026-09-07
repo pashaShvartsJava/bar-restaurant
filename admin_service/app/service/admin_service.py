@@ -14,6 +14,9 @@ class AdminService:
     async def find_by_id(self, id : int) -> Admin:
         return await self.admin_repository.get_by_id(id)
 
+    async def find_by_identity(self, identity_id : UUID):
+        return await self.admin_repository.get_by_identity_id(identity_id)
+
     async def find_all_admins(self) -> List[Admin]:
         return await self.admin_repository.get_all()
 
