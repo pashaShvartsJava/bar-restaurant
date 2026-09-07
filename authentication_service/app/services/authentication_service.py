@@ -2,6 +2,7 @@ from pydantic import EmailStr
 from watchfiles import awatch
 
 from ..repositories.authentication_repository import AuthenticationRepository
+from ..schemas.admin_schema import IdentityEdit, AddAdminRequest
 from ..schemas.schema import LoginSchema, RegisterIdentitySchema, RegisterRequestDTO, AddressResponseDTO
 from ..security.password.password import hash_password, verify_password
 from ..security.jwt.jwt import create_access_token
@@ -60,7 +61,7 @@ class AuthenticationService:
 
     async def login(self, data : LoginSchema) -> str | None:
         identity = await self.verify_credentials(data.email, data.password)
-        token = create_access_token(identity.id, identity.role)
+        token = create_access_token(identity.id, identity.role, identity.status)
         return token
 
     async def create_identity(self, email : EmailStr, password : str):
@@ -86,5 +87,18 @@ class AuthenticationService:
 
     async def update_status_identity(self, identity : Identity, status : Status):
         return await self.authentication_repository.update_status_identity(identity, status)
+
+    async def update_identity_role(self, identity : Identity, role : IdentityRole):
+        return await self.authentication_repository.update_identity_role(identity, role)
+
+    async def update_identity(self, identity : Identity, data : IdentityEdit):
+        return await self.authentication_repository.update_identity(identity, data)
+
+    async def add_new_identity(self, data : AddAdminRequest):
+        hashed_password = hash_password(data.password)
+        data.password = hashed_password
+        return await self.authentication_repository.add_new_identity(data)
+
+
 
 

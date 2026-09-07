@@ -1,9 +1,11 @@
+from fastapi import HTTPException
 from pydantic import EmailStr
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from ..model.identity_model import IdentityRole, Status
 from ..model.key_model import Key
+from ..schemas.admin_schema import IdentityEdit, AddAdminRequest
 from ..security.password.password import hash_password
 
 from ..model.identity_model import Identity
@@ -65,7 +67,12 @@ class AuthenticationRepository:
         await self.db.refresh(identity)
 
     async def delete_identity(self, identity_id : UUID):
+        print("IDENTITY ID:", identity_id)
+        print("IDENTITY ID TYPE:", type(identity_id))
         identity = await self.get_by_identity(identity_id)
+        print("FOUND IDENTITY:", identity)
+        if identity is None:
+            raise HTTPException(status_code=404,detail="Пользователь не найден")
         await self.db.delete(identity)
         await self.db.commit()
 
@@ -81,3 +88,22 @@ class AuthenticationRepository:
         identity.status = status
         await self.db.commit()
         await self.db.refresh(identity)
+
+    async def update_identity_role(self, identity : Identity, role : IdentityRole):
+        identity.role = role
+        await self.db.commit()
+        await self.db.refresh(identity)
+
+    async def update_identity(self, identity : Identity, data : IdentityEdit):
+        if data.email is not None:
+            identity.email = data.email
+        if data.role is not None:
+            identity.role = data.role
+        await self.db.commit()
+        await self.db.refresh(identity)
+
+    async def add_new_identity(self, data : AddAdminRequest):
+        new_identity = Identity(id=data.identity_id, email=data.email, password_hash=data.password, role=data.role, status=Status.ACTIVE)
+        self.db.add(new_identity)
+        await self.db.commit()
+        await self.db.refresh(new_identity)

@@ -1,521 +1,551 @@
 <!DOCTYPE html>
+
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Panel__bar_name</title>
 
-    <title>Admin Panel__bar_name</title>
+<style>
 
-    <style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+    body {
+        min-height: 100vh;
 
-        body {
-            min-height: 100vh;
+        background: #101012;
 
-            background: #101012;
+        color: #ffffff;
 
-            color: #ffffff;
+        font-family: Arial, sans-serif;
 
-            font-family: Arial, sans-serif;
+        position: relative;
+    }
 
-            position: relative;
-        }
+   body {
+    min-height: 100vh;
 
-        body::before {
-            content: "";
+    background:
+    radial-gradient(
+        ellipse at 50% 0%,
+        rgba(220, 120, 100, 0.40) 0%,
+        rgba(150, 65, 80, 0.45) 40%,
+        rgba(18, 18, 21, 0.97) 80%
+    ),
+    linear-gradient(
+        180deg,
+        #4a292d 0%,
+        #281b20 50%,
+        #101012 100%
+    );
 
-            position: fixed;
+    color: #f2c1a8;
 
-            inset: 0;
+    font-family: Arial, sans-serif;
 
-            z-index: -2;
+    position: relative;
+}
 
-            background-image:
-                url("https://images.unsplash.com/photo-1515003197210-e0cd71810b5f?auto=format&fit=crop&w=2000&q=70");
+    .container {
+        width: 100%;
 
-            background-size: cover;
+        max-width: 1100px;
 
-            background-position: center;
+        margin: 0 auto;
 
-            background-repeat: no-repeat;
+        padding: 70px 35px;
+    }
 
-            filter: blur(3px);
+    .header {
+        text-align: center;
 
-            transform: scale(1.03);
-        }
+        margin-bottom: 65px;
+    }
 
-        body::after {
-            content: "";
+    .header h1 {
+        font-family: Georgia, serif;
 
-            position: fixed;
+        font-size: 42px;
 
-            inset: 0;
+        font-weight: normal;
 
-            z-index: -1;
+        letter-spacing: 3px;
+    }
 
-            background:
-                linear-gradient(
-                    rgba(10, 10, 12, 0.88),
-                    rgba(10, 10, 12, 0.94)
-                );
-        }
+    .header h1 span {
+        color: #d5a65b;
+    }
+
+    .header p {
+        margin-top: 12px;
+
+        color: #77777d;
+
+        font-size: 13px;
+    }
+
+    .section {
+        margin-bottom: 50px;
+    }
+
+    .section-title {
+        display: flex;
+
+        align-items: center;
+
+        gap: 15px;
+
+        margin-bottom: 18px;
+    }
+
+    .section-title h2 {
+        color: #aaa9ae;
+
+        font-size: 11px;
+
+        font-weight: 600;
+
+        letter-spacing: 2px;
+
+        text-transform: uppercase;
+    }
+
+    .section-line {
+        height: 1px;
+
+        flex: 1;
+
+        background: #29292d;
+    }
+
+    .buttons {
+        display: grid;
+
+        gap: 14px;
+    }
+
+    .buttons-main {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .buttons-secondary {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .buttons-management {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .button {
+        position: relative;
+
+        min-height: 125px;
+
+        display: flex;
+
+        flex-direction: column;
+
+        align-items: center;
+
+        justify-content: center;
+
+        text-align: center;
+
+        padding: 25px;
+
+        background: rgba(25, 25, 28, 0.88);
+
+        border: 1px solid rgba(255, 255, 255, 0.08);
+
+        border-radius: 14px;
+
+        color: #ffffff;
+
+        text-decoration: none;
+
+        backdrop-filter: blur(8px);
+
+        transition:
+            background 0.2s,
+            border-color 0.2s,
+            transform 0.2s;
+    }
+
+    .button:hover {
+        background: rgba(32, 32, 36, 0.94);
+
+        border-color: #d5a65b;
+
+        transform: translateY(-3px);
+    }
+
+    .icon {
+        width: 48px;
+
+        height: 48px;
+
+        display: flex;
+
+        align-items: center;
+
+        justify-content: center;
+
+        margin-bottom: 13px;
+
+        background: #242427;
+
+        border-radius: 11px;
+
+        font-size: 20px;
+
+        transition: 0.2s;
+    }
+
+    .button:hover .icon {
+        background: #d5a65b;
+    }
+
+    .button h3 {
+        font-size: 14px;
+
+        font-weight: 600;
+    }
+
+    .button p {
+        margin-top: 6px;
+
+        color: #77777d;
+
+        font-size: 10px;
+    }
+
+    .button-large {
+        min-height: 155px;
+    }
+
+    .button-large .icon {
+        width: 56px;
+
+        height: 56px;
+
+        font-size: 24px;
+    }
+
+    .button-large h3 {
+        font-size: 16px;
+    }
+
+
+    .logout {
+    display: block;
+
+    margin-top: 5px;
+
+    padding: 10px 24px;
+
+    border: 1px solid rgba(180, 70, 70, 0.45);
+
+    border-radius: 8px;
+
+    background: rgba(45, 25, 25, 0.85);
+
+    color: #c87878;
+
+    font-family: Arial, sans-serif;
+
+    font-size: 11px;
+
+    font-weight: 600;
+
+    letter-spacing: 1px;
+
+    cursor: pointer;
+
+    backdrop-filter: blur(8px);
+
+    transition:
+        background 0.2s,
+        border-color 0.2s,
+        color 0.2s;
+}
+
+.logout:hover {
+    background: rgba(70, 30, 30, 0.9);
+
+    border-color: rgba(200, 80, 80, 0.65);
+
+    color: #d98a8a;
+}
+
+    .footer {
+        padding-top: 35px;
+
+        text-align: center;
+
+        color: #4f4f54;
+
+        font-size: 9px;
+
+        letter-spacing: 1px;
+    }
+
+    @media (max-width: 800px) {
 
         .container {
-            width: 100%;
-
-            max-width: 1100px;
-
-            margin: 0 auto;
-
-            padding: 70px 35px;
-        }
-
-        .header {
-            text-align: center;
-
-            margin-bottom: 65px;
-        }
-
-        .header h1 {
-            font-family: Georgia, serif;
-
-            font-size: 42px;
-
-            font-weight: normal;
-
-            letter-spacing: 3px;
-        }
-
-        .header h1 span {
-            color: #d5a65b;
-        }
-
-        .header p {
-            margin-top: 12px;
-
-            color: #77777d;
-
-            font-size: 13px;
-        }
-
-        .section {
-            margin-bottom: 50px;
-        }
-
-        .section-title {
-            display: flex;
-
-            align-items: center;
-
-            gap: 15px;
-
-            margin-bottom: 18px;
-        }
-
-        .section-title h2 {
-            color: #aaa9ae;
-
-            font-size: 11px;
-
-            font-weight: 600;
-
-            letter-spacing: 2px;
-
-            text-transform: uppercase;
-        }
-
-        .section-line {
-            height: 1px;
-
-            flex: 1;
-
-            background: #29292d;
-        }
-
-        .buttons {
-            display: grid;
-
-            gap: 14px;
+            padding: 45px 25px;
         }
 
         .buttons-main {
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: 1fr;
         }
 
-        .buttons-secondary {
-            grid-template-columns: repeat(2, 1fr);
-        }
-
+        .buttons-secondary,
         .buttons-management {
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns: 1fr;
         }
 
+        .header {
+            margin-bottom: 45px;
+        }
+
+        .header h1 {
+            font-size: 34px;
+        }
+    }
+
+    @media (max-width: 500px) {
+
+        .container {
+            padding: 35px 18px;
+        }
 
         .button {
-            position: relative;
-
-            min-height: 125px;
-
-            display: flex;
-
-            flex-direction: column;
-
-            align-items: center;
-
-            justify-content: center;
-
-            text-align: center;
-
-            padding: 25px;
-
-            background: rgba(25, 25, 28, 0.88);
-
-            border: 1px solid rgba(255, 255, 255, 0.08);
-
-            border-radius: 14px;
-
-            color: #ffffff;
-
-            text-decoration: none;
-
-            backdrop-filter: blur(8px);
-
-            transition:
-                background 0.2s,
-                border-color 0.2s,
-                transform 0.2s;
-        }
-
-        .button:hover {
-            background: rgba(32, 32, 36, 0.94);
-
-            border-color: #d5a65b;
-
-            transform: translateY(-3px);
-        }
-
-        .icon {
-            width: 48px;
-
-            height: 48px;
-
-            display: flex;
-
-            align-items: center;
-
-            justify-content: center;
-
-            margin-bottom: 13px;
-
-            background: #242427;
-
-            border-radius: 11px;
-
-            font-size: 20px;
-
-            transition: 0.2s;
-        }
-
-        .button:hover .icon {
-            background: #d5a65b;
-        }
-
-        .button h3 {
-            font-size: 14px;
-
-            font-weight: 600;
-        }
-
-        .button p {
-            margin-top: 6px;
-
-            color: #77777d;
-
-            font-size: 10px;
+            min-height: 110px;
         }
 
         .button-large {
-            min-height: 155px;
+            min-height: 125px;
         }
 
-        .button-large .icon {
-            width: 56px;
+    }
 
-            height: 56px;
+</style>
 
-            font-size: 24px;
-        }
-
-        .button-large h3 {
-            font-size: 16px;
-        }
-
-        .footer {
-            padding-top: 15px;
-
-            text-align: center;
-
-            color: #4f4f54;
-
-            font-size: 9px;
-
-            letter-spacing: 1px;
-        }
-
-        @media (max-width: 800px) {
-
-            .container {
-                padding: 45px 25px;
-            }
-
-            .buttons-main {
-                grid-template-columns: 1fr;
-            }
-
-            .buttons-secondary,
-            .buttons-management {
-                grid-template-columns: 1fr;
-            }
-
-            .header {
-                margin-bottom: 45px;
-            }
-
-            .header h1 {
-                font-size: 34px;
-            }
-        }
-
-
-        @media (max-width: 500px) {
-
-            .container {
-                padding: 35px 18px;
-            }
-
-            .button {
-                min-height: 110px;
-            }
-
-            .button-large {
-                min-height: 125px;
-            }
-        }
-
-    </style>
 </head>
-
 
 <body>
 
-    <main class="container">
+<main class="container">
 
-        <header class="header">
+    <header class="header">
 
-            <h1>
-                ADMIN<span>.</span> PANEL
-            </h1>
+        <h1>
+            ADMIN<span>.</span> PANEL
+        </h1>
 
-            <p>
-                Панель управления заведением
-            </p>
+        <p>
+            Панель управления заведением
+        </p>
 
-        </header>
-
-        <section class="section">
-
-            <div class="section-title">
-
-                <h2>
-                    Работа заведения
-                </h2>
-
-                <div class="section-line"></div>
-
-            </div>
+    </header>
 
 
-            <div class="buttons buttons-main">
+    <section class="section">
+
+        <div class="section-title">
+
+            <h2>
+                Работа заведения
+            </h2>
+
+            <div class="section-line"></div>
+
+        </div>
 
 
-                <a href="/menu_page" class="button button-large">
+        <div class="buttons buttons-main">
 
-                    <div class="icon">
-                        🍸
-                    </div>
+            <a href="/menu_page" class="button button-large">
 
-                    <h3>
-                        Меню
-                    </h3>
+                <div class="icon">
+                    🍸
+                </div>
 
-                    <p>
-                        Управление меню
-                    </p>
+                <h3>
+                    Меню
+                </h3>
 
-                </a>
+                <p>
+                    Управление меню
+                </p>
 
-
-                <a href="orders.html" class="button button-large">
-
-                    <div class="icon">
-                        🛵
-                    </div>
-
-                    <h3>
-                        Заказы
-                    </h3>
-
-                    <p>
-                        Заказы на доставку
-                    </p>
-
-                </a>
+            </a>
 
 
-                <a href="reservations.html" class="button button-large">
+            <a href="orders.html" class="button button-large">
 
-                    <div class="icon">
-                        ▦
-                    </div>
+                <div class="icon">
+                    🛵
+                </div>
 
-                    <h3>
-                        Бронь
-                    </h3>
+                <h3>
+                    Заказы
+                </h3>
 
-                    <p>
-                        Столики и бронирования
-                    </p>
+                <p>
+                    Заказы на доставку
+                </p>
 
-                </a>
+            </a>
 
 
-            </div>
+            <a href="reservations.html" class="button button-large">
 
-        </section>
+                <div class="icon">
+                    ▦
+                </div>
 
-        <section class="section">
+                <h3>
+                    Бронь
+                </h3>
 
-            <div class="section-title">
+                <p>
+                    Столики и бронирования
+                </p>
 
-                <h2>
+            </a>
+
+        </div>
+
+    </section>
+
+
+    <section class="section">
+
+        <div class="section-title">
+
+            <h2>
+                Клиенты
+            </h2>
+
+            <div class="section-line"></div>
+
+        </div>
+
+
+        <div class="buttons buttons-secondary">
+
+            <a href="support.html" class="button">
+
+                <div class="icon">
+                    💬
+                </div>
+
+                <h3>
+                    Поддержка
+                </h3>
+
+                <p>
+                    Общение с клиентами
+                </p>
+
+            </a>
+
+
+            <a href="customers.html" class="button">
+
+                <div class="icon">
+                    ♙
+                </div>
+
+                <h3>
                     Клиенты
-                </h2>
+                </h3>
 
-                <div class="section-line"></div>
+                <p>
+                    Зарегистрированные клиенты
+                </p>
 
-            </div>
+            </a>
 
+        </div>
 
-            <div class="buttons buttons-secondary">
-
-
-                <a href="support.html" class="button">
-
-                    <div class="icon">
-                        💬
-                    </div>
-
-                    <h3>
-                        Поддержка
-                    </h3>
-
-                    <p>
-                        Общение с клиентами
-                    </p>
-
-                </a>
+    </section>
 
 
-                <a href="customers.html" class="button">
+    <section class="section">
 
-                    <div class="icon">
-                        ♙
-                    </div>
+        <div class="section-title">
 
-                    <h3>
-                        Клиенты
-                    </h3>
+            <h2>
+                Управление
+            </h2>
 
-                    <p>
-                        Зарегистрированные клиенты
-                    </p>
+            <div class="section-line"></div>
 
-                </a>
+        </div>
 
 
-            </div>
+        <div class="buttons buttons-management">
 
-        </section>
+            <a href="/admin_panel/all_admins" class="button">
 
-        <section class="section">
+                <div class="icon">
+                    ♙
+                </div>
 
-            <div class="section-title">
+                <h3>
+                    Администраторы
+                </h3>
 
-                <h2>
-                    Управление
-                </h2>
+                <p>
+                    Управление администраторами
+                </p>
 
-                <div class="section-line"></div>
-
-            </div>
-
-
-            <div class="buttons buttons-management">
-
-
-                <a href="/admin_panel/all_admins" class="button">
-
-                    <div class="icon">
-                        ♙
-                    </div>
-
-                    <h3>
-                        Администраторы
-                    </h3>
-
-                    <p>
-                        Управление администраторами
-                    </p>
-
-                </a>
+            </a>
 
 
-                <a href="order-history.html" class="button">
+            <a href="order-history.html" class="button">
 
-                    <div class="icon">
-                        ↺
-                    </div>
+                <div class="icon">
+                    ↺
+                </div>
 
-                    <h3>
-                        История заказов
-                    </h3>
+                <h3>
+                    История заказов
+                </h3>
 
-                    <p>
-                        Архив выполненных заказов
-                    </p>
+                <p>
+                    Архив выполненных заказов
+                </p>
 
-                </a>
+            </a>
 
+        </div>
 
-            </div>
-
-        </section>
-
+    </section>
 
 
-        <footer class="footer">
+    <form method="post" action="/admin/logout">
+        <button type="submit" class="logout">
+            Выйти с панели управления
+        </button>
+    </form>
 
-            BAR. ADMIN PANEL
 
-        </footer>
+    <footer class="footer">
+
+        BAR. ADMIN PANEL
+
+    </footer>
 
 
-    </main>
+</main>
 
 </body>
 </html>
+

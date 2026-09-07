@@ -2,7 +2,7 @@ import re
 
 from pydantic import BaseModel, Field, EmailStr, field_validator
 from datetime import date
-from ..model.identity_model import IdentityRole
+from ..model.identity_model import IdentityRole, Status
 from uuid import UUID
 
 class LoginSchema(BaseModel):

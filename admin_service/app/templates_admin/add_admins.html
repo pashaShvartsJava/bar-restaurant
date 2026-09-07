@@ -123,6 +123,12 @@
             cursor: pointer;
         }
 
+        .field-error {
+            margin-top: 5px;
+            color: #d98282;
+            font-size: 11px;
+        }
+
         .buttons {
             display: flex;
             justify-content: flex-end;
@@ -191,7 +197,10 @@
     <main class="container">
 
         <div class="top">
-            <a href="http://localhost:8002/admin_panel/all_admins" class="back">← Назад</a>
+            <a href="/admin_panel/all_admins" class="back">
+                ← Назад
+            </a>
+
             <span class="brand">BAR. ADMIN</span>
         </div>
 
@@ -201,12 +210,13 @@
             <p>Заполните данные сотрудника</p>
         </header>
 
-        <form class="form" action="/admin_panel/all_admins/add_admin" method="post">
+        <form class="form" id="addAdminForm">
 
             <div class="row">
 
                 <div class="field">
                     <label for="first-name">Имя</label>
+
                     <input
                         type="text"
                         id="first-name"
@@ -217,6 +227,7 @@
 
                 <div class="field">
                     <label for="last-name">Фамилия</label>
+
                     <input
                         type="text"
                         id="last-name"
@@ -231,6 +242,7 @@
 
                 <div class="field">
                     <label for="birth-date">Дата рождения</label>
+
                     <input
                         type="date"
                         id="birth-date"
@@ -240,6 +252,7 @@
 
                 <div class="field">
                     <label for="phone">Номер телефона</label>
+
                     <input
                         type="tel"
                         id="phone"
@@ -252,6 +265,7 @@
 
             <div class="field">
                 <label for="email">Почта</label>
+
                 <input
                     type="email"
                     id="email"
@@ -262,6 +276,7 @@
 
             <div class="field">
                 <label for="password">Пароль</label>
+
                 <input
                     type="password"
                     id="password"
@@ -288,9 +303,12 @@
                 </select>
             </div>
 
+            <!-- Общее сообщение об ошибке -->
+            <div id="form-error" class="field-error"></div>
+
             <div class="buttons">
 
-                <a href="all_admins.html" class="button cancel">
+                <a href="/admin_panel/all_admins" class="button cancel">
                     Отмена
                 </a>
 
@@ -303,6 +321,171 @@
         </form>
 
     </main>
+
+
+    <script>
+        const form = document.getElementById("addAdminForm");
+        const formError = document.getElementById("form-error");
+
+
+        function clearError(input) {
+            input.style.borderColor = "";
+
+            const error = input.parentElement.querySelector(
+                ".field-error:not(#form-error)"
+            );
+
+            if (error) {
+                error.remove();
+            }
+        }
+
+
+        function showError(input, message) {
+            clearError(input);
+
+            input.style.borderColor = "#d98282";
+
+            const error = document.createElement("div");
+
+            error.className = "field-error";
+            error.textContent = message;
+
+            input.parentElement.appendChild(error);
+        }
+
+
+        function clearAllErrors() {
+            form.querySelectorAll(
+                ".field-error:not(#form-error)"
+            ).forEach(error => {
+                error.remove();
+            });
+
+            form.querySelectorAll("input, select").forEach(input => {
+                input.style.borderColor = "";
+            });
+
+            formError.textContent = "";
+        }
+
+
+        async function handleErrors(response) {
+            const data = await response.json();
+
+            console.log("ERROR RESPONSE:", data);
+
+            if (Array.isArray(data.detail)) {
+
+                data.detail.forEach(error => {
+
+                    const field = error.loc?.at(-1);
+
+                    const input = form.querySelector(
+                        `[name="${field}"]`
+                    );
+
+                    if (input) {
+                        showError(input, error.msg);
+                    }
+
+                });
+
+                return;
+            }
+
+            if (typeof data.detail === "string") {
+                formError.textContent = data.detail;
+                return;
+            }
+
+
+            formError.textContent = "Произошла ошибка.";
+        }
+
+
+        async function handleResponse(response) {
+
+            if (response.ok) {
+                return true;
+            }
+
+            if (response.status === 422) {
+                await handleErrors(response);
+                return false;
+            }
+
+            if (response.status === 403) {
+                await handleErrors(response);
+                return false;
+            }
+
+            if (response.status === 409) {
+                await handleErrors(response);
+                return false;
+            }
+
+            if (response.status === 400) {
+                await handleErrors(response);
+                return false;
+            }
+
+            if (response.status === 401) {
+                await handleErrors(response);
+                return false;
+            }
+
+            if (response.status >= 500) {
+                formError.textContent =
+                    "Ошибка сервера. Попробуйте позже.";
+
+                return false;
+            }
+
+
+            formError.textContent =
+                "Произошла ошибка.";
+
+            return false;
+        }
+
+
+        form.addEventListener("submit", async function(event) {
+
+            event.preventDefault();
+
+            clearAllErrors();
+
+
+            try {
+
+                const response = await fetch(
+                    "/admin_panel/all_admins/add_admin",
+                    {
+                        method: "POST",
+                        body: new FormData(form)
+                    }
+                );
+
+
+                if (!await handleResponse(response)) {
+                    return;
+                }
+
+                window.location.href =
+                    "/admin_panel/all_admins";
+
+            } catch (error) {
+
+                console.error(error);
+
+                formError.textContent =
+                    "Не удалось подключиться к серверу. " +
+                    "Проверьте соединение.";
+            }
+
+        });
+    </script>
 
 </body>
 </html>

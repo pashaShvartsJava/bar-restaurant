@@ -29,3 +29,4 @@ class Admin(Base):
         nullable=False,
         default=AdminRole.ADMIN
     )
+    email = Column(String, nullable=False, index=True, unique=True)
