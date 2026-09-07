@@ -1,7 +1,10 @@
+from uuid import UUID
+
 from ..repository.admin_repository import AdminRepository
 from ..model.admin import Admin
 from typing import List
-from ..schema.admin import AdminRegistrationDTO, AdminUpdateDTO
+from ..schema.admin import AdminRegistrationDTO, AdminUpdateDTO, AdminRegistrationForm
+
 
 class AdminService:
 
@@ -25,3 +28,6 @@ class AdminService:
 
     async def delete_admin(self, delete_admin_id : int) -> Admin:
         return await self.admin_repository.delete_admin(delete_admin_id)
+
+    async def add_new_admin(self, admin_form : AdminRegistrationForm, identity_id : UUID):
+        return await self.admin_repository.add_new_admin(admin_form, identity_id)

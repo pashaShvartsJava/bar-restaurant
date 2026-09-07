@@ -6,8 +6,10 @@ from pydantic import EmailStr
 from starlette.responses import HTMLResponse, RedirectResponse
 from starlette.templating import Jinja2Templates
 
+from ..schemas.admin_schema import AddAdminRequest
 from ..exceptions.exceptions import InvalidCredentialsError
-from ..model.identity_model import Status
+from ..model.identity_model import Status, IdentityRole
+from ..schemas.admin_schema import IdentityEdit
 from ..schemas.schema import LoginSchema, RegisterRequest, RegisterRequestDTO, AddressResponseDTO, PasswordUpdateDTO, \
     EmailRequest, RegistrationSchema
 from ..dependencies.dependency import get_service_dependency
@@ -132,6 +134,27 @@ async def edit_email(data : EmailRequest, service: AuthenticationService = Depen
 
 @router.delete("/delete_identity")
 async def delete_identity(identity_id : UUID, service: AuthenticationService = Depends(get_service_dependency)):
-    await service.delete_identity(identity_id)
+    try:
+        await service.delete_identity(identity_id)
+    except Exception:
+        raise HTTPException(status_code=500, detail="Ошибка удаления")
+
+@router.patch("/edit_identity")
+async def edit_identity(data : IdentityEdit, service: AuthenticationService = Depends(get_service_dependency)):
+    taken_identity = await service.find_by_email(data.email)
+    if taken_identity is not None and taken_identity.id != data.identity_id:
+        raise HTTPException(detail="Этот email уже занят", status_code=409)
+    identity = await service.find_by_identity(data.identity_id)
+    await service.update_identity(identity, data)
+
+@router.post("/add_identity")
+async def add_new_identity(data : AddAdminRequest, service: AuthenticationService = Depends(get_service_dependency)):
+    taken_identity = await service.find_by_email(data.email)
+    if taken_identity is not None and taken_identity.id != data.identity_id:
+        raise HTTPException(detail="Этот email уже занят", status_code=409)
+    await service.add_new_identity(data)
+
+
+
 
 

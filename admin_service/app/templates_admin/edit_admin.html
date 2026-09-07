@@ -7,162 +7,266 @@
     <title>Изменение администратора</title>
 
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
 
-        body {
-            min-height: 100vh;
-            background: #0c0c0e;
-            color: #fff;
-            font-family: Arial, sans-serif;
-        }
+    body {
+        min-height: 100vh;
 
-        .container {
-            max-width: 650px;
-            margin: auto;
-            padding: 40px 25px;
-        }
+        background:
+            radial-gradient(
+                ellipse at 50% 0%,
+                rgba(190, 135, 75, 0.32) 0%,
+                rgba(115, 75, 45, 0.38) 40%,
+                rgba(18, 18, 21, 0.97) 80%
+            ),
+            linear-gradient(
+                180deg,
+                #3a2b24 0%,
+                #211a18 50%,
+                #101012 100%
+            );
 
-        .top {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 40px;
-        }
+        color: #f0b38a;
+        font-family: Arial, sans-serif;
+    }
 
-        .back {
-            color: #777;
-            text-decoration: none;
-            font-size: 12px;
-        }
+    .container {
+        max-width: 650px;
+        margin: auto;
+        padding: 40px 25px;
+    }
 
-        .back:hover {
-            color: #d5a65b;
-        }
+    .top {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 40px;
+    }
 
-        .brand {
-            color: #555;
-            font-size: 10px;
-            letter-spacing: 2px;
-        }
+    .back {
+        color: #b98b82;
+        text-decoration: none;
+        font-size: 12px;
 
-        h1 {
-            margin-bottom: 20px;
-            text-align: center;
-            font-family: Georgia, serif;
-            font-weight: normal;
-        }
+        transition: color 0.2s;
+    }
 
-        .current {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 15px;
-            padding: 15px;
-            background: #18181b;
-            border: 1px solid #29292d;
-            border-radius: 10px;
-        }
+    .back:hover {
+        color: #e8b76f;
+    }
 
-        .avatar {
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-            background: #252529;
-            color: #d5a65b;
-        }
+    .brand {
+        color: #8f7065;
+        font-size: 10px;
+        letter-spacing: 2px;
+    }
 
-        .current-name {
-            font-size: 13px;
-            font-weight: bold;
-        }
+    h1 {
+        margin-bottom: 20px;
 
-        .current-info {
-            margin-top: 4px;
-            color: #777;
-            font-size: 10px;
-        }
+        text-align: center;
 
-        form {
-            padding: 25px;
-            background: #18181b;
-            border: 1px solid #29292d;
-            border-radius: 10px;
-        }
+        color: #f0b38a;
 
+        font-family: Georgia, serif;
+        font-weight: normal;
+    }
+
+    .current {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+
+        margin-bottom: 15px;
+        padding: 15px;
+
+        background: rgba(30, 22, 20, 0.90);
+
+        border: 1px solid rgba(180, 125, 70, 0.35);
+        border-radius: 10px;
+
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.20);
+    }
+
+    .avatar {
+        width: 40px;
+        height: 40px;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        border-radius: 50%;
+
+        background: rgba(70, 45, 32, 0.85);
+
+        color: #e8b76f;
+
+        border: 1px solid rgba(200, 140, 75, 0.30);
+    }
+
+    .current-name {
+        font-size: 13px;
+        font-weight: bold;
+        color: #f0c09d;
+    }
+
+    .current-info {
+        margin-top: 4px;
+
+        color: #a98678;
+
+        font-size: 10px;
+    }
+
+    form {
+        padding: 25px;
+
+        background: rgba(30, 22, 20, 0.90);
+
+        border: 1px solid rgba(180, 125, 70, 0.35);
+        border-radius: 10px;
+
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.25);
+    }
+
+    .row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+    }
+
+    .field {
+        margin-bottom: 16px;
+    }
+
+    label {
+        display: block;
+        margin-bottom: 6px;
+
+        color: #c5a69a;
+
+        font-size: 10px;
+    }
+
+    input,
+    select {
+        width: 100%;
+        padding: 10px;
+
+        background: rgba(45, 30, 26, 0.90);
+
+        border: 1px solid rgba(180, 100, 75, 0.40);
+        border-radius: 6px;
+
+        color: #f0b38a;
+
+        outline: none;
+
+        transition:
+            background 0.2s,
+            border-color 0.2s;
+    }
+
+    input:hover,
+    select:hover {
+        background: rgba(55, 34, 30, 0.95);
+        border-color: rgba(200, 120, 85, 0.55);
+    }
+
+    input:focus,
+    select:focus {
+        background: rgba(55, 34, 30, 0.95);
+        border-color: rgba(210, 145, 75, 0.70);
+    }
+
+    input::placeholder {
+        color: #806761;
+    }
+
+    select {
+        cursor: pointer;
+    }
+
+    select option {
+        background: #281d1a;
+        color: #f0b38a;
+    }
+
+    .field-error {
+        margin-top: 5px;
+
+        color: #e89a8f;
+
+        font-size: 11px;
+    }
+
+    .buttons {
+        display: flex;
+        justify-content: flex-end;
+        gap: 8px;
+
+        margin-top: 10px;
+        padding-top: 20px;
+
+        border-top: 1px solid rgba(180, 110, 70, 0.25);
+    }
+
+    .button {
+        padding: 10px 16px;
+
+        border-radius: 6px;
+
+        font-size: 10px;
+        text-decoration: none;
+        cursor: pointer;
+
+        transition:
+            background 0.2s,
+            border-color 0.2s,
+            color 0.2s;
+    }
+
+    .cancel {
+        color: #b99c91;
+
+        background: rgba(45, 30, 26, 0.85);
+
+        border: 1px solid rgba(180, 100, 75, 0.40);
+    }
+
+    .cancel:hover {
+        color: #f0c09d;
+
+        background: rgba(60, 35, 32, 0.90);
+
+        border-color: rgba(205, 120, 90, 0.60);
+    }
+
+    .save {
+        background: #d5a65b;
+
+        color: #211714;
+
+        border: none;
+
+        font-weight: bold;
+    }
+
+    .save:hover {
+        background: #e4b971;
+    }
+
+    @media (max-width: 600px) {
         .row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
+            grid-template-columns: 1fr;
+            gap: 0;
         }
-
-        .field {
-            margin-bottom: 16px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 6px;
-            color: #aaa;
-            font-size: 10px;
-        }
-
-        input,
-        select {
-            width: 100%;
-            padding: 10px;
-            background: #222225;
-            border: 1px solid #333338;
-            border-radius: 6px;
-            color: #fff;
-            outline: none;
-        }
-
-        input:focus,
-        select:focus {
-            border-color: #d5a65b;
-        }
-
-        .buttons {
-            display: flex;
-            justify-content: flex-end;
-            gap: 8px;
-            margin-top: 10px;
-        }
-
-        .button {
-            padding: 10px 16px;
-            border-radius: 6px;
-            font-size: 10px;
-            text-decoration: none;
-            cursor: pointer;
-        }
-
-        .cancel {
-            color: #aaa;
-            background: #222225;
-            border: 1px solid #333338;
-        }
-
-        .save {
-            background: #d5a65b;
-            color: #111;
-            border: none;
-            font-weight: bold;
-        }
-
-        @media (max-width: 600px) {
-            .row {
-                grid-template-columns: 1fr;
-                gap: 0;
-            }
-        }
-    </style>
+    }
+</style>
 </head>
 
 <body>
@@ -170,6 +274,7 @@
 <div class="container">
 
     <div class="top">
+
         <a href="/admin_panel/all_admins" class="back">
             ← Назад
         </a>
@@ -177,9 +282,12 @@
         <span class="brand">
             BAR. ADMIN
         </span>
+
     </div>
 
+
     <h1>Изменение данных</h1>
+
 
     <div class="current">
 
@@ -188,81 +296,100 @@
         </div>
 
         <div>
+
             <div class="current-name">
                 {{ admin.name }} {{ admin.surname }}
             </div>
 
             <div class="current-info">
-                {{ admin.email }} · {{ admin.role }}
+                {{ admin.role.value }}
             </div>
+
         </div>
 
     </div>
+
 
     <form id="editAdminForm">
 
         <div class="row">
 
             <div class="field">
+
                 <label>Имя</label>
 
                 <input
                     type="text"
                     name="name"
                     value="{{ admin.name }}"
-                    required>
+                    >
+
             </div>
 
+
             <div class="field">
+
                 <label>Фамилия</label>
 
                 <input
                     type="text"
                     name="surname"
                     value="{{ admin.surname }}"
-                    required>
+                    >
+
             </div>
 
         </div>
 
+
         <div class="row">
 
             <div class="field">
+
                 <label>Дата рождения</label>
 
                 <input
                     type="date"
                     name="birthday"
                     value="{{ admin.birthday }}"
-                    required>
+                    >
+
             </div>
 
+
             <div class="field">
+
                 <label>Номер телефона</label>
 
                 <input
                     type="tel"
                     name="phone"
                     value="{{ admin.phone }}"
-                    required>
+                    >
+
             </div>
 
         </div>
 
+
         <div class="field">
+
             <label>Почта</label>
 
             <input
                 type="email"
                 name="email"
                 value="{{ admin.email }}"
-                required>
+                >
+
         </div>
 
+
         <div class="field">
+
             <label>Статус</label>
 
-            <select name="role" id="role" required>
+            <select name="role" id="role" >
 
                 <option value="admin">
                     Администратор
@@ -273,7 +400,12 @@
                 </option>
 
             </select>
+
         </div>
+
+
+        <div id="form-error" class="field-error"></div>
+
 
         <div class="buttons">
 
@@ -295,27 +427,171 @@
 
 </div>
 
+
 <script>
 
     const form = document.getElementById("editAdminForm");
+    const formError = document.getElementById("form-error");
 
     document.getElementById("role").value = "{{ admin.role }}";
+
+
+    function clearError(input) {
+
+        input.style.borderColor = "";
+
+        const error = input.parentElement.querySelector(
+            ".field-error:not(#form-error)"
+        );
+
+        if (error) {
+            error.remove();
+        }
+    }
+
+
+    function showError(input, message) {
+
+        clearError(input);
+
+        input.style.borderColor = "#d98282";
+
+        const error = document.createElement("div");
+
+        error.className = "field-error";
+        error.textContent = message;
+
+        input.parentElement.appendChild(error);
+    }
+
+
+    function clearAllErrors() {
+
+        form.querySelectorAll(
+            ".field-error:not(#form-error)"
+        ).forEach(error => {
+            error.remove();
+        });
+
+        form.querySelectorAll("input, select").forEach(input => {
+            input.style.borderColor = "";
+        });
+
+        formError.textContent = "";
+    }
+
+
+    async function handleErrors(response) {
+
+        const data = await response.json();
+
+        console.log("ERROR RESPONSE:", data);
+
+
+        if (Array.isArray(data.detail)) {
+
+            data.detail.forEach(error => {
+
+                const field = error.loc?.at(-1);
+
+                const input = form.querySelector(
+                    `[name="${field}"]`
+                );
+
+                if (input) {
+                    showError(input, error.msg);
+                }
+
+            });
+
+            return;
+        }
+
+
+        if (typeof data.detail === "string") {
+
+            formError.textContent = data.detail;
+
+            return;
+        }
+
+
+        formError.textContent = "Произошла ошибка.";
+    }
+
+
+    async function handleResponse(response) {
+
+        if (response.ok) {
+            return true;
+        }
+
+
+        if (
+            response.status === 422 ||
+            response.status === 400 ||
+            response.status === 401 ||
+            response.status === 403 ||
+            response.status === 409
+        ) {
+
+            await handleErrors(response);
+
+            return false;
+        }
+
+
+        if (response.status >= 500) {
+
+            formError.textContent =
+                "Ошибка сервера. Попробуйте позже.";
+
+            return false;
+        }
+
+
+        formError.textContent =
+            "Произошла ошибка.";
+
+        return false;
+    }
+
 
     form.addEventListener("submit", async function(event) {
 
         event.preventDefault();
 
-        const formData = new FormData(form);
+        clearAllErrors();
 
-        await fetch(
-            "/admin_panel/edit/{{ admin.id }}",
-            {
-                method: "PATCH",
-                body: formData
+
+        try {
+
+            const formData = new FormData(form);
+
+            const response = await fetch(
+                "/admin_panel/edit/{{ admin.id }}",
+                {
+                    method: "PATCH",
+                    body: formData
+                }
+            );
+
+
+            if (!await handleResponse(response)) {
+                return;
             }
-        );
 
-        window.location.href = "/admin_panel/all_admins";
+
+            window.location.href =
+                "/admin_panel/all_admins";
+
+        } catch (error) {
+
+            console.error(error);
+
+            formError.textContent =
+                "Не удалось подключиться к серверу. Проверьте соединение.";
+        }
 
     });
 

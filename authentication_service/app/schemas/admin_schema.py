@@ -2,7 +2,7 @@ import re
 
 from pydantic import BaseModel, Field, EmailStr, field_validator
 from datetime import date
-from ..model.identity_model import IdentityRole
+from ..model.identity_model import IdentityRole, Status
 from uuid import UUID
 
 class AdminRegistration(BaseModel):
@@ -61,3 +61,15 @@ class AdminLogin(BaseModel):
     email : EmailStr
     password: str = Field(..., min_length=8, max_length=64, description="password")
     authentication_key: str = Field(..., )
+
+class IdentityEdit(BaseModel):
+    identity_id: UUID = Field(..., description="identity_id")
+    email: EmailStr | None
+    role: IdentityRole | None = Field(None, description="role")
+
+class AddAdminRequest(BaseModel):
+    identity_id: UUID = Field(..., description="identity_id")
+    email : EmailStr
+    role: IdentityRole = Field(..., description="role")
+    password: str = Field(..., min_length=8, description="password")
+    status : Status
