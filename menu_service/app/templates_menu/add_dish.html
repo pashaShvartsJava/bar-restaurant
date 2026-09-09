@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Добавить блюдо</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+
+            background:
+                radial-gradient(
+                    ellipse at 50% 0%,
+                    rgba(145, 85, 75, 0.20) 0%,
+                    rgba(55, 35, 40, 0.22) 38%,
+                    rgba(9, 9, 11, 1) 78%
+                ),
+                linear-gradient(
+                    180deg,
+                    #211a1c 0%,
+                    #121214 50%,
+                    #09090b 100%
+                );
+
+            color: #ffffff;
+            font-family: Arial, sans-serif;
+        }
+
+        .page {
+            width: 100%;
+            max-width: 760px;
+            margin: 0 auto;
+            padding: 50px 30px 70px;
+        }
+
+        .back {
+            display: inline-flex;
+            align-items: center;
+            gap: 9px;
+
+            margin-bottom: 35px;
+            padding: 8px 12px;
+
+            background: rgba(42, 40, 42, 0.65);
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            border-radius: 6px;
+
+            color: #77777d;
+            font-size: 10px;
+            text-decoration: none;
+
+            transition:
+                background 0.2s,
+                border-color 0.2s,
+                color 0.2s,
+                transform 0.15s;
+        }
+
+        .back-arrow {
+            color: #d5a65b;
+            font-size: 14px;
+            line-height: 1;
+
+            transition: transform 0.2s;
+        }
+
+        .back:hover {
+            background: rgba(52, 49, 52, 0.9);
+            border-color: rgba(213, 166, 91, 0.35);
+            color: #ffffff;
+        }
+
+        .back:hover .back-arrow {
+            transform: translateX(-3px);
+            color: #e4b971;
+        }
+
+        .back:active {
+            transform: translateY(1px);
+        }
+
+        .header {
+            margin-bottom: 28px;
+        }
+
+        .title {
+            margin: 0 0 8px;
+
+            font-family: Georgia, serif;
+            font-size: 38px;
+            font-weight: normal;
+            letter-spacing: -0.5px;
+        }
+
+        .subtitle {
+            margin: 0;
+
+            color: #77777d;
+            font-size: 11px;
+            line-height: 1.6;
+        }
+
+        .card {
+            padding: 30px;
+
+            background: rgba(25, 24, 26, 0.92);
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            border-radius: 10px;
+
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+        }
+
+        .field {
+            margin-bottom: 22px;
+        }
+
+        .field:last-child {
+            margin-bottom: 0;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+
+            color: #c5a69a;
+            font-size: 10px;
+            letter-spacing: 0.5px;
+        }
+
+        input,
+        textarea,
+        select {
+            width: 100%;
+            padding: 12px 13px;
+
+            background: rgba(40, 34, 35, 0.9);
+            border: 1px solid rgba(180, 100, 90, 0.28);
+            border-radius: 7px;
+
+            color: #f0b38a;
+            font-family: Arial, sans-serif;
+            font-size: 12px;
+
+            outline: none;
+
+            transition:
+                background 0.2s,
+                border-color 0.2s;
+        }
+
+        input:hover,
+        textarea:hover,
+        select:hover {
+            background: rgba(48, 39, 40, 0.95);
+            border-color: rgba(180, 100, 90, 0.45);
+        }
+
+        input:focus,
+        textarea:focus,
+        select:focus {
+            border-color: rgba(213, 166, 91, 0.65);
+        }
+
+        input::placeholder,
+        textarea::placeholder {
+            color: #68666a;
+        }
+
+        textarea {
+            min-height: 110px;
+            resize: vertical;
+            line-height: 1.5;
+        }
+
+        select {
+            cursor: pointer;
+        }
+
+        select option {
+            background: #242123;
+            color: #f0b38a;
+        }
+
+        /* Фото */
+
+        .photo-box {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .photo-preview {
+            width: 100px;
+            height: 100px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            overflow: hidden;
+
+            background: rgba(35, 33, 35, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 8px;
+
+            color: #66656a;
+            font-size: 10px;
+            text-align: center;
+        }
+
+        .photo-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .photo-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .photo-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+
+            min-width: 145px;
+            padding: 10px 15px;
+
+            border: 1px solid rgba(213, 166, 91, 0.32);
+            border-radius: 7px;
+
+            background: rgba(45, 38, 35, 0.9);
+            color: #d5a65b;
+
+            font-size: 10px;
+            cursor: pointer;
+
+            transition:
+                background 0.2s,
+                border-color 0.2s,
+                color 0.2s;
+        }
+
+        .photo-button:hover {
+            background: rgba(62, 49, 40, 0.95);
+            border-color: rgba(213, 166, 91, 0.6);
+            color: #e4b971;
+        }
+
+        .photo-button.change {
+            display: none;
+        }
+
+        .photo-input {
+            display: none;
+        }
+
+        /* Ошибка */
+
+        .form-error {
+            display: none;
+
+            margin-bottom: 20px;
+            padding: 10px 12px;
+
+            background: rgba(75, 35, 38, 0.45);
+            border: 1px solid rgba(200, 90, 95, 0.3);
+            border-radius: 6px;
+
+            color: #d98282;
+            font-size: 10px;
+            line-height: 1.5;
+        }
+
+        .field-error {
+            margin-top: 6px;
+
+            color: #d98282;
+            font-size: 10px;
+        }
+
+        .invalid {
+            border-color: rgba(210, 90, 95, 0.7) !important;
+        }
+
+        /* Кнопки */
+
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+
+            margin-top: 30px;
+            padding-top: 22px;
+
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .button {
+            padding: 11px 20px;
+
+            border-radius: 7px;
+
+            font-family: Arial, sans-serif;
+            font-size: 10px;
+            font-weight: 600;
+
+            cursor: pointer;
+            text-decoration: none;
+
+            transition:
+                background 0.2s,
+                border-color 0.2s,
+                color 0.2s;
+        }
+
+        .cancel {
+            background: rgba(40, 39, 41, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: #77777d;
+        }
+
+        .cancel:hover {
+            background: rgba(52, 50, 53, 0.9);
+            color: #ffffff;
+        }
+
+        .save {
+            background: rgba(175, 132, 73, 0.9);
+            border: 1px solid rgba(213, 166, 91, 0.5);
+            color: #171412;
+        }
+
+        .save:hover {
+            background: #d5a65b;
+            border-color: #e4b971;
+        }
+
+        @media (max-width: 600px) {
+            .page {
+                padding: 30px 18px 50px;
+            }
+
+            .title {
+                font-size: 31px;
+            }
+
+            .card {
+                padding: 22px;
+            }
+
+            .photo-box {
+                align-items: flex-start;
+            }
+
+            .photo-preview {
+                width: 85px;
+                height: 85px;
+            }
+
+            .form-actions {
+                flex-direction: column-reverse;
+            }
+
+            .button {
+                width: 100%;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="page">
+
+    <a href="/menu_page" class="back">
+        <span class="back-arrow">←</span>
+        <span>Вернуться к меню</span>
+    </a>
+
+    <div class="header">
+        <h1 class="title">Добавить блюдо</h1>
+        <p class="subtitle">
+            Заполните информацию о блюде и назначьте ему категорию.
+        </p>
+    </div>
+
+    <div class="card">
+
+        <div id="formError" class="form-error"></div>
+
+        <form
+            id="dishForm"
+            action="/menu_page/add_dish"
+            method="POST"
+            enctype="multipart/form-data"
+        >
+
+            <!-- Имя -->
+
+            <div class="field">
+                <label for="dish_name">Имя блюда</label>
+
+                <input
+                    type="text"
+                    id="dish_name"
+                    name="dish_name"
+                    placeholder="Например: Стейк из говядины"
+                    required
+                    minlength="2"
+                    maxlength="100"
+                >
+            </div>
+
+            <!-- Цена -->
+
+            <div class="field">
+                <label for="price">Цена</label>
+
+                <input
+                    type="number"
+                    id="price"
+                    name="price"
+                    placeholder="0.00"
+                    min="0"
+                    step="0.01"
+                    required
+                >
+            </div>
+
+            <!-- Описание -->
+
+            <div class="field">
+                <label for="description">Описание</label>
+
+                <textarea
+                    id="description"
+                    name="description"
+                    placeholder="Краткое описание блюда..."
+                    maxlength="1000"
+                ></textarea>
+            </div>
+
+            <!-- Категория -->
+
+            <div class="field">
+                <label for="category_id">Категория</label>
+
+                <select
+                    id="category_id"
+                    name="category_id"
+                    required
+                >
+                    <option value="" selected disabled>
+                        Выберите категорию
+                    </option>
+
+                    {% for category in categories %}
+                        <option value="{{ category.id }}">
+                            {{ category.category_name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- Фото -->
+
+            <div class="field">
+                <label>Фотография</label>
+
+                <div class="photo-box">
+
+                    <div class="photo-preview" id="photoPreview">
+                        Фото не выбрано
+                    </div>
+
+                    <div class="photo-actions">
+
+                        <label
+                            for="image"
+                            class="photo-button"
+                            id="attachButton"
+                        >
+                            Прикрепить фото
+                        </label>
+
+                        <label
+                            for="image"
+                            class="photo-button change"
+                            id="changeButton"
+                        >
+                            Изменить фото
+                        </label>
+
+                        <input
+                            type="file"
+                            id="image"
+                            name="image"
+                            class="photo-input"
+                            accept="image/jpeg,image/png,image/webp"
+                        >
+
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="form-actions">
+
+                <a
+                    href="/menu_page"
+                    class="button cancel"
+                >
+                    Отмена
+                </a>
+
+                <button
+                    type="submit"
+                    class="button save"
+                >
+                    Добавить блюдо
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<script>
+    const form = document.getElementById("dishForm");
+
+    const formError = document.getElementById("formError");
+
+    const imageInput = document.getElementById("image");
+    const photoPreview = document.getElementById("photoPreview");
+
+    const attachButton = document.getElementById("attachButton");
+    const changeButton = document.getElementById("changeButton");
+
+
+    /*
+     * Предпросмотр фотографии
+     */
+
+    imageInput.addEventListener("change", function () {
+
+        const file = this.files[0];
+
+        if (!file) {
+            return;
+        }
+
+        if (!file.type.startsWith("image/")) {
+            showFormError("Можно загрузить только изображение.");
+            this.value = "";
+            return;
+        }
+
+        const reader = new FileReader();
+
+        reader.onload = function (event) {
+
+            photoPreview.innerHTML = "";
+
+            const image = document.createElement("img");
+            image.src = event.target.result;
+
+            photoPreview.appendChild(image);
+
+            attachButton.style.display = "none";
+            changeButton.style.display = "inline-flex";
+        };
+
+        reader.readAsDataURL(file);
+    });
+
+
+    /*
+     * Ошибка формы
+     */
+
+    function showFormError(message) {
+        formError.textContent = message;
+        formError.style.display = "block";
+    }
+
+    function clearFormError() {
+        formError.textContent = "";
+        formError.style.display = "none";
+    }
+
+
+    /*
+     * Отправка формы
+     */
+
+    form.addEventListener("submit", async function (event) {
+
+        event.preventDefault();
+
+        clearFormError();
+
+        const formData = new FormData(form);
+
+        try {
+
+            const response = await fetch(
+                "/menu_page/add_dish",
+                {
+                    method: "POST",
+                    body: formData
+                }
+            );
+
+            if (response.ok) {
+                window.location.href = "/menu_page";
+                return;
+            }
+
+            const text = await response.text();
+
+            let data;
+
+            try {
+                data = JSON.parse(text);
+            } catch {
+                showFormError(
+                    text || "Не удалось добавить блюдо."
+                );
+                return;
+            }
+
+            if (typeof data.detail === "string") {
+                showFormError(data.detail);
+                return;
+            }
+
+            if (Array.isArray(data.detail)) {
+
+                data.detail.forEach(error => {
+
+                    const fieldName = error.loc?.at(-1);
+
+                    const input = form.querySelector(
+                        `[name="${fieldName}"]`
+                    );
+
+                    if (input) {
+                        input.classList.add("invalid");
+                    }
+                });
+
+                showFormError(
+                    "Проверьте правильность заполнения формы."
+                );
+
+                return;
+            }
+
+            showFormError(
+                "Не удалось добавить блюдо."
+            );
+
+        } catch (error) {
+
+            console.error(error);
+
+            showFormError(
+                "Не удалось подключиться к серверу."
+            );
+        }
+    });
+
+
+    /*
+     * Убираем красную рамку после изменения поля
+     */
+
+    form.querySelectorAll("input, textarea, select").forEach(input => {
+
+        input.addEventListener("input", function () {
+            this.classList.remove("invalid");
+        });
+
+        input.addEventListener("change", function () {
+            this.classList.remove("invalid");
+        });
+    });
+</script>
+
+</body>
+</html>

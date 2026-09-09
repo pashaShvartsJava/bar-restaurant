@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>Добавить категорию</title>
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+
+            background:
+                radial-gradient(
+                    ellipse at 50% 0%,
+                    rgba(145, 85, 75, 0.20) 0%,
+                    rgba(55, 35, 40, 0.22) 38%,
+                    rgba(9, 9, 11, 1) 78%
+                ),
+                linear-gradient(
+                    180deg,
+                    #211a1c 0%,
+                    #121214 50%,
+                    #09090b 100%
+                );
+
+            color: #ffffff;
+
+            font-family: Arial, sans-serif;
+        }
+
+
+        .container {
+            width: 100%;
+            max-width: 850px;
+
+            margin: 0 auto;
+
+            padding: 60px 35px;
+        }
+
+
+        /* =========================
+           TOP
+        ========================= */
+
+        .top {
+            display: flex;
+
+            justify-content: space-between;
+            align-items: center;
+
+            margin-bottom: 45px;
+        }
+
+        .back {
+            display: inline-flex;
+
+            align-items: center;
+
+            gap: 9px;
+
+            padding: 8px 12px;
+
+            background: rgba(42, 40, 42, 0.65);
+
+            border: 1px solid rgba(255, 255, 255, 0.07);
+
+            border-radius: 6px;
+
+            color: #77777d;
+
+            font-size: 10px;
+
+            text-decoration: none;
+
+            transition:
+                background 0.2s,
+                border-color 0.2s,
+                color 0.2s,
+                transform 0.15s;
+        }
+
+        .back-arrow {
+            color: #d5a65b;
+
+            font-size: 14px;
+
+            line-height: 1;
+
+            transition: transform 0.2s;
+        }
+
+        .back:hover {
+            background: rgba(52, 49, 52, 0.9);
+
+            border-color: rgba(213, 166, 91, 0.35);
+
+            color: #ffffff;
+        }
+
+        .back:hover .back-arrow {
+            transform: translateX(-3px);
+
+            color: #e4b971;
+        }
+
+
+        .brand {
+            color: #d5a65b;
+
+            font-family: Georgia, serif;
+
+            font-size: 11px;
+
+            letter-spacing: 3px;
+        }
+
+
+        /* =========================
+           HEADER
+        ========================= */
+
+        .header {
+            text-align: center;
+
+            margin-bottom: 35px;
+        }
+
+        .header-label {
+            margin-bottom: 10px;
+
+            color: #d5a65b;
+
+            font-size: 9px;
+
+            letter-spacing: 3px;
+
+            text-transform: uppercase;
+        }
+
+        .header h1 {
+            font-family: Georgia, serif;
+
+            font-size: 38px;
+
+            font-weight: normal;
+
+            letter-spacing: 2px;
+        }
+
+        .description {
+            margin-top: 12px;
+
+            color: #77777d;
+
+            font-size: 12px;
+        }
+
+
+        /* =========================
+           ERROR
+        ========================= */
+
+        .error {
+            display: none;
+
+            margin-bottom: 18px;
+
+            padding: 12px 15px;
+
+            background: rgba(100, 35, 45, 0.35);
+
+            border: 1px solid rgba(210, 85, 90, 0.45);
+
+            border-radius: 8px;
+
+            color: #d98282;
+
+            font-size: 11px;
+
+            text-align: center;
+        }
+
+
+        /* =========================
+           FORM
+        ========================= */
+
+        .form-card {
+            padding: 25px;
+
+            background: rgba(27, 25, 27, 0.96);
+
+            border: 1px solid rgba(213, 166, 91, 0.16);
+
+            border-radius: 14px;
+
+            box-shadow:
+                0 20px 60px rgba(0, 0, 0, 0.35);
+        }
+
+        .form-title {
+            margin-bottom: 20px;
+
+            color: #ffffff;
+
+            font-family: Georgia, serif;
+
+            font-size: 17px;
+
+            font-weight: normal;
+        }
+
+        .field {
+            margin-bottom: 18px;
+        }
+
+        .field label {
+            display: block;
+
+            margin-bottom: 8px;
+
+            color: #aaa9ae;
+
+            font-size: 10px;
+        }
+
+        .field input {
+            width: 100%;
+
+            height: 40px;
+
+            padding: 0 12px;
+
+            background: rgba(42, 40, 42, 0.95);
+
+            border: 1px solid rgba(255, 255, 255, 0.08);
+
+            border-radius: 6px;
+
+            outline: none;
+
+            color: #ffffff;
+
+            font-family: Arial, sans-serif;
+
+            font-size: 11px;
+
+            transition:
+                background 0.2s,
+                border-color 0.2s,
+                box-shadow 0.2s;
+        }
+
+        .field input::placeholder {
+            color: #55555b;
+        }
+
+        .field input:hover {
+            border-color: rgba(213, 166, 91, 0.25);
+        }
+
+        .field input:focus {
+            background: rgba(48, 46, 48, 0.98);
+
+            border-color: #d5a65b;
+
+            box-shadow:
+                0 0 0 2px rgba(213, 166, 91, 0.08);
+        }
+
+        .field-error {
+            margin-top: 6px;
+
+            color: #d98282;
+
+            font-size: 10px;
+        }
+
+
+        .submit {
+            width: 100%;
+
+            min-height: 38px;
+
+            margin-top: 5px;
+
+            background: rgba(150, 105, 55, 0.22);
+
+            border: 1px solid rgba(213, 166, 91, 0.35);
+
+            border-radius: 6px;
+
+            color: #d5a65b;
+
+            font-family: Arial, sans-serif;
+
+            font-size: 10px;
+
+            font-weight: 600;
+
+            letter-spacing: 0.5px;
+
+            cursor: pointer;
+
+            transition:
+                background 0.2s,
+                border-color 0.2s,
+                color 0.2s;
+        }
+
+        .submit:hover {
+            background: rgba(150, 105, 55, 0.32);
+
+            border-color: #d5a65b;
+
+            color: #e4b971;
+        }
+
+
+        /* =========================
+           CATEGORIES
+        ========================= */
+
+        .categories-card {
+            margin-top: 25px;
+
+            background: rgba(27, 25, 27, 0.96);
+
+            border: 1px solid rgba(213, 166, 91, 0.16);
+
+            border-radius: 14px;
+
+            overflow: hidden;
+
+            box-shadow:
+                0 20px 60px rgba(0, 0, 0, 0.35);
+        }
+
+        .categories-header {
+            display: flex;
+
+            align-items: center;
+            justify-content: space-between;
+
+            min-height: 52px;
+
+            padding: 0 22px;
+
+            background: rgba(40, 34, 32, 0.98);
+
+            border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+        }
+
+        .categories-title {
+            color: #d5a65b;
+
+            font-family: Georgia, serif;
+
+            font-size: 16px;
+
+            font-weight: normal;
+        }
+
+        .categories-count {
+            color: #77777d;
+
+            font-size: 9px;
+
+            letter-spacing: 1px;
+        }
+
+
+        .category-list {
+            display: flex;
+
+            flex-direction: column;
+        }
+
+        .category-item {
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            min-height: 52px;
+
+            padding: 0 22px;
+
+            background: rgba(30, 29, 31, 0.97);
+
+            border-bottom: 1px solid rgba(255, 255, 255, 0.055);
+
+            transition: background 0.2s;
+        }
+
+        .category-item:last-child {
+            border-bottom: none;
+        }
+
+        .category-item:hover {
+            background: rgba(38, 36, 38, 0.98);
+        }
+
+        .category-name {
+            color: #ffffff;
+
+            font-size: 12px;
+
+            font-weight: 600;
+        }
+
+        .category-number {
+            color: #55555b;
+
+            font-size: 9px;
+        }
+
+
+        .empty-categories {
+            padding: 40px 25px;
+
+            background: rgba(30, 29, 31, 0.97);
+
+            color: #55555b;
+
+            font-size: 10px;
+
+            text-align: center;
+        }
+
+
+        /* =========================
+           FOOTER
+        ========================= */
+
+        .footer {
+            padding-top: 35px;
+
+            text-align: center;
+
+            color: #4f4f54;
+
+            font-size: 9px;
+
+            letter-spacing: 1px;
+        }
+
+
+        /* =========================
+           MOBILE
+        ========================= */
+
+        @media (max-width: 600px) {
+
+            .container {
+                padding: 35px 18px;
+            }
+
+            .top {
+                margin-bottom: 35px;
+            }
+
+            .brand {
+                display: none;
+            }
+
+            .header h1 {
+                font-size: 32px;
+            }
+
+            .form-card {
+                padding: 20px;
+            }
+
+            .categories-header {
+                padding: 0 18px;
+            }
+
+            .category-item {
+                padding: 0 18px;
+            }
+        }
+
+    </style>
+</head>
+
+
+<body>
+
+<div class="container">
+
+
+    <!-- =========================
+         TOP
+    ========================= -->
+
+    <div class="top">
+
+        <a
+            href="/menu_page"
+            class="back">
+
+            <span class="back-arrow">←</span>
+
+            <span>Вернуться к меню</span>
+
+        </a>
+
+        <div class="brand">
+            BAR
+        </div>
+
+    </div>
+
+
+    <!-- =========================
+         HEADER
+    ========================= -->
+
+    <header class="header">
+
+        <div class="header-label">
+            MENU MANAGEMENT
+        </div>
+
+        <h1>
+            Добавить категорию
+        </h1>
+
+        <p class="description">
+            Создайте новую категорию для блюд меню
+        </p>
+
+    </header>
+
+
+    <!-- =========================
+         ERROR
+    ========================= -->
+
+    <div
+        id="form-error"
+        class="error">
+    </div>
+
+
+    <!-- =========================
+         CREATE CATEGORY
+    ========================= -->
+
+    <form
+        id="categoryForm"
+        class="form-card">
+
+        <h2 class="form-title">
+            Новая категория
+        </h2>
+
+        <div class="field">
+
+            <label for="category_name">
+                Название категории
+            </label>
+
+            <input
+                type="text"
+                id="category_name"
+                name="category_name"
+                placeholder="Например: Закуски"
+                minlength="2"
+                maxlength="100"
+                required>
+
+        </div>
+
+        <button
+            type="submit"
+            class="submit">
+
+            Добавить категорию
+
+        </button>
+
+    </form>
+
+
+    <!-- =========================
+         EXISTING CATEGORIES
+    ========================= -->
+
+    <section class="categories-card">
+
+        <div class="categories-header">
+
+            <h2 class="categories-title">
+                Существующие категории
+            </h2>
+
+            <span class="categories-count">
+                {{ categories|length }}
+            </span>
+
+        </div>
+
+
+        {% if categories %}
+
+            <div class="category-list">
+
+                {% for category in categories %}
+
+                    <div class="category-item">
+
+                        <span class="category-name">
+                            {{ category.category_name }}
+                        </span>
+
+                        <span class="category-number">
+                            #{{ loop.index }}
+                        </span>
+
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+        {% else %}
+
+            <div class="empty-categories">
+                Категории пока не добавлены
+            </div>
+
+        {% endif %}
+
+    </section>
+
+
+    <footer class="footer">
+        BAR. MENU MANAGEMENT
+    </footer>
+
+</div>
+
+
+<script>
+
+const form = document.getElementById("categoryForm");
+const formError = document.getElementById("form-error");
+const input = document.getElementById("category_name");
+
+
+function clearError() {
+
+    formError.textContent = "";
+
+    formError.style.display = "none";
+
+    input.style.borderColor = "";
+
+}
+
+
+function showError(message) {
+
+    formError.textContent = message;
+
+    formError.style.display = "block";
+
+    input.style.borderColor = "#d98282";
+
+}
+
+
+form.addEventListener("submit", async function(event) {
+
+    event.preventDefault();
+
+    clearError();
+
+
+    try {
+
+        const response = await fetch(
+            "/menu_page/add_category",
+            {
+                method: "POST",
+
+                body: new FormData(form)
+            }
+        );
+
+
+        if (response.ok) {
+
+            window.location.href = "/menu_page/add_category";
+
+            return;
+        }
+
+
+        const text = await response.text();
+
+        let data;
+
+        try {
+            data = JSON.parse(text);
+        } catch {
+            showError(
+                "Не удалось добавить категорию."
+            );
+
+            return;
+        }
+
+
+        if (typeof data.detail === "string") {
+
+            showError(data.detail);
+
+            return;
+        }
+
+
+        if (Array.isArray(data.detail)) {
+
+            showError(
+                data.detail
+                    .map(error => error.msg)
+                    .join(", ")
+            );
+
+            return;
+        }
+
+
+        showError(
+            "Не удалось добавить категорию."
+        );
+
+
+    } catch (error) {
+
+        console.error(error);
+
+        showError(
+            "Не удалось подключиться к серверу."
+        );
+
+    }
+
+});
+
+</script>
+
+</body>
+
+</html>

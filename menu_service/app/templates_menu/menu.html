@@ -1,0 +1,993 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Меню</title>
+
+<style>
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    min-height: 100vh;
+
+    background:
+        radial-gradient(
+            ellipse at 50% 0%,
+            rgba(145, 85, 75, 0.20) 0%,
+            rgba(55, 35, 40, 0.22) 38%,
+            rgba(9, 9, 11, 1) 78%
+        ),
+        linear-gradient(
+            180deg,
+            #211a1c 0%,
+            #121214 50%,
+            #09090b 100%
+        );
+
+    color: #ffffff;
+
+    font-family: Arial, sans-serif;
+}
+
+.page {
+    width: 100%;
+    max-width: 1200px;
+
+    margin: 0 auto;
+
+    padding: 60px 35px;
+}
+.back { display: inline-flex; align-items: center; gap: 9px; padding: 8px 12px; background: rgba(42, 40, 42, 0.65); border: 1px solid rgba(255, 255, 255, 0.07); border-radius: 6px; color: #77777d; font-size: 10px; text-decoration: none; transition: background 0.2s, border-color 0.2s, color 0.2s, transform 0.15s; } .back-arrow { color: #d5a65b; font-size: 14px; line-height: 1; transition: transform 0.2s; } .back:hover { background: rgba(52, 49, 52, 0.9); border-color: rgba(213, 166, 91, 0.35); color: #ffffff; } .back:hover .back-arrow { transform: translateX(-3px); color: #e4b971; } .back:active { transform: translateY(1px); }
+
+
+/* =========================
+   HEADER
+========================= */
+
+.header {
+    display: flex;
+
+    justify-content: space-between;
+    align-items: center;
+
+    margin-bottom: 45px;
+}
+
+.header-info {
+    text-align: left;
+}
+
+.title {
+    color: #ffffff;
+
+    font-family: Georgia, serif;
+
+    font-size: 42px;
+    font-weight: normal;
+
+    letter-spacing: 3px;
+}
+
+.subtitle {
+    margin-top: 12px;
+
+    color: #77777d;
+
+    font-size: 13px;
+}
+
+.header-actions {
+    display: flex;
+
+    gap: 8px;
+}
+
+.btn {
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    min-height: 34px;
+
+    padding: 9px 13px;
+
+    background: rgba(42, 40, 42, 0.95);
+
+    border: 1px solid rgba(255, 255, 255, 0.08);
+
+    border-radius: 6px;
+
+    color: #aaa9ae;
+
+    font-family: Arial, sans-serif;
+
+    font-size: 9px;
+    font-weight: 600;
+
+    text-decoration: none;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s,
+        border-color 0.2s,
+        color 0.2s;
+}
+
+.btn:hover {
+    background: rgba(52, 49, 52, 0.98);
+
+    border-color: #d5a65b;
+
+    color: #ffffff;
+}
+
+.btn.add {
+    color: #d5a65b;
+}
+
+.btn.add:hover {
+    color: #e4b971;
+}
+
+
+/* =========================
+   MENU
+========================= */
+
+.menu {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 25px;
+}
+
+
+/* =========================
+   CATEGORY
+========================= */
+
+.category {
+    width: 100%;
+
+    background: rgba(27, 25, 27, 0.96);
+
+    border: 1px solid rgba(213, 166, 91, 0.16);
+
+    border-radius: 14px;
+
+    overflow: hidden;
+
+    box-shadow:
+        0 20px 60px rgba(0, 0, 0, 0.35);
+}
+
+.category-header {
+    display: flex;
+
+    align-items: center;
+    justify-content: space-between;
+
+    min-height: 55px;
+
+    padding: 0 22px;
+
+    background: rgba(40, 34, 32, 0.98);
+
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.category-name {
+    color: #d5a65b;
+
+    font-family: Georgia, serif;
+
+    font-size: 17px;
+    font-weight: normal;
+
+    letter-spacing: 1px;
+}
+
+.dish-count {
+    color: #77777d;
+
+    font-size: 9px;
+
+    letter-spacing: 1px;
+
+    text-transform: uppercase;
+}
+
+
+/* =========================
+   DISH
+========================= */
+
+.dishes {
+    width: 100%;
+}
+
+.dish {
+    display: grid;
+
+    grid-template-columns:
+        95px
+        minmax(250px, 1fr)
+        120px
+        220px;
+
+    align-items: center;
+
+    min-height: 115px;
+
+    padding: 15px 22px;
+
+    background: rgba(30, 29, 31, 0.97);
+
+    border-bottom: 1px solid rgba(255, 255, 255, 0.055);
+
+    transition:
+        background 0.2s,
+        border-color 0.2s;
+}
+
+.dish:last-child {
+    border-bottom: none;
+}
+
+.dish:hover {
+    background: rgba(38, 36, 38, 0.98);
+
+    border-color: rgba(213, 166, 91, 0.18);
+}
+
+
+/* =========================
+   IMAGE
+========================= */
+
+.dish-image-wrapper {
+    display: flex;
+
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.dish-image {
+    width: 64px;
+    height: 64px;
+
+    object-fit: cover;
+
+    border-radius: 9px;
+
+    background: #252427;
+
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.no-image {
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    width: 64px;
+    height: 64px;
+
+    background: #252427;
+
+    border: 1px dashed rgba(255, 255, 255, 0.08);
+
+    border-radius: 9px;
+
+    color: #55555b;
+
+    font-size: 9px;
+
+    text-align: center;
+}
+
+
+/* =========================
+   DISH INFO
+========================= */
+
+.dish-info {
+    min-width: 0;
+
+    padding-right: 20px;
+}
+
+.dish-name {
+    margin-bottom: 6px;
+
+    color: #ffffff;
+
+    font-size: 13px;
+
+    font-weight: 600;
+}
+
+.dish-description {
+    max-width: 650px;
+
+    color: #77777d;
+
+    font-size: 10px;
+
+    line-height: 1.5;
+
+    word-break: break-word;
+}
+
+.no-description {
+    color: #55555b;
+
+    font-style: italic;
+}
+
+
+/* =========================
+   PRICE
+========================= */
+
+.dish-price {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    color: #d5a65b;
+
+    font-size: 13px;
+
+    font-weight: 600;
+
+    white-space: nowrap;
+}
+
+.currency {
+    margin-left: 4px;
+
+    color: #77777d;
+
+    font-size: 9px;
+
+    font-weight: normal;
+}
+
+
+/* =========================
+   ACTIONS
+========================= */
+
+.dish-actions {
+    display: flex;
+
+    justify-content: flex-end;
+
+    gap: 7px;
+}
+
+.action {
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    min-height: 31px;
+
+    padding: 8px 11px;
+
+    background: rgba(42, 40, 42, 0.95);
+
+    border: 1px solid rgba(255, 255, 255, 0.08);
+
+    border-radius: 6px;
+
+    color: #aaa9ae;
+
+    font-family: Arial, sans-serif;
+
+    font-size: 9px;
+
+    text-decoration: none;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s,
+        border-color 0.2s,
+        color 0.2s;
+}
+
+.action:hover {
+    background: rgba(52, 49, 52, 0.98);
+
+    border-color: #d5a65b;
+
+    color: #ffffff;
+}
+
+
+/* =========================
+   EDIT
+========================= */
+
+.action.edit:hover {
+    border-color: #d5a65b;
+
+    color: #d5a65b;
+}
+
+
+/* =========================
+   DELETE
+========================= */
+
+.action.delete {
+    background: rgba(80, 30, 35, 0.35);
+
+    border-color: rgba(190, 70, 75, 0.28);
+
+    color: #c87878;
+}
+
+.action.delete:hover {
+    background: rgba(100, 35, 40, 0.55);
+
+    border-color: #d98282;
+
+    color: #e39a9a;
+}
+
+
+/* =========================
+   EMPTY CATEGORY
+========================= */
+
+.empty-category {
+    padding: 35px 25px;
+
+    background: rgba(30, 29, 31, 0.97);
+
+    color: #55555b;
+
+    font-size: 10px;
+
+    text-align: center;
+}
+
+
+/* =========================
+   EMPTY MENU
+========================= */
+
+.empty-menu {
+    padding: 55px 30px;
+
+    background: rgba(27, 25, 27, 0.96);
+
+    border: 1px solid rgba(213, 166, 91, 0.16);
+
+    border-radius: 14px;
+
+    text-align: center;
+
+    box-shadow:
+        0 20px 60px rgba(0, 0, 0, 0.35);
+}
+
+.empty-title {
+    color: #ffffff;
+
+    font-family: Georgia, serif;
+
+    font-size: 18px;
+}
+
+.empty-text {
+    margin-top: 9px;
+
+    color: #77777d;
+
+    font-size: 10px;
+}
+
+
+/* =========================
+   FOOTER
+========================= */
+
+.footer {
+    padding-top: 35px;
+
+    text-align: center;
+
+    color: #4f4f54;
+
+    font-size: 9px;
+
+    letter-spacing: 1px;
+}
+
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 950px) {
+
+    .dish {
+        grid-template-columns:
+            80px
+            minmax(200px, 1fr)
+            100px
+            170px;
+    }
+
+    .dish-actions {
+        flex-direction: column;
+
+        align-items: stretch;
+    }
+
+    .action {
+        width: 100%;
+    }
+}
+
+
+@media (max-width: 750px) {
+
+    .page {
+        padding: 40px 20px;
+    }
+
+    .header {
+        flex-direction: column;
+
+        align-items: flex-start;
+
+        gap: 20px;
+    }
+
+    .header-actions {
+        width: 100%;
+    }
+
+    .header-actions .btn {
+        flex: 1;
+    }
+
+    .dish {
+        grid-template-columns: 75px 1fr;
+
+        gap: 0 15px;
+
+        padding: 18px;
+    }
+
+    .dish-image-wrapper {
+        grid-row: span 2;
+
+        align-self: start;
+    }
+
+    .dish-info {
+        padding-right: 0;
+    }
+
+    .dish-price {
+        justify-content: flex-start;
+
+        padding-top: 10px;
+    }
+
+    .dish-actions {
+        grid-column: 1 / -1;
+
+        flex-direction: row;
+
+        justify-content: flex-start;
+
+        padding-top: 12px;
+    }
+
+    .action {
+        width: auto;
+    }
+}
+
+
+@media (max-width: 500px) {
+
+    .page {
+        padding: 30px 15px;
+    }
+
+    .title {
+        font-size: 34px;
+    }
+
+    .category-header {
+        padding: 0 16px;
+    }
+
+    .dish {
+        display: flex;
+
+        flex-direction: column;
+
+        align-items: stretch;
+
+        gap: 12px;
+
+        padding: 18px 16px;
+    }
+
+    .dish-image-wrapper {
+        justify-content: flex-start;
+    }
+
+    .dish-info {
+        padding: 0;
+    }
+
+    .dish-price {
+        padding: 0;
+
+        justify-content: flex-start;
+    }
+
+    .dish-actions {
+        padding: 0;
+
+        flex-direction: column;
+    }
+
+    .action {
+        width: 100%;
+    }
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="page">
+
+    <!-- HEADER -->
+
+    <header class="header">
+
+        <div>
+            <h1 class="title">Меню</h1>
+            <div class="subtitle">
+                Управление блюдами и категориями
+            </div>
+        </div>
+
+        <div class="top">
+
+        <a
+            href="/admin_panel"
+            class="back">
+            ← Вернуться в панель управления
+        </a>
+
+    </div>
+
+        <div class="header-actions">
+
+            <a href="/menu_page/add_category" class="btn add"> + Добавить категорию </a>
+            <a href="/menu_page/add_dish" class="btn add"> + Добавить блюдо </a>
+
+        </div>
+
+    </header>
+
+
+    <!-- MENU -->
+
+    <main class="menu">
+
+        {% if categories %}
+
+            {% set has_dishes = false %}
+
+            {% for category in categories %}
+
+                {% if category.dishes %}
+                    {% set has_dishes = true %}
+                {% endif %}
+
+                <section class="category">
+
+                    <div class="category-header">
+
+                        <h2 class="category-name">
+                            {{ category.category_name }}
+                        </h2>
+
+                        <span class="dish-count">
+                            {{ category.dishes|length }}
+                            {% if category.dishes|length == 1 %}
+                                блюдо
+                            {% elif category.dishes|length < 5 %}
+                                блюда
+                            {% else %}
+                                блюд
+                            {% endif %}
+                        </span>
+
+                    </div>
+
+
+                    <div class="dishes">
+
+                        {% if category.dishes %}
+
+                            {% for dish in category.dishes %}
+
+                                <article
+                                    class="dish"
+                                    data-dish-id="{{ dish.id }}"
+                                >
+
+                                    <!-- IMAGE -->
+
+                                    <div class="dish-image-wrapper">
+
+                                        {% if dish.image_url %}
+
+                                            <img
+                                                src="{{ dish.image_url }}"
+                                                alt="{{ dish.dish_name }}"
+                                                class="dish-image"
+                                            >
+
+                                        {% else %}
+
+                                            <div class="no-image">
+                                                Нет<br>фото
+                                            </div>
+
+                                        {% endif %}
+
+                                    </div>
+
+
+                                    <!-- NAME + DESCRIPTION -->
+
+                                    <div class="dish-info">
+
+                                        <h3 class="dish-name">
+                                            {{ dish.dish_name }}
+                                        </h3>
+
+                                        {% if dish.description %}
+
+                                            <div class="dish-description">
+                                                {{ dish.description }}
+                                            </div>
+
+                                        {% else %}
+
+                                            <div class="dish-description no-description">
+                                                Описание отсутствует
+                                            </div>
+
+                                        {% endif %}
+
+                                    </div>
+
+
+                                    <!-- PRICE -->
+
+                                    <div class="dish-price">
+
+                                        {{ "%.2f"|format(dish.price) }}
+
+                                        <span class="currency">
+                                            €
+                                        </span>
+
+                                    </div>
+
+
+                                    <!-- ACTIONS -->
+
+                                    <div class="dish-actions">
+
+                                        <button
+                                            type="button"
+                                            class="action edit"
+                                            data-dish-id="{{ dish.id }}"
+                                        >
+                                            Изменить
+                                        </button>
+
+                                        <button
+                                            type="button"
+                                            class="action delete"
+                                            data-dish-id="{{ dish.id }}"
+                                        >
+                                            Убрать из меню
+                                        </button>
+
+                                    </div>
+
+                                </article>
+
+                            {% endfor %}
+
+                        {% else %}
+
+                            <div class="empty-category">
+                                В этой категории пока нет блюд
+                            </div>
+
+                        {% endif %}
+
+                    </div>
+
+                </section>
+
+            {% endfor %}
+
+        {% else %}
+
+            <!-- COMPLETELY EMPTY MENU -->
+
+            <div class="empty-menu">
+
+                <div class="empty-title">
+                    Меню пока пустое
+                </div>
+
+                <div class="empty-text">
+                    Не добавлено пока ни одного блюда
+                </div>
+
+            </div>
+
+        {% endif %}
+
+    </main>
+
+
+    <footer class="footer">
+        BAR. MENU MANAGEMENT
+    </footer>
+
+</div>
+
+
+<script>
+    /*
+     * Изменить блюдо
+     */
+
+    document
+        .querySelectorAll(".action.edit")
+        .forEach(button => {
+
+            button.addEventListener("click", function () {
+
+                const dishId =
+                    this.dataset.dishId;
+
+                window.location.href =
+                    `/menu_page/dish/${dishId}/edit`;
+
+            });
+
+        });
+
+
+    /*
+     * Убрать блюдо из меню
+     */
+
+    document
+        .querySelectorAll(".action.delete")
+        .forEach(button => {
+
+            button.addEventListener("click", async function () {
+
+                const dishId =
+                    this.dataset.dishId;
+
+                const confirmed = confirm(
+                    "Вы действительно хотите убрать это блюдо из меню?"
+                );
+
+                if (!confirmed) {
+                    return;
+                }
+
+                try {
+
+                    const response = await fetch(
+                        `/menu_page/dish/${dishId}/delete`,
+                        {
+                            method: "PATCH"
+                        }
+                    );
+
+                    if (response.ok) {
+
+                        window.location.reload();
+
+                        return;
+                    }
+
+
+                    let data = null;
+
+                    try {
+                        data = await response.json();
+                    } catch {
+                        // response не JSON
+                    }
+
+
+                    if (data && data.detail) {
+
+                        if (Array.isArray(data.detail)) {
+
+                            alert(
+                                data.detail
+                                    .map(error => error.msg)
+                                    .join(", ")
+                            );
+
+                        } else {
+
+                            alert(data.detail);
+
+                        }
+
+                    } else {
+
+                        alert(
+                            "Не удалось убрать блюдо из меню."
+                        );
+
+                    }
+
+                } catch (error) {
+
+                    console.error(
+                        "DELETE DISH ERROR:",
+                        error
+                    );
+
+                    alert(
+                        "Не удалось подключиться к серверу."
+                    );
+
+                }
+
+            });
+
+        });
+
+</script>
+
+</body>
+</html>
