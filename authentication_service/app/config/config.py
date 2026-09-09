@@ -10,6 +10,8 @@ class Settings(BaseSettings):
     jwt_private_key_path: str
     jwt_public_key_path: str
 
+    internal_token: str
+
     model_config = SettingsConfigDict(
         env_file=".env",
         extra="ignore",

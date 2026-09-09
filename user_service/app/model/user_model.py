@@ -30,7 +30,7 @@ class User(Base):
     birthday = Column(Date, nullable=False, index=True)
     phone = Column(String, nullable=False)
     role = Column(SQLEnum(IdentityRole), nullable=False, index=True)
-    address_id = Column(Integer, ForeignKey("addresses.id"), nullable=False)
+    address_id = Column(Integer, ForeignKey("addresses.id"), nullable=False, unique=True)
     created_at = Column(DateTime(timezone=True), nullable=False, default=lambda : datetime.now(timezone.utc))
     updated_at = Column(DateTime(timezone=True), nullable=False, default=lambda: datetime.now(timezone.utc))
 

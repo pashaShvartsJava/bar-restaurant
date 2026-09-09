@@ -1,0 +1,972 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Информация о клиенте | BAR. ADMIN</title>
+
+    <style>
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    min-height: 100vh;
+
+    background:
+        radial-gradient(
+            ellipse at 50% 0%,
+            rgba(145, 85, 75, 0.20) 0%,
+            rgba(55, 35, 40, 0.22) 38%,
+            rgba(9, 9, 11, 1) 78%
+        ),
+        linear-gradient(
+            180deg,
+            #211a1c 0%,
+            #121214 50%,
+            #09090b 100%
+        );
+
+    color: #ffffff;
+
+    font-family: Arial, sans-serif;
+}
+
+.container {
+    width: 100%;
+    max-width: 1000px;
+
+    margin: 0 auto;
+
+    padding: 60px 35px;
+}
+
+.top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    margin-bottom: 45px;
+}
+
+.back {
+    color: #77777d;
+
+    font-size: 11px;
+
+    text-decoration: none;
+
+    transition: color 0.2s;
+}
+
+.back:hover {
+    color: #d5a65b;
+}
+
+.brand {
+    color: #d5a65b;
+
+    font-family: Georgia, serif;
+
+    font-size: 11px;
+
+    letter-spacing: 3px;
+}
+
+.header {
+    text-align: center;
+
+    margin-bottom: 35px;
+}
+
+.header-label {
+    margin-bottom: 10px;
+
+    color: #d5a65b;
+
+    font-size: 9px;
+
+    letter-spacing: 3px;
+}
+
+.header h1 {
+    font-family: Georgia, serif;
+
+    font-size: 38px;
+
+    font-weight: normal;
+
+    letter-spacing: 2px;
+}
+
+.description {
+    margin-top: 12px;
+
+    color: #77777d;
+
+    font-size: 12px;
+}
+
+
+/* =========================
+   ERROR
+========================= */
+
+.error {
+    display: none;
+
+    margin-bottom: 18px;
+
+    padding: 12px 15px;
+
+    background: rgba(100, 35, 45, 0.35);
+
+    border: 1px solid rgba(210, 85, 90, 0.45);
+
+    border-radius: 8px;
+
+    color: #d98282;
+
+    font-size: 11px;
+
+    text-align: center;
+}
+
+
+/* =========================
+   MAIN CARD
+========================= */
+
+.info-card {
+    background: rgba(27, 25, 27, 0.96);
+
+    border: 1px solid rgba(213, 166, 91, 0.16);
+
+    border-radius: 14px;
+
+    overflow: hidden;
+
+    box-shadow:
+        0 20px 60px rgba(0, 0, 0, 0.35);
+}
+
+
+/* =========================
+   PROFILE
+========================= */
+
+.profile {
+    display: flex;
+
+    align-items: center;
+
+    gap: 18px;
+
+    padding: 25px;
+
+    background: rgba(40, 34, 32, 0.98);
+
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.avatar {
+    width: 58px;
+    height: 58px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    background: #252427;
+
+    border: 1px solid rgba(213, 166, 91, 0.25);
+
+    border-radius: 12px;
+
+    color: #d5a65b;
+
+    font-size: 17px;
+
+    font-weight: 600;
+}
+
+.profile-name {
+    color: #ffffff;
+
+    font-family: Georgia, serif;
+
+    font-size: 21px;
+}
+
+.profile-email {
+    margin-top: 6px;
+
+    color: #77777d;
+
+    font-size: 10px;
+}
+
+
+/* =========================
+   SECTIONS
+========================= */
+
+.section {
+    padding: 25px;
+
+    border-bottom: 1px solid rgba(255, 255, 255, 0.055);
+}
+
+.section:last-child {
+    border-bottom: none;
+}
+
+.section-title {
+    margin-bottom: 20px;
+
+    color: #d5a65b;
+
+    font-size: 9px;
+
+    letter-spacing: 2px;
+
+    text-transform: uppercase;
+}
+
+
+/* =========================
+   DATA GRID
+========================= */
+
+.info-grid {
+    display: grid;
+
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+
+    gap: 18px 35px;
+}
+
+.info-item {
+    min-width: 0;
+}
+
+.info-label {
+    margin-bottom: 6px;
+
+    color: #66666c;
+
+    font-size: 9px;
+
+    letter-spacing: 1px;
+
+    text-transform: uppercase;
+}
+
+.info-value {
+    color: #eeeeef;
+
+    font-size: 12px;
+
+    word-break: break-word;
+}
+
+.info-value.muted {
+    color: #77777d;
+}
+
+
+/* =========================
+   STATUS
+========================= */
+
+.status {
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 7px;
+
+    padding: 7px 10px;
+
+    border-radius: 6px;
+
+    font-size: 9px;
+}
+
+.status::before {
+    content: "";
+
+    width: 5px;
+    height: 5px;
+
+    border-radius: 50%;
+
+    background: currentColor;
+}
+
+.status.active {
+    background: rgba(100, 130, 80, 0.12);
+
+    border: 1px solid rgba(120, 150, 95, 0.25);
+
+    color: #9aaa8b;
+}
+
+.status.blocked {
+    background: rgba(150, 55, 65, 0.16);
+
+    border: 1px solid rgba(210, 85, 90, 0.32);
+
+    color: #d98282;
+}
+
+
+/* =========================
+   MANAGEMENT
+========================= */
+
+.management {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 20px;
+}
+
+.management-text {
+    color: #77777d;
+
+    font-size: 10px;
+
+    line-height: 1.6;
+}
+
+.status-button {
+    width: 145px;
+
+    min-height: 34px;
+
+    padding: 8px 12px;
+
+    border-radius: 6px;
+
+    font-family: Arial, sans-serif;
+
+    font-size: 9px;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s,
+        border-color 0.2s,
+        color 0.2s;
+}
+
+.status-button.block {
+    background: rgba(80, 30, 35, 0.45);
+
+    border: 1px solid rgba(190, 70, 75, 0.38);
+
+    color: #c87878;
+}
+
+.status-button.block:hover {
+    background: rgba(100, 35, 40, 0.65);
+
+    border-color: #d98282;
+
+    color: #e39a9a;
+}
+
+.status-button.unblock {
+    background: rgba(55, 75, 45, 0.35);
+
+    border: 1px solid rgba(110, 140, 85, 0.35);
+
+    color: #9aaa8b;
+}
+
+.status-button.unblock:hover {
+    background: rgba(65, 90, 50, 0.50);
+
+    border-color: #9aaa8b;
+
+    color: #b3c4a2;
+}
+
+.status-button:disabled {
+    opacity: 0.5;
+
+    cursor: wait;
+}
+
+
+/* =========================
+   FOOTER
+========================= */
+
+.footer {
+    padding-top: 35px;
+
+    text-align: center;
+
+    color: #4f4f54;
+
+    font-size: 9px;
+
+    letter-spacing: 1px;
+}
+
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 650px) {
+
+    .container {
+        padding: 35px 18px;
+    }
+
+    .top {
+        margin-bottom: 35px;
+    }
+
+    .header h1 {
+        font-size: 31px;
+    }
+
+    .profile {
+        padding: 20px;
+    }
+
+    .section {
+        padding: 20px;
+    }
+
+    .info-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .management {
+        flex-direction: column;
+
+        align-items: stretch;
+    }
+
+    .status-button {
+        width: 100%;
+    }
+}
+
+</style>
+</head>
+
+
+<body>
+
+<div class="container">
+
+    <div class="top">
+
+        <a
+            href="/admin_panel/all_customers"
+            class="back">
+            ← Вернуться к клиентам
+        </a>
+
+        <span class="brand">
+            BAR. ADMIN
+        </span>
+
+    </div>
+
+
+    <div class="header">
+
+        <div class="header-label">
+            CLIENT INFORMATION
+        </div>
+
+        <h1>
+            Информация о клиенте
+        </h1>
+
+    </div>
+
+
+    <div
+        id="pageError"
+        class="error">
+    </div>
+
+
+    <div class="info-card">
+
+
+        <!-- PROFILE -->
+
+        <div class="profile">
+
+            <div class="avatar">
+                {{ user.name[0] }}{{ user.surname[0] }}
+            </div>
+
+            <div>
+
+                <div class="profile-name">
+                    {{ user.name }} {{ user.surname }}
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- PERSONAL -->
+
+        <section class="section">
+
+            <div class="section-title">
+                Личная информация
+            </div>
+
+            <div class="info-grid">
+
+                <div class="info-item">
+                    <div class="info-label">
+                        Имя
+                    </div>
+
+                    <div class="info-value">
+                        {{ user.name }}
+                    </div>
+                </div>
+
+
+                <div class="info-item">
+                    <div class="info-label">
+                        Фамилия
+                    </div>
+
+                    <div class="info-value">
+                        {{ user.surname }}
+                    </div>
+                </div>
+
+
+                <div class="info-item">
+                    <div class="info-label">
+                        Email
+                    </div>
+
+                    <div class="info-value">
+                        {{ user.email }}
+                    </div>
+                </div>
+
+
+                <div class="info-item">
+                    <div class="info-label">
+                        Телефон
+                    </div>
+
+                    <div class="info-value">
+                        {{ user.phone }}
+                    </div>
+                </div>
+
+
+                <div class="info-item">
+                    <div class="info-label">
+                        Дата рождения
+                    </div>
+
+                    <div class="info-value">
+                        {{ user.birthday }}
+                    </div>
+                </div>
+
+
+                <div class="info-item">
+                    <div class="info-label">
+                        Статус
+                    </div>
+
+                    <div class="info-value">
+
+                        {% if user.status == "blocked" %}
+
+                            <span class="status blocked">
+                                Заблокирован
+                            </span>
+
+                        {% else %}
+
+                            <span class="status active">
+                                Активен
+                            </span>
+
+                        {% endif %}
+
+                    </div>
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ADDRESS -->
+
+        <section class="section">
+
+            <div class="section-title">
+                Адрес проживания
+            </div>
+
+            <div class="info-grid">
+
+                <div class="info-item">
+                    <div class="info-label">
+                        Город
+                    </div>
+
+                    <div class="info-value">
+                        {{ user.city }}
+                    </div>
+                </div>
+
+
+                <div class="info-item">
+                    <div class="info-label">
+                        Почтовый индекс
+                    </div>
+
+                    <div class="info-value">
+                        {{ user.postal_code }}
+                    </div>
+                </div>
+
+
+                <div class="info-item">
+                    <div class="info-label">
+                        Улица
+                    </div>
+
+                    <div class="info-value">
+                        {{ user.street }}
+                    </div>
+                </div>
+
+
+                <div class="info-item">
+                    <div class="info-label">
+                        Номер дома
+                    </div>
+
+                    <div class="info-value">
+                        {{ user.house }}
+                    </div>
+                </div>
+
+
+                <div class="info-item">
+
+                    <div class="info-label">
+                        Квартира
+                    </div>
+
+                    <div class="info-value">
+
+                        {% if user.apartment %}
+                            {{ user.apartment }}
+                        {% else %}
+                            <span class="muted">
+                                Не указана
+                            </span>
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ACCOUNT -->
+
+        <section class="section">
+
+            <div class="section-title">
+                Аккаунт
+            </div>
+
+            <div class="info-grid">
+
+                <div class="info-item">
+                    <div class="info-label">
+                        Аккаунт создан
+                    </div>
+
+                    <div class="info-value">
+                        {{ user.created_at }}
+                    </div>
+                </div>
+
+
+                <div class="info-item">
+                    <div class="info-label">
+                        Последнее обновление
+                    </div>
+
+                    <div class="info-value">
+                        {{ user.updated_at }}
+                    </div>
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- MANAGEMENT -->
+
+        <section class="section">
+
+            <div class="section-title">
+                Управление аккаунтом
+            </div>
+
+            <div class="management">
+
+
+                {% if user.status == "blocked" %}
+
+                    <button
+                        type="button"
+                        class="status-button unblock"
+                        data-action="unblock"
+                        data-client-id="{{ user.identity_id }}">
+                        Разблокировать
+                    </button>
+
+                {% else %}
+
+                    <button
+                        type="button"
+                        class="status-button block"
+                        data-action="block"
+                        data-client-id="{{ user.identity_id }}">
+                        Заблокировать
+                    </button>
+
+                {% endif %}
+
+            </div>
+
+        </section>
+
+
+    </div>
+
+
+    <footer class="footer">
+        BAR. ADMIN PANEL
+    </footer>
+
+</div>
+
+
+<script>
+
+const statusButton =
+    document.querySelector(".status-button");
+
+const pageError =
+    document.getElementById("pageError");
+
+
+function showError(message) {
+
+    pageError.textContent = message;
+
+    pageError.style.display = "block";
+}
+
+
+function clearError() {
+
+    pageError.textContent = "";
+
+    pageError.style.display = "none";
+}
+
+
+statusButton.addEventListener(
+    "click",
+    async function() {
+
+        clearError();
+
+        const button = this;
+
+        const identityId =
+            button.dataset.clientId;
+
+        const action =
+            button.dataset.action;
+
+        const isBlocking =
+            action === "block";
+
+
+        const message =
+            isBlocking
+                ? "Вы действительно хотите заблокировать этого пользователя?"
+                : "Вы действительно хотите разблокировать этого пользователя?";
+
+
+        if (!confirm(message)) {
+            return;
+        }
+
+
+        button.disabled = true;
+
+
+        try {
+
+            const response =
+                await fetch(
+                    `/admin_panel/all_customers/${identityId}/${action}`,
+                    {
+                        method: "PATCH"
+                    }
+                );
+
+
+            if (!response.ok) {
+
+                let message =
+                    "Не удалось изменить статус пользователя.";
+
+
+                try {
+
+                    const data =
+                        await response.json();
+
+
+                    if (typeof data.detail === "string") {
+
+                        message =
+                            data.detail;
+
+                    } else if (Array.isArray(data.detail)) {
+
+                        message =
+                            data.detail
+                                .map(error => error.msg)
+                                .join(", ");
+
+                    }
+
+                } catch (error) {
+
+                    console.error(
+                        "Ошибка чтения ответа:",
+                        error
+                    );
+
+                }
+
+
+                showError(message);
+
+                button.disabled = false;
+
+                return;
+            }
+
+
+            const status =
+                document.querySelector(".status");
+
+
+            if (isBlocking) {
+
+                status.classList.remove("active");
+                status.classList.add("blocked");
+
+                status.textContent =
+                    "Заблокирован";
+
+
+                button.dataset.action =
+                    "unblock";
+
+                button.classList.remove("block");
+                button.classList.add("unblock");
+
+                button.textContent =
+                    "Разблокировать";
+
+            } else {
+
+                status.classList.remove("blocked");
+                status.classList.add("active");
+
+                status.textContent =
+                    "Активен";
+
+
+                button.dataset.action =
+                    "block";
+
+                button.classList.remove("unblock");
+                button.classList.add("block");
+
+                button.textContent =
+                    "Заблокировать";
+            }
+
+
+            button.disabled = false;
+
+        } catch (error) {
+
+            console.error(
+                "Ошибка запроса:",
+                error
+            );
+
+
+            showError(
+                "Не удалось связаться с сервером. Попробуйте ещё раз."
+            );
+
+
+            button.disabled = false;
+        }
+
+    }
+);
+
+</script>
+
+</body>
+
+</html>

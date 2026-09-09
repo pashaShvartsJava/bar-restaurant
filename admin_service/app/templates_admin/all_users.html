@@ -1,0 +1,1093 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Клиенты | BAR. ADMIN</title>
+
+    <style>
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    min-height: 100vh;
+
+    background:
+        radial-gradient(
+            ellipse at 50% 0%,
+            rgba(145, 85, 75, 0.20) 0%,
+            rgba(55, 35, 40, 0.22) 38%,
+            rgba(9, 9, 11, 1) 78%
+        ),
+        linear-gradient(
+            180deg,
+            #211a1c 0%,
+            #121214 50%,
+            #09090b 100%
+        );
+
+    color: #ffffff;
+
+    font-family: Arial, sans-serif;
+}
+
+.container {
+    width: 100%;
+    max-width: 1200px;
+
+    margin: 0 auto;
+
+    padding: 60px 35px;
+}
+
+.top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    margin-bottom: 45px;
+}
+
+.back {
+    color: #77777d;
+
+    font-size: 11px;
+
+    text-decoration: none;
+
+    transition: color 0.2s;
+}
+
+.back:hover {
+    color: #d5a65b;
+}
+
+.brand {
+    color: #d5a65b;
+
+    font-family: Georgia, serif;
+
+    font-size: 11px;
+
+    letter-spacing: 3px;
+}
+
+.header {
+    text-align: center;
+
+    margin-bottom: 40px;
+}
+
+.header-label {
+    margin-bottom: 10px;
+
+    color: #d5a65b;
+
+    font-size: 9px;
+
+    letter-spacing: 3px;
+}
+
+.header h1 {
+    font-family: Georgia, serif;
+
+    font-size: 42px;
+
+    font-weight: normal;
+
+    letter-spacing: 3px;
+}
+
+.description {
+    margin-top: 12px;
+
+    color: #77777d;
+
+    font-size: 13px;
+}
+
+
+/* =========================
+   ERROR
+========================= */
+
+.error {
+    display: none;
+
+    margin-bottom: 18px;
+
+    padding: 12px 15px;
+
+    background: rgba(100, 35, 45, 0.35);
+
+    border: 1px solid rgba(210, 85, 90, 0.45);
+
+    border-radius: 8px;
+
+    color: #d98282;
+
+    font-size: 11px;
+
+    text-align: center;
+}
+
+
+/* =========================
+   TABLE
+========================= */
+
+.clients {
+    width: 100%;
+
+    background: rgba(27, 25, 27, 0.96);
+
+    border: 1px solid rgba(213, 166, 91, 0.16);
+
+    border-radius: 14px;
+
+    overflow: hidden;
+
+    box-shadow:
+        0 20px 60px rgba(0, 0, 0, 0.35);
+}
+
+
+/* Заголовок таблицы */
+
+.table-header {
+    display: grid;
+
+    grid-template-columns:
+        minmax(260px, 1.6fr)
+        130px
+        1.3fr
+        145px;
+
+    align-items: center;
+
+    min-height: 48px;
+
+    padding: 0 22px;
+
+    background: rgba(40, 34, 32, 0.98);
+
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+
+    color: #77777d;
+
+    font-size: 9px;
+
+    letter-spacing: 1.5px;
+
+    text-transform: uppercase;
+}
+
+
+/* Строка клиента */
+
+.client {
+    display: grid;
+
+    grid-template-columns:
+        minmax(260px, 1.6fr)
+        130px
+        1.3fr
+        145px;
+
+    align-items: center;
+
+    min-height: 105px;
+
+    padding: 16px 22px;
+
+    background: rgba(30, 29, 31, 0.97);
+
+    border-bottom: 1px solid rgba(255, 255, 255, 0.055);
+
+    transition:
+        background 0.2s,
+        border-color 0.2s;
+}
+
+.client:last-child {
+    border-bottom: none;
+}
+
+.client:hover {
+    background: rgba(38, 36, 38, 0.98);
+
+    border-color: rgba(213, 166, 91, 0.18);
+}
+
+
+/* Заблокированный */
+
+.client.blocked {
+    background: rgba(30, 29, 31, 0.97);
+}
+
+.client.blocked:hover {
+    background: rgba(38, 36, 38, 0.98);
+}
+
+
+/* =========================
+   CLIENT INFO
+========================= */
+
+.client-main {
+    display: flex;
+
+    align-items: center;
+
+    gap: 14px;
+
+    min-width: 0;
+}
+
+.avatar {
+    width: 46px;
+    height: 46px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    background: #252427;
+
+    border: 1px solid rgba(255, 255, 255, 0.08);
+
+    border-radius: 10px;
+
+    color: #d5a65b;
+
+    font-size: 13px;
+
+    font-weight: 600;
+
+    transition: 0.2s;
+}
+
+.client:hover .avatar {
+    background: #d5a65b;
+
+    color: #252427;
+}
+
+.client.blocked .avatar {
+    background: rgba(110, 40, 45, 0.45);
+    border-color: rgba(210, 85, 90, 0.35);
+    color: #d98282;
+}
+
+.client.blocked:hover .avatar {
+    background: #c86d72;
+    color: #30191c;
+}
+
+.client-name {
+    margin-bottom: 5px;
+
+    color: #ffffff;
+
+    font-size: 13px;
+
+    font-weight: 600;
+}
+
+.client-email {
+    color: #77777d;
+
+    font-size: 10px;
+
+    word-break: break-all;
+}
+
+
+/* =========================
+   STATUS
+========================= */
+
+.status-wrapper {
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: flex-start;
+
+    gap: 8px;
+}
+
+.status {
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 7px;
+
+    padding: 7px 10px;
+
+    border-radius: 6px;
+
+    font-size: 9px;
+
+    white-space: nowrap;
+}
+
+.status::before {
+    content: "";
+
+    width: 5px;
+    height: 5px;
+
+    flex-shrink: 0;
+
+    border-radius: 50%;
+
+    background: currentColor;
+}
+
+.status.active {
+    background: rgba(100, 130, 80, 0.12);
+
+    border: 1px solid rgba(120, 150, 95, 0.25);
+
+    color: #9aaa8b;
+}
+
+.status.blocked {
+    background: rgba(150, 55, 65, 0.16);
+
+    border: 1px solid rgba(210, 85, 90, 0.32);
+
+    color: #d98282;
+}
+
+
+/* =========================
+   ACTIONS
+========================= */
+
+.actions {
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: 7px;
+}
+
+.action {
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    min-height: 31px;
+
+    padding: 8px 11px;
+
+    background: rgba(42, 40, 42, 0.95);
+
+    border: 1px solid rgba(255, 255, 255, 0.08);
+
+    border-radius: 6px;
+
+    color: #aaa9ae;
+
+    font-family: Arial, sans-serif;
+
+    font-size: 9px;
+
+    text-decoration: none;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s,
+        border-color 0.2s,
+        color 0.2s;
+}
+
+.action:hover {
+    background: rgba(52, 49, 52, 0.98);
+
+    border-color: #d5a65b;
+
+    color: #ffffff;
+}
+
+.action.info:hover {
+    border-color: #d5a65b;
+
+    color: #d5a65b;
+}
+
+.action.history:hover {
+    border-color: rgba(190, 145, 80, 0.65);
+
+    color: #d5a65b;
+}
+
+
+/* =========================
+   BLOCK / UNBLOCK
+========================= */
+
+.status-action {
+    display: flex;
+
+    justify-content: flex-end;
+}
+
+.status-button {
+    width: 125px;
+}
+
+.action.block {
+    background: rgba(80, 30, 35, 0.45);
+
+    border-color: rgba(190, 70, 75, 0.38);
+
+    color: #c87878;
+}
+
+.action.block:hover {
+    background: rgba(100, 35, 40, 0.65);
+
+    border-color: #d98282;
+
+    color: #e39a9a;
+}
+
+.action.unblock {
+    background: rgba(55, 75, 45, 0.35);
+
+    border-color: rgba(110, 140, 85, 0.35);
+
+    color: #9aaa8b;
+}
+
+.action.unblock:hover {
+    background: rgba(65, 90, 50, 0.50);
+
+    border-color: #9aaa8b;
+
+    color: #b3c4a2;
+}
+
+
+/* =========================
+   CONTACT BUTTON
+========================= */
+
+.contact-row {
+    display: flex;
+
+    align-items: center;
+
+    min-height: 48px;
+
+    padding: 0 22px;
+
+    background: rgba(24, 23, 25, 0.98);
+
+    border-top: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.contact {
+    color: #aaa9ae;
+}
+
+.contact:hover {
+    border-color: rgba(165, 145, 190, 0.65);
+
+    color: #b9acd0;
+}
+
+
+/* =========================
+   EMPTY
+========================= */
+
+.empty {
+    padding: 55px 30px;
+
+    background: rgba(27, 25, 27, 0.96);
+
+    border: 1px solid rgba(213, 166, 91, 0.16);
+
+    border-radius: 14px;
+
+    text-align: center;
+
+    box-shadow:
+        0 20px 60px rgba(0, 0, 0, 0.35);
+}
+
+.empty-title {
+    color: #ffffff;
+
+    font-family: Georgia, serif;
+
+    font-size: 18px;
+}
+
+.empty-description {
+    margin-top: 9px;
+
+    color: #77777d;
+
+    font-size: 10px;
+}
+
+
+/* =========================
+   FOOTER
+========================= */
+
+.footer {
+    padding-top: 35px;
+
+    text-align: center;
+
+    color: #4f4f54;
+
+    font-size: 9px;
+
+    letter-spacing: 1px;
+}
+
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 900px) {
+
+    .table-header {
+        display: none;
+    }
+
+    .client {
+        display: grid;
+
+        grid-template-columns: 1fr 140px;
+
+        gap: 18px;
+
+        padding: 20px;
+    }
+
+    .client-main {
+        grid-column: 1 / -1;
+    }
+
+    .status-wrapper {
+        grid-column: 1;
+    }
+
+    .actions {
+        grid-column: 1 / -1;
+    }
+
+    .status-action {
+        grid-column: 2;
+
+        grid-row: 2;
+
+        justify-content: flex-end;
+    }
+
+    .contact-row {
+        padding: 10px 20px;
+    }
+}
+
+
+@media (max-width: 600px) {
+
+    .container {
+        padding: 35px 18px;
+    }
+
+    .top {
+        margin-bottom: 35px;
+    }
+
+    .header {
+        margin-bottom: 30px;
+    }
+
+    .header h1 {
+        font-size: 34px;
+    }
+
+    .client {
+        display: flex;
+
+        flex-direction: column;
+
+        align-items: stretch;
+
+        gap: 15px;
+    }
+
+    .status-action {
+        justify-content: flex-start;
+    }
+
+    .status-button {
+        width: 100%;
+    }
+
+    .actions {
+        flex-direction: column;
+    }
+
+    .action {
+        width: 100%;
+
+        text-align: center;
+    }
+
+    .contact-row {
+        padding: 10px 16px;
+    }
+
+    .contact {
+        width: 100%;
+    }
+}
+
+</style>
+</head>
+
+
+<body>
+
+<div class="container">
+
+    <div class="top">
+
+        <a
+            href="/admin_panel"
+            class="back">
+            ← Вернуться в панель управления
+        </a>
+
+        <span class="brand">
+            BAR. ADMIN
+        </span>
+
+    </div>
+
+
+    <div class="header">
+
+        <div class="header-label">
+            CLIENTS
+        </div>
+
+        <h1>
+            Клиенты
+        </h1>
+
+        <div class="description">
+            Управление зарегистрированными клиентами заведения
+        </div>
+
+    </div>
+
+
+    <div
+        id="pageError"
+        class="error">
+    </div>
+
+
+    {% if not users %}
+
+        <div class="empty">
+
+            <div class="empty-title">
+                У вас пока нет зарегистрированных клиентов
+            </div>
+
+            <div class="empty-description">
+                Зарегистрированные пользователи появятся здесь.
+            </div>
+
+        </div>
+
+    {% else %}
+
+        <div class="clients">
+
+
+            <!-- HEADER -->
+
+            <div class="table-header">
+
+                <div>
+                    Клиент
+                </div>
+
+                <div>
+                    Статус
+                </div>
+
+                <div>
+                    Действия
+                </div>
+
+                <div>
+                    Управление
+                </div>
+
+            </div>
+
+
+            {% for user in users %}
+
+                <div
+                    class="client {% if user.status == 'blocked' %}blocked{% endif %}"
+                    data-client-id="{{ user.id }}"
+                >
+
+
+                    <!-- CLIENT -->
+
+                    <div class="client-main">
+
+                        <div class="avatar">
+                            {{ user.name[0] }}{{ user.surname[0] }}
+                        </div>
+
+                        <div>
+
+                            <div class="client-name">
+                                {{ user.name }} {{ user.surname }}
+                            </div>
+
+                            <div class="client-email">
+                                {{ user.email }}
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- STATUS -->
+
+                    <div class="status-wrapper">
+
+                        {% if user.status == "blocked" %}
+
+                            <div class="status blocked">
+                                Заблокирован
+                            </div>
+
+                        {% else %}
+
+                            <div class="status active">
+                                Активен
+                            </div>
+
+                        {% endif %}
+
+                    </div>
+
+
+                    <!-- ACTIONS -->
+
+                    <div class="actions">
+
+                        <a
+                            href="/admin_panel/all_customers/{{ user.identity_id }}"
+                            class="action info">
+                            Информация
+                        </a>
+
+                        <a
+                            href="/admin_panel/all_customers/{{ user.id }}/orders"
+                            class="action history">
+                            История заказов
+                        </a>
+
+                        <a
+                            href="/admin_panel/all_customers/{{ user.id }}/reservations"
+                            class="action history">
+                            История бронирований
+                        </a>
+
+                    </div>
+
+                    <div class="status-action">
+
+                        {% if user.status == "blocked" %}
+
+                            <button
+                                type="button"
+                                class="action unblock status-button"
+                                data-action="unblock"
+                                data-client-id="{{ user.identity_id }}">
+                                Разблокировать
+                            </button>
+
+                        {% else %}
+
+                            <button
+                                type="button"
+                                class="action block status-button"
+                                data-action="block"
+                                data-client-id="{{ user.identity_id }}">
+                                Заблокировать
+                            </button>
+
+                        {% endif %}
+
+                    </div>
+
+
+                </div>
+
+
+                <!-- CONTACT -->
+
+                <div class="contact-row">
+
+                    <a
+                        href="/admin_panel/all_customers/{{ user.id }}/chat"
+                        class="action contact">
+                        Связаться с клиентом
+                    </a>
+
+                </div>
+
+            {% endfor %}
+
+
+        </div>
+
+    {% endif %}
+
+
+    <footer class="footer">
+        BAR. ADMIN PANEL
+    </footer>
+
+</div>
+
+<script>
+
+function showError(message) {
+
+    const error =
+        document.getElementById("pageError");
+
+    error.textContent = message;
+
+    error.style.display = "block";
+}
+
+
+function clearError() {
+
+    const error =
+        document.getElementById("pageError");
+
+    error.textContent = "";
+
+    error.style.display = "none";
+}
+
+
+document
+    .querySelectorAll(".status-button")
+    .forEach(button => {
+
+        button.addEventListener(
+            "click",
+            async function() {
+
+                clearError();
+
+                const clientId =
+                    this.dataset.clientId;
+
+                const action =
+                    this.dataset.action;
+
+
+                const isBlocking =
+                    action === "block";
+
+
+                const message =
+                    isBlocking
+                        ? "Вы действительно хотите заблокировать этого пользователя?"
+                        : "Вы действительно хотите разблокировать этого пользователя?";
+
+
+                if (!confirm(message)) {
+                    return;
+                }
+
+
+                this.disabled = true;
+
+
+                try {
+
+                    const response =
+                        await fetch(
+                            `/admin_panel/all_customers/${clientId}/${action}`,
+                            {
+                                method: "PATCH"
+                            }
+                        );
+
+
+                    if (!response.ok) {
+
+                        let message =
+                            "Не удалось изменить статус пользователя.";
+
+
+                        try {
+
+                            const data =
+                                await response.json();
+
+
+                            if (
+                                typeof data.detail === "string"
+                            ) {
+
+                                message =
+                                    data.detail;
+
+                            } else if (
+                                Array.isArray(data.detail)
+                            ) {
+
+                                message =
+                                    data.detail
+                                        .map(error => error.msg)
+                                        .join(", ");
+
+                            }
+
+                        } catch (error) {
+
+                            console.error(
+                                "Ошибка чтения ответа:",
+                                error
+                            );
+
+                        }
+
+
+                        showError(message);
+
+                        this.disabled = false;
+
+                        return;
+                    }
+
+
+                    const client =
+                        this.closest(".client");
+
+
+                    const status =
+                        client.querySelector(".status");
+
+
+                    if (isBlocking) {
+
+                        client.classList.add("blocked");
+
+
+                        status.classList.remove("active");
+
+                        status.classList.add("blocked");
+
+                        status.textContent =
+                            "Заблокирован";
+
+
+                        this.dataset.action =
+                            "unblock";
+
+                        this.classList.remove("block");
+
+                        this.classList.add("unblock");
+
+                        this.textContent =
+                            "Разблокировать";
+
+                    } else {
+
+                        client.classList.remove("blocked");
+
+
+                        status.classList.remove("blocked");
+
+                        status.classList.add("active");
+
+                        status.textContent =
+                            "Активен";
+
+
+                        this.dataset.action =
+                            "block";
+
+                        this.classList.remove("unblock");
+
+                        this.classList.add("block");
+
+                        this.textContent =
+                            "Заблокировать";
+
+                    }
+
+
+                    this.disabled = false;
+
+                } catch (error) {
+
+                    console.error(
+                        "Ошибка запроса:",
+                        error
+                    );
+
+
+                    showError(
+                        "Не удалось связаться с сервером. Попробуйте ещё раз."
+                    );
+
+
+                    this.disabled = false;
+                }
+
+            }
+        );
+
+    });
+
+</script>
+
+</body>
+
+</html>

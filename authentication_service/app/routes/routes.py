@@ -1,7 +1,7 @@
 from typing import Annotated
 
 from fastapi import Request, APIRouter, HTTPException, Form
-from fastapi.params import Depends
+from fastapi.params import Depends, Header
 from pydantic import EmailStr
 from starlette.responses import HTMLResponse, RedirectResponse
 from starlette.templating import Jinja2Templates
@@ -11,13 +11,15 @@ from ..exceptions.exceptions import InvalidCredentialsError
 from ..model.identity_model import Status, IdentityRole
 from ..schemas.admin_schema import IdentityEdit
 from ..schemas.schema import LoginSchema, RegisterRequest, RegisterRequestDTO, AddressResponseDTO, PasswordUpdateDTO, \
-    EmailRequest, RegistrationSchema
+    EmailRequest, RegistrationSchema, IdentityDto
 from ..dependencies.dependency import get_service_dependency
 from ..security.password.password import verify_password
 from ..services.authentication_service import AuthenticationService, send_new_user_dto, send_address
 import httpx
 from uuid import UUID
+from ..config.config import settings
 
+INTERNAL_TOKEN = settings.internal_token
 templates = Jinja2Templates(directory="app/templates_auth")
 router = APIRouter()
 
@@ -96,12 +98,8 @@ async def registration( data : Annotated[RegistrationSchema, Form()],
     return RedirectResponse(url="/login", status_code=303)
 
 @router.get("/get_identity")
-async def update_password(
-    identity_id: UUID,
-    old_password: str,
-    new_password: str,
-    service: AuthenticationService = Depends(get_service_dependency)
-):
+async def update_password(identity_id: UUID, old_password: str, new_password: str,
+    service: AuthenticationService = Depends(get_service_dependency)):
     identity = await service.find_by_identity(identity_id)
 
     checked_passwords = verify_password(
@@ -110,10 +108,7 @@ async def update_password(
     )
 
     if not checked_passwords:
-        raise HTTPException(
-            status_code=401,
-            detail="Incorrect old password"
-        )
+        raise HTTPException(status_code=401, detail="Incorrect old password")
     return await service.update_password(identity_id, new_password)
 
 @router.patch("/edit_password")
@@ -149,6 +144,32 @@ async def add_new_identity(data : AddAdminRequest, service: AuthenticationServic
     if taken_identity is not None and taken_identity.id != data.identity_id:
         raise HTTPException(detail="Этот email уже занят", status_code=409)
     await service.add_new_identity(data)
+
+@router.get("/get_all_identities")
+async def get_all_identities(service: AuthenticationService = Depends(get_service_dependency),
+                       internal_token : str = Header(..., alias="internal_token")):
+    if internal_token != INTERNAL_TOKEN or internal_token is None:
+        raise HTTPException(status_code=403, detail="Forbidden")
+    identities = await service.get_all_identities()
+    return [IdentityDto.model_validate(identity).model_dump(mode="json") for identity in identities]
+
+@router.patch("/edit_status")
+async def edit_status(identity_id : UUID, status : Status,
+                      internal_token : str = Header(..., alias="internal_token"),
+                      service: AuthenticationService = Depends(get_service_dependency)):
+    if internal_token != INTERNAL_TOKEN or internal_token is None:
+        raise HTTPException(status_code=403, detail="Forbidden")
+    identity = await service.find_by_identity(identity_id)
+    await service.update_status_identity(identity, status)
+
+@router.get("/get_status")
+async def get_status(identity_id : UUID, internal_token : str = Header(..., alias="internal_token"),
+                     service: AuthenticationService = Depends(get_service_dependency)):
+    if internal_token != INTERNAL_TOKEN or internal_token is None:
+        raise HTTPException(status_code=403, detail="Forbidden")
+    user = await service.find_by_identity(identity_id)
+    return IdentityDto.model_validate(user).model_dump(mode="json")
+
 
 
 

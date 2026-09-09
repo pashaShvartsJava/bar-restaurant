@@ -4,7 +4,7 @@ from typing import Annotated
 import httpx
 from asyncpg import InternalClientError
 from fastapi import Request, APIRouter, Form, HTTPException
-from fastapi.params import Depends
+from fastapi.params import Depends, Header
 from starlette.responses import RedirectResponse, JSONResponse
 from starlette.templating import Jinja2Templates
 
@@ -12,9 +12,12 @@ from ..model.user_model import Status
 from ..security.jwt.jwt import get_payload
 from ..dependencies.dependency import get_service_dependency
 from ..services.user_service import UserService
-from ..schema.user_schema import RegisterRequest, EmailRequest
+from ..schema.user_schema import RegisterRequest, EmailRequest, UserDto, UserInfo
 from ..schema.user_schema import UserEditSchema
+from ..config.config import settings
+from uuid import UUID
 
+INTERNAL_TOKEN = settings.internal_token
 templates = Jinja2Templates(directory="app/templates")
 router = APIRouter()
 
@@ -105,5 +108,31 @@ async def edit_password(request: Request,service: UserService = Depends(get_serv
     response = JSONResponse({"success": True})
     response.delete_cookie("access_token")
     return response
+
+@router.get("/get_all_users")
+async def get_all_users(service : UserService = Depends(get_service_dependency),
+                        internal_token : str = Header(..., alias="internal_token")):
+    if internal_token != INTERNAL_TOKEN or internal_token is None:
+        raise HTTPException(detail="Forbidden", status_code=403)
+    users = await service.find_all_users()
+    return [UserDto.model_validate(user).model_dump(mode="json") for user in users]
+
+@router.get("/get_user_address")
+async def get_user_address(identity_id : UUID, service : UserService = Depends(get_service_dependency)):
+    user = await service.find_by_identity_id(identity_id)
+    return UserInfo(
+        name=user.name,
+        surname=user.surname,
+        email=user.email,
+        phone=user.phone,
+        birthday=user.birthday,
+        city=user.address.city,
+        postal_code=user.address.postal_code,
+        street=user.address.street,
+        house=user.address.house,
+        apartment=user.address.apartment,
+        created_at=user.created_at,
+        updated_at=user.updated_at
+    ).model_dump(mode="json")
 
 

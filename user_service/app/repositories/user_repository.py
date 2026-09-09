@@ -43,3 +43,7 @@ class UserRepository:
         await self.db.delete(user)
         await self.db.commit()
 
+    async def get_all_users(self):
+        all_users = await self.db.execute(select(User))
+        return all_users.scalars().all()
+
