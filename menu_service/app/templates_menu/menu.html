@@ -249,6 +249,17 @@ body {
 
     border-color: rgba(213, 166, 91, 0.18);
 }
+.action.delete.restore {
+    background: rgba(65, 110, 70, 0.18);
+    border-color: rgba(100, 180, 110, 0.28);
+    color: #8fbd93;
+}
+
+.action.delete.restore:hover {
+    background: rgba(75, 125, 80, 0.30);
+    border-color: rgba(110, 190, 120, 0.45);
+    color: #a8d3ab;
+}
 
 
 /* =========================
@@ -823,10 +834,15 @@ body {
 
                                         <button
                                             type="button"
-                                            class="action delete"
+                                            class="action delete {% if dish.dish_status.value == 'unavailable' %}restore{% endif %}"
                                             data-dish-id="{{ dish.id }}"
-                                        >
-                                            Убрать из меню
+                                            data-status="{{ dish.dish_status.value }}"
+                                            >
+                                            {% if dish.dish_status.value == "available" %}
+                                                Убрать из меню
+                                            {% else %}
+                                                Вернуть в меню
+                                            {% endif %}
                                         </button>
 
                                     </div>
@@ -888,11 +904,10 @@ body {
 
             button.addEventListener("click", function () {
 
-                const dishId =
-                    this.dataset.dishId;
+                const dishId = this.dataset.dishId;
 
                 window.location.href =
-                    `/menu_page/dish/${dishId}/edit`;
+                    `/menu_page/edit_dish/${dishId}`;
 
             });
 
@@ -900,7 +915,7 @@ body {
 
 
     /*
-     * Убрать блюдо из меню
+     * Изменить статус блюда
      */
 
     document
@@ -909,12 +924,16 @@ body {
 
             button.addEventListener("click", async function () {
 
-                const dishId =
-                    this.dataset.dishId;
+                const dishId = this.dataset.dishId;
 
-                const confirmed = confirm(
-                    "Вы действительно хотите убрать это блюдо из меню?"
-                );
+                const isAvailable =
+                    this.dataset.status === "available";
+
+                const message = isAvailable
+                    ? "Вы действительно хотите убрать это блюдо из меню?"
+                    : "Вы действительно хотите вернуть это блюдо в меню?";
+
+                const confirmed = confirm(message);
 
                 if (!confirmed) {
                     return;
@@ -923,70 +942,63 @@ body {
                 try {
 
                     const response = await fetch(
-                        `/menu_page/dish/${dishId}/delete`,
+                        `/menu_page/change_dish_status/${dishId}`,
                         {
                             method: "PATCH"
                         }
                     );
 
-                    if (response.ok) {
+                    if (!response.ok) {
 
-                        window.location.reload();
+                        let data = null;
+
+                        try {
+                            data = await response.json();
+                        } catch {
+                            // response не JSON
+                        }
+
+                        if (data && data.detail) {
+                            alert(
+                                Array.isArray(data.detail)
+                                    ? data.detail.map(error => error.msg).join(", ")
+                                    : data.detail
+                            );
+                        } else {
+                            alert("Не удалось изменить статус блюда.");
+                        }
 
                         return;
                     }
 
+                    /*
+                     * Меняем кнопку без перезагрузки страницы
+                     */
 
-                    let data = null;
+                    if (isAvailable) {
 
-                    try {
-                        data = await response.json();
-                    } catch {
-                        // response не JSON
-                    }
-
-
-                    if (data && data.detail) {
-
-                        if (Array.isArray(data.detail)) {
-
-                            alert(
-                                data.detail
-                                    .map(error => error.msg)
-                                    .join(", ")
-                            );
-
-                        } else {
-
-                            alert(data.detail);
-
-                        }
+                        this.textContent = "Вернуть в меню";
+                        this.dataset.status = "unavailable";
+                        this.classList.add("restore");
 
                     } else {
 
-                        alert(
-                            "Не удалось убрать блюдо из меню."
-                        );
+                        this.textContent = "Убрать из меню";
+                        this.dataset.status = "available";
+                        this.classList.remove("restore");
 
                     }
 
                 } catch (error) {
 
-                    console.error(
-                        "DELETE DISH ERROR:",
-                        error
-                    );
+                    console.error("CHANGE DISH STATUS ERROR:", error);
 
-                    alert(
-                        "Не удалось подключиться к серверу."
-                    );
-
+                    alert("Не удалось подключиться к серверу.");
                 }
 
             });
 
         });
-
 </script>
 
 </body>

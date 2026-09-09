@@ -36,13 +36,27 @@ class MenuRepository:
         await self.db.refresh(new_dish)
         return new_dish
 
-    async def update_dish(self, id : int, new_dish : Menu) -> Menu:
+    async def update_dish(self, id : int, dish_name : str, description : str, price : Decimal, image_url : str) -> Menu:
         updated_dish = await self.get_dish_by_id(id)
+        if dish_name is not None:
+            updated_dish.dish_name = dish_name
+        if description is not None:
+            updated_dish.description = description
+        if price is not None:
+            updated_dish.price = price
+        if image_url is not None:
+            updated_dish.image_url = image_url
 
-        updated_dish.dish_name = new_dish.dish_name
-        updated_dish.price = new_dish.price
-        updated_dish.description = new_dish.description
+        await self.db.commit()
+        await self.db.refresh(updated_dish)
+        return updated_dish
 
+    async def update_dish_status(self, id : int):
+        updated_dish = await self.get_dish_by_id(id)
+        if updated_dish.dish_status == DishStatus.AVAILABLE:
+            updated_dish.dish_status = DishStatus.UNAVAILABLE
+        else:
+            updated_dish.dish_status = DishStatus.AVAILABLE
         await self.db.commit()
         await self.db.refresh(updated_dish)
         return updated_dish
