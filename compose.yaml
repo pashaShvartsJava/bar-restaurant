@@ -68,6 +68,25 @@ services:
       - --port
       - "8002"
       - --reload
+  menu-service:
+    build:
+      context: ./menu_service
+    container_name: menu-service
+    ports:
+      - "8001:8001"
+    env_file:
+      - ./menu_service/.env
+    volumes:
+      - ./menu_service:/menu_service
+      - ./menu_service/app/templates_menu/media:/menu_service/app/templates/media
+    command:
+      - uvicorn
+      - app.main:app
+      - --host
+      - 0.0.0.0
+      - --port
+      - "8001"
+      - --reload
 
   db-authentication:
     image: postgres:16
@@ -102,7 +121,19 @@ services:
       - "5434:5432"
     volumes:
       - postgres_admin_data:/var/lib/postgresql/data
+  db-menu:
+    image: postgres:16
+    container_name: db-menu
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: menu_db
+    ports:
+      - "5435:5432"
+    volumes:
+      - postgres_menu_data:/var/lib/postgresql/data
 volumes:
   postgres_auth_data:
   postgres_user_data:
   postgres_admin_data:
+  postgres_menu_data:

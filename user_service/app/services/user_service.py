@@ -1,6 +1,3 @@
-import jwt
-from watchfiles import awatch
-
 from ..repositories.user_repository import UserRepository
 from ..repositories.address_repository import AddressRepository
 from ..model.user_model import User
