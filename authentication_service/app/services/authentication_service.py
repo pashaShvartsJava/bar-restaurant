@@ -45,6 +45,9 @@ class AuthenticationService:
     def __init__(self, authentication_repository : AuthenticationRepository):
         self.authentication_repository = authentication_repository
 
+    async def get_all_identities(self):
+        return await self.authentication_repository.get_all_identities()
+
     async def find_by_identity(self, identity_id : UUID) -> Identity:
         return await self.authentication_repository.get_by_identity(identity_id)
 

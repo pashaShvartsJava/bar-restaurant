@@ -5,7 +5,6 @@ import httpx
 from asyncpg import InternalClientError
 from fastapi import Request, APIRouter, Form, HTTPException
 from fastapi.params import Depends
-from jinja2.runtime import identity
 from pydantic import EmailStr
 from starlette.responses import HTMLResponse, RedirectResponse, JSONResponse
 from starlette.templating import Jinja2Templates
@@ -17,9 +16,13 @@ from ..security.role.role import IdentityRole
 from ..service.admin_service import AdminService
 from ..security.jwt.jwt import get_payload
 from ..security.authorization.authorization import required_role, required_roles
+from uuid import UUID
 
 from ..model.admin import Status
+from ..config.config import settings
 
+
+INTERNAL_TOKEN = settings.internal_token
 templates = Jinja2Templates(directory="app/templates_admin")
 router = APIRouter()
 
@@ -170,4 +173,59 @@ async def edit_password(request: Request, service: AdminService = Depends(get_se
     response = JSONResponse({"success": True})
     response.delete_cookie("access_token")
     return response
+
+@router.get("/admin_panel/all_customers")
+async def show_all_customers(request : Request):
+    payload = get_payload(request)
+    required_roles(IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
+    async with httpx.AsyncClient() as client:
+        response = await client.get(url="http://user-service:8005/get_all_users", headers={"internal_token" : INTERNAL_TOKEN} )
+        response.raise_for_status()
+    users = response.json()
+
+    async with httpx.AsyncClient() as client:
+        response2 = await client.get(url="http://authentication-service:8000/get_all_identities", headers={"internal_token" : INTERNAL_TOKEN} )
+        response2.raise_for_status()
+    identities = response2.json()
+
+    statuses_by_id = {identity["id"]: identity["status"] for identity in identities}
+    for user in users:
+        user["status"] = statuses_by_id.get(str(user["identity_id"]))
+
+    return templates.TemplateResponse("all_users.html", {"request" : request, "users" : users})
+
+@router.patch("/admin_panel/all_customers/{identity_id}/block")
+async def block_customer(identity_id: UUID):
+    async with httpx.AsyncClient() as client:
+        response = await client.patch("http://authentication-service:8000/edit_status",
+                                      params={"identity_id" : str(identity_id), "status" : Status.BLOCKED.value},
+                                      headers={"internal_token" : INTERNAL_TOKEN})
+        response.raise_for_status()
+
+@router.patch("/admin_panel/all_customers/{identity_id}/unblock")
+async def unblock_customer(identity_id: UUID):
+    async with httpx.AsyncClient() as client:
+        response = await client.patch("http://authentication-service:8000/edit_status",
+                                      params={"identity_id" : str(identity_id), "status" : Status.ACTIVE.value},
+                                      headers={"internal_token" : INTERNAL_TOKEN})
+        response.raise_for_status()
+
+@router.get("/admin_panel/all_customers/{identity_id}")
+async def customer_info(request : Request, identity_id : UUID):
+    payload = get_payload(request)
+    required_roles(IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
+    async with httpx.AsyncClient() as client:
+        response = await client.get(url="http://user-service:8005/get_user_address", params={"identity_id" : str(identity_id)})
+        response.raise_for_status()
+    info_user = response.json()
+
+    async with httpx.AsyncClient() as client:
+        response2 = await client.get("http://authentication-service:8000/get_status",
+                                     params={"identity_id": str(identity_id)},
+                                     headers={"internal_token": INTERNAL_TOKEN})
+        identity = response2.json()
+        info_user["status"] = identity["status"]
+        info_user["identity_id"] = str(identity_id)
+    return templates.TemplateResponse("user_info.html", {"request" : request, "user" : info_user})
+
 

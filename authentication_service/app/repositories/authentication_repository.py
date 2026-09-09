@@ -17,6 +17,10 @@ class AuthenticationRepository:
     def __init__ (self, db : AsyncSession):
         self.db = db
 
+    async def get_all_identities(self):
+        result = await self.db.execute(select(Identity).where(Identity.role == IdentityRole.USER))
+        return result.scalars().all()
+
 ################################################
     # authentication process #
 ################################################

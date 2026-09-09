@@ -1,7 +1,7 @@
 import re
 
-from pydantic import BaseModel, Field, EmailStr, field_validator
-from datetime import date
+from pydantic import BaseModel, Field, EmailStr, field_validator, ConfigDict
+from datetime import date, datetime
 from uuid import UUID
 
 from .address_schema import AddressResponseDTO
@@ -81,3 +81,41 @@ class PasswordDTO(BaseModel):
 class EmailRequest(BaseModel):
     old_email: EmailStr | None = Field(..., min_length=6, max_length=64, description="email")
     new_email: EmailStr | None = Field(..., min_length=6, max_length=64, description="email")
+
+class UserDto(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    id : int = Field(..., )
+    identity_id: UUID = Field(..., description="identity_id")
+    name: str = Field(...,min_length=2, max_length=50, description="name")
+    surname: str = Field(...,min_length=2, max_length=50, description="surname")
+    email: EmailStr
+
+class UserInfo(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    name: str = Field(..., min_length=2, max_length=50, description="name")
+    surname: str = Field(..., min_length=2, max_length=50, description="surname")
+    email: EmailStr
+    phone: str
+    birthday: date = Field(..., description="birthday")
+    city: str = Field(..., min_length=2, max_length=100)
+    postal_code: str = Field(..., description="postal code")
+    street: str = Field(..., min_length=2, max_length=100, description="street")
+    house: int = Field(..., gt=0, description="house number")
+    apartment: int | None = Field(default=None, gt=0, description="apartment number; not necessary")
+    created_at: datetime
+    updated_at: datetime
+
+    @field_validator("phone")
+    @classmethod
+    def validate_phone(cls, value: str):
+        if not re.fullmatch(r"\+?[0-9]{10,15}", value):
+            raise ValueError("Некорректный номер телефона")
+        return value
+
+    @field_validator("postal_code")
+    @classmethod
+    def validate_postal_code(cls, value: str):
+        if not re.fullmatch(r"[0-9]{5}", value):
+            raise ValueError("Некорректный почтовый индекс")
+        return value
+

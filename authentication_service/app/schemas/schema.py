@@ -1,6 +1,6 @@
 import re
 
-from pydantic import BaseModel, Field, EmailStr, field_validator
+from pydantic import BaseModel, Field, EmailStr, field_validator, ConfigDict
 from datetime import date
 from ..model.identity_model import IdentityRole, Status
 from uuid import UUID
@@ -109,3 +109,9 @@ class PasswordUpdateDTO(BaseModel):
 class EmailRequest(BaseModel):
     old_email: EmailStr
     new_email: EmailStr
+
+class IdentityDto(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    id: UUID = Field(..., description="identity_id")
+    email : EmailStr
+    status : Status
