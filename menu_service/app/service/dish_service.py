@@ -23,8 +23,11 @@ class MenuService:
     async def create_dish(self, dish_name : str, price : Decimal, description : str, category_id : UUID, image_url : str) -> Menu:
         return await self.menu_repository.create_dish(dish_name, price, description, category_id, image_url)
 
-    async def update_dish(self, id : int, updated_dish : Menu) -> Menu:
-        return await self.menu_repository.update_dish(id, updated_dish)
+    async def update_dish(self, id : int, dish_name : str,  description : str, price : Decimal, image_url : str) -> Menu:
+        return await self.menu_repository.update_dish(id, dish_name, description, price, image_url)
+
+    async def update_dish_status(self, id : int):
+        return await self.menu_repository.update_dish_status(id)
 
     async def delete_dish(self, id : int) -> Menu:
         return await self.menu_repository.delete_dish(id)
