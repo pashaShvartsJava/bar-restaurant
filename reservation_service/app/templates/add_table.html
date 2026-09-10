@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Добавление столика</title>
+
+<style>
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        margin: 0;
+        min-height: 100vh;
+
+        background:
+            radial-gradient(
+                ellipse at 50% 0%,
+                rgba(145, 85, 75, 0.20) 0%,
+                rgba(55, 35, 40, 0.22) 38%,
+                rgba(9, 9, 11, 1) 78%
+            ),
+            linear-gradient(
+                180deg,
+                #211a1c 0%,
+                #121214 50%,
+                #09090b 100%
+            );
+
+        color: #ffffff;
+        font-family: Arial, sans-serif;
+    }
+
+    .page {
+        width: 100%;
+        max-width: 760px;
+        margin: 0 auto;
+        padding: 50px 30px 70px;
+    }
+
+    /* =========================
+       BACK
+    ========================= */
+
+    .back {
+        display: inline-flex;
+        align-items: center;
+        gap: 9px;
+
+        margin-bottom: 35px;
+        padding: 8px 12px;
+
+        background: rgba(42, 40, 42, 0.65);
+        border: 1px solid rgba(255, 255, 255, 0.07);
+        border-radius: 6px;
+
+        color: #77777d;
+        font-size: 10px;
+        text-decoration: none;
+
+        transition:
+            background 0.2s,
+            border-color 0.2s,
+            color 0.2s,
+            transform 0.15s;
+    }
+
+    .back-arrow {
+        color: #d5a65b;
+        font-size: 14px;
+        line-height: 1;
+
+        transition: transform 0.2s;
+    }
+
+    .back:hover {
+        background: rgba(52, 49, 52, 0.9);
+        border-color: rgba(213, 166, 91, 0.35);
+        color: #ffffff;
+    }
+
+    .back:hover .back-arrow {
+        transform: translateX(-3px);
+        color: #e4b971;
+    }
+
+    .back:active {
+        transform: translateY(1px);
+    }
+
+    /* =========================
+       HEADER
+    ========================= */
+
+    .header {
+        margin-bottom: 28px;
+    }
+
+    .title {
+        margin: 0 0 8px;
+
+        font-family: Georgia, serif;
+        font-size: 38px;
+        font-weight: normal;
+        letter-spacing: -0.5px;
+    }
+
+    .subtitle {
+        margin: 0;
+
+        color: #77777d;
+        font-size: 11px;
+        line-height: 1.6;
+    }
+
+    /* =========================
+       CARD
+    ========================= */
+
+    .card {
+        padding: 30px;
+
+        background: rgba(25, 24, 26, 0.92);
+        border: 1px solid rgba(255, 255, 255, 0.07);
+        border-radius: 10px;
+
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+    }
+
+    /* =========================
+       FIELDS
+    ========================= */
+
+    .field {
+        margin-bottom: 22px;
+    }
+
+    .field:last-child {
+        margin-bottom: 0;
+    }
+
+    label {
+        display: block;
+        margin-bottom: 8px;
+
+        color: #c5a69a;
+        font-size: 10px;
+        letter-spacing: 0.5px;
+    }
+
+    input {
+        width: 100%;
+        padding: 12px 13px;
+
+        background: rgba(40, 34, 35, 0.9);
+        border: 1px solid rgba(180, 100, 90, 0.28);
+        border-radius: 7px;
+
+        color: #f0b38a;
+        font-family: Arial, sans-serif;
+        font-size: 12px;
+
+        outline: none;
+
+        transition:
+            background 0.2s,
+            border-color 0.2s;
+    }
+
+    input:hover {
+        background: rgba(48, 39, 40, 0.95);
+        border-color: rgba(180, 100, 90, 0.45);
+    }
+
+    input:focus {
+        border-color: rgba(213, 166, 91, 0.65);
+    }
+
+    input::placeholder {
+        color: #68666a;
+    }
+
+    /* Убираем стрелки у number */
+
+    input[type="number"]::-webkit-inner-spin-button,
+    input[type="number"]::-webkit-outer-spin-button {
+        opacity: 0.5;
+    }
+
+    .hint {
+        margin-top: 7px;
+
+        color: #68666a;
+        font-size: 9px;
+        line-height: 1.5;
+    }
+
+    /* =========================
+       FORM ACTIONS
+    ========================= */
+
+    .form-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+
+        margin-top: 30px;
+        padding-top: 22px;
+
+        border-top: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+
+        padding: 11px 20px;
+
+        border-radius: 7px;
+
+        font-family: Arial, sans-serif;
+        font-size: 10px;
+        font-weight: 600;
+
+        cursor: pointer;
+        text-decoration: none;
+
+        transition:
+            background 0.2s,
+            border-color 0.2s,
+            color 0.2s;
+    }
+
+    .cancel {
+        background: rgba(40, 39, 41, 0.8);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        color: #77777d;
+    }
+
+    .cancel:hover {
+        background: rgba(52, 50, 53, 0.9);
+        color: #ffffff;
+    }
+
+    .save {
+        background: rgba(175, 132, 73, 0.9);
+        border: 1px solid rgba(213, 166, 91, 0.5);
+        color: #171412;
+    }
+
+    .save:hover {
+        background: #d5a65b;
+        border-color: #e4b971;
+    }
+
+    /* =========================
+       RESPONSIVE
+    ========================= */
+
+    @media (max-width: 600px) {
+
+        .page {
+            padding: 30px 18px 50px;
+        }
+
+        .title {
+            font-size: 31px;
+        }
+
+        .card {
+            padding: 22px;
+        }
+
+        .form-actions {
+            flex-direction: column-reverse;
+        }
+
+        .button {
+            width: 100%;
+            text-align: center;
+        }
+    }
+</style>
+
+</head>
+
+<body>
+
+<div class="page">
+
+<!-- Назад -->
+
+<a href="/tables" class="back">
+    <span class="back-arrow">←</span>
+    Назад к столикам
+</a>
+
+
+<!-- Заголовок -->
+
+<header class="header">
+
+    <h1 class="title">
+        Добавление столика
+    </h1>
+
+    <p class="subtitle">
+        Укажите номер столика и максимальное количество гостей.
+    </p>
+
+</header>
+
+
+<!-- Форма -->
+
+<div class="card">
+
+    <form
+        action="/tables/add_table"
+        method="post"
+    >
+
+        <!-- Номер -->
+
+        <div class="field">
+
+            <label for="table_number">
+                НОМЕР СТОЛИКА
+            </label>
+
+            <input
+                type="number"
+                id="table_number"
+                name="table_number"
+                min="1"
+                required
+                placeholder="Например, 12"
+            >
+
+            <div class="hint">
+                Номер должен быть уникальным.
+            </div>
+
+        </div>
+
+
+        <!-- Вместимость -->
+
+        <div class="field">
+
+            <label for="capacity">
+                ВМЕСТИМОСТЬ
+            </label>
+
+            <input
+                type="number"
+                id="capacity"
+                name="capacity"
+                min="1"
+                required
+                placeholder="Например, 4"
+            >
+
+            <div class="hint">
+                Максимальное количество гостей за столиком.
+            </div>
+
+        </div>
+
+
+        <!-- Кнопки -->
+
+        <div class="form-actions">
+
+            <a
+                href="/tables"
+                class="button cancel"
+            >
+                Отмена
+            </a>
+
+            <button
+                type="submit"
+                class="button save"
+            >
+                Добавить столик
+            </button>
+
+        </div>
+
+    </form>
+
+</div>
+
+</div>
+
+</body>
+</html>

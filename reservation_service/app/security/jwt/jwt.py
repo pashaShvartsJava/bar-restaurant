@@ -11,16 +11,9 @@ ALGORITHM = settings.jwt_algorithm
 
 def decode_access_token(token: str) -> dict:
     try:
-        payload = jwt.decode(
-            token,
-            PUBLIC_SECRET_KEY,
-            algorithms=ALGORITHM
-        )
+        payload = jwt.decode(token, PUBLIC_SECRET_KEY, algorithms=ALGORITHM)
         return payload
-
-    except InvalidTokenError as e:
-        print("JWT ERROR:", type(e).__name__, str(e))
-
+    except InvalidTokenError:
         raise HTTPException(
             status_code=401,
             detail="Authentication required"
