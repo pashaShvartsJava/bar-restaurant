@@ -2,11 +2,14 @@ from fastapi import APIRouter, Request, Form
 from starlette.responses import RedirectResponse
 from starlette.templating import Jinja2Templates
 from fastapi.params import Depends
+
+from ..models.table import TableStatus
 from ..security.jwt.jwt import get_payload
 from ..security.authorization.authorization import required_roles
 from ..security.role.role import IdentityRole
-from ..dependencies.dependencies import get_table_service_dependency
+from ..dependencies.dependencies import get_table_service_dependency, get_table_session_service_dependency
 from ..service.table_service import TableService
+from ..service.table_session_service import TableSessionService
 
 router = APIRouter()
 templates = Jinja2Templates(directory="app/templates")
@@ -32,4 +35,18 @@ async def add_table(request : Request,
     payload = get_payload(request)
     required_roles(IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
     await table_service.create_table(table_number, capacity)
+    return RedirectResponse(url="/tables", status_code=303)
+
+@router.post("/tables/start_session/{table_id}")
+async def take_table(request : Request, table_id : int,  service : TableSessionService = Depends(get_table_session_service_dependency)):
+    payload = get_payload(request)
+    required_roles(IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
+    await service.start_session(table_id)
+    return RedirectResponse(url="/tables", status_code=303)
+
+@router.post("/tables/end_session/{table_id}")
+async def take_table(request : Request, table_id : int,  service : TableSessionService = Depends(get_table_session_service_dependency)):
+    payload = get_payload(request)
+    required_roles(IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
+    await service.end_session(table_id)
     return RedirectResponse(url="/tables", status_code=303)
