@@ -804,7 +804,7 @@
                     {% if table.status.value == "taken" %}
 
                         <form
-                            action="/tables/{{ table.id }}/sessions/finish"
+                            action="/tables/end_session/{{ table.id }}"
                             method="post"
                         >
 
@@ -820,7 +820,7 @@
                     {% else %}
 
                         <form
-                            action="/tables/{{ table.id }}/sessions"
+                            action="/tables/start_session/{{ table.id }}"
                             method="post"
                         >
 

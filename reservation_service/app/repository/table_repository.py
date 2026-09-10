@@ -11,6 +11,10 @@ class TableRepository:
     def __init__(self, db : AsyncSession):
         self.db = db
 
+    async def get_table_by_id(self, table_id : int):
+        result = await self.db.execute(select(Table).where(Table.id==table_id))
+        return result.scalar_one_or_none()
+
     async def get_all_tables(self):
         result = await self.db.execute(select(Table))
         return result.scalars().all()
