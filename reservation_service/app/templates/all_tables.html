@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Управление столиками</title>
+
+<style>
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        min-height: 100vh;
+
+        background:
+            radial-gradient(
+                ellipse at 50% 0%,
+                rgba(145, 85, 75, 0.20) 0%,
+                rgba(55, 35, 40, 0.22) 38%,
+                rgba(9, 9, 11, 1) 78%
+            ),
+            linear-gradient(
+                180deg,
+                #211a1c 0%,
+                #121214 50%,
+                #09090b 100%
+            );
+
+        color: #ffffff;
+
+        font-family: Arial, sans-serif;
+    }
+
+    .page {
+        width: 100%;
+        max-width: 1200px;
+
+        margin: 0 auto;
+
+        padding: 60px 35px;
+    }
+
+
+    /* =========================
+       BACK
+    ========================= */
+
+    .back {
+        display: inline-flex;
+
+        align-items: center;
+
+        gap: 9px;
+
+        margin-bottom: 35px;
+
+        padding: 8px 12px;
+
+        background: rgba(42, 40, 42, 0.65);
+
+        border: 1px solid rgba(255, 255, 255, 0.07);
+
+        border-radius: 6px;
+
+        color: #77777d;
+
+        font-size: 10px;
+
+        text-decoration: none;
+
+        transition:
+            background 0.2s,
+            border-color 0.2s,
+            color 0.2s,
+            transform 0.15s;
+    }
+
+    .back-arrow {
+        color: #d5a65b;
+
+        font-size: 14px;
+
+        line-height: 1;
+
+        transition: transform 0.2s;
+    }
+
+    .back:hover {
+        background: rgba(52, 49, 52, 0.9);
+
+        border-color: rgba(213, 166, 91, 0.35);
+
+        color: #ffffff;
+    }
+
+    .back:hover .back-arrow {
+        transform: translateX(-3px);
+
+        color: #e4b971;
+    }
+
+    .back:active {
+        transform: translateY(1px);
+    }
+
+
+    /* =========================
+       HEADER
+    ========================= */
+
+    .header {
+        display: flex;
+
+        justify-content: space-between;
+
+        align-items: center;
+
+        margin-bottom: 45px;
+    }
+
+    .header-info {
+        text-align: left;
+    }
+
+    .title {
+        color: #ffffff;
+
+        font-family: Georgia, serif;
+
+        font-size: 42px;
+
+        font-weight: normal;
+
+        letter-spacing: 3px;
+    }
+
+    .subtitle {
+        margin-top: 12px;
+
+        color: #77777d;
+
+        font-size: 13px;
+    }
+
+    .header-actions {
+        display: flex;
+
+        gap: 8px;
+    }
+
+
+    /* =========================
+       BUTTONS
+    ========================= */
+
+    .btn {
+        display: inline-flex;
+
+        align-items: center;
+
+        justify-content: center;
+
+        min-height: 34px;
+
+        padding: 9px 13px;
+
+        background: rgba(42, 40, 42, 0.95);
+
+        border: 1px solid rgba(255, 255, 255, 0.08);
+
+        border-radius: 6px;
+
+        color: #aaa9ae;
+
+        font-family: Arial, sans-serif;
+
+        font-size: 9px;
+
+        font-weight: 600;
+
+        text-decoration: none;
+
+        cursor: pointer;
+
+        transition:
+            background 0.2s,
+            border-color 0.2s,
+            color 0.2s;
+    }
+
+    .btn:hover {
+        background: rgba(52, 49, 52, 0.98);
+
+        border-color: #d5a65b;
+
+        color: #ffffff;
+    }
+
+    .btn.add {
+        color: #d5a65b;
+    }
+
+    .btn.add:hover {
+        color: #e4b971;
+    }
+
+
+    /* =========================
+       TABLES CARD
+    ========================= */
+
+    .tables-card {
+        width: 100%;
+
+        background: rgba(27, 25, 27, 0.96);
+
+        border: 1px solid rgba(213, 166, 91, 0.16);
+
+        border-radius: 14px;
+
+        overflow: hidden;
+
+        box-shadow:
+            0 20px 60px rgba(0, 0, 0, 0.35);
+    }
+
+
+    /* =========================
+       CARD HEADER
+    ========================= */
+
+    .tables-header {
+        display: grid;
+
+        grid-template-columns:
+            minmax(250px, 1fr)
+            150px
+            260px;
+
+        align-items: center;
+
+        min-height: 55px;
+
+        padding: 0 22px;
+
+        background: rgba(40, 34, 32, 0.98);
+
+        border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+    }
+
+    .column-name {
+        color: #77777d;
+
+        font-size: 9px;
+
+        font-weight: 600;
+
+        letter-spacing: 1px;
+
+        text-transform: uppercase;
+    }
+
+    .column-name.status-column {
+        text-align: center;
+    }
+
+    .column-name.actions-column {
+        text-align: right;
+    }
+
+
+    /* =========================
+       TABLE ROW
+    ========================= */
+
+    .table-row {
+        display: grid;
+
+        grid-template-columns:
+            minmax(250px, 1fr)
+            150px
+            260px;
+
+        align-items: center;
+
+        min-height: 95px;
+
+        padding: 15px 22px;
+
+        background: rgba(30, 29, 31, 0.97);
+
+        border-bottom: 1px solid rgba(255, 255, 255, 0.055);
+
+        transition:
+            background 0.2s,
+            border-color 0.2s;
+    }
+
+    .table-row:last-child {
+        border-bottom: none;
+    }
+
+    .table-row:hover {
+        background: rgba(38, 36, 38, 0.98);
+
+        border-color: rgba(213, 166, 91, 0.18);
+    }
+
+
+    /* =========================
+       TABLE INFO
+    ========================= */
+
+    .table-info {
+        min-width: 0;
+    }
+
+    .table-number {
+        margin-bottom: 6px;
+
+        color: #ffffff;
+
+        font-size: 13px;
+
+        font-weight: 600;
+    }
+
+    .table-capacity {
+        color: #77777d;
+
+        font-size: 10px;
+
+        line-height: 1.5;
+    }
+
+
+    /* =========================
+       STATUS
+    ========================= */
+
+    .table-status {
+        display: flex;
+
+        align-items: center;
+
+        justify-content: center;
+
+        gap: 7px;
+
+        font-size: 10px;
+
+        font-weight: 600;
+    }
+
+    .table-status::before {
+        content: "";
+
+        width: 7px;
+
+        height: 7px;
+
+        border-radius: 50%;
+    }
+
+    .status-free {
+        color: #8fbd93;
+    }
+
+    .status-free::before {
+        background: #78b98b;
+
+        box-shadow:
+            0 0 7px rgba(120, 185, 139, 0.35);
+    }
+
+    .status-taken {
+        color: #c87878;
+    }
+
+    .status-taken::before {
+        background: #c66e6e;
+
+        box-shadow:
+            0 0 7px rgba(198, 110, 110, 0.35);
+    }
+
+
+    /* =========================
+       ACTIONS
+    ========================= */
+
+    .table-actions {
+        display: flex;
+
+        justify-content: flex-end;
+
+        gap: 7px;
+    }
+
+    .action {
+        display: inline-flex;
+
+        align-items: center;
+
+        justify-content: center;
+
+        min-height: 31px;
+
+        padding: 8px 11px;
+
+        background: rgba(42, 40, 42, 0.95);
+
+        border: 1px solid rgba(255, 255, 255, 0.08);
+
+        border-radius: 6px;
+
+        color: #aaa9ae;
+
+        font-family: Arial, sans-serif;
+
+        font-size: 9px;
+
+        text-decoration: none;
+
+        cursor: pointer;
+
+        transition:
+            background 0.2s,
+            border-color 0.2s,
+            color 0.2s;
+    }
+
+    .action:hover {
+        background: rgba(52, 49, 52, 0.98);
+
+        border-color: #d5a65b;
+
+        color: #ffffff;
+    }
+
+
+    /* =========================
+       TAKE
+    ========================= */
+
+    .action.take {
+        background: rgba(80, 30, 35, 0.35);
+
+        border-color: rgba(190, 70, 75, 0.28);
+
+        color: #c87878;
+    }
+
+    .action.take:hover {
+        background: rgba(100, 35, 40, 0.55);
+
+        border-color: #d98282;
+
+        color: #e39a9a;
+    }
+
+
+    /* =========================
+       RELEASE
+    ========================= */
+
+    .action.release {
+        background: rgba(65, 110, 70, 0.18);
+
+        border-color: rgba(100, 180, 110, 0.28);
+
+        color: #8fbd93;
+    }
+
+    .action.release:hover {
+        background: rgba(75, 125, 80, 0.30);
+
+        border-color: rgba(110, 190, 120, 0.45);
+
+        color: #a8d3ab;
+    }
+
+
+    /* =========================
+       RESERVE
+    ========================= */
+
+    .action.reserve {
+        color: #d5a65b;
+    }
+
+    .action.reserve:hover {
+        border-color: #d5a65b;
+
+        color: #e4b971;
+    }
+
+
+    /* =========================
+       EMPTY
+    ========================= */
+
+    .empty-tables {
+        padding: 55px 30px;
+
+        background: rgba(27, 25, 27, 0.96);
+
+        text-align: center;
+    }
+
+    .empty-title {
+        color: #ffffff;
+
+        font-family: Georgia, serif;
+
+        font-size: 18px;
+    }
+
+    .empty-text {
+        margin-top: 9px;
+
+        color: #77777d;
+
+        font-size: 10px;
+    }
+
+
+    /* =========================
+       FOOTER
+    ========================= */
+
+    .footer {
+        padding-top: 35px;
+
+        text-align: center;
+
+        color: #4f4f54;
+
+        font-size: 9px;
+
+        letter-spacing: 1px;
+    }
+
+
+    /* =========================
+       RESPONSIVE
+    ========================= */
+
+    @media (max-width: 950px) {
+
+        .tables-header,
+        .table-row {
+            grid-template-columns:
+                minmax(200px, 1fr)
+                120px
+                220px;
+        }
+
+        .table-actions {
+            flex-direction: column;
+
+            align-items: stretch;
+        }
+
+        .action {
+            width: 100%;
+        }
+    }
+
+
+    @media (max-width: 750px) {
+
+        .page {
+            padding: 40px 20px;
+        }
+
+        .header {
+            flex-direction: column;
+
+            align-items: flex-start;
+
+            gap: 20px;
+        }
+
+        .header-actions {
+            width: 100%;
+        }
+
+        .header-actions .btn {
+            flex: 1;
+        }
+
+        .tables-header {
+            display: none;
+        }
+
+        .table-row {
+            display: grid;
+
+            grid-template-columns: 1fr 1fr;
+
+            gap: 15px;
+
+            padding: 20px;
+        }
+
+        .table-status {
+            justify-content: flex-end;
+        }
+
+        .table-actions {
+            grid-column: 1 / -1;
+
+            flex-direction: row;
+
+            justify-content: flex-start;
+
+            padding-top: 5px;
+        }
+
+        .action {
+            width: auto;
+        }
+    }
+
+
+    @media (max-width: 500px) {
+
+        .page {
+            padding: 30px 15px;
+        }
+
+        .title {
+            font-size: 34px;
+        }
+
+        .header-actions {
+            flex-direction: column;
+        }
+
+        .header-actions .btn {
+            width: 100%;
+        }
+
+        .table-row {
+            display: flex;
+
+            flex-direction: column;
+
+            align-items: stretch;
+
+            gap: 12px;
+
+            padding: 18px 16px;
+        }
+
+        .table-status {
+            justify-content: flex-start;
+        }
+
+        .table-actions {
+            flex-direction: column;
+
+            padding-top: 3px;
+        }
+
+        .action {
+            width: 100%;
+        }
+    }
+
+</style>
+
+</head>
+
+<body>
+
+<div class="page">
+
+<a href="/admin_panel" class="back">
+
+    <span class="back-arrow">
+        ←
+    </span>
+
+    Назад
+
+</a>
+
+<header class="header">
+
+    <div class="header-info">
+
+        <h1 class="title">
+            Столики
+        </h1>
+
+        <p class="subtitle">
+            Управление столиками и их текущим состоянием.
+        </p>
+
+    </div>
+
+
+    <div class="header-actions">
+
+        <a
+            href="/reservations/history"
+            class="btn"
+        >
+            История бронирований
+        </a>
+
+        <a
+            href="/tables/add_table"
+            class="btn add"
+        >
+            + Добавить столик
+        </a>
+
+    </div>
+
+</header>
+
+
+<!-- =========================
+     TABLES
+========================= -->
+
+<section class="tables-card">
+
+    {% if tables %}
+
+        <!-- Заголовок -->
+
+        <div class="tables-header">
+
+            <div class="column-name">
+                Столик
+            </div>
+
+            <div class="column-name status-column">
+                Статус
+            </div>
+
+            <div class="column-name actions-column">
+                Действия
+            </div>
+
+        </div>
+
+
+        <!-- Столики -->
+
+        {% for table in tables %}
+
+            <div class="table-row">
+
+                <!-- Информация -->
+
+                <div class="table-info">
+
+                    <div class="table-number">
+                        Столик №{{ table.table_number }}
+                    </div>
+
+                    <div class="table-capacity">
+                        До {{ table.capacity }} гостей
+                    </div>
+
+                </div>
+
+
+                <!-- Статус -->
+
+                <div>
+
+                    {% if table.status.value == "taken" %}
+
+                        <div class="table-status status-taken">
+                            Занят
+                        </div>
+
+                    {% else %}
+
+                        <div class="table-status status-free">
+                            Свободен
+                        </div>
+
+                    {% endif %}
+
+                </div>
+
+
+                <!-- Действия -->
+
+                <div class="table-actions">
+
+                    {% if table.status.value == "taken" %}
+
+                        <form
+                            action="/tables/{{ table.id }}/sessions/finish"
+                            method="post"
+                        >
+
+                            <button
+                                type="submit"
+                                class="action release"
+                            >
+                                Освободить
+                            </button>
+
+                        </form>
+
+                    {% else %}
+
+                        <form
+                            action="/tables/{{ table.id }}/sessions"
+                            method="post"
+                        >
+
+                            <button
+                                type="submit"
+                                class="action take"
+                            >
+                                Занять
+                            </button>
+
+                        </form>
+
+                    {% endif %}
+
+
+                    <a
+                        href="/reservations/create?table_id={{ table.id }}"
+                        class="action reserve"
+                    >
+                        Зарезервировать
+                    </a>
+
+                </div>
+
+            </div>
+
+        {% endfor %}
+
+    {% else %}
+
+        <div class="empty-tables">
+
+            <div class="empty-title">
+                Столиков пока нет
+            </div>
+
+            <div class="empty-text">
+                Добавьте первый столик, чтобы он появился в списке.
+            </div>
+
+        </div>
+
+    {% endif %}
+
+</section>
+
+
+<div class="footer">
+    RESTAURANT · TABLE MANAGEMENT
+</div>
+
+</div>
+
+</body>
+</html>
+
+
