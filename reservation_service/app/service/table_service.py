@@ -13,3 +13,6 @@ class TableService:
 
     async def create_table(self, table_number : int, capacity : int):
         return await self.table_repository.create_table(table_number, capacity)
+
+    async def get_table_by_id(self, table_id : int):
+        return await self.table_repository.get_table_by_id(table_id)

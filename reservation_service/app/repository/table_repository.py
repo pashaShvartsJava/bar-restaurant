@@ -4,6 +4,8 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import List, Optional
 from sqlalchemy import or_
+from sqlalchemy.orm import selectinload
+
 from ..models.table import Table
 
 class TableRepository:
@@ -12,7 +14,7 @@ class TableRepository:
         self.db = db
 
     async def get_table_by_id(self, table_id : int):
-        result = await self.db.execute(select(Table).where(Table.id==table_id))
+        result = await self.db.execute(select(Table).options(selectinload(Table.reservations)).where(Table.id==table_id))
         return result.scalar_one_or_none()
 
     async def get_all_tables(self):

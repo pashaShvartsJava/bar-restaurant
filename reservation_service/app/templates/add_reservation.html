@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Новое бронирование</title>
+
+<style>
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        min-height: 100vh;
+
+        background:
+            radial-gradient(
+                ellipse at 50% 0%,
+                rgba(145, 85, 75, 0.20) 0%,
+                rgba(55, 35, 40, 0.22) 38%,
+                rgba(9, 9, 11, 1) 78%
+            ),
+            linear-gradient(
+                180deg,
+                #211a1c 0%,
+                #121214 50%,
+                #09090b 100%
+            );
+
+        color: #ffffff;
+
+        font-family: Arial, sans-serif;
+    }
+
+
+    /* =========================
+       PAGE
+    ========================= */
+
+    .page {
+        width: 100%;
+        max-width: 1200px;
+
+        margin: 0 auto;
+
+        padding: 60px 35px;
+    }
+
+
+    /* =========================
+       BACK
+    ========================= */
+
+    .back {
+        display: inline-flex;
+
+        align-items: center;
+
+        gap: 9px;
+
+        margin-bottom: 35px;
+
+        padding: 8px 12px;
+
+        background: rgba(42, 40, 42, 0.65);
+
+        border: 1px solid rgba(255, 255, 255, 0.07);
+
+        border-radius: 6px;
+
+        color: #77777d;
+
+        font-size: 10px;
+
+        text-decoration: none;
+
+        transition:
+            background 0.2s,
+            border-color 0.2s,
+            color 0.2s,
+            transform 0.15s;
+    }
+
+    .back-arrow {
+        color: #d5a65b;
+
+        font-size: 14px;
+
+        line-height: 1;
+
+        transition: transform 0.2s;
+    }
+
+    .back:hover {
+        background: rgba(52, 49, 52, 0.9);
+
+        border-color: rgba(213, 166, 91, 0.35);
+
+        color: #ffffff;
+    }
+
+    .back:hover .back-arrow {
+        transform: translateX(-3px);
+
+        color: #e4b971;
+    }
+
+    .back:active {
+        transform: translateY(1px);
+    }
+
+
+    /* =========================
+       HEADER
+    ========================= */
+
+    .header {
+        margin-bottom: 35px;
+    }
+
+    .title {
+        color: #ffffff;
+
+        font-family: Georgia, serif;
+
+        font-size: 42px;
+
+        font-weight: normal;
+
+        letter-spacing: 3px;
+    }
+
+    .subtitle {
+        margin-top: 12px;
+
+        color: #77777d;
+
+        font-size: 13px;
+    }
+
+
+    /* =========================
+       CONTENT
+    ========================= */
+
+    .content {
+        display: grid;
+
+        grid-template-columns: 1fr 1.35fr;
+
+        gap: 25px;
+
+        align-items: start;
+    }
+
+
+    /* =========================
+       CARDS
+    ========================= */
+
+    .card {
+        width: 100%;
+
+        background: rgba(27, 25, 27, 0.96);
+
+        border: 1px solid rgba(213, 166, 91, 0.16);
+
+        border-radius: 14px;
+
+        overflow: hidden;
+
+        box-shadow:
+            0 20px 60px rgba(0, 0, 0, 0.35);
+    }
+
+
+    /* =========================
+       CARD HEADER
+    ========================= */
+
+    .card-header {
+        min-height: 55px;
+
+        display: flex;
+
+        align-items: center;
+
+        padding: 0 22px;
+
+        background: rgba(40, 34, 32, 0.98);
+
+        border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+    }
+
+    .card-title {
+        color: #77777d;
+
+        font-size: 9px;
+
+        font-weight: 600;
+
+        letter-spacing: 1px;
+
+        text-transform: uppercase;
+    }
+
+
+    /* =========================
+       CREATE RESERVATION
+    ========================= */
+
+    .reservation-form {
+        padding: 25px;
+    }
+
+
+    /* =========================
+       TABLE INFO
+    ========================= */
+
+    .table-info {
+        margin-bottom: 25px;
+
+        padding-bottom: 22px;
+
+        border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+    }
+
+    .table-label {
+        margin-bottom: 8px;
+
+        color: #77777d;
+
+        font-size: 9px;
+
+        font-weight: 600;
+
+        letter-spacing: 1px;
+
+        text-transform: uppercase;
+    }
+
+    .table-number {
+        color: #ffffff;
+
+        font-size: 15px;
+
+        font-weight: 600;
+    }
+
+    .table-capacity {
+        margin-top: 6px;
+
+        color: #77777d;
+
+        font-size: 10px;
+    }
+
+
+    /* =========================
+       FIELDS
+    ========================= */
+
+    .field {
+        margin-bottom: 20px;
+    }
+
+    .field label {
+        display: block;
+
+        margin-bottom: 8px;
+
+        color: #aaa9ae;
+
+        font-size: 10px;
+
+        font-weight: 600;
+    }
+
+    .field input {
+        width: 100%;
+
+        height: 42px;
+
+        padding: 0 12px;
+
+        background: rgba(42, 40, 42, 0.95);
+
+        border: 1px solid rgba(255, 255, 255, 0.08);
+
+        border-radius: 6px;
+
+        color: #ffffff;
+
+        font-family: Arial, sans-serif;
+
+        font-size: 11px;
+
+        outline: none;
+
+        transition:
+            background 0.2s,
+            border-color 0.2s;
+    }
+
+    .field input:focus {
+        background: rgba(52, 49, 52, 0.98);
+
+        border-color: rgba(213, 166, 91, 0.55);
+    }
+
+    .field input::-webkit-calendar-picker-indicator {
+        filter: invert(0.75);
+
+        cursor: pointer;
+    }
+
+
+    /* =========================
+       FORM ACTIONS
+    ========================= */
+
+    .form-actions {
+        display: flex;
+
+        justify-content: flex-end;
+
+        gap: 8px;
+
+        margin-top: 28px;
+
+        padding-top: 20px;
+
+        border-top: 1px solid rgba(255, 255, 255, 0.07);
+    }
+
+    .button {
+        display: inline-flex;
+
+        align-items: center;
+
+        justify-content: center;
+
+        min-height: 34px;
+
+        padding: 9px 13px;
+
+        border-radius: 6px;
+
+        font-family: Arial, sans-serif;
+
+        font-size: 9px;
+
+        font-weight: 600;
+
+        text-decoration: none;
+
+        cursor: pointer;
+
+        transition:
+            background 0.2s,
+            border-color 0.2s,
+            color 0.2s;
+    }
+
+    .button.cancel {
+        background: rgba(42, 40, 42, 0.95);
+
+        border: 1px solid rgba(255, 255, 255, 0.08);
+
+        color: #aaa9ae;
+    }
+
+    .button.cancel:hover {
+        background: rgba(52, 49, 52, 0.98);
+
+        border-color: #d5a65b;
+
+        color: #ffffff;
+    }
+
+    .button.save {
+        background: rgba(80, 30, 35, 0.35);
+
+        border: 1px solid rgba(190, 70, 75, 0.28);
+
+        color: #c87878;
+    }
+
+    .button.save:hover {
+        background: rgba(100, 35, 40, 0.55);
+
+        border-color: #d98282;
+
+        color: #e39a9a;
+    }
+
+
+    /* =========================
+       RESERVATIONS
+    ========================= */
+
+    .reservations-list {
+        padding: 15px;
+    }
+
+    .reservation-item {
+        padding: 17px 18px;
+
+        background: rgba(30, 29, 31, 0.97);
+
+        border: 1px solid rgba(255, 255, 255, 0.055);
+
+        border-radius: 8px;
+
+        margin-bottom: 10px;
+
+        transition:
+            background 0.2s,
+            border-color 0.2s;
+    }
+
+    .reservation-item:last-child {
+        margin-bottom: 0;
+    }
+
+    .reservation-item:hover {
+        background: rgba(38, 36, 38, 0.98);
+
+        border-color: rgba(213, 166, 91, 0.18);
+    }
+
+    .reservation-main {
+        display: flex;
+
+        flex-direction: column;
+
+        gap: 7px;
+    }
+
+    .reservation-table {
+        color: #ffffff;
+
+        font-size: 12px;
+
+        font-weight: 600;
+    }
+
+
+    /* =========================
+       CUSTOMER
+    ========================= */
+
+    .reservation-customer {
+        display: flex;
+
+        flex-direction: column;
+
+        gap: 5px;
+
+        padding: 4px 0;
+    }
+
+    .customer-name {
+        color: #e8e3dd;
+
+        font-size: 13px;
+
+        font-weight: 600;
+    }
+
+    .customer-phone {
+        color: #8f8984;
+
+        font-size: 10px;
+    }
+
+
+    /* =========================
+       RESERVATION TIME
+    ========================= */
+
+    .reservation-time {
+        color: #aaa9ae;
+
+        font-size: 10px;
+    }
+
+    .reservation-time-arrow {
+        margin: 0 7px;
+
+        color: #d5a65b;
+    }
+
+
+    /* =========================
+       RESERVATION NUMBER
+    ========================= */
+
+    .reservation-number {
+margin-top: 6px;
+
+color: #77777d;
+
+font-size: 11px;
+
+font-weight: 500;
+
+}
+
+.reservation-number-value {
+color: #d5a65b;
+
+font-size: 14px;
+
+font-weight: 600;
+
+letter-spacing: 0.5px;
+
+}
+
+
+
+
+    /* =========================
+       EMPTY
+    ========================= */
+
+    .empty-reservations {
+        padding: 50px 25px;
+
+        text-align: center;
+    }
+
+    .empty-title {
+        color: #ffffff;
+
+        font-family: Georgia, serif;
+
+        font-size: 17px;
+    }
+
+    .empty-text {
+        margin-top: 8px;
+
+        color: #77777d;
+
+        font-size: 10px;
+    }
+
+
+    /* =========================
+       FOOTER
+    ========================= */
+
+    .footer {
+        padding-top: 35px;
+
+        text-align: center;
+
+        color: #4f4f54;
+
+        font-size: 9px;
+
+        letter-spacing: 1px;
+    }
+
+
+    /* =========================
+       RESPONSIVE
+    ========================= */
+
+    @media (max-width: 850px) {
+
+        .content {
+            grid-template-columns: 1fr;
+        }
+
+        .reservations-list {
+            max-height: none;
+        }
+    }
+
+
+    @media (max-width: 500px) {
+
+        .page {
+            padding: 30px 15px;
+        }
+
+        .title {
+            font-size: 34px;
+        }
+
+        .reservation-form {
+            padding: 20px;
+        }
+
+        .form-actions {
+            flex-direction: column;
+        }
+
+        .button {
+            width: 100%;
+        }
+    }
+
+</style>
+
+</head>
+
+<body>
+
+<div class="page">
+
+
+<!-- =========================
+     BACK
+========================= -->
+
+<a href="/tables" class="back">
+
+    <span class="back-arrow">
+        ←
+    </span>
+
+    Назад к столикам
+
+</a>
+
+
+<!-- =========================
+     HEADER
+========================= -->
+
+<header class="header">
+
+    <h1 class="title">
+        Новое бронирование
+    </h1>
+
+    <p class="subtitle">
+        Создание нового бронирования для выбранного столика.
+    </p>
+
+</header>
+
+
+<!-- =========================
+     CONTENT
+========================= -->
+
+<main class="content">
+
+
+    <!-- =========================
+         CREATE RESERVATION
+    ========================= -->
+
+    <section class="card">
+
+        <div class="card-header">
+
+            <div class="card-title">
+                Создание бронирования
+            </div>
+
+        </div>
+
+
+        <div class="reservation-form">
+
+
+            <!-- TABLE INFO -->
+
+            <div class="table-info">
+
+                <div class="table-label">
+                    Выбранный столик
+                </div>
+
+                <div class="table-number">
+                    Столик №{{ table.table_number }}
+                </div>
+
+                <div class="table-capacity">
+                    Вместимость: до {{ table.capacity }} гостей
+                </div>
+
+            </div>
+
+
+            <!-- FORM -->
+
+            <form
+                action="/tables/create_reservation"
+                method="post"
+            >
+
+                <input
+                    type="hidden"
+                    name="table_id"
+                    value="{{ table.id }}"
+                >
+
+
+                <div class="field">
+
+                    <label for="name">
+                        Имя
+                    </label>
+
+                    <input
+                        type="text"
+                        id="name"
+                        name="name"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="field">
+
+                    <label for="surname">
+                        Фамилия
+                    </label>
+
+                    <input
+                        type="text"
+                        id="surname"
+                        name="surname"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="field">
+
+                    <label for="phone">
+                        Номер телефона
+                    </label>
+
+                    <input
+                        type="tel"
+                        id="phone"
+                        name="phone"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="field">
+
+                    <label for="reservation_start">
+                        Начало бронирования
+                    </label>
+
+                    <input
+                        type="datetime-local"
+                        id="reservation_start"
+                        name="reservation_start"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="field">
+
+                    <label for="reservation_end">
+                        Конец бронирования
+                    </label>
+
+                    <input
+                        type="datetime-local"
+                        id="reservation_end"
+                        name="reservation_end"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-actions">
+
+                    <a
+                        href="/tables"
+                        class="button cancel"
+                    >
+                        Отмена
+                    </a>
+
+                    <button
+                        type="submit"
+                        class="button save"
+                    >
+                        Забронировать
+                    </button>
+
+                </div>
+
+            </form>
+
+
+        </div>
+
+    </section>
+
+
+    <!-- =========================
+         EXISTING RESERVATIONS
+    ========================= -->
+
+    <section class="card">
+
+        <div class="card-header">
+
+            <div class="card-title">
+                Бронирования столика
+            </div>
+
+        </div>
+
+
+        {% if table.reservations %}
+
+            <div class="reservations-list">
+
+                {% for reservation in table.reservations %}
+
+                    <div class="reservation-item">
+
+                        <div class="reservation-main">
+
+
+                            <div class="reservation-table">
+                                Столик №{{ table.table_number }}
+                            </div>
+
+
+                            <!-- CUSTOMER -->
+
+                            <div class="reservation-customer">
+
+                                <div class="customer-name">
+                                    {{ reservation.name }}
+                                    {{ reservation.surname }}
+                                </div>
+
+                                <div class="customer-phone">
+                                    {{ reservation.phone }}
+                                </div>
+
+                            </div>
+
+
+                            <!-- TIME -->
+
+                            <div class="reservation-time">
+
+                                {{ reservation.reservation_start.strftime("%d.%m.%Y %H:%M") }}
+
+                                <span class="reservation-time-arrow">
+                                    →
+                                </span>
+
+                                {{ reservation.reservation_end.strftime("%H:%M") }}
+
+                            </div>
+
+
+                            <!-- RESERVATION NUMBER -->
+                            <div class="reservation-number">
+    Бронирование № <span class="reservation-number-value">{{ reservation.reservation_number }}</span>
+</div>
+
+
+                        </div>
+
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+        {% else %}
+
+            <div class="empty-reservations">
+
+                <div class="empty-title">
+                    Бронирований пока нет
+                </div>
+
+                <div class="empty-text">
+                    Для этого столика ещё нет созданных бронирований.
+                </div>
+
+            </div>
+
+        {% endif %}
+
+    </section>
+
+</main>
+
+
+<!-- =========================
+     FOOTER
+========================= -->
+
+<div class="footer">
+    RESERVATION MANAGEMENT
+</div>
+
+</div>
+
+</body>
+</html>
+
+

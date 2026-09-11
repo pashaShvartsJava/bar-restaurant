@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Бронирования</title>
+    <style>
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background:
+                radial-gradient(ellipse at 50% 0%, rgba(145, 85, 75, 0.20) 0%, rgba(55, 35, 40, 0.22) 38%, rgba(9, 9, 11, 1) 78%),
+                linear-gradient(180deg, #211a1c 0%, #121214 50%, #09090b 100%);
+            color: #f1eee9;
+            font-family: Arial, sans-serif;
+        }
+
+        .page { width: 100%; max-width: 1200px; margin: 0 auto; padding: 60px 35px; }
+
+        .header { margin-bottom: 35px; }
+
+        .title {
+            margin: 0 0 10px;
+            font-family: Georgia, serif;
+            font-size: 42px;
+            font-weight: normal;
+            letter-spacing: 3px;
+            color: #f1eee9;
+        }
+
+        .subtitle { margin: 0; color: #aaa4a0; font-size: 15px; }
+
+        .card {
+            width: 100%;
+            background: rgba(27, 25, 27, 0.96);
+            border: 1px solid rgba(213, 166, 91, 0.16);
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 22px 25px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .card-title {
+            font-family: Georgia, serif;
+            font-size: 22px;
+            letter-spacing: 1px;
+            color: #f0ebe5;
+        }
+
+        .header-actions { display: flex; align-items: center; gap: 18px; }
+
+        .count { color: #8f8984; font-size: 14px; }
+
+        .sort-toggle { display: none; }
+
+        .sort-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 38px;
+            padding: 0 16px;
+            border: 1px solid rgba(213, 166, 91, 0.25);
+            border-radius: 8px;
+            background: rgba(213, 166, 91, 0.05);
+            color: #d5a65b;
+            font-size: 13px;
+            cursor: pointer;
+            transition: background 0.2s ease, border-color 0.2s ease;
+        }
+
+        .sort-button:hover { background: rgba(213, 166, 91, 0.10); border-color: rgba(213, 166, 91, 0.45); }
+
+        .sort-drawer {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 340px;
+            max-width: 90vw;
+            height: 100vh;
+            z-index: 1000;
+            background: #191719;
+            border-left: 1px solid rgba(213, 166, 91, 0.18);
+            box-shadow: -20px 0 60px rgba(0, 0, 0, 0.45);
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+        }
+
+        .sort-toggle:checked ~ .sort-drawer { transform: translateX(0); }
+
+        .sort-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 999;
+            background: rgba(0, 0, 0, 0.45);
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        .sort-toggle:checked ~ .sort-overlay { opacity: 1; visibility: visible; }
+
+        .sort-overlay label { display: block; width: 100%; height: 100%; cursor: pointer; }
+
+        .sort-drawer-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 24px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+        }
+
+        .sort-drawer-title { font-family: Georgia, serif; font-size: 22px; color: #f0ebe5; }
+
+        .sort-close {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            color: #8f8984;
+            font-size: 28px;
+            line-height: 1;
+            cursor: pointer;
+            transition: color 0.2s ease;
+        }
+
+        .sort-close:hover { color: #d5a65b; }
+
+        .sort-content { padding: 25px; }
+
+        .sort-form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 24px;
+        }
+
+        .sort-form label { color: #aaa4a0; font-size: 13px; }
+
+        .sort-form input {
+            width: 100%;
+            height: 42px;
+            padding: 0 12px;
+            border: 1px solid rgba(255, 255, 255, 0.10);
+            border-radius: 7px;
+            outline: none;
+            background: #111113;
+            color: #e5e0db;
+            font-size: 14px;
+        }
+
+        .sort-form input:focus { border-color: rgba(213, 166, 91, 0.45); }
+
+        .sort-form button {
+            min-height: 40px;
+            padding: 0 15px;
+            border: 1px solid rgba(213, 166, 91, 0.22);
+            border-radius: 7px;
+            background: rgba(213, 166, 91, 0.07);
+            color: #d5a65b;
+            font-size: 13px;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .sort-form button:hover { background: rgba(213, 166, 91, 0.13); }
+
+        .sort-reset, .search-reset {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 40px;
+            padding: 0 18px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 7px;
+            background: rgba(255, 255, 255, 0.03);
+            color: #8f8984;
+            text-decoration: none;
+            font-size: 13px;
+            transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+        }
+
+        .sort-reset { width: 100%; }
+
+        .sort-reset:hover, .search-reset:hover {
+            color: #d5a65b;
+            border-color: rgba(213, 166, 91, 0.35);
+            background: rgba(213, 166, 91, 0.06);
+        }
+
+        .search-section {
+            padding: 18px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .search-form { display: flex; gap: 10px; max-width: 700px; }
+
+        .search-form input {
+            flex: 1;
+            min-height: 42px;
+            padding: 0 13px;
+            border: 1px solid rgba(255, 255, 255, 0.10);
+            border-radius: 7px;
+            outline: none;
+            background: #111113;
+            color: #e5e0db;
+            font-size: 14px;
+        }
+
+        .search-form input:focus { border-color: rgba(213, 166, 91, 0.45); }
+
+        .search-form button {
+            min-height: 42px;
+            padding: 0 18px;
+            border: 1px solid rgba(213, 166, 91, 0.25);
+            border-radius: 7px;
+            background: rgba(213, 166, 91, 0.08);
+            color: #d5a65b;
+            font-size: 13px;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .search-form button:hover { background: rgba(213, 166, 91, 0.14); }
+
+        .table-wrapper { width: 100%; overflow: hidden; }
+
+        table { width: 100%; table-layout: fixed; border-collapse: collapse; }
+
+        thead { background: rgba(255, 255, 255, 0.025); }
+
+        th {
+            padding: 17px 20px;
+            color: #8f8984;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+        }
+
+        td {
+            padding: 19px 20px;
+            color: #d9d4cf;
+            font-size: 14px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.055);
+            vertical-align: middle;
+        }
+
+        tbody tr { transition: background 0.2s ease; }
+
+        tbody tr:hover { background: rgba(213, 166, 91, 0.045); }
+
+        tbody tr:last-child td { border-bottom: none; }
+
+        .reservation-number {
+            display: block;
+            color: #d5a65b;
+            font-family: monospace;
+            font-size: 12px;
+            letter-spacing: 0.2px;
+            overflow-wrap: anywhere;
+        }
+
+        .customer { display: flex; flex-direction: column; gap: 5px; }
+
+        .customer-name { color: #e5e0db; font-size: 14px; font-weight: 600; }
+
+        .customer-phone { color: #8f8984; font-size: 12px; }
+
+        .table-number { color: #f1eee9; font-weight: 600; }
+
+        .datetime { display: flex; flex-direction: column; gap: 4px; }
+
+        .date { color: #e5e0db; font-weight: 600; }
+
+        .time { color: #8f8984; font-size: 13px; }
+
+        .status {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 7px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status::before { content: ""; width: 7px; height: 7px; border-radius: 50%; }
+
+        .status.active { background: rgba(70, 145, 90, 0.12); color: #75c285; }
+
+        .status.active::before { background: #75c285; box-shadow: 0 0 8px rgba(117, 194, 133, 0.5); }
+
+        .status.finished { background: rgba(150, 80, 75, 0.12); color: #c98982; }
+
+        .status.finished::before { background: #c98982; }
+
+        .cancel-button {
+            min-height: 34px;
+            padding: 0 12px;
+            border: 1px solid rgba(150, 80, 75, 0.35);
+            border-radius: 6px;
+            background: rgba(150, 80, 75, 0.08);
+            color: #c98982;
+            font-size: 12px;
+            cursor: pointer;
+            transition: background 0.2s ease, border-color 0.2s ease;
+        }
+
+        .cancel-button:hover {
+            background: rgba(150, 80, 75, 0.16);
+            border-color: rgba(150, 80, 75, 0.55);
+        }
+
+        .no-action { color: #5f5a57; }
+
+        .empty { padding: 70px 30px; text-align: center; }
+
+        .empty-title {
+            margin-bottom: 10px;
+            font-family: Georgia, serif;
+            font-size: 22px;
+            color: #ded8d1;
+        }
+
+        .empty-text { color: #817b77; font-size: 14px; }
+
+        .bottom-actions { display: flex; justify-content: flex-start; margin-top: 25px; }
+
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 42px;
+            padding: 0 22px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.10);
+            background: rgba(27, 25, 27, 0.75);
+            color: #aaa4a0;
+            text-decoration: none;
+            font-size: 14px;
+            transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+        }
+
+        .back-button:hover {
+            color: #d5a65b;
+            border-color: rgba(213, 166, 91, 0.35);
+            background: rgba(213, 166, 91, 0.06);
+        }
+
+        @media (max-width: 900px) {
+            .table-wrapper { overflow-x: auto; }
+            table { min-width: 900px; }
+        }
+
+        @media (max-width: 700px) {
+            .page { padding: 40px 18px; }
+            .title { font-size: 32px; }
+            .card-header { align-items: flex-start; flex-direction: column; gap: 15px; padding: 18px; }
+            .header-actions { width: 100%; align-items: center; justify-content: space-between; }
+            th, td { padding: 15px; }
+            .search-form { flex-direction: column; }
+        }
+    </style>
+</head>
+
+<body>
+<div class="page">
+
+    <div class="header">
+        <h1 class="title">Бронирования</h1>
+        <p class="subtitle">История бронирований столиков</p>
+    </div>
+
+    <section class="card">
+
+        <div class="card-header">
+            <div class="card-title">Список бронирований</div>
+
+            <div class="header-actions">
+                <div class="count">
+                    {{ reservations|length }}
+                    {% if reservations|length == 1 %}бронирование{% else %}бронирований{% endif %}
+                </div>
+
+                <label for="sort-toggle" class="sort-button">Фильтрация</label>
+            </div>
+        </div>
+
+        <input type="checkbox" id="sort-toggle" class="sort-toggle">
+
+        <div class="sort-overlay">
+            <label for="sort-toggle"></label>
+        </div>
+
+        <aside class="sort-drawer">
+
+            <div class="sort-drawer-header">
+                <span class="sort-drawer-title">Фильтрация</span>
+                <label for="sort-toggle" class="sort-close">×</label>
+            </div>
+
+            <div class="sort-content">
+
+                <form action="/tables/reservations/filtered_history" method="get" class="sort-form">
+                    <label for="sort-date">По дате</label>
+                    <input type="date" id="sort-date" name="date" required>
+                    <button type="submit">Показать</button>
+                </form>
+
+                <form action="/tables/reservations/filtered_history" method="get" class="sort-form">
+                    <input type="hidden" name="status" value="finished">
+                    <button type="submit">Завершённые брони</button>
+                </form>
+
+                <form action="/tables/reservations/filtered_history" method="get" class="sort-form">
+                    <input type="hidden" name="status" value="active">
+                    <button type="submit">Активные брони</button>
+                </form>
+
+                <form action="/tables/reservations/filtered_history" method="get" class="sort-form">
+                    <label for="sort-table">По номеру столика</label>
+                    <input type="number" id="sort-table" name="table_number" min="1" required>
+                    <button type="submit">Показать</button>
+                </form>
+
+                <a href="/tables/reservations/filtered_history" class="sort-reset">Сбросить фильтры</a>
+
+            </div>
+        </aside>
+
+        <div class="search-section">
+            <form action="/tables/reservations/history/search" method="get" class="search-form">
+                <input type="text" name="reservation_number" placeholder="Поиск по номеру брони">
+                <input type="text" name="name" placeholder="Поиск по имени">
+                <input type="text" name="surname" placeholder="Поиск по фамилии">
+                <button type="submit">Найти</button>
+                <a href="/tables/reservations/history" class="search-reset">Сбросить</a>
+            </form>
+        </div>
+
+        {% if reservations %}
+
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>№ резерва</th>
+                        <th>Клиент</th>
+                        <th>№ столика</th>
+                        <th>Начало</th>
+                        <th>Конец</th>
+                        <th>Статус</th>
+                        <th>Действия</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for reservation in reservations %}
+                    <tr>
+                        <td>
+                            <span class="reservation-number">{{ reservation.reservation_number }}</span>
+                        </td>
+
+                        <td>
+                            <div class="customer">
+                                <span class="customer-name">{{ reservation.name }} {{ reservation.surname }}</span>
+                                <span class="customer-phone">{{ reservation.phone }}</span>
+                            </div>
+                        </td>
+
+                        <td>
+                            <span class="table-number">№ {{ reservation.table.table_number }}</span>
+                        </td>
+
+                        <td>
+                            <div class="datetime">
+                                <span class="date">{{ reservation.reservation_start.strftime("%d.%m.%Y") }}</span>
+                                <span class="time">{{ reservation.reservation_start.strftime("%H:%M") }}</span>
+                            </div>
+                        </td>
+
+                        <td>
+                            <div class="datetime">
+                                <span class="date">{{ reservation.reservation_end.strftime("%d.%m.%Y") }}</span>
+                                <span class="time">{{ reservation.reservation_end.strftime("%H:%M") }}</span>
+                            </div>
+                        </td>
+
+                        <td>
+                            {% if reservation.reservation_end < now %}
+                                <span class="status finished">Завершено</span>
+                            {% else %}
+                                <span class="status active">Активно</span>
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            {% if reservation.reservation_end >= now %}
+                                <form action="/tables/reservations/cancel/{{ reservation.id }}" method="post">
+                                    <button type="submit" class="cancel-button">Отменить бронь</button>
+                                </form>
+                            {% else %}
+                                <span class="no-action">—</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        {% else %}
+
+        <div class="empty">
+            <div class="empty-title">Бронирований нет</div>
+            <div class="empty-text">История бронирований пока пуста.</div>
+        </div>
+
+        {% endif %}
+
+    </section>
+
+    <div class="bottom-actions">
+        <a href="/tables" class="back-button">← Вернуться к столикам</a>
+    </div>
+
+</div>
+</body>
+</html>
