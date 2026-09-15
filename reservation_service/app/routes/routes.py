@@ -70,7 +70,8 @@ async def create_reservation(request : Request,
                              phone : str = Form(..., ),
                              reservation_start : datetime = Form(...,),
                              reservation_end : datetime = Form(...,),
-                             reservation_service : ReservationService = Depends(get_reservation_service_dependency)):
+                             reservation_service : ReservationService = Depends(get_reservation_service_dependency),
+                             table_service : TableService = Depends(get_table_service_dependency)):
     payload = get_payload(request)
     required_roles(IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
     reservation_start = reservation_start.replace(tzinfo=timezone.utc)
@@ -78,7 +79,12 @@ async def create_reservation(request : Request,
     now = datetime.now(timezone.utc)
     if reservation_start.date() != reservation_end.date() or reservation_start>=reservation_end\
             or reservation_start <= now:
-        raise HTTPException(status_code=401, detail="Dates are not the same or dates are incorrect")
+        table = await table_service.get_table_by_id(table_id)
+        return templates.TemplateResponse( "add_reservation.html",
+                                           { "request": request,
+                                             "table": table,
+                                             "error": "Даты указаны некорректно. Бронирование должно быть в будущем и начинаться раньше окончания." },
+                                             status_code=400 )
     await reservation_service.create_reservation(table_id, name, surname, phone, reservation_start, reservation_end)
     return RedirectResponse(url="/tables", status_code=303)
 

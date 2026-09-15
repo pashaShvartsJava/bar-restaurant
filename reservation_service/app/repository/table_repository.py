@@ -1,11 +1,13 @@
+from datetime import datetime, timezone
 from uuid import UUID
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import List, Optional
 from sqlalchemy import or_
-from sqlalchemy.orm import selectinload
+from sqlalchemy.orm import selectinload, with_loader_criteria
 
+from ..models import Reservation
 from ..models.table import Table
 
 class TableRepository:
@@ -14,7 +16,10 @@ class TableRepository:
         self.db = db
 
     async def get_table_by_id(self, table_id : int):
-        result = await self.db.execute(select(Table).options(selectinload(Table.reservations)).where(Table.id==table_id))
+        now = datetime.now(timezone.utc)
+        result = await self.db.execute(
+            select(Table).options(selectinload(Table.reservations),
+                                  with_loader_criteria(Reservation, Reservation.reservation_start >= now)).where(Table.id == table_id))
         return result.scalar_one_or_none()
 
     async def get_all_tables(self):
