@@ -3,33 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Чат с поддержкой</title>
-
+    <title>Чат с клиентом</title>
     <style>
-        * {
-            box-sizing: border-box;
-        }
-
+        * { box-sizing: border-box; }
         body {
             margin: 0;
             min-height: 100vh;
             background:
-                radial-gradient(
-                    ellipse at 50% 0%,
-                    rgba(145, 85, 75, 0.20) 0%,
-                    rgba(55, 35, 40, 0.22) 38%,
-                    rgba(9, 9, 11, 1) 78%
-                ),
-                linear-gradient(
-                    180deg,
-                    #211a1c 0%,
-                    #121214 50%,
-                    #09090b 100%
-                );
+                radial-gradient(ellipse at 50% 0%, rgba(145, 85, 75, 0.20) 0%, rgba(55, 35, 40, 0.22) 38%, rgba(9, 9, 11, 1) 78%),
+                linear-gradient(180deg, #211a1c 0%, #121214 50%, #09090b 100%);
             color: #f1eee9;
             font-family: Arial, sans-serif;
         }
-
         .page {
             min-height: 100vh;
             display: flex;
@@ -37,7 +22,6 @@
             justify-content: center;
             padding: 30px 20px;
         }
-
         .chat-card {
             width: 100%;
             max-width: 760px;
@@ -48,175 +32,171 @@
             border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: 18px;
             overflow: hidden;
-            box-shadow:
-                0 25px 70px rgba(0, 0, 0, 0.45),
-                0 0 0 1px rgba(213, 166, 91, 0.03);
+            box-shadow: 0 25px 70px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(213, 166, 91, 0.03);
         }
-
         .chat-header {
             display: flex;
             align-items: center;
-            gap: 16px;
-            padding: 18px 22px;
+            justify-content: space-between;
+            gap: 20px;
+            padding: 18px 20px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.07);
             background: rgba(255, 255, 255, 0.015);
         }
-
+        .chat-header-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            min-width: 0;
+        }
         .back-button {
-            width: 38px;
-            height: 38px;
+            width: 40px;
+            height: 40px;
             flex-shrink: 0;
             display: flex;
             align-items: center;
             justify-content: center;
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.09);
             border-radius: 10px;
-            background: rgba(255, 255, 255, 0.035);
-            color: #aaa5a0;
-            text-decoration: none;
-            font-size: 21px;
-            line-height: 1;
-            transition:
-                background 0.2s ease,
-                color 0.2s ease,
-                border-color 0.2s ease;
+            background: rgba(255, 255, 255, 0.04);
+            color: #d7d2cd;
+            font-size: 20px;
+            cursor: pointer;
+            transition: background 0.2s ease, border-color 0.2s ease;
         }
-
         .back-button:hover {
-            background: rgba(213, 166, 91, 0.10);
-            border-color: rgba(213, 166, 91, 0.25);
-            color: #d5a65b;
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.14);
         }
-
-        .chat-header-left {
-            min-width: 0;
-            flex: 1;
+        .chat-header-info {
             display: flex;
             flex-direction: column;
-            gap: 4px;
+            gap: 5px;
+            min-width: 0;
         }
-
         .chat-title {
             margin: 0;
             font-family: Georgia, serif;
             font-size: 23px;
             font-weight: normal;
             color: #f1eee9;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
-
         .chat-subtitle {
             margin: 0;
             font-size: 12px;
             color: #817c77;
         }
-
+        .chat-header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-shrink: 0;
+        }
         .connection-status {
             display: flex;
             align-items: center;
             gap: 8px;
-            font-size: 12px;
+            font-size: 13px;
             color: #8f938c;
             white-space: nowrap;
         }
-
         .status-dot {
-            width: 7px;
-            height: 7px;
+            width: 8px;
+            height: 8px;
             border-radius: 50%;
             background: #6f9b71;
             box-shadow: 0 0 8px rgba(111, 155, 113, 0.45);
         }
-
         .status-dot.disconnected {
             background: #a85b5b;
             box-shadow: 0 0 8px rgba(168, 91, 91, 0.35);
         }
-
+        .finish-button {
+            height: 40px;
+            padding: 0 15px;
+            border: 1px solid rgba(168, 91, 91, 0.25);
+            border-radius: 10px;
+            background: rgba(168, 91, 91, 0.10);
+            color: #c98a8a;
+            font-size: 13px;
+            cursor: pointer;
+            transition: background 0.2s ease, border-color 0.2s ease;
+        }
+        .finish-button:hover {
+            background: rgba(168, 91, 91, 0.18);
+            border-color: rgba(168, 91, 91, 0.40);
+        }
         .messages {
             flex: 1;
             min-height: 0;
             overflow-y: auto;
-            padding: 24px;
+            padding: 25px;
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 14px;
             scrollbar-width: thin;
             scrollbar-color: #393638 transparent;
         }
-
-        .messages::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        .messages::-webkit-scrollbar-track {
-            background: transparent;
-        }
-
+        .messages::-webkit-scrollbar { width: 6px; }
+        .messages::-webkit-scrollbar-track { background: transparent; }
         .messages::-webkit-scrollbar-thumb {
             background: #393638;
             border-radius: 10px;
         }
-
         .message-row {
-            width: 100%;
             display: flex;
+            width: 100%;
         }
-
-        .message-row.user {
+        .message-row.admin,
+        .message-row.moderator {
             justify-content: flex-end;
         }
-
-        .message-row.admin {
+        .message-row.user {
             justify-content: flex-start;
         }
-
         .message {
-            width: fit-content;
-            max-width: 65%;
-            padding: 11px 14px 9px;
+            max-width: 72%;
+            padding: 12px 15px;
             border-radius: 14px;
-            line-height: 1.45;
+            line-height: 1.5;
             font-size: 14px;
-            word-break: normal;
-            overflow-wrap: anywhere;
-            text-align: left;
+            word-break: break-word;
         }
-
+        .message-row.admin .message,
+        .message-row.moderator .message {
+            background: rgba(213, 166, 91, 0.20);
+            border: 1px solid rgba(213, 166, 91, 0.35);
+            border-bottom-right-radius: 4px;
+        }
         .message-row.user .message {
-            background: rgba(213, 166, 91, 0.15);
-            border: 1px solid rgba(213, 166, 91, 0.20);
-            border-bottom-right-radius: 5px;
-        }
-
-        .message-row.admin .message {
             background: rgba(255, 255, 255, 0.055);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-bottom-left-radius: 5px;
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            border-bottom-left-radius: 4px;
         }
-
         .message-text {
-            display: block;
-            width: 100%;
             color: #eeeae5;
             white-space: pre-wrap;
             text-align: left;
-            line-height: 1.5;
         }
-
         .message-meta {
             display: flex;
             align-items: center;
-            justify-content: flex-end;
-            gap: 7px;
+            gap: 8px;
             margin-top: 7px;
-            font-size: 10px;
+            font-size: 11px;
             color: #77726e;
         }
-
-        .message-meta span:first-child {
-            color: #8b857f;
+        .message-row.admin .message-meta,
+        .message-row.moderator .message-meta {
+            justify-content: flex-end;
         }
-
+        .message-row.admin .message-meta span:first-child,
+        .message-row.moderator .message-meta span:first-child {
+            color: #d5a65b;
+        }
         .empty-chat {
             flex: 1;
             display: flex;
@@ -227,282 +207,161 @@
             padding: 30px;
             color: #8f8b87;
         }
-
         .empty-chat-icon {
-            width: 54px;
-            height: 54px;
+            width: 58px;
+            height: 58px;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-bottom: 16px;
+            margin-bottom: 18px;
             border-radius: 50%;
             background: rgba(213, 166, 91, 0.10);
             border: 1px solid rgba(213, 166, 91, 0.18);
-            font-size: 23px;
+            font-size: 25px;
         }
-
         .empty-chat-title {
-            margin-bottom: 7px;
+            margin-bottom: 8px;
             color: #d5a65b;
             font-family: Georgia, serif;
-            font-size: 20px;
+            font-size: 21px;
         }
-
         .empty-chat-text {
             max-width: 360px;
-            font-size: 13px;
+            font-size: 14px;
             line-height: 1.6;
             color: #77736f;
         }
-
         .chat-form {
             display: flex;
             align-items: flex-end;
-            gap: 10px;
-            padding: 15px 18px;
+            gap: 12px;
+            padding: 18px 20px;
             border-top: 1px solid rgba(255, 255, 255, 0.07);
             background: rgba(10, 10, 11, 0.45);
         }
-
         .message-input {
             flex: 1;
-            min-height: 44px;
-            max-height: 120px;
+            min-height: 46px;
+            max-height: 130px;
             resize: none;
-            padding: 11px 13px;
+            padding: 13px 15px;
             border: 1px solid rgba(255, 255, 255, 0.09);
-            border-radius: 10px;
+            border-radius: 11px;
             outline: none;
             background: rgba(255, 255, 255, 0.045);
             color: #eeeae5;
             font-family: Arial, sans-serif;
             font-size: 14px;
-            line-height: 1.4;
-            transition:
-                border-color 0.2s ease,
-                background 0.2s ease;
+            transition: border-color 0.2s ease, background 0.2s ease;
         }
-
-        .message-input::placeholder {
-            color: #65615e;
-        }
-
+        .message-input::placeholder { color: #65615e; }
         .message-input:focus {
             border-color: rgba(213, 166, 91, 0.45);
             background: rgba(255, 255, 255, 0.06);
         }
-
         .send-button {
-            height: 44px;
-            padding: 0 18px;
+            height: 46px;
+            padding: 0 21px;
             border: none;
-            border-radius: 10px;
+            border-radius: 11px;
             background: #d5a65b;
             color: #171311;
-            font-size: 13px;
+            font-size: 14px;
             font-weight: 600;
             cursor: pointer;
-            transition:
-                background 0.2s ease,
-                transform 0.15s ease,
-                opacity 0.2s ease;
+            transition: background 0.2s ease, transform 0.15s ease, opacity 0.2s ease;
         }
-
-        .send-button:hover {
-            background: #e0b66d;
-        }
-
-        .send-button:active {
-            transform: translateY(1px);
-        }
-
+        .send-button:hover { background: #e0b66d; }
+        .send-button:active { transform: translateY(1px); }
         .send-button:disabled {
             opacity: 0.45;
             cursor: not-allowed;
         }
-
         @media (max-width: 700px) {
-            .page {
-                padding: 0;
-            }
-
+            .page { padding: 0; }
             .chat-card {
                 height: 100vh;
                 max-width: none;
                 border-radius: 0;
                 border: none;
             }
-
-            .chat-header {
-                padding: 16px;
-                gap: 12px;
-            }
-
-            .back-button {
-                width: 36px;
-                height: 36px;
-            }
-
-            .chat-title {
-                font-size: 20px;
-            }
-
-            .chat-subtitle {
+            .chat-header { padding: 14px; }
+            .chat-header-right { gap: 8px; }
+            .connection-status { font-size: 11px; }
+            .chat-title { font-size: 19px; }
+            .chat-subtitle { font-size: 11px; }
+            .finish-button {
+                padding: 0 10px;
                 font-size: 11px;
             }
-
-            .connection-status {
-                font-size: 10px;
-            }
-
-            .messages {
-                padding: 18px 14px;
-            }
-
-            .message {
-                max-width: 80%;
-                padding: 9px 12px 8px;
-            }
-
-            .message-text {
-                font-size: 13px;
-                line-height: 1.45;
-            }
-
-            .message-meta {
-                margin-top: 6px;
-                font-size: 9px;
-            }
-
-            .chat-form {
-                padding: 10px;
-            }
-
-            .send-button {
-                padding: 0 15px;
-            }
+            .messages { padding: 18px; }
+            .message { max-width: 82%; }
+            .chat-form { padding: 12px; }
+            .send-button { padding: 0 16px; }
         }
     </style>
 </head>
-
 <body>
-
 <div class="page">
     <div class="chat-card">
-
         <div class="chat-header">
-            <a
-                href="/user/my_profile"
-                class="back-button"
-                aria-label="Назад"
-                title="Назад"
-            >←</a>
-
             <div class="chat-header-left">
-                <h1 class="chat-title">Чат с поддержкой</h1>
-
-                <p class="chat-subtitle">
-                    Мы постараемся помочь вам как можно скорее
-                </p>
+                <button class="back-button" id="backButton" type="button" title="Назад">←</button>
+                <div class="chat-header-info">
+                    <h1 class="chat-title">Чат с клиентом</h1>
+                    <p class="chat-subtitle">Клиент #{{ conversation.user_id }}</p>
+                </div>
             </div>
-
-            <div class="connection-status">
-                <span class="status-dot" id="statusDot"></span>
-
-                <span id="statusText">
-                    Подключение...
-                </span>
+            <div class="chat-header-right">
+                <div class="connection-status">
+                    <span class="status-dot" id="statusDot"></span>
+                    <span id="statusText">Подключение...</span>
+                </div>
+                <form action="/support/admin/{{ conversation.id }}/free_conversation" method="post">
+                    <button class="finish-button" id="finishButton" type="submit">Завершить сессию</button>
+                </form>
             </div>
         </div>
-
         <div class="messages" id="messages">
-
             {% if conversation.messages %}
-
                 {% for message in conversation.messages %}
-
-                    <div class="message-row {% if message.sender_role.value == 'user' or message.sender_role == 'user' %}user{% else %}admin{% endif %}">
+                    {% set role = message.sender_role.value if message.sender_role.value is defined else message.sender_role %}
+                    <div class="message-row {% if role == 'admin' or role == 'moderator' %}admin{% else %}user{% endif %}">
                         <div class="message">
-
-                            <div class="message-text">
-                                {{ message.text }}
-                            </div>
-
+                            <div class="message-text">{{ message.text }}</div>
                             <div class="message-meta">
-                                <span>
-                                    {% if message.sender_role.value == 'user' or message.sender_role == 'user' %}
-                                        Вы
-                                    {% else %}
-                                        Поддержка
-                                    {% endif %}
-                                </span>
-
-                                <span>
-                                    {{ message.created_at.strftime('%H:%M') }}
-                                </span>
+                                <span>{% if role == 'admin' or role == 'moderator' %}Вы{% else %}Клиент{% endif %}</span>
+                                <span>{{ message.created_at.strftime('%H:%M') }}</span>
                             </div>
-
                         </div>
                     </div>
-
                 {% endfor %}
-
             {% else %}
-
                 <div class="empty-chat" id="emptyChat">
                     <div class="empty-chat-icon">💬</div>
-
-                    <div class="empty-chat-title">
-                        Начните чат
-                    </div>
-
-                    <div class="empty-chat-text">
-                        Напишите нам, и мы постараемся помочь вам как можно скорее.
-                    </div>
+                    <div class="empty-chat-title">Начните диалог</div>
+                    <div class="empty-chat-text">Отправьте клиенту сообщение, чтобы начать диалог.</div>
                 </div>
-
             {% endif %}
-
         </div>
-
         <form class="chat-form" id="chatForm">
-            <textarea
-                class="message-input"
-                id="messageInput"
-                placeholder="Введите сообщение..."
-                rows="1"
-                autocomplete="off"
-            ></textarea>
-
-            <button
-                class="send-button"
-                id="sendButton"
-                type="submit"
-                disabled
-            >
-                Отправить
-            </button>
+            <textarea class="message-input" id="messageInput" placeholder="Введите сообщение..." rows="1" autocomplete="off"></textarea>
+            <button class="send-button" id="sendButton" type="submit" disabled>Отправить</button>
         </form>
-
     </div>
 </div>
-
 <script>
     const conversationId = {{ conversation.id }};
-
     const messagesContainer = document.getElementById("messages");
     const messageInput = document.getElementById("messageInput");
     const chatForm = document.getElementById("chatForm");
     const sendButton = document.getElementById("sendButton");
     const statusDot = document.getElementById("statusDot");
     const statusText = document.getElementById("statusText");
-
-    const protocol =
-        window.location.protocol === "https:" ? "wss:" : "ws:";
-
-    const socket = new WebSocket(
-        `${protocol}//${window.location.host}/ws/support/${conversationId}`
-    );
+    const backButton = document.getElementById("backButton");
+    const finishButton = document.getElementById("finishButton");
+    const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+    const socket = new WebSocket(`${protocol}//${window.location.host}/ws/support/admin/${conversationId}`);
 
     socket.onopen = function() {
         statusDot.classList.remove("disconnected");
@@ -529,19 +388,9 @@
 
     chatForm.addEventListener("submit", function(event) {
         event.preventDefault();
-
         const text = messageInput.value.trim();
-
-        if (!text) {
-            return;
-        }
-
-        if (socket.readyState !== WebSocket.OPEN) {
-            return;
-        }
-
+        if (!text || socket.readyState !== WebSocket.OPEN) return;
         socket.send(text);
-
         messageInput.value = "";
         messageInput.style.height = "auto";
     });
@@ -555,20 +404,17 @@
 
     messageInput.addEventListener("input", function() {
         this.style.height = "auto";
-        this.style.height = Math.min(this.scrollHeight, 120) + "px";
+        this.style.height = Math.min(this.scrollHeight, 130) + "px";
     });
 
     function addMessage(message) {
         const emptyChat = document.getElementById("emptyChat");
+        if (emptyChat) emptyChat.remove();
 
-        if (emptyChat) {
-            emptyChat.remove();
-        }
-
-        const isUser = message.sender_role === "user";
+        const isAdmin = message.sender_role === "admin" || message.sender_role === "moderator";
 
         const row = document.createElement("div");
-        row.className = "message-row " + (isUser ? "user" : "admin");
+        row.className = "message-row " + (isAdmin ? "admin" : "user");
 
         const messageElement = document.createElement("div");
         messageElement.className = "message";
@@ -581,36 +427,35 @@
         meta.className = "message-meta";
 
         const sender = document.createElement("span");
-        sender.textContent = isUser ? "Вы" : "Поддержка";
+        sender.textContent = isAdmin ? "Вы" : "Клиент";
 
         const time = document.createElement("span");
         time.textContent = formatTime(message.created_at);
 
         meta.appendChild(sender);
         meta.appendChild(time);
-
         messageElement.appendChild(textElement);
         messageElement.appendChild(meta);
-
         row.appendChild(messageElement);
         messagesContainer.appendChild(row);
-
-        messagesContainer.scrollTop =
-            messagesContainer.scrollHeight;
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
     }
 
     function formatTime(dateString) {
         const date = new Date(dateString);
-
-        return date.toLocaleTimeString("ru-RU", {
-            hour: "2-digit",
-            minute: "2-digit"
-        });
+        return date.toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit" });
     }
 
-    messagesContainer.scrollTop =
-        messagesContainer.scrollHeight;
-</script>
+    backButton.addEventListener("click", function() {
+        socket.close();
+        window.location.href = "/admin_panel";
+    });
 
+    finishButton.addEventListener("click", function() {
+        socket.close();
+    });
+
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+</script>
 </body>
 </html>
