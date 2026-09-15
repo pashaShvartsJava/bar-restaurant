@@ -16,5 +16,21 @@ class ConversationService:
         else:
             return conversation
 
+    async def get_or_create_admin_conversation(self, identity_id: UUID, admin_id : UUID):
+        conversation = await self.conversation_repository.get_conversation_by_identity_id(identity_id)
+        if conversation is None:
+            return await self.conversation_repository.create_admin_conversation(identity_id, admin_id)
+        else:
+            if conversation.admin_id is not None and conversation.admin_id==admin_id:
+                return conversation
+            if conversation.admin_id is None:
+                await self.conversation_repository.take_conversation_by_admin(admin_id, conversation)
+            else:
+                raise ValueError("This customer is already taken by another administrator")
+            return conversation
+
     async def get_conversation_by_id(self, conversation_id : int) -> Conversation:
         return await self.conversation_repository.get_conversation_by_id(conversation_id)
+
+    async def free_conversation(self, conversation_id : int):
+        return await self.conversation_repository.free_conversation(conversation_id)

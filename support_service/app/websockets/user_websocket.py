@@ -1,7 +1,6 @@
-from fastapi import APIRouter, WebSocket, WebSocketDisconnect, Depends, HTTPException
+from fastapi import APIRouter, WebSocket, WebSocketDisconnect, Depends
 
-from ..dependencies.dependencies import get_message_service_dependency, get_conversation_service_dependency
-from ..service.conversation_service import ConversationService
+from ..dependencies.dependencies import get_message_service_dependency
 from ..service.message_service import MessageService
 from ..security.jwt.jwt import decode_access_token
 from ..security.authorization.authorization import required_role
@@ -11,11 +10,15 @@ from ..chat_manager.manager import ChatManager
 router = APIRouter()
 
 chat_manager = ChatManager()
+print("USER WEBSOCKET MODULE LOADED")
 
 @router.websocket("/ws/support/{conversation_id}")
 async def support_websocket(websocket: WebSocket, conversation_id: int,
                             message_service : MessageService = Depends(get_message_service_dependency)):
-    token = websocket.cookies.get("token")
+    print("ENTERED USER WS")
+
+    token = websocket.cookies.get("access_token")
+    print("TOKEN:", token)
     if token is None:
         await websocket.close(code=1008)
     payload = decode_access_token(token)
