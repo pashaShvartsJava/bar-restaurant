@@ -105,6 +105,24 @@ services:
       - --port
       - "8003"
       - --reload
+  support-service:
+    build:
+      context: ./support_service
+    container_name: support-service
+    ports:
+      - "8006:8006"
+    env_file:
+      - ./support_service/.env
+    volumes:
+      - ./support_service:/support_service
+    command:
+      - uvicorn
+      - app.main:app
+      - --host
+      - 0.0.0.0
+      - --port
+      - "8006"
+      - --reload
 
   db-authentication:
     image: postgres:16
@@ -161,9 +179,21 @@ services:
       - "5436:5432"
     volumes:
       - postgres_reservation_data:/var/lib/postgresql/data
+  db-support:
+    image: postgres:16
+    container_name: db-support
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: support_db
+    ports:
+      - "5437:5432"
+    volumes:
+      - postgres_support_data:/var/lib/postgresql/data
 volumes:
   postgres_auth_data:
   postgres_user_data:
   postgres_admin_data:
   postgres_menu_data:
   postgres_reservation_data:
+  postgres_support_data:
