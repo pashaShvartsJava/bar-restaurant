@@ -217,6 +217,31 @@ async def unblock_customer(identity_id: UUID):
                                       headers={"internal_token" : INTERNAL_TOKEN})
         response.raise_for_status()
 
+@router.get("/admin_panel/all_customers/found_customer")
+async def search_customer(request : Request, client_id : UUID):
+    payload = get_payload(request)
+    required_roles(IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
+    async with httpx.AsyncClient() as client:
+        response = await client.get(url="http://user-service:8005/get_all_users",
+                                    headers={"internal_token": INTERNAL_TOKEN})
+        response.raise_for_status()
+    users = response.json()
+
+    async with httpx.AsyncClient() as client:
+        response2 = await client.get(url="http://authentication-service:8000/get_all_identities",
+                                     headers={"internal_token": INTERNAL_TOKEN})
+        response2.raise_for_status()
+    identities = response2.json()
+
+    statuses_by_id = {identity["id"]: identity["status"] for identity in identities}
+    for user in users:
+        user["status"] = statuses_by_id.get(str(user["identity_id"]))
+    client = []
+    for user in users:
+        if user["identity_id"] == str(client_id):
+            client.append(user)
+    return templates.TemplateResponse("all_users.html", {"request" : request, "users" : client})
+
 @router.get("/admin_panel/all_customers/{identity_id}")
 async def customer_info(request : Request, identity_id : UUID):
     payload = get_payload(request)
@@ -234,7 +259,5 @@ async def customer_info(request : Request, identity_id : UUID):
         info_user["status"] = identity["status"]
         info_user["identity_id"] = str(identity_id)
     return templates.TemplateResponse("user_info.html", {"request" : request, "user" : info_user})
-
-
 
 
