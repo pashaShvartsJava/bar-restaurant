@@ -40,3 +40,8 @@ async def general_support(request : Request, conversation_service : Conversation
     required_roles(IdentityRole.ADMIN, IdentityRole.MODERATOR, payload=payload)
     conversations = await conversation_service.get_unread_conversations()
     return templates.TemplateResponse("general_support.html", {"request" : request, "conversations" : conversations})
+
+@router.get("/support/unread/count")
+async def get_unread_support_count(conversation_service: ConversationService = Depends(get_conversation_service_dependency)):
+    count = await conversation_service.count_unread_conversations()
+    return {"count": count}
