@@ -17,5 +17,7 @@ class Conversation(Base):
     user_id = Column(UUID(as_uuid=True), nullable=False)
     admin_id = Column(UUID(as_uuid=True))
     created_at = Column(DateTime(timezone=True), nullable=False)
+    last_read_message_by_user_id = Column(Integer, index=True)
+    last_read_message_by_admin_id = Column(Integer, index=True)
 
     messages = relationship("Message", back_populates="conversation")
