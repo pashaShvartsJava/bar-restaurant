@@ -5,7 +5,9 @@ from sqlalchemy.orm import selectinload
 
 from ..models import Message
 from ..models.conversation import Conversation
-from sqlalchemy import or_, select, func
+from sqlalchemy import or_, select, func, exists
+
+from ..models.message import SenderRole
 from ..security.role.role import IdentityRole
 from uuid import UUID
 
@@ -80,3 +82,12 @@ class ConversationRepository:
             conversation.last_read_message_by_admin_id = message_id
         await self.db.commit()
         await self.db.refresh(conversation)
+
+    async def count_unread_conversations(self):
+        result = await self.db.execute(
+            select(func.count(Conversation.id))
+            .where(exists(select(Message.id).where(
+            Message.conversation_id == Conversation.id,
+                        Message.sender_role == SenderRole.USER,
+                        Message.id > Conversation.last_read_message_by_admin_id))))
+        return result.scalar_one()

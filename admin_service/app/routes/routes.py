@@ -36,7 +36,14 @@ def logout():
 async def show_admin_panel(request: Request):
     payload = get_payload(request)
     required_roles(IdentityRole.ADMIN, IdentityRole.MODERATOR, payload=payload)
-    return templates.TemplateResponse("admin_panel.html", {"request" : request})
+    async with httpx.AsyncClient() as client:
+        response = await client.get(
+            "http://support-service:8006/support/unread/count"
+        )
+
+    support_data = response.json()
+    unread_support_count = support_data["count"]
+    return templates.TemplateResponse("admin_panel.html", {"request" : request, "unread_support_count" : unread_support_count})
 
 @router.get("/admin_panel/all_admins")
 async def show_all_admins(request: Request, admin_service : AdminService = Depends(get_service_dependency)):
@@ -227,5 +234,7 @@ async def customer_info(request : Request, identity_id : UUID):
         info_user["status"] = identity["status"]
         info_user["identity_id"] = str(identity_id)
     return templates.TemplateResponse("user_info.html", {"request" : request, "user" : info_user})
+
+
 
 

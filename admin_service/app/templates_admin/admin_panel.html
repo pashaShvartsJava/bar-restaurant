@@ -238,6 +238,34 @@
     .button-large h3 {
         font-size: 16px;
     }
+    .support-button {
+    position: relative;
+}
+
+.support-badge {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+
+    min-width: 22px;
+    height: 22px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0 6px;
+
+    background: #8b5cf6;
+    border: 1px solid rgba(196, 181, 253, 0.35);
+    border-radius: 50%;
+
+    color: #ffffff;
+    font-size: 10px;
+    font-weight: 600;
+
+    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.25);
+}
 
 
     .logout {
@@ -439,7 +467,13 @@
 
         <div class="buttons buttons-secondary">
 
-            <a href="/support/general_support" class="button">
+            <a href="/support/general_support" class="button support-button">
+
+                {% if unread_support_count > 0 %}
+                    <span class="support-badge">
+                        {{ unread_support_count }}
+                    </span>
+                {% endif %}
 
                 <div class="icon">
                     💬
@@ -450,8 +484,7 @@
                 </h3>
 
                 <p>
-                    Общение с клиентами
-                </p>
+                    Общение с клиентами</p>
 
             </a>
 
