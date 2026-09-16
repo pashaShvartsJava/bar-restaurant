@@ -15,6 +15,10 @@ class AdminRepository:
         result = await self.db.execute(select(Admin))
         return result.scalars().all()
 
+    async def get_all_by_search(self, identity_id : UUID) -> List[Admin]:
+        result = await self.db.execute(select(Admin).where(Admin.identity_id==identity_id))
+        return result.scalars().all()
+
     async def get_by_id(self, id: int) -> Optional[Admin]:
         result = await self.db.execute(select(Admin).where(Admin.id == id))
         return result.scalar_one_or_none()
