@@ -34,3 +34,9 @@ class ConversationService:
 
     async def free_conversation(self, conversation_id : int):
         return await self.conversation_repository.free_conversation(conversation_id)
+
+    async def mark_as_read_by_user(self, conversation_id : int, message_id : int):
+        return await self.conversation_repository.mark_as_read_by_user(conversation_id, message_id)
+
+    async def mark_as_read_by_admin(self, conversation_id: int, message_id: int):
+        return await self.conversation_repository.mark_as_read_by_admin(conversation_id, message_id)

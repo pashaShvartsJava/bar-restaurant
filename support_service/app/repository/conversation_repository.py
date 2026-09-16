@@ -3,6 +3,7 @@ from datetime import datetime, timezone
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
+from ..models import Message
 from ..models.conversation import Conversation
 from sqlalchemy import or_, select
 from ..security.role.role import IdentityRole
@@ -51,5 +52,24 @@ class ConversationRepository:
     async def free_conversation(self, conversation_id : int):
         conversation = await self.get_conversation_by_id(conversation_id)
         conversation.admin_id = None
+        await self.db.commit()
+        await self.db.refresh(conversation)
+
+    async def mark_as_read_by_user(self, conversation_id: int, message_id: int):
+        result  = await self.db.execute(select(Conversation).join(Message).where(Conversation.id==conversation_id).where(Message.id==message_id))
+        conversation : Conversation = result.scalar_one_or_none()
+        if conversation.last_read_message_by_user_id is None or message_id > conversation.last_read_message_by_user_id:
+            conversation.last_read_message_by_user_id = message_id
+        await self.db.commit()
+        await self.db.refresh(conversation)
+
+
+    async def mark_as_read_by_admin(self, conversation_id: int, message_id: int):
+        result = await self.db.execute(
+            select(Conversation).join(Message).where(Conversation.id == conversation_id).where(
+                Message.id == message_id))
+        conversation: Conversation = result.scalar_one_or_none()
+        if conversation.last_read_message_by_admin_id is None or message_id > conversation.last_read_message_by_admin_id:
+            conversation.last_read_message_by_admin_id = message_id
         await self.db.commit()
         await self.db.refresh(conversation)

@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Техническая поддержка</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            background:
+                radial-gradient(
+                    ellipse at 50% 0%,
+                    rgba(145, 85, 75, 0.20) 0%,
+                    rgba(55, 35, 40, 0.22) 38%,
+                    rgba(9, 9, 11, 1) 78%
+                ),
+                linear-gradient(
+                    180deg,
+                    #211a1c 0%,
+                    #121214 50%,
+                    #09090b 100%
+                );
+            color: #ffffff;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 60px 35px;
+        }
+
+        .top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 45px;
+        }
+
+        .back {
+            color: #77777d;
+            font-size: 11px;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .back:hover {
+            color: #d5a65b;
+        }
+
+        .brand {
+            color: #d5a65b;
+            font-family: Georgia, serif;
+            font-size: 11px;
+            letter-spacing: 3px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header-label {
+            margin-bottom: 10px;
+            color: #d5a65b;
+            font-size: 9px;
+            letter-spacing: 3px;
+        }
+
+        .header h1 {
+            font-family: Georgia, serif;
+            font-size: 42px;
+            font-weight: normal;
+            letter-spacing: 3px;
+        }
+
+        .description {
+            max-width: 600px;
+            margin: 12px auto 0;
+            color: #77777d;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .clients {
+            width: 100%;
+            background: rgba(27, 25, 27, 0.96);
+            border: 1px solid rgba(213, 166, 91, 0.16);
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+        }
+
+        .table-header {
+            display: grid;
+            grid-template-columns: 1.4fr 1.1fr 1.3fr 140px;
+            align-items: center;
+            min-height: 48px;
+            padding: 0 22px;
+            background: rgba(40, 34, 32, 0.98);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+            color: #77777d;
+            font-size: 9px;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+
+        .client {
+            display: grid;
+            grid-template-columns: 1.4fr 1.1fr 1.3fr 140px;
+            align-items: center;
+            min-height: 90px;
+            padding: 16px 22px;
+            background: rgba(30, 29, 31, 0.97);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.055);
+            transition: background 0.2s, border-color 0.2s;
+        }
+
+        .client:last-child {
+            border-bottom: none;
+        }
+
+        .client:hover {
+            background: rgba(38, 36, 38, 0.98);
+            border-color: rgba(213, 166, 91, 0.18);
+        }
+
+        .client-main {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            min-width: 0;
+        }
+
+        .avatar {
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            background: #252427;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
+            color: #d5a65b;
+            font-size: 13px;
+            font-weight: 600;
+            transition: 0.2s;
+        }
+
+        .client:hover .avatar {
+            background: #d5a65b;
+            color: #252427;
+        }
+
+        .client-name {
+            color: #ffffff;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .client-email {
+            color: #77777d;
+            font-size: 10px;
+            word-break: break-all;
+        }
+
+        .client-phone {
+            color: #aaa9ae;
+            font-size: 11px;
+        }
+
+        .action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 34px;
+    padding: 8px 13px;
+    background: rgba(42, 40, 42, 0.95);
+    border: 1px solid rgba(139, 92, 246, 0.35);
+    border-radius: 6px;
+    color: #a78bfa;
+    font-family: Arial, sans-serif;
+    font-size: 9px;
+    text-decoration: none;
+    cursor: pointer;
+    transition:
+        background 0.2s,
+        border-color 0.2s,
+        color 0.2s;
+}
+
+.action:hover {
+    background: rgba(52, 49, 52, 0.98);
+    border-color: #a78bfa;
+    color: #c4b5fd;
+}
+
+        .actions {
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .empty {
+            padding: 55px 30px;
+            background: rgba(27, 25, 27, 0.96);
+            border: 1px solid rgba(213, 166, 91, 0.16);
+            border-radius: 14px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+        }
+
+        .empty-title {
+            color: #ffffff;
+            font-family: Georgia, serif;
+            font-size: 18px;
+        }
+
+        .empty-description {
+            margin-top: 9px;
+            color: #77777d;
+            font-size: 10px;
+        }
+
+        .footer {
+            padding-top: 35px;
+            text-align: center;
+            color: #4f4f54;
+            font-size: 9px;
+            letter-spacing: 1px;
+        }
+
+        @media (max-width: 850px) {
+            .table-header {
+                display: none;
+            }
+
+            .client {
+                display: grid;
+                grid-template-columns: 1fr auto;
+                gap: 14px;
+                padding: 20px;
+            }
+
+            .client-main {
+                grid-column: 1 / -1;
+            }
+
+            .client-phone {
+                grid-column: 1;
+            }
+
+            .client-email {
+                grid-column: 1;
+            }
+
+            .actions {
+                grid-column: 2;
+                grid-row: 2 / 4;
+                align-items: center;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 35px 18px;
+            }
+
+            .top {
+                margin-bottom: 35px;
+            }
+
+            .header {
+                margin-bottom: 30px;
+            }
+
+            .header h1 {
+                font-size: 32px;
+            }
+
+            .client {
+                display: flex;
+                flex-direction: column;
+                align-items: stretch;
+                gap: 13px;
+            }
+
+            .actions {
+                display: flex;
+                width: 100%;
+            }
+
+            .action {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="top">
+        <a href="/admin_panel" class="back">← НАЗАД</a>
+        <div class="brand">SUPPORT</div>
+    </div>
+
+    <div class="header">
+        <div class="header-label">ТЕХНИЧЕСКАЯ ПОДДЕРЖКА</div>
+
+        <h1>Клиенты</h1>
+
+        <p class="description">
+            Данным клиентам нужна техническая помощь.
+            Выберите клиента, чтобы открыть чат с ним.
+        </p>
+    </div>
+
+    {% if clients %}
+
+    <div class="clients">
+
+        <div class="table-header">
+            <div>Клиент</div>
+            <div>Телефон</div>
+            <div>Email</div>
+            <div></div>
+        </div>
+
+        {% for client in clients %}
+
+        <div class="client">
+
+            <div class="client-main">
+                <div class="avatar">
+                    {{ client.name[0] }}{{ client.surname[0] }}
+                </div>
+
+                <div>
+                    <div class="client-name">
+                        {{ client.name }} {{ client.surname }}
+                    </div>
+                </div>
+            </div>
+
+            <div class="client-phone">
+                {{ client.phone }}
+            </div>
+
+            <div class="client-email">
+                {{ client.email }}
+            </div>
+
+            <div class="actions">
+                <a
+                    href="/support/admin?identity_id={{ client.identity_id }}"
+                    class="action"
+                >
+                    Открыть чат
+                </a>
+            </div>
+
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+    {% else %}
+
+    <div class="empty">
+        <div class="empty-title">
+            Сейчас помощь никому не требуется
+        </div>
+
+        <div class="empty-description">
+            Клиентов с непрочитанными сообщениями нет.
+        </div>
+    </div>
+
+    {% endif %}
+
+    <div class="footer">
+        TECHNICAL SUPPORT
+    </div>
+
+</div>
+
+</body>
+</html>

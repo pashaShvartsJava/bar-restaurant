@@ -497,17 +497,31 @@
     const statusDot = document.getElementById("statusDot");
     const statusText = document.getElementById("statusText");
 
-    const protocol =
-        window.location.protocol === "https:" ? "wss:" : "ws:";
-
+    const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
     const socket = new WebSocket(
         `${protocol}//${window.location.host}/ws/support/${conversationId}`
     );
+
+    const lastSupportMessageId = {{ conversation.messages
+        | selectattr("sender_role", "in", ["admin", "moderator"])
+        | map(attribute="id")
+        | list
+        | last
+        | default(none)
+        | tojson
+    }};
 
     socket.onopen = function() {
         statusDot.classList.remove("disconnected");
         statusText.textContent = "Подключено";
         sendButton.disabled = false;
+
+        if (lastSupportMessageId !== null) {
+            socket.send(JSON.stringify({
+                type: "read",
+                message_id: lastSupportMessageId
+            }));
+        }
     };
 
     socket.onclose = function() {
@@ -522,9 +536,21 @@
         sendButton.disabled = true;
     };
 
-    socket.onmessage = function(event) {
+    socket.onmessage = (event) => {
         const message = JSON.parse(event.data);
+
         addMessage(message);
+
+        if (
+            document.visibilityState === "visible" &&
+            (message.sender_role === "admin" ||
+             message.sender_role === "moderator")
+        ) {
+            socket.send(JSON.stringify({
+                type: "read",
+                message_id: message.id
+            }));
+        }
     };
 
     chatForm.addEventListener("submit", function(event) {
@@ -532,11 +558,7 @@
 
         const text = messageInput.value.trim();
 
-        if (!text) {
-            return;
-        }
-
-        if (socket.readyState !== WebSocket.OPEN) {
+        if (!text || socket.readyState !== WebSocket.OPEN) {
             return;
         }
 
@@ -595,8 +617,7 @@
         row.appendChild(messageElement);
         messagesContainer.appendChild(row);
 
-        messagesContainer.scrollTop =
-            messagesContainer.scrollHeight;
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
     }
 
     function formatTime(dateString) {
@@ -608,9 +629,9 @@
         });
     }
 
-    messagesContainer.scrollTop =
-        messagesContainer.scrollHeight;
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
 </script>
+
 
 </body>
 </html>
