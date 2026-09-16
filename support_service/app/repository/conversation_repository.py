@@ -5,7 +5,7 @@ from sqlalchemy.orm import selectinload
 
 from ..models import Message
 from ..models.conversation import Conversation
-from sqlalchemy import or_, select
+from sqlalchemy import or_, select, func
 from ..security.role.role import IdentityRole
 from uuid import UUID
 
@@ -43,6 +43,13 @@ class ConversationRepository:
         self.db.add(new_conversation)
         await self.db.commit()
         await self.db.refresh(new_conversation)
+
+    async def get_unread_conversations(self):
+        result = await self.db.execute(select(Conversation)
+                                        .join(Conversation.messages)
+                                        .group_by(Conversation.id)
+                                        .having(Conversation.last_read_message_by_admin_id < func.max(Message.id)))
+        return result.scalars().all()
 
     async def take_conversation_by_admin(self, admin_id : UUID, conversation : Conversation):
         conversation.admin_id = admin_id

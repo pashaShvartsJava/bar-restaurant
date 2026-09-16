@@ -40,3 +40,9 @@ class ConversationService:
 
     async def mark_as_read_by_admin(self, conversation_id: int, message_id: int):
         return await self.conversation_repository.mark_as_read_by_admin(conversation_id, message_id)
+
+    async def filter_users_by_conversations(self, users : list):
+        return await self.conversation_repository.filter_users_by_conversations(users)
+
+    async def get_unread_conversations(self):
+        return await self.conversation_repository.get_unread_conversations()

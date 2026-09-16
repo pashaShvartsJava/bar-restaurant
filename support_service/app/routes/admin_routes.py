@@ -1,3 +1,4 @@
+import httpx
 from fastapi import APIRouter, Request, Form
 from fastapi.params import Depends
 from starlette.responses import RedirectResponse
@@ -9,7 +10,9 @@ from ..security.role.role import IdentityRole
 from ..dependencies.dependencies import get_message_service_dependency, get_conversation_service_dependency
 from ..service.conversation_service import ConversationService
 from uuid import UUID
+from ..config.config import settings
 
+INTERNAL_TOKEN = settings.internal_token
 router = APIRouter()
 templates = Jinja2Templates(directory="app/templates")
 
@@ -30,3 +33,10 @@ async def free_conversation(request : Request,
     required_roles(IdentityRole.ADMIN, IdentityRole.MODERATOR, payload=payload)
     await conversation_service.free_conversation(conversation_id)
     return RedirectResponse(url="/admin_panel/all_customers", status_code=303)
+
+@router.get("/support/general_support")
+async def general_support(request : Request, conversation_service : ConversationService = Depends(get_conversation_service_dependency)):
+    payload = get_payload(request)
+    required_roles(IdentityRole.ADMIN, IdentityRole.MODERATOR, payload=payload)
+    conversations = await conversation_service.get_unread_conversations()
+    return templates.TemplateResponse("general_support.html", {"request" : request, "conversations" : conversations})
