@@ -923,7 +923,6 @@ const clearCartButton = document.getElementById("clearCartButton");
 function getCart() {
     try {
         const savedCart = localStorage.getItem(CART_STORAGE_KEY);
-
         if (!savedCart) {
             return [];
         }
@@ -946,7 +945,6 @@ function getDishElement(dishId) {
 
 function getDishData(dishId) {
     const dish = getDishElement(dishId);
-
     if (!dish) {
         return null;
     }
@@ -961,9 +959,8 @@ function getDishData(dishId) {
 
 function getDishQuantity(dishId) {
     const cart = getCart();
-
     const item = cart.find(
-        item => Number(item.menu_item_id) === Number(dishId)
+        item => Number(item.dish_id) === Number(dishId)
     );
 
     return item ? Number(item.quantity) : 0;
@@ -971,9 +968,8 @@ function getDishQuantity(dishId) {
 
 function setDishQuantity(dishId, quantity) {
     let cart = getCart();
-
     const index = cart.findIndex(
-        item => Number(item.menu_item_id) === Number(dishId)
+        item => Number(item.dish_id) === Number(dishId)
     );
 
     if (quantity <= 0) {
@@ -983,20 +979,19 @@ function setDishQuantity(dishId, quantity) {
     } else if (index !== -1) {
         cart[index].quantity = quantity;
     } else {
-    const dish = getDishData(dishId);
+        const dish = getDishData(dishId);
+        if (!dish) {
+            return;
+        }
 
-    if (!dish) {
-        return;
+        cart.push({
+            dish_id: Number(dishId),
+            quantity,
+            dish_name: dish.name,
+            price: dish.price,
+            image: dish.image
+        });
     }
-
-    cart.push({
-        menu_item_id: Number(dishId),
-        quantity,
-        dish_name: dish.name,
-        price: dish.price,
-        image: dish.image
-    });
-}
 
     saveCart(cart);
     updateInterface();
@@ -1009,7 +1004,6 @@ function clearCart() {
 
 function addToCart(dishId, amount = 1) {
     const quantity = getDishQuantity(dishId);
-
     setDishQuantity(dishId, quantity + amount);
     openCart();
 }
@@ -1027,8 +1021,7 @@ function getTotalQuantity() {
 
 function getTotalPrice() {
     return getCart().reduce((total, item) => {
-        const dish = getDishData(item.menu_item_id);
-
+        const dish = getDishData(item.dish_id);
         if (!dish) {
             return total;
         }
@@ -1094,15 +1087,13 @@ function renderCart() {
                 </div>
             </div>
         `;
-
         return;
     }
 
     cartContent.innerHTML = "";
 
     cart.forEach(item => {
-        const dish = getDishData(item.menu_item_id);
-
+        const dish = getDishData(item.dish_id);
         if (!dish) {
             return;
         }
@@ -1119,38 +1110,22 @@ function renderCart() {
 
         cartItem.innerHTML = `
             ${imageHTML}
-
             <div class="cart-item-info">
                 <div class="cart-item-name">${escapeHTML(dish.name)}</div>
-
                 <div class="cart-item-price">
                     ${quantity} × <strong>${dish.price.toFixed(2)} €</strong><br>
                     ${itemTotal.toFixed(2)} €
                 </div>
             </div>
-
             <div class="cart-item-controls">
                 <div class="cart-quantity">
-                    <button
-                        type="button"
-                        data-cart-minus="${dish.id}"
-                    >−</button>
-
-                    <span class="cart-quantity-value">
-                        ${quantity}
-                    </span>
-
-                    <button
-                        type="button"
-                        data-cart-plus="${dish.id}"
-                    >+</button>
+                    <button type="button" data-cart-minus="${dish.id}">−</button>
+                    <span class="cart-quantity-value">${quantity}</span>
+                    <button type="button" data-cart-plus="${dish.id}">+</button>
                 </div>
-
-                <button
-                    type="button"
-                    class="cart-item-remove"
-                    data-cart-remove="${dish.id}"
-                >Убрать</button>
+                <button type="button" class="cart-item-remove" data-cart-remove="${dish.id}">
+                    Убрать
+                </button>
             </div>
         `;
 
@@ -1160,22 +1135,14 @@ function renderCart() {
     cartContent.querySelectorAll("[data-cart-plus]").forEach(button => {
         button.addEventListener("click", () => {
             const dishId = button.dataset.cartPlus;
-
-            setDishQuantity(
-                dishId,
-                getDishQuantity(dishId) + 1
-            );
+            setDishQuantity(dishId, getDishQuantity(dishId) + 1);
         });
     });
 
     cartContent.querySelectorAll("[data-cart-minus]").forEach(button => {
         button.addEventListener("click", () => {
             const dishId = button.dataset.cartMinus;
-
-            setDishQuantity(
-                dishId,
-                getDishQuantity(dishId) - 1
-            );
+            setDishQuantity(dishId, getDishQuantity(dishId) - 1);
         });
     });
 
@@ -1190,7 +1157,6 @@ function updateInterface() {
     updateDishQuantities();
     updateCartHeader();
     renderCart();
-
     cartTotalPrice.textContent = `${getTotalPrice().toFixed(2)} €`;
 }
 
@@ -1217,11 +1183,7 @@ document.querySelectorAll(".quantity-plus").forEach(button => {
 document.querySelectorAll(".quantity-minus").forEach(button => {
     button.addEventListener("click", () => {
         const dishId = button.dataset.dishId;
-
-        setDishQuantity(
-            dishId,
-            getDishQuantity(dishId) - 1
-        );
+        setDishQuantity(dishId, getDishQuantity(dishId) - 1);
     });
 });
 
@@ -1243,6 +1205,7 @@ clearCartButton.addEventListener("click", () => {
     if (getCart().length === 0) {
         return;
     }
+
     clearCart();
 });
 
@@ -1252,7 +1215,7 @@ document.addEventListener("keydown", event => {
     }
 });
 
-checkoutButton.addEventListener("click", () => {
+checkoutButton.addEventListener("click", async () => {
     const cart = getCart();
 
     if (cart.length === 0) {
@@ -1260,14 +1223,47 @@ checkoutButton.addEventListener("click", () => {
         return;
     }
 
-    console.log("ORDER DATA:", {
-        items: cart
-    });
+    const orderData = {
+        items: cart.map(item => ({
+            dish_id: Number(item.dish_id),
+            dish_name: item.dish_name,
+            price: Number(item.price),
+            quantity: Number(item.quantity)
+        }))
+    };
 
-    alert("Оформление заказа будет подключено к Order Service.");
+    console.log(
+        "ORDER DTO:",
+        JSON.stringify(orderData, null, 2)
+    );
+
+    try {
+        const response = await fetch(
+            "http://order-service/orders/user",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(orderData)
+            }
+        );
+
+        if (!response.ok) {
+            throw new Error(`HTTP error: ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        console.log("ORDER CREATED:", data);
+    } catch (error) {
+        console.error("ORDER ERROR:", error);
+        alert("Не удалось оформить заказ.");
+    }
 });
 
 updateInterface();
 </script>
+
 </body>
 </html>
