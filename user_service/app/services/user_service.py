@@ -1,7 +1,7 @@
 from ..repositories.user_repository import UserRepository
 from ..repositories.address_repository import AddressRepository
 from ..model.user_model import User
-from ..schema.address_schema import AddressResponseDTO
+from ..schema.address_schema import AddressResponseDTO, AddressEditSchema
 from ..schema.user_schema import RegisterResponseDTO, UserEditSchema, PasswordResponse
 from uuid import UUID
 
@@ -58,4 +58,3 @@ class UserService:
 
     async def find_all_users(self):
         return await self.user_repository.get_all_users()
-

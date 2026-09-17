@@ -1,0 +1,1017 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Заказы</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            background:
+                radial-gradient(ellipse at 50% 0%, rgba(145, 85, 75, 0.20) 0%, rgba(55, 35, 40, 0.22) 38%, rgba(9, 9, 11, 1) 78%),
+                linear-gradient(180deg, #211a1c 0%, #121214 50%, #09090b 100%);
+            color: #ffffff;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 60px 35px;
+        }
+
+        .top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 45px;
+        }
+
+        .back {
+            color: #77777d;
+            font-size: 11px;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .back:hover {
+            color: #d5a65b;
+        }
+
+        .brand {
+            color: #d5a65b;
+            font-family: Georgia, serif;
+            font-size: 11px;
+            letter-spacing: 3px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        .header-label {
+            margin-bottom: 10px;
+            color: #d5a65b;
+            font-size: 9px;
+            letter-spacing: 3px;
+        }
+
+        .header h1 {
+            font-family: Georgia, serif;
+            font-size: 42px;
+            font-weight: normal;
+            letter-spacing: 3px;
+        }
+
+        .description {
+            margin-top: 12px;
+            color: #77777d;
+            font-size: 13px;
+        }
+
+        .controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 25px;
+        }
+
+        .search-form {
+            display: flex;
+            flex: 1;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .search-input {
+            flex: 1;
+            min-height: 34px;
+            padding: 8px 12px;
+            background: rgba(42, 40, 42, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 6px;
+            outline: none;
+            color: #ffffff;
+            font-family: Arial, sans-serif;
+            font-size: 9px;
+            transition: border-color 0.2s;
+        }
+
+        .search-input::placeholder {
+            color: #77777d;
+        }
+
+        .search-input:focus {
+            border-color: rgba(139, 92, 246, 0.55);
+        }
+
+        .search-button,
+        .reset-button,
+        .sort-button,
+        .action {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 34px;
+            padding: 8px 13px;
+            border-radius: 6px;
+            font-family: Arial, sans-serif;
+            font-size: 9px;
+            text-decoration: none;
+            cursor: pointer;
+            transition: background 0.2s, border-color 0.2s, color 0.2s;
+        }
+
+        .search-button {
+            background: rgba(42, 40, 42, 0.95);
+            border: 1px solid rgba(139, 92, 246, 0.35);
+            color: #a78bfa;
+        }
+
+        .search-button:hover {
+            background: rgba(52, 49, 52, 0.98);
+            border-color: #a78bfa;
+            color: #c4b5fd;
+        }
+
+        .reset-button {
+            background: rgba(42, 40, 42, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: #aaa9ae;
+        }
+
+        .reset-button:hover {
+            background: rgba(52, 49, 52, 0.98);
+            border-color: #77777d;
+            color: #ffffff;
+        }
+
+        .sort-button {
+            min-width: 105px;
+            background: rgba(42, 40, 42, 0.95);
+            border: 1px solid rgba(213, 166, 91, 0.30);
+            color: #d5a65b;
+        }
+
+        .sort-button:hover {
+            background: rgba(52, 49, 52, 0.98);
+            border-color: #d5a65b;
+            color: #e4bc7a;
+        }
+
+        .orders {
+            width: 100%;
+            background: rgba(27, 25, 27, 0.96);
+            border: 1px solid rgba(213, 166, 91, 0.16);
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+        }
+
+        .table-header,
+        .order {
+            display: grid;
+            grid-template-columns: 1.5fr 1.15fr 135px 155px 155px 110px 120px;
+            align-items: center;
+        }
+
+        .table-header {
+            min-height: 48px;
+            padding: 0 22px;
+            background: rgba(40, 34, 32, 0.98);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+            color: #77777d;
+            font-size: 9px;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+
+        .order {
+            min-height: 105px;
+            padding: 16px 22px;
+            background: rgba(30, 29, 31, 0.97);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.055);
+            transition: background 0.2s, border-color 0.2s;
+        }
+
+        .order:last-child {
+            border-bottom: none;
+        }
+
+        .order:hover {
+            background: rgba(38, 36, 38, 0.98);
+            border-color: rgba(213, 166, 91, 0.18);
+        }
+
+        .order-number {
+            color: #ffffff;
+            font-size: 12px;
+            font-weight: 600;
+            word-break: break-all;
+        }
+
+        .order-client {
+            color: #77777d;
+            font-size: 10px;
+            word-break: break-all;
+        }
+
+        .order-date {
+            color: #aaa9ae;
+            font-size: 10px;
+            line-height: 1.5;
+        }
+
+        .order-sum {
+            color: #d5a65b;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            width: fit-content;
+            padding: 7px 10px;
+            border-radius: 6px;
+            font-size: 9px;
+            white-space: nowrap;
+        }
+
+        .status::before {
+            content: "";
+            width: 5px;
+            height: 5px;
+            flex-shrink: 0;
+            border-radius: 50%;
+            background: currentColor;
+        }
+
+        .status.pending {
+            background: rgba(170, 130, 70, 0.13);
+            border: 1px solid rgba(210, 166, 91, 0.28);
+            color: #d5a65b;
+        }
+
+        .status.paid {
+            background: rgba(70, 100, 130, 0.14);
+            border: 1px solid rgba(90, 135, 175, 0.30);
+            color: #8db4d3;
+        }
+
+        .status.prepared {
+            background: rgba(110, 80, 135, 0.15);
+            border: 1px solid rgba(145, 110, 175, 0.30);
+            color: #b59bc9;
+        }
+
+        .status.delivering {
+            background: rgba(70, 110, 100, 0.15);
+            border: 1px solid rgba(90, 145, 125, 0.30);
+            color: #8db9a9;
+        }
+
+        .status.completed {
+            background: rgba(100, 130, 80, 0.12);
+            border: 1px solid rgba(120, 150, 95, 0.25);
+            color: #9aaa8b;
+        }
+
+        .status.cancelled_before {
+            background: rgba(150, 55, 65, 0.16);
+            border: 1px solid rgba(210, 85, 90, 0.32);
+            color: #d98282;
+        }
+
+        .status.confirmed_address {
+            background: rgba(70, 100, 130, 0.14);
+            border: 1px solid rgba(90, 135, 175, 0.30);
+            color: #8db4d3;
+        }
+
+        .action {
+            background: rgba(42, 40, 42, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: #aaa9ae;
+            white-space: nowrap;
+        }
+
+        .action:hover {
+            background: rgba(52, 49, 52, 0.98);
+            border-color: #d5a65b;
+            color: #d5a65b;
+        }
+
+        .empty {
+            padding: 55px 30px;
+            background: rgba(27, 25, 27, 0.96);
+            border: 1px solid rgba(213, 166, 91, 0.16);
+            border-radius: 14px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+        }
+
+        .empty-title {
+            color: #ffffff;
+            font-family: Georgia, serif;
+            font-size: 18px;
+        }
+
+        .empty-description {
+            margin-top: 9px;
+            color: #77777d;
+            font-size: 10px;
+        }
+
+        .footer {
+            padding-top: 35px;
+            text-align: center;
+            color: #4f4f54;
+            font-size: 9px;
+            letter-spacing: 1px;
+        }
+
+        .sort-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 1000;
+            display: none;
+            pointer-events: none;
+        }
+
+        .sort-overlay.active {
+            display: block;
+        }
+
+        .sort-panel {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 360px;
+            height: 100%;
+            padding: 30px;
+            background: #1b191b;
+            border-left: 1px solid rgba(213, 166, 91, 0.20);
+            box-shadow: -20px 0 60px rgba(0, 0, 0, 0.40);
+            transform: translateX(100%);
+            transition: transform 0.25s ease;
+            overflow-y: auto;
+            pointer-events: auto;
+        }
+
+        .sort-overlay.active .sort-panel {
+            transform: translateX(0);
+        }
+
+        .sort-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 30px;
+        }
+
+        .sort-title {
+            color: #ffffff;
+            font-family: Georgia, serif;
+            font-size: 21px;
+            letter-spacing: 1px;
+        }
+
+        .close-sort {
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(42, 40, 42, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 6px;
+            color: #77777d;
+            cursor: pointer;
+            font-size: 15px;
+            transition: 0.2s;
+        }
+
+        .close-sort:hover {
+            border-color: #d5a65b;
+            color: #d5a65b;
+        }
+
+        .sort-section {
+            margin-bottom: 25px;
+        }
+
+        .sort-label {
+            display: block;
+            margin-bottom: 9px;
+            color: #aaa9ae;
+            font-size: 9px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .sort-select,
+        .sort-input {
+            width: 100%;
+            min-height: 36px;
+            padding: 8px 10px;
+            background: rgba(42, 40, 42, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 6px;
+            outline: none;
+            color: #ffffff;
+            font-family: Arial, sans-serif;
+            font-size: 10px;
+        }
+
+        .sort-select:focus,
+        .sort-input:focus {
+            border-color: rgba(213, 166, 91, 0.55);
+        }
+
+        .sort-select option {
+            background: #2a282a;
+            color: #ffffff;
+        }
+
+        .sort-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .sort-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 35px;
+        }
+
+        .sort-submit,
+        .sort-reset {
+            flex: 1;
+            min-height: 36px;
+            border-radius: 6px;
+            font-family: Arial, sans-serif;
+            font-size: 9px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .sort-submit {
+            background: rgba(213, 166, 91, 0.12);
+            border: 1px solid rgba(213, 166, 91, 0.35);
+            color: #d5a65b;
+        }
+
+        .sort-submit:hover {
+            background: rgba(213, 166, 91, 0.20);
+            border-color: #d5a65b;
+        }
+
+        .sort-reset {
+            background: rgba(42, 40, 42, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: #aaa9ae;
+        }
+
+        .sort-reset:hover {
+            border-color: #77777d;
+            color: #ffffff;
+        }
+
+        @media (max-width: 1200px) {
+            .table-header {
+                display: none;
+            }
+
+            .order {
+                grid-template-columns: 1fr 1fr;
+                gap: 18px;
+                padding: 20px;
+            }
+
+            .order-number {
+                grid-column: 1 / -1;
+            }
+        }
+
+        @media (max-width: 700px) {
+            .container {
+                padding: 35px 18px;
+            }
+
+            .top {
+                margin-bottom: 35px;
+            }
+
+            .header {
+                margin-bottom: 30px;
+            }
+
+            .header h1 {
+                font-size: 34px;
+            }
+
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .search-form {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .search-input,
+            .search-button,
+            .reset-button,
+            .sort-button {
+                width: 100%;
+            }
+
+            .order {
+                display: flex;
+                flex-direction: column;
+                align-items: stretch;
+                gap: 14px;
+            }
+
+            .action {
+                width: 100%;
+            }
+
+            .sort-panel {
+                width: 100%;
+            }
+
+            .sort-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="top">
+        <a href="/admin_panel" class="back">← НАЗАД</a>
+        <div class="brand">RESTAURANT ADMIN</div>
+    </div>
+
+    <div class="header">
+        <div class="header-label">ORDER MANAGEMENT</div>
+        <h1>Заказы</h1>
+        <p class="description">Все зарегистрированные заказы ресторана</p>
+    </div>
+
+    <div class="controls">
+        <div class="search-form">
+            <input
+                class="search-input"
+                id="searchInput"
+                type="text"
+                placeholder="Введите номер заказа"
+            >
+
+            <button
+                class="search-button"
+                type="button"
+                onclick="searchOrders()"
+            >
+                Найти
+            </button>
+
+            <button
+                class="reset-button"
+                type="button"
+                onclick="resetOrders()"
+            >
+                Сбросить
+            </button>
+        </div>
+
+        <button
+            class="sort-button"
+            type="button"
+            onclick="openSort()"
+        >
+            Сортировать
+        </button>
+    </div>
+
+    {% if orders %}
+    <div class="orders" id="ordersContainer">
+        <div class="table-header">
+            <div>Номер заказа</div>
+            <div>Клиент</div>
+            <div>Статус</div>
+            <div>Создан</div>
+            <div>Статус изменён</div>
+            <div>Сумма</div>
+            <div>Действия</div>
+        </div>
+
+        <div id="ordersList">
+            {% for order in orders %}
+            <div
+                class="order"
+                data-order-number="{{ order.order_number }}"
+                data-client-id="{{ order.client_id }}"
+                data-status="{{ order.status.value if order.status.value is defined else order.status }}"
+                data-created="{{ order.created_at.isoformat() }}"
+                data-updated="{{ order.updated_status.isoformat() }}"
+                data-sum="{{ order.sum }}"
+            >
+                <div>
+                    <div class="order-number">
+                        {{ order.order_number }}
+                    </div>
+                </div>
+
+                <div>
+                    <div class="order-client">
+                        {{ order.client_id }}
+                    </div>
+                </div>
+
+                <div>
+                    <span class="status {{ order.status.value if order.status.value is defined else order.status }}">
+                        {% if order.status.value is defined %}
+                            {% if order.status.value == "pending" %}
+                                Ожидает
+                            {% elif order.status.value == "confirmed_address" %}
+                                Адрес подтверждён
+                            {% elif order.status.value == "paid" %}
+                                Оплачен
+                            {% elif order.status.value == "prepared" %}
+                                Готовится
+                            {% elif order.status.value == "delivering" %}
+                                Доставляется
+                            {% elif order.status.value == "completed" %}
+                                Завершён
+                            {% elif order.status.value == "cancelled_before" %}
+                                Отменён до оплаты
+                            {% elif order.status.value == "cancelled_after" %}
+                                Отменён после оплаты
+                            {% else %}
+                                {{ order.status.value }}
+                            {% endif %}
+                        {% else %}
+                            {{ order.status }}
+                        {% endif %}
+                    </span>
+                </div>
+
+                <div class="order-date">
+                    {{ order.created_at.strftime("%d.%m.%Y %H:%M") if order.created_at else "—" }}
+                </div>
+
+                <div class="order-date">
+                    {{ order.updated_status.strftime("%d.%m.%Y %H:%M") if order.updated_status else "—" }}
+                </div>
+
+                <div class="order-sum">
+                    {{ order.sum }} €
+                </div>
+
+                <div>
+                    <a
+                        class="action"
+                        href="/orders/{{ order.order_number }}"
+                    >
+                        Информация
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% else %}
+    <div class="empty" id="emptyState">
+        <div class="empty-title">Заказы не найдены</div>
+        <div class="empty-description">
+            В системе пока нет зарегистрированных заказов.
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="empty" id="filteredEmptyState" style="display: none;">
+        <div class="empty-title">Заказы не найдены</div>
+        <div class="empty-description">
+            По заданным параметрам заказов нет.
+        </div>
+    </div>
+
+    <div class="footer">
+        RESTAURANT ADMINISTRATION
+    </div>
+</div>
+
+<div class="sort-overlay" id="sortOverlay">
+    <div class="sort-panel">
+        <div class="sort-header">
+            <div class="sort-title">Сортировка</div>
+
+            <button
+                class="close-sort"
+                type="button"
+                onclick="closeSort()"
+            >
+                ×
+            </button>
+        </div>
+
+        <div class="sort-section">
+            <label class="sort-label">Дата создания</label>
+
+            <div class="sort-row">
+                <input
+                    class="sort-input"
+                    id="dateFrom"
+                    type="date"
+                >
+
+                <input
+                    class="sort-input"
+                    id="dateTo"
+                    type="date"
+                >
+            </div>
+        </div>
+
+        <div class="sort-section">
+            <label class="sort-label">Статус</label>
+
+            <select class="sort-select" id="statusFilter">
+                <option value="">Все статусы</option>
+                <option value="pending">Ожидает</option>
+                <option value="confirmed_address">Адрес подтверждён</option>
+                <option value="paid">Оплачен</option>
+                <option value="prepared">Готовится</option>
+                <option value="delivering">Доставляется</option>
+                <option value="completed">Завершён</option>
+                <option value="cancelled_before">Отменён до оплаты</option>
+                <option value="cancelled_after">Отменён после оплаты</option>
+            </select>
+        </div>
+
+        <div class="sort-section">
+            <label class="sort-label">Сумма</label>
+
+            <div class="sort-row">
+                <input
+                    class="sort-input"
+                    id="sumFrom"
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    placeholder="От"
+                >
+
+                <input
+                    class="sort-input"
+                    id="sumTo"
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    placeholder="До"
+                >
+            </div>
+        </div>
+
+        <div class="sort-section">
+            <label class="sort-label">Порядок</label>
+
+            <select class="sort-select" id="sortOrder">
+                <option value="created_desc">Сначала новые</option>
+                <option value="created_asc">Сначала старые</option>
+                <option value="sum_desc">Сумма по убыванию</option>
+                <option value="sum_asc">Сумма по возрастанию</option>
+            </select>
+        </div>
+
+        <div class="sort-actions">
+            <button
+                class="sort-submit"
+                type="button"
+                onclick="applySort()"
+            >
+                Применить
+            </button>
+
+            <button
+                class="sort-reset"
+                type="button"
+                onclick="resetSort()"
+            >
+                Сбросить
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const orderElements = Array.from(document.querySelectorAll(".order"));
+
+    function getOrderData(element) {
+        return {
+            element,
+            orderNumber: element.dataset.orderNumber || "",
+            clientId: element.dataset.clientId || "",
+            status: element.dataset.status || "",
+            created: new Date(element.dataset.created),
+            updated: new Date(element.dataset.updated),
+            sum: Number(element.dataset.sum || 0)
+        };
+    }
+
+    const orders = orderElements.map(getOrderData);
+
+    function renderOrders(data) {
+        const ordersList = document.getElementById("ordersList");
+        const ordersContainer = document.getElementById("ordersContainer");
+        const filteredEmptyState = document.getElementById("filteredEmptyState");
+
+        if (!ordersList || !ordersContainer) {
+            return;
+        }
+
+        ordersList.innerHTML = "";
+
+        if (!data.length) {
+            ordersContainer.style.display = "none";
+
+            if (filteredEmptyState) {
+                filteredEmptyState.style.display = "block";
+            }
+
+            return;
+        }
+
+        ordersContainer.style.display = "block";
+
+        if (filteredEmptyState) {
+            filteredEmptyState.style.display = "none";
+        }
+
+        data.forEach(order => {
+            ordersList.appendChild(order.element);
+        });
+    }
+
+    function searchOrders() {
+        const searchValue = document
+            .getElementById("searchInput")
+            .value
+            .trim()
+            .toLowerCase();
+
+        if (!searchValue) {
+            renderOrders(orders);
+            return;
+        }
+
+        const result = orders.filter(order =>
+            order.orderNumber.toLowerCase().includes(searchValue)
+        );
+
+        renderOrders(result);
+    }
+
+    function resetOrders() {
+        document.getElementById("searchInput").value = "";
+        renderOrders(orders);
+    }
+
+    function openSort() {
+        document
+            .getElementById("sortOverlay")
+            .classList.add("active");
+
+        document.body.style.overflow = "hidden";
+    }
+
+    function closeSort() {
+        document
+            .getElementById("sortOverlay")
+            .classList.remove("active");
+
+        document.body.style.overflow = "";
+    }
+
+    function applySort() {
+        let result = [...orders];
+
+        const dateFrom = document.getElementById("dateFrom").value;
+        const dateTo = document.getElementById("dateTo").value;
+        const status = document.getElementById("statusFilter").value;
+        const sumFrom = document.getElementById("sumFrom").value;
+        const sumTo = document.getElementById("sumTo").value;
+        const sortOrder = document.getElementById("sortOrder").value;
+        const searchValue = document
+            .getElementById("searchInput")
+            .value
+            .trim()
+            .toLowerCase();
+
+        if (searchValue) {
+            result = result.filter(order =>
+                order.orderNumber.toLowerCase().includes(searchValue)
+            );
+        }
+
+        if (dateFrom) {
+            const from = new Date(`${dateFrom}T00:00:00`);
+
+            result = result.filter(order =>
+                order.created >= from
+            );
+        }
+
+        if (dateTo) {
+            const to = new Date(`${dateTo}T23:59:59`);
+
+            result = result.filter(order =>
+                order.created <= to
+            );
+        }
+
+        if (status) {
+            result = result.filter(order =>
+                order.status === status
+            );
+        }
+
+        if (sumFrom !== "") {
+            const min = Number(sumFrom);
+
+            result = result.filter(order =>
+                order.sum >= min
+            );
+        }
+
+        if (sumTo !== "") {
+            const max = Number(sumTo);
+
+            result = result.filter(order =>
+                order.sum <= max
+            );
+        }
+
+        result.sort((a, b) => {
+            if (sortOrder === "created_asc") {
+                return a.created - b.created;
+            }
+
+            if (sortOrder === "sum_desc") {
+                return b.sum - a.sum;
+            }
+
+            if (sortOrder === "sum_asc") {
+                return a.sum - b.sum;
+            }
+
+            return b.created - a.created;
+        });
+
+        renderOrders(result);
+        closeSort();
+    }
+
+    function resetSort() {
+        document.getElementById("dateFrom").value = "";
+        document.getElementById("dateTo").value = "";
+        document.getElementById("statusFilter").value = "";
+        document.getElementById("sumFrom").value = "";
+        document.getElementById("sumTo").value = "";
+        document.getElementById("sortOrder").value = "created_desc";
+
+        renderOrders(orders);
+        closeSort();
+    }
+
+    document
+        .getElementById("searchInput")
+        .addEventListener("keydown", event => {
+            if (event.key === "Enter") {
+                event.preventDefault();
+                searchOrders();
+            }
+        });
+
+    document.addEventListener("keydown", event => {
+        if (event.key === "Escape") {
+            closeSort();
+        }
+    });
+</script>
+</body>
+</html>

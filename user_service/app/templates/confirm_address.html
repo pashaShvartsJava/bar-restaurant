@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Подтверждение адреса | Bar & Lounge</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: "Segoe UI", sans-serif;
+            background:
+                radial-gradient(circle at 15% 15%, rgba(213,166,91,.2), transparent 30%),
+                radial-gradient(circle at 85% 85%, rgba(180,70,110,.16), transparent 30%),
+                linear-gradient(135deg, #24191f, #39252c, #21191e);
+            color: #fff;
+            padding: 40px 20px;
+        }
+
+        .page {
+            width: 650px;
+            max-width: 100%;
+            margin: auto;
+        }
+
+        .top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .back {
+            color: #aaa;
+            text-decoration: none;
+            font-size: 12px;
+        }
+
+        .back:hover {
+            color: #d5a65b;
+        }
+
+        .brand {
+            color: #d5a65b;
+            font-family: Georgia, serif;
+            letter-spacing: 3px;
+            font-size: 11px;
+        }
+
+        .card {
+            background: rgba(39,32,38,.96);
+            border: 1px solid rgba(255,255,255,.1);
+            border-radius: 18px;
+            padding: 35px;
+            box-shadow: 0 25px 60px rgba(0,0,0,.4);
+        }
+
+        .header {
+            margin-bottom: 30px;
+        }
+
+        .header-label {
+            color: #d5a65b;
+            font-size: 9px;
+            letter-spacing: 3px;
+            margin-bottom: 7px;
+        }
+
+        h1 {
+            margin: 0;
+            font-family: Georgia, serif;
+            font-size: 30px;
+            font-weight: normal;
+        }
+
+        .description {
+            color: #999;
+            font-size: 12px;
+            line-height: 1.6;
+            margin-top: 8px;
+        }
+
+        .section {
+            background: rgba(255,255,255,.025);
+            border: 1px solid #40383e;
+            border-radius: 14px;
+            padding: 22px;
+        }
+
+        .section-title {
+            color: #d5a65b;
+            font-size: 10px;
+            letter-spacing: 2px;
+            margin-bottom: 20px;
+        }
+
+        .field {
+            margin-bottom: 15px;
+        }
+
+        .field:last-child {
+            margin-bottom: 0;
+        }
+
+        .row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            color: #ccc;
+            font-size: 11px;
+        }
+
+        input {
+            width: 100%;
+            padding: 11px 12px;
+            background: #302a30;
+            border: 1px solid #51484e;
+            border-radius: 8px;
+            color: white;
+            font-size: 13px;
+            outline: none;
+            transition: .2s;
+        }
+
+        input:focus {
+            border-color: #d5a65b;
+            box-shadow: 0 0 0 3px rgba(213,166,91,.07);
+        }
+
+        .bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 25px;
+            padding-top: 22px;
+            border-top: 1px solid #40383e;
+        }
+
+        .cancel {
+            color: #999;
+            text-decoration: none;
+            font-size: 12px;
+        }
+
+        .cancel:hover {
+            color: white;
+        }
+
+        .continue {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            background: #d5a65b;
+            color: #211a15;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: .2s;
+        }
+
+        .continue:hover {
+            background: #e5b970;
+        }
+
+        .field-error {
+            color: #d98282;
+            font-size: 11px;
+            margin-top: 5px;
+        }
+
+        @media (max-width: 700px) {
+            body {
+                padding: 25px 15px;
+            }
+
+            .card {
+                padding: 25px 18px;
+            }
+
+            .row {
+                grid-template-columns: 1fr;
+            }
+
+            .bottom {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 15px;
+            }
+
+            .continue {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="page">
+    <div class="top">
+        <a href="/user/my_profile" class="back">← Вернуться в профиль</a>
+        <div class="brand">BAR & LOUNGE</div>
+    </div>
+
+    <div class="card">
+        <div class="header">
+            <div class="header-label">DELIVERY ADDRESS</div>
+            <h1>Подтверждение адреса</h1>
+            <div class="description">
+                Проверьте адрес доставки и подтвердите его перед переходом к оплате
+            </div>
+        </div>
+
+        <form id="addressForm" method="POST" action="/users/confirm_address">
+            <div class="section">
+                <div class="section-title">АДРЕС ДОСТАВКИ</div>
+
+                <div class="field">
+                    <label for="city">Город</label>
+                    <input
+                        id="city"
+                        type="text"
+                        name="city"
+                        value="{{ user.address.city if user.address else '' }}"
+                        required
+                    >
+                </div>
+
+                <div class="field">
+                    <label for="postal_code">Почтовый индекс</label>
+                    <input
+                        id="postal_code"
+                        type="text"
+                        name="postal_code"
+                        value="{{ user.address.postal_code if user.address else '' }}"
+                        required
+                    >
+                </div>
+
+                <div class="field">
+                    <label for="street">Улица</label>
+                    <input
+                        id="street"
+                        type="text"
+                        name="street"
+                        value="{{ user.address.street if user.address else '' }}"
+                        required
+                    >
+                </div>
+
+                <div class="row">
+                    <div class="field">
+                        <label for="house">Дом</label>
+                        <input
+                            id="house"
+                            type="text"
+                            name="house"
+                            value="{{ user.address.house if user.address else '' }}"
+                            required
+                        >
+                    </div>
+
+                    <div class="field">
+                        <label for="apartment">Квартира</label>
+                        <input
+                            id="apartment"
+                            type="text"
+                            name="apartment"
+                            value="{{ user.address.apartment if user.address else '' }}"
+                        >
+                    </div>
+                </div>
+            </div>
+
+            <div class="bottom">
+                <a href="/user/my_profile" class="cancel">
+                    Отмена
+                </a>
+
+                <button
+                    type="submit"
+                    class="continue">
+                    Перейти к оплате
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>

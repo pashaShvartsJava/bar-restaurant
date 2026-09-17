@@ -1241,284 +1241,328 @@
 
 
 <script>
-    const CART_STORAGE_KEY = "restaurant_cart";
+const CART_STORAGE_KEY = "restaurant_cart";
 
-    const cartButton = document.getElementById("cartButton");
-    const cartSidebar = document.getElementById("cartSidebar");
-    const cartOverlay = document.getElementById("cartOverlay");
-    const cartClose = document.getElementById("cartClose");
-    const cartContent = document.getElementById("cartContent");
-    const cartBadge = document.getElementById("cartBadge");
-    const cartHeaderCount = document.getElementById("cartHeaderCount");
-    const cartTotalPrice = document.getElementById("cartTotalPrice");
-    const clearCartButton = document.getElementById("clearCartButton");
-    const checkoutButton = document.getElementById("checkoutButton");
+const cartButton = document.getElementById("cartButton");
+const cartSidebar = document.getElementById("cartSidebar");
+const cartOverlay = document.getElementById("cartOverlay");
+const cartClose = document.getElementById("cartClose");
+const cartContent = document.getElementById("cartContent");
+const cartBadge = document.getElementById("cartBadge");
+const cartHeaderCount = document.getElementById("cartHeaderCount");
+const cartTotalPrice = document.getElementById("cartTotalPrice");
+const clearCartButton = document.getElementById("clearCartButton");
+const checkoutButton = document.getElementById("checkoutButton");
 
-    function getCart() {
-        try {
-            return JSON.parse(localStorage.getItem(CART_STORAGE_KEY)) || [];
-        } catch {
-            return [];
-        }
+function getCart() {
+    try {
+        return JSON.parse(localStorage.getItem(CART_STORAGE_KEY)) || [];
+    } catch {
+        return [];
+    }
+}
+
+function saveCart(cart) {
+    localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cart));
+}
+
+function openCart() {
+    cartSidebar.classList.add("open");
+    cartOverlay.classList.add("visible");
+    document.body.classList.add("cart-open");
+    renderCart();
+}
+
+function closeCart() {
+    cartSidebar.classList.remove("open");
+    cartOverlay.classList.remove("visible");
+    document.body.classList.remove("cart-open");
+}
+
+function getCartCount() {
+    return getCart().reduce((total, item) => {
+        return total + Number(item.quantity || 0);
+    }, 0);
+}
+
+function formatPrice(price) {
+    return `${Number(price || 0).toFixed(2)} €`;
+}
+
+function getItemName(item) {
+    return item.dish_name || item.name || `Блюдо #${item.dish_id}`;
+}
+
+function getItemPrice(item) {
+    return Number(item.price || item.dish_price || 0);
+}
+
+function getItemImage(item) {
+    return item.image || item.dish_image || "";
+}
+
+function getItemsText(count) {
+    if (count === 1) {
+        return "1 предмет";
     }
 
-    function saveCart(cart) {
-        localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cart));
+    if (count >= 2 && count <= 4) {
+        return `${count} предмета`;
     }
 
-    function openCart() {
-        cartSidebar.classList.add("open");
-        cartOverlay.classList.add("visible");
-        document.body.classList.add("cart-open");
-        renderCart();
-    }
+    return `${count} предметов`;
+}
 
-    function closeCart() {
-        cartSidebar.classList.remove("open");
-        cartOverlay.classList.remove("visible");
-        document.body.classList.remove("cart-open");
-    }
+function renderCart() {
+    const cart = getCart();
+    const count = getCartCount();
 
-    function getCartCount() {
-        return getCart().reduce((total, item) => {
-            return total + Number(item.quantity || 0);
-        }, 0);
-    }
+    cartBadge.textContent = count;
+    cartHeaderCount.textContent = getItemsText(count);
 
-    function formatPrice(price) {
-        return `${Number(price || 0).toFixed(2)} €`;
-    }
-
-    function getItemName(item) {
-        return item.dish_name || item.name || `Блюдо #${item.menu_item_id}`;
-    }
-
-    function getItemPrice(item) {
-        return Number(item.price || item.dish_price || 0);
-    }
-
-    function getItemImage(item) {
-        return item.image || item.dish_image || "";
-    }
-
-    function renderCart() {
-        const cart = getCart();
-        const count = getCartCount();
-
-        cartBadge.textContent = count;
-        cartHeaderCount.textContent = getItemsText(count);
-
-        if (cart.length === 0) {
-            cartContent.innerHTML = `
-                <div class="cart-empty">
-                    <div class="cart-empty-icon">🛒</div>
-                    <div class="cart-empty-text">Корзина пуста</div>
-                    <div class="cart-empty-description">
-                        Добавьте блюда из меню, и они появятся здесь.
-                    </div>
+    if (cart.length === 0) {
+        cartContent.innerHTML = `
+            <div class="cart-empty">
+                <div class="cart-empty-icon">🛒</div>
+                <div class="cart-empty-text">Корзина пуста</div>
+                <div class="cart-empty-description">
+                    Добавьте блюда из меню, и они появятся здесь.
                 </div>
-            `;
+            </div>
+        `;
 
-            cartTotalPrice.textContent = "0.00 €";
-            return;
-        }
+        cartTotalPrice.textContent = "0.00 €";
+        return;
+    }
 
-        let total = 0;
+    let total = 0;
 
-        cartContent.innerHTML = cart.map((item, index) => {
-            const quantity = Number(item.quantity || 1);
-            const price = getItemPrice(item);
-            const itemTotal = price * quantity;
+    cartContent.innerHTML = cart.map((item, index) => {
+        const quantity = Number(item.quantity || 1);
+        const price = getItemPrice(item);
+        const itemTotal = price * quantity;
 
-            total += itemTotal;
+        total += itemTotal;
 
-            const name = escapeHtml(getItemName(item));
-            const image = getItemImage(item);
+        const name = escapeHtml(getItemName(item));
+        const image = getItemImage(item);
 
-            return `
-                <div class="cart-item">
+        return `
+            <div class="cart-item">
+                <div class="cart-item-image">
+                    ${
+                        image
+                            ? `<img src="${escapeHtml(image)}" alt="${name}">`
+                            : `<div class="cart-item-image-placeholder">🍽</div>`
+                    }
+                </div>
 
-                    <div class="cart-item-image">
-                        ${
-                            image
-                                ? `<img src="${escapeHtml(image)}" alt="${name}">`
-                                : `<div class="cart-item-image-placeholder">🍽</div>`
-                        }
+                <div class="cart-item-info">
+                    <div class="cart-item-top">
+                        <div class="cart-item-name">
+                            ${name}
+                        </div>
+
+                        <button
+                            type="button"
+                            class="cart-item-remove"
+                            data-index="${index}"
+                            title="Удалить"
+                        >
+                            ×
+                        </button>
                     </div>
 
-                    <div class="cart-item-info">
+                    <div class="cart-item-price">
+                        ${formatPrice(price)}
+                    </div>
 
-                        <div class="cart-item-top">
+                    <div class="cart-item-bottom">
+                        <div class="cart-quantity">
+                            <button
+                                type="button"
+                                data-action="decrease"
+                                data-index="${index}"
+                            >
+                                −
+                            </button>
 
-                            <div class="cart-item-name">
-                                ${name}
-                            </div>
+                            <span class="cart-quantity-value">
+                                ${quantity}
+                            </span>
 
                             <button
                                 type="button"
-                                class="cart-item-remove"
+                                data-action="increase"
                                 data-index="${index}"
-                                title="Удалить"
                             >
-                                ×
+                                +
                             </button>
-
                         </div>
 
-                        <div class="cart-item-price">
-                            ${formatPrice(price)}
+                        <div class="cart-item-total">
+                            ${formatPrice(itemTotal)}
                         </div>
-
-                        <div class="cart-item-bottom">
-
-                            <div class="cart-quantity">
-
-                                <button
-                                    type="button"
-                                    data-action="decrease"
-                                    data-index="${index}"
-                                >
-                                    −
-                                </button>
-
-                                <span class="cart-quantity-value">
-                                    ${quantity}
-                                </span>
-
-                                <button
-                                    type="button"
-                                    data-action="increase"
-                                    data-index="${index}"
-                                >
-                                    +
-                                </button>
-
-                            </div>
-
-                            <div class="cart-item-total">
-                                ${formatPrice(itemTotal)}
-                            </div>
-
-                        </div>
-
                     </div>
-
                 </div>
-            `;
-        }).join("");
+            </div>
+        `;
+    }).join("");
 
-        cartTotalPrice.textContent = formatPrice(total);
+    cartTotalPrice.textContent = formatPrice(total);
+}
+
+function updateQuantity(index, change) {
+    const cart = getCart();
+
+    if (!cart[index]) {
+        return;
     }
 
-    function getItemsText(count) {
-        if (count === 1) {
-            return "1 предмет";
-        }
+    cart[index].quantity = Number(cart[index].quantity || 0) + change;
 
-        if (count >= 2 && count <= 4) {
-            return `${count} предмета`;
-        }
-
-        return `${count} предметов`;
-    }
-
-    function updateQuantity(index, change) {
-        const cart = getCart();
-
-        if (!cart[index]) {
-            return;
-        }
-
-        cart[index].quantity = Number(cart[index].quantity || 0) + change;
-
-        if (cart[index].quantity <= 0) {
-            cart.splice(index, 1);
-        }
-
-        saveCart(cart);
-        renderCart();
-    }
-
-    function removeItem(index) {
-        const cart = getCart();
-
-        if (!cart[index]) {
-            return;
-        }
-
+    if (cart[index].quantity <= 0) {
         cart.splice(index, 1);
-
-        saveCart(cart);
-        renderCart();
     }
 
-    function clearCart() {
-        localStorage.removeItem(CART_STORAGE_KEY);
-        renderCart();
-    }
-
-    function escapeHtml(value) {
-        return String(value)
-            .replaceAll("&", "&amp;")
-            .replaceAll("<", "&lt;")
-            .replaceAll(">", "&gt;")
-            .replaceAll('"', "&quot;")
-            .replaceAll("'", "&#039;");
-    }
-
-    cartButton.addEventListener("click", openCart);
-
-    cartClose.addEventListener("click", closeCart);
-
-    cartOverlay.addEventListener("click", closeCart);
-
-    cartContent.addEventListener("click", event => {
-        const removeButton = event.target.closest(".cart-item-remove");
-
-        if (removeButton) {
-            removeItem(Number(removeButton.dataset.index));
-            return;
-        }
-
-        const quantityButton = event.target.closest("[data-action]");
-
-        if (!quantityButton) {
-            return;
-        }
-
-        const index = Number(quantityButton.dataset.index);
-        const action = quantityButton.dataset.action;
-
-        updateQuantity(
-            index,
-            action === "increase" ? 1 : -1
-        );
-    });
-
-    clearCartButton.addEventListener("click", () => {
-        if (getCart().length === 0) {
-            return;
-        }
-        clearCart();
-    });
-
-    checkoutButton.addEventListener("click", () => {
-        if (getCart().length === 0) {
-            return;
-        }
-
-        window.location.href = "/cart";
-    });
-
-    window.addEventListener("storage", event => {
-        if (event.key === CART_STORAGE_KEY) {
-            renderCart();
-        }
-    });
-
-    window.addEventListener("pageshow", renderCart);
-
+    saveCart(cart);
     renderCart();
+}
+
+function removeItem(index) {
+    const cart = getCart();
+
+    if (!cart[index]) {
+        return;
+    }
+
+    cart.splice(index, 1);
+
+    saveCart(cart);
+    renderCart();
+}
+
+function clearCart() {
+    localStorage.removeItem(CART_STORAGE_KEY);
+    renderCart();
+}
+
+function escapeHtml(value) {
+    return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+}
+
+cartButton.addEventListener("click", openCart);
+
+cartClose.addEventListener("click", closeCart);
+
+cartOverlay.addEventListener("click", closeCart);
+
+cartContent.addEventListener("click", event => {
+    const removeButton = event.target.closest(".cart-item-remove");
+
+    if (removeButton) {
+        removeItem(Number(removeButton.dataset.index));
+        return;
+    }
+
+    const quantityButton = event.target.closest("[data-action]");
+
+    if (!quantityButton) {
+        return;
+    }
+
+    const index = Number(quantityButton.dataset.index);
+    const action = quantityButton.dataset.action;
+
+    updateQuantity(
+        index,
+        action === "increase" ? 1 : -1
+    );
+});
+
+clearCartButton.addEventListener("click", () => {
+    if (getCart().length === 0) {
+        return;
+    }
+
+    clearCart();
+});
+
+checkoutButton.addEventListener("click", async () => {
+    const cart = getCart();
+
+    if (cart.length === 0) {
+        alert("Корзина пуста.");
+        return;
+    }
+
+    const orderData = {
+        order_items: cart.map(item => ({
+            dish_id: Number(item.dish_id),
+            dish_name: item.dish_name,
+            price: Number(item.price),
+            quantity: Number(item.quantity)
+        }))
+    };
+
+    console.log(
+        "ORDER DTO:",
+        JSON.stringify(orderData, null, 2)
+    );
+
+    try {
+        const response = await fetch("/orders/create", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(orderData)
+        });
+
+        console.log(
+            "ORDER RESPONSE:",
+            response.status,
+            response.url
+        );
+
+        if (!response.ok) {
+            const errorData = await response.json();
+
+            console.error(
+                "ORDER ERROR:",
+                errorData
+            );
+
+            throw new Error(
+                `HTTP error: ${response.status}`
+            );
+        }
+
+        window.location.href = "/users/confirm_address";
+    } catch (error) {
+        console.error("ORDER ERROR:", error);
+        alert("Не удалось оформить заказ.");
+    }
+});
+
+window.addEventListener("storage", event => {
+    if (event.key === CART_STORAGE_KEY) {
+        renderCart();
+    }
+});
+
+document.addEventListener("keydown", event => {
+    if (event.key === "Escape") {
+        closeCart();
+    }
+});
+
+renderCart();
 </script>
 
 </body>

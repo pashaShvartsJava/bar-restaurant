@@ -945,6 +945,7 @@ function getDishElement(dishId) {
 
 function getDishData(dishId) {
     const dish = getDishElement(dishId);
+
     if (!dish) {
         return null;
     }
@@ -959,6 +960,7 @@ function getDishData(dishId) {
 
 function getDishQuantity(dishId) {
     const cart = getCart();
+
     const item = cart.find(
         item => Number(item.dish_id) === Number(dishId)
     );
@@ -968,6 +970,7 @@ function getDishQuantity(dishId) {
 
 function setDishQuantity(dishId, quantity) {
     let cart = getCart();
+
     const index = cart.findIndex(
         item => Number(item.dish_id) === Number(dishId)
     );
@@ -980,6 +983,7 @@ function setDishQuantity(dishId, quantity) {
         cart[index].quantity = quantity;
     } else {
         const dish = getDishData(dishId);
+
         if (!dish) {
             return;
         }
@@ -1004,6 +1008,7 @@ function clearCart() {
 
 function addToCart(dishId, amount = 1) {
     const quantity = getDishQuantity(dishId);
+
     setDishQuantity(dishId, quantity + amount);
     openCart();
 }
@@ -1022,6 +1027,7 @@ function getTotalQuantity() {
 function getTotalPrice() {
     return getCart().reduce((total, item) => {
         const dish = getDishData(item.dish_id);
+
         if (!dish) {
             return total;
         }
@@ -1094,6 +1100,7 @@ function renderCart() {
 
     cart.forEach(item => {
         const dish = getDishData(item.dish_id);
+
         if (!dish) {
             return;
         }
@@ -1183,7 +1190,10 @@ document.querySelectorAll(".quantity-plus").forEach(button => {
 document.querySelectorAll(".quantity-minus").forEach(button => {
     button.addEventListener("click", () => {
         const dishId = button.dataset.dishId;
-        setDishQuantity(dishId, getDishQuantity(dishId) - 1);
+        setDishQuantity(
+            dishId,
+            getDishQuantity(dishId) - 1
+        );
     });
 });
 
@@ -1215,8 +1225,15 @@ document.addEventListener("keydown", event => {
     }
 });
 
+console.log("CART SCRIPT LOADED");
+console.log("CHECKOUT BUTTON:", checkoutButton);
+
 checkoutButton.addEventListener("click", async () => {
+    console.log("CHECKOUT CLICKED");
+
     const cart = getCart();
+
+    console.log("CART:", cart);
 
     if (cart.length === 0) {
         alert("Корзина пуста.");
@@ -1224,7 +1241,7 @@ checkoutButton.addEventListener("click", async () => {
     }
 
     const orderData = {
-        items: cart.map(item => ({
+        order_items: cart.map(item => ({
             dish_id: Number(item.dish_id),
             dish_name: item.dish_name,
             price: Number(item.price),
@@ -1238,24 +1255,34 @@ checkoutButton.addEventListener("click", async () => {
     );
 
     try {
-        const response = await fetch(
-            "http://order-service/orders/user",
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(orderData)
-            }
+        const response = await fetch("/orders/create", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(orderData)
+        });
+
+        console.log(
+            "RESPONSE:",
+            response.status,
+            response.url
         );
 
         if (!response.ok) {
-            throw new Error(`HTTP error: ${response.status}`);
+            const errorData = await response.json();
+
+            console.error(
+                "ORDER ERROR:",
+                errorData
+            );
+
+            throw new Error(
+                `HTTP error: ${response.status}`
+            );
         }
 
-        const data = await response.json();
-
-        console.log("ORDER CREATED:", data);
+        window.location.href = "/users/confirm_address";
     } catch (error) {
         console.error("ORDER ERROR:", error);
         alert("Не удалось оформить заказ.");
