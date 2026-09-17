@@ -13,3 +13,6 @@ class CategoryService:
 
     async def create_category(self, category_name : str):
         return await self.category_service.create_category(category_name)
+
+    async def get_all_categories_for_users(self) -> List[Menu]:
+        return await self.category_service.get_all_categories()

@@ -95,3 +95,10 @@ async def edit_dish(request : Request,
         image_url = f"/media/dishes/{image.filename}"
     await menu_service.update_dish(id, dish_name, description, price, image_url)
     return RedirectResponse(url="/menu_page", status_code=303)
+
+@router.get("/menu_page/orders/users")
+async def menu_page_for_users(request : Request, category_service : CategoryService = Depends(get_category_service_dependency)):
+    payload = get_payload(request)
+    required_roles(IdentityRole.USER, payload=payload)
+    categories = await category_service.get_all_categories_for_users()
+    return templates.TemplateResponse("menu_for_users.html", {"request" : request, "categories" : categories})
