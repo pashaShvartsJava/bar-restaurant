@@ -123,6 +123,24 @@ services:
       - --port
       - "8006"
       - --reload
+  order-service:
+    build:
+      context: ./order_service
+    container_name: order-service
+    ports:
+      - "8007:8007"
+    env_file:
+      - ./order_service/.env
+    volumes:
+      - ./order_service:/order_service
+    command:
+      - uvicorn
+      - app.main:app
+      - --host
+      - 0.0.0.0
+      - --port
+      - "8007"
+      - --reload
 
   db-authentication:
     image: postgres:16
@@ -190,6 +208,17 @@ services:
       - "5437:5432"
     volumes:
       - postgres_support_data:/var/lib/postgresql/data
+  db-order:
+    image: postgres:16
+    container_name: db-order
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: order_db
+    ports:
+      - "5438:5432"
+    volumes:
+      - postgres_order_data:/var/lib/postgresql/data
 volumes:
   postgres_auth_data:
   postgres_user_data:
@@ -197,3 +226,4 @@ volumes:
   postgres_menu_data:
   postgres_reservation_data:
   postgres_support_data:
+  postgres_order_data:
