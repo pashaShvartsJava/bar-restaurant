@@ -13,4 +13,4 @@ class OrderItemDTO(BaseModel):
     quantity: int = Field(...,)
 
 class ListOrderDTO(BaseModel):
-    order_items = list[OrderItemDTO]
+    order_items : list[OrderItemDTO]

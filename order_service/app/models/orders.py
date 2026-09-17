@@ -12,10 +12,13 @@ from ..database.database import Base
 
 class OrderStatus(str, Enum):
     PENDING = "pending"
+    CONFIRMED_ADDRESS = "confirmed_address"
     PAID = "paid"
     PREPARING = "prepared"
     DELIVERING = "delivering"
     COMPLETED = "completed"
+    CANCELLED_BEFORE = "cancelled_before"
+    CANCELLED_AFTER = "cancelled_after"
 
 class Order(Base):
     __tablename__ = "orders"

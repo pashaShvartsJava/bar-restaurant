@@ -9,7 +9,10 @@ from starlette.responses import RedirectResponse, JSONResponse
 from starlette.templating import Jinja2Templates
 
 from ..model.user_model import Status
+from ..schema.address_schema import AddressEditSchema
 from ..security.jwt.jwt import get_payload
+from ..security.authorization.authorization import required_role
+from ..security.role.roles import IdentityRole
 from ..dependencies.dependency import get_service_dependency
 from ..services.user_service import UserService
 from ..schema.user_schema import RegisterRequest, EmailRequest, UserDto, UserInfo
@@ -118,7 +121,9 @@ async def get_all_users(service : UserService = Depends(get_service_dependency),
     return [UserDto.model_validate(user).model_dump(mode="json") for user in users]
 
 @router.get("/get_user_address")
-async def get_user_address(identity_id : UUID, service : UserService = Depends(get_service_dependency)):
+async def get_user_address(request : Request, identity_id : UUID, service : UserService = Depends(get_service_dependency)):
+    payload = get_payload(request)
+    required_role(IdentityRole.USER, payload)
     user = await service.find_by_identity_id(identity_id)
     return UserInfo(
         name=user.name,
@@ -134,5 +139,22 @@ async def get_user_address(identity_id : UUID, service : UserService = Depends(g
         created_at=user.created_at,
         updated_at=user.updated_at
     ).model_dump(mode="json")
+
+@router.get("/users/confirm_address")
+async def confirm_address(request : Request,  service : UserService = Depends(get_service_dependency)):
+    payload = get_payload(request)
+    required_role(IdentityRole.USER, payload)
+    identity_id = UUID(payload["sub"])
+    user = await service.find_by_identity_id(identity_id)
+    return templates.TemplateResponse("confirm_address.html", {"request" : request, "user" : user})
+
+@router.post("/users/confirm_address")
+async def confirm_address(request : Request,
+                          data : Annotated[AddressEditSchema, Form()]):
+    payload = get_payload(request)
+    required_role(IdentityRole.USER, payload)
+    async with httpx.AsyncClient() as client:
+        response = await client.post(url="/orders/confirm_address", json=data.model_dump(mode="json"))
+        response.raise_for_status()
 
 
