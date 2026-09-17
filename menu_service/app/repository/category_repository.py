@@ -1,8 +1,13 @@
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import List
+
+from ..model import Menu
 from ..model.category import Category
 from sqlalchemy.orm import selectinload
+
+from ..model.menu import DishStatus
+
 
 class CategoryRepository:
 
@@ -18,3 +23,7 @@ class CategoryRepository:
         self.db.add(new_category)
         await self.db.commit()
         await self.db.refresh(new_category)
+
+    async def get_all_categories_for_users(self) -> List[Category]:
+        result = await self.db.execute(select(Category).where(Category.dishes.any()).options(selectinload(Category.dishes)))
+        return result.scalars().unique().all()
