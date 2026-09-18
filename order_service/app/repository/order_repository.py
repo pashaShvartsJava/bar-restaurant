@@ -25,14 +25,6 @@ class OrderRepository:
                                        .order_by(Order.created_at.desc()).limit(1))
         return result.scalar_one_or_none()
 
-    async def get_pending_by_client_id_and_corresponding_order(self, client_id : UUID, data : ListOrderDTO):
-        result = await self.db.execute(select(Order).options(selectinload(Order.order_items)).where(Order.client_id==client_id, Order.status==OrderStatus.PENDING))
-        orders = result.scalars().all()
-        for order in orders:
-            if order.order_items == data.order_items:
-                return order
-        return None
-
     async def get_all_orders(self):
         result = await self.db.execute(select(Order).options(selectinload(Order.order_items)))
         return result.scalars().all()
@@ -55,7 +47,7 @@ class OrderRepository:
         await self.db.refresh(new_delivery_address)
         return new_delivery_address
 
-    async def create_order(self, order_items : ListOrderDTO, client_id : UUID, total_sum : Decimal):
+    async def create_order(self, order_items : ListOrderDTO, client_id : UUID, total_sum : Decimal) -> Order:
         new_order = Order(
             client_id=client_id,
             sum=total_sum
@@ -75,6 +67,7 @@ class OrderRepository:
 
         await self.db.commit()
         await self.db.refresh(new_order)
+        return new_order
 
     async def cancel_order_before_payment(self, client_id: UUID):
         old_order = await self.get_unpaid_order_by_client(client_id)
