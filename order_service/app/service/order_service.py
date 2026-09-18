@@ -54,3 +54,6 @@ class OrderService:
                                     sum_to: Decimal,
                                     sort: str):
         return await self.order_repository.search_or_sort_orders(search, status, date_from, date_to, sum_from, sum_to, sort)
+
+    async def find_order_by_client_id(self, client_id: UUID):
+        return await self.order_repository.find_order_by_client_id(client_id)

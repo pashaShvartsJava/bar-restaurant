@@ -137,6 +137,10 @@ class OrderRepository:
         result = await self.db.execute(query)
         return result.scalars().all()
 
+    async def find_order_by_client_id(self, client_id : UUID):
+        result = await self.db.execute(select(Order).options(selectinload(Order.order_items)).where(Order.client_id==client_id).order_by(Order.created_at.desc()))
+        return result.scalars().all()
+
 
 
 

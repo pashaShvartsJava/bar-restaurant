@@ -62,13 +62,6 @@ async def create_delivering_address(request : Request,
     await service.update_order_status(client_id, OrderStatus.CONFIRMED_ADDRESS)
     return RedirectResponse(url="/payment/registered_users")
 
-@router.get("/orders/{order_id}")
-async def get_order_info(request : Request, order_id : int, service : OrderService = Depends(get_order_service_dependency)):
-    payload = get_payload(request)
-    required_roles(IdentityRole.ADMIN, IdentityRole.MODERATOR, payload=payload)
-    order = await service.get_order_by_id(order_id)
-    return templates.TemplateResponse("order_info.html", {"request" : request, "order" : order})
-
 @router.get("/orders/get_orders/search_or_sorting")
 async def search_and_sorting(request : Request,
                              search: str | None = None,
@@ -84,5 +77,18 @@ async def search_and_sorting(request : Request,
     orders = await service.search_or_sort_orders(search, status, date_from, date_to, sum_from, sum_to, sort)
     return templates.TemplateResponse("all_orders.html", {"request" : request, "orders" : orders})
 
+@router.get("/orders/get_customer_orders")
+async def get_user_orders(request : Request, identity_id : UUID, service : OrderService = Depends(get_order_service_dependency)):
+    payload = get_payload(request)
+    required_roles(IdentityRole.ADMIN, IdentityRole.MODERATOR, payload=payload)
+    orders = await service.find_order_by_client_id(identity_id)
+    return orders
+
+@router.get("/orders/{order_id}")
+async def get_order_info(request : Request, order_id : int, service : OrderService = Depends(get_order_service_dependency)):
+    payload = get_payload(request)
+    required_roles(IdentityRole.ADMIN, IdentityRole.MODERATOR, payload=payload)
+    order = await service.get_order_by_id(order_id)
+    return templates.TemplateResponse("order_info.html", {"request" : request, "order" : order})
 
 

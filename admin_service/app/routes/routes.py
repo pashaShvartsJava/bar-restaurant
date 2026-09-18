@@ -262,4 +262,15 @@ async def customer_info(request : Request, identity_id : UUID):
         info_user["identity_id"] = str(identity_id)
     return templates.TemplateResponse("user_info.html", {"request" : request, "user" : info_user})
 
+@router.get("/admin_panel/all_customers/orders/{identity_id}")
+async def customer_info(request : Request, identity_id : UUID):
+    payload = get_payload(request)
+    required_roles(IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
+    async with httpx.AsyncClient() as client:
+        response = await client.get("http://order-service:8007/orders/get_customer_orders",
+                                    params={"identity_id": str(identity_id)},
+                                    cookies={"access_token": request.cookies.get("access_token")})
+    orders = response.json()
+    return templates.TemplateResponse("user_orders_history.html", {"request" : request, "orders" : orders})
+
 
