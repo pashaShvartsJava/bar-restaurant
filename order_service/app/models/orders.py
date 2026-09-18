@@ -30,5 +30,7 @@ class Order(Base):
     created_at = Column(DateTime(timezone=True), nullable=False, default=datetime.now(timezone.utc))
     updated_status = Column(DateTime(timezone=True), nullable=False, default=datetime.now(timezone.utc))
     sum = Column(DECIMAL(10, 2), nullable=False, index=True)
+    address_id = Column(Integer, ForeignKey("delivery_addresses.id"), nullable=True)
 
     order_items = relationship("OrderItem", back_populates="order")
+    address = relationship("DeliveryAddress", back_populates="order")
