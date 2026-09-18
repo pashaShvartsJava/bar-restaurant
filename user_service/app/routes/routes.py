@@ -154,7 +154,9 @@ async def confirm_address(request : Request,
     payload = get_payload(request)
     required_role(IdentityRole.USER, payload)
     async with httpx.AsyncClient() as client:
-        response = await client.post(url="/orders/confirm_address", json=data.model_dump(mode="json"))
+        response = await client.post(url="http://order-service:8007/orders/confirm_address",
+                                     json=data.model_dump(mode="json"),
+                                     cookies={"access_token": request.cookies.get("access_token")})
         response.raise_for_status()
 
 

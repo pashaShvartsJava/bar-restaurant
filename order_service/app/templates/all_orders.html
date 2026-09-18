@@ -661,6 +661,8 @@
                                 Отменён до оплаты
                             {% elif order.status.value == "cancelled_after" %}
                                 Отменён после оплаты
+                            {% elif order.status.value == "expired" %}
+                                Истёк
                             {% else %}
                                 {{ order.status.value }}
                             {% endif %}
@@ -760,6 +762,7 @@
                 <option value="completed">Завершён</option>
                 <option value="cancelled_before">Отменён до оплаты</option>
                 <option value="cancelled_after">Отменён после оплаты</option>
+                <option value="expired">Заказ истёк из-за долго ожидания оплаты</option>
             </select>
         </div>
 
