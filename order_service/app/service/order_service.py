@@ -1,5 +1,6 @@
 from ..models.orders import Order, OrderStatus
 from ..repository.order_repository import OrderRepository
+from ..schema.delivery_address_schema import DeliveryAddressDTO
 from ..schema.order_item_schema import ListOrderDTO
 from uuid import UUID
 
@@ -29,3 +30,6 @@ class OrderService:
 
     async def update_order_status(self, client_id : UUID, status : OrderStatus):
         return await self.order_repository.update_order_status(client_id, status)
+
+    async def create_order_address(self, order_id : int, delivery_data : DeliveryAddressDTO):
+        return self.order_repository.create_order_address(order_id, delivery_data)

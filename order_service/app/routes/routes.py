@@ -4,6 +4,7 @@ from starlette.templating import Jinja2Templates
 
 from ..dependencies.dependencies import get_order_service_dependency
 from ..models.orders import OrderStatus
+from ..schema.delivery_address_schema import DeliveryAddressDTO
 from ..schema.order_item_schema import ListOrderDTO
 from ..security.jwt.jwt import get_payload
 from ..security.authorization.authorization import required_roles
@@ -40,10 +41,13 @@ async def cancel_order_before_payment(request : Request, service : OrderService 
     return RedirectResponse(url="/my_profile/users", status_code=303)
 
 @router.post("/orders/confirm_address")
-async def create_delivering_address(request : Request, service : OrderService = Depends(get_order_service_dependency)):
+async def create_delivering_address(request : Request,
+                                    data : DeliveryAddressDTO,
+                                    service : OrderService = Depends(get_order_service_dependency)):
     payload = get_payload(request)
     required_roles(IdentityRole.USER, payload=payload)
     client_id = UUID(payload["sub"])
+    order = await service.get_pending_by_client_id(client_id)
+    await service.create_order_address(order.id, data)
     await service.update_order_status(client_id, OrderStatus.CONFIRMED_ADDRESS)
-
     return RedirectResponse(url="/payment/registered_users")

@@ -4,8 +4,10 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from uuid import UUID
 
+from ..models.delivery_address import DeliveryAddress
 from ..models.order_items import OrderItem
 from ..models.orders import Order, OrderStatus
+from ..schema.delivery_address_schema import DeliveryAddressDTO
 from ..schema.order_item_schema import ListOrderDTO
 
 
@@ -25,6 +27,20 @@ class OrderRepository:
     async def get_unpaid_order_by_client(self, client_id : UUID) -> Order:
         result = await self.db.execute(select(Order).where(Order.client_id==client_id, Order.status==OrderStatus.PENDING))
         return result.scalar_one_or_none()
+
+    async def create_order_address(self, order_id : int, delivery_data : DeliveryAddressDTO) -> DeliveryAddress:
+        new_delivery_address = DeliveryAddress(
+            order_id=order_id,
+            city=delivery_data.city,
+            street=delivery_data.street,
+            postal_code=delivery_data.postal_code,
+            house=delivery_data.house,
+            apartment=delivery_data.apartment
+        )
+        self.db.add(new_delivery_address)
+        await self.db.commit()
+        await self.db.refresh(new_delivery_address)
+        return new_delivery_address
 
     async def create_order(self, order_items : ListOrderDTO, client_id : UUID, total_sum : Decimal):
         new_order = Order(
