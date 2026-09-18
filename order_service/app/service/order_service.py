@@ -1,3 +1,6 @@
+from datetime import date
+from decimal import Decimal
+
 from ..models.orders import Order, OrderStatus
 from ..repository.order_repository import OrderRepository
 from ..schema.delivery_address_schema import DeliveryAddressDTO
@@ -9,6 +12,12 @@ class OrderService:
 
     def __init__(self, order_repository : OrderRepository):
         self.order_repository=order_repository
+
+    async def get_order_by_id(self, order_id: int) -> Order:
+        return await self.order_repository.get_order_by_id(order_id)
+
+    async def get_all_orders_history(self):
+        return await self.order_repository.get_all_orders_history()
 
     async def get_pending_by_client_id(self, client_id : UUID):
         return await self.order_repository.get_pending_by_client_id(client_id)
@@ -32,7 +41,16 @@ class OrderService:
         return await self.order_repository.update_order_status(client_id, status)
 
     async def create_order_address(self, order_id : int, delivery_data : DeliveryAddressDTO):
-        return self.order_repository.create_order_address(order_id, delivery_data)
+        return await self.order_repository.create_order_address(order_id, delivery_data)
 
     async def mark_order_as_expired(self):
         return await self.order_repository.mark_order_as_expired()
+
+    async def search_or_sort_orders(self, search: str,
+                                    status: OrderStatus,
+                                    date_from: date,
+                                    date_to: date,
+                                    sum_from: Decimal,
+                                    sum_to: Decimal,
+                                    sort: str):
+        return await self.order_repository.search_or_sort_orders(search, status, date_from, date_to, sum_from, sum_to, sort)

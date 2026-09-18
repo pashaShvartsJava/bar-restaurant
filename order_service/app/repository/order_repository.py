@@ -1,4 +1,5 @@
-from datetime import datetime, timezone, timedelta
+import decimal
+from datetime import datetime, timezone, timedelta, date
 from decimal import Decimal
 
 from sqlalchemy import select, or_
@@ -19,11 +20,19 @@ class OrderRepository:
     def __init__(self, db : AsyncSession):
         self.db=db
 
+    async def get_order_by_id(self, order_id : int) -> Order:
+        result = await self.db.execute(select(Order).options(selectinload(Order.order_items), selectinload(Order.address)).where(Order.id==order_id))
+        return result.scalar_one_or_none()
+
     async def get_pending_by_client_id(self, client_id : UUID) -> Order:
         result = await self.db.execute(select(Order).options(selectinload(Order.order_items))
-                                       .where(Order.client_id==client_id, Order.status==OrderStatus.PENDING)
-                                       .order_by(Order.created_at.desc()).limit(1))
+                                       .where(Order.client_id==client_id, Order.status==OrderStatus.PENDING))
         return result.scalar_one_or_none()
+
+    async def get_all_orders_history(self):
+        today = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0)
+        result = await self.db.execute(select(Order).options(selectinload(Order.order_items)).where(Order.created_at<today))
+        return result.scalars().all()
 
     async def get_all_orders(self):
         result = await self.db.execute(select(Order).options(selectinload(Order.order_items)))
@@ -92,5 +101,46 @@ class OrderRepository:
                 order.status = OrderStatus.EXPIRED
                 order.updated_status = now
         await self.db.commit()
+
+    async def search_or_sort_orders(self, search : str,
+                                    status : OrderStatus,
+                                    date_from : date,
+                                    date_to : date,
+                                    sum_from : Decimal,
+                                    sum_to : Decimal,
+                                    sort : str):
+        query = select(Order).options(selectinload(Order.order_items))
+        if search is not None:
+            query = query.where(Order.order_number == search)
+        if status is not None:
+            query = query.where(Order.status == status)
+        if date_from is not None:
+            query = query.where(Order.created_at >= date_from)
+        if date_to is not None:
+            query = query.where(Order.created_at <= date_to)
+        if sum_from is not None:
+            query = query.where(Order.sum >= sum_from)
+        if sum_to is not None:
+            query = query.where(Order.sum <= sum_to)
+
+        if sort == "created_desc":
+            query = query.order_by(Order.created_at.desc())
+        elif sort == "created_asc":
+            query = query.order_by(Order.created_at.asc())
+        elif sort == "sum_desc":
+            query = query.order_by(Order.sum.desc())
+        elif sort == "sum_asc":
+            query = query.order_by(Order.sum.asc())
+        else:
+            query = query.order_by(Order.created_at.desc())
+
+        result = await self.db.execute(query)
+        return result.scalars().all()
+
+
+
+
+
+
 
 
