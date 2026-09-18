@@ -33,4 +33,4 @@ class Order(Base):
     sum = Column(DECIMAL(10, 2), nullable=False, index=True)
 
     order_items = relationship("OrderItem", back_populates="order")
-    address = relationship("DeliveryAddress", back_populates="order")
+    address = relationship("DeliveryAddress", back_populates="order", uselist=False)

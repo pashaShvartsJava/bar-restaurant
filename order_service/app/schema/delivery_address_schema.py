@@ -7,11 +7,11 @@ from uuid import UUID
 
 class DeliveryAddressDTO(BaseModel):
 
-    city: str | None = Field(None, min_length=2, max_length=100)
-    postal_code: str | None = Field(None, description="postal code")
-    street: str | None = Field(None, min_length=2, max_length=100, description="street")
-    house: int | None = Field(None, gt=0, description="house number")
-    apartment: int | None = Field(default=None, gt=0, description="apartment number; not necessary")
+    city: str = Field(..., min_length=2, max_length=100)
+    postal_code: str = Field(..., description="postal code")
+    street: str = Field(..., min_length=2, max_length=100, description="street")
+    house: int = Field(..., gt=0, description="house number")
+    apartment: int | None= Field(default=None, gt=0, description="apartment number; not necessary")
 
     @field_validator("postal_code")
     @classmethod

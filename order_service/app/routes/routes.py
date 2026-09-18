@@ -1,3 +1,6 @@
+from datetime import date
+from decimal import Decimal
+
 from fastapi import APIRouter, Request, Depends
 from starlette.responses import RedirectResponse
 from starlette.templating import Jinja2Templates
@@ -15,6 +18,13 @@ from ..service.order_service import OrderService
 
 router = APIRouter()
 templates = Jinja2Templates(directory="app/templates")
+
+@router.get("/orders/history")
+async def orders_history_page(request : Request, service : OrderService = Depends(get_order_service_dependency)):
+    payload = get_payload(request)
+    required_roles(IdentityRole.ADMIN, IdentityRole.MODERATOR, payload=payload)
+    orders = await service.get_all_orders_history()
+    return templates.TemplateResponse("old_orders.html", {"request": request, "orders": orders})
 
 @router.get("/orders/get_orders")
 async def get_all_orders(request : Request, service : OrderService = Depends(get_order_service_dependency)):
@@ -51,3 +61,28 @@ async def create_delivering_address(request : Request,
     await service.create_order_address(order.id, data)
     await service.update_order_status(client_id, OrderStatus.CONFIRMED_ADDRESS)
     return RedirectResponse(url="/payment/registered_users")
+
+@router.get("/orders/{order_id}")
+async def get_order_info(request : Request, order_id : int, service : OrderService = Depends(get_order_service_dependency)):
+    payload = get_payload(request)
+    required_roles(IdentityRole.ADMIN, IdentityRole.MODERATOR, payload=payload)
+    order = await service.get_order_by_id(order_id)
+    return templates.TemplateResponse("order_info.html", {"request" : request, "order" : order})
+
+@router.get("/orders/get_orders/search_or_sorting")
+async def search_and_sorting(request : Request,
+                             search: str | None = None,
+                             status: OrderStatus | None = None,
+                             date_from: date | None = None,
+                             date_to: date | None = None,
+                             sum_from: Decimal | None = None,
+                             sum_to: Decimal | None = None,
+                             sort: str = "created_desc",
+                             service : OrderService = Depends(get_order_service_dependency)):
+    payload = get_payload(request)
+    required_roles(IdentityRole.ADMIN, IdentityRole.MODERATOR, payload=payload)
+    orders = await service.search_or_sort_orders(search, status, date_from, date_to, sum_from, sum_to, sort)
+    return templates.TemplateResponse("all_orders.html", {"request" : request, "orders" : orders})
+
+
+

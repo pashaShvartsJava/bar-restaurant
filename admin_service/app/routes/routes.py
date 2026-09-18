@@ -247,7 +247,9 @@ async def customer_info(request : Request, identity_id : UUID):
     payload = get_payload(request)
     required_roles(IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
     async with httpx.AsyncClient() as client:
-        response = await client.get(url="http://user-service:8005/get_user_address", params={"identity_id" : str(identity_id)})
+        response = await client.get(url="http://user-service:8005/get_user_address",
+                                    params={"identity_id" : str(identity_id)},
+                                    cookies={"access_token": request.cookies.get("access_token")})
         response.raise_for_status()
     info_user = response.json()
 

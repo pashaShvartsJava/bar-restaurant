@@ -11,7 +11,7 @@ from starlette.templating import Jinja2Templates
 from ..model.user_model import Status
 from ..schema.address_schema import AddressEditSchema
 from ..security.jwt.jwt import get_payload
-from ..security.authorization.authorization import required_role
+from ..security.authorization.authorization import required_roles, required_role
 from ..security.role.roles import IdentityRole
 from ..dependencies.dependency import get_service_dependency
 from ..services.user_service import UserService
@@ -123,7 +123,7 @@ async def get_all_users(service : UserService = Depends(get_service_dependency),
 @router.get("/get_user_address")
 async def get_user_address(request : Request, identity_id : UUID, service : UserService = Depends(get_service_dependency)):
     payload = get_payload(request)
-    required_role(IdentityRole.USER, payload)
+    required_roles(IdentityRole.ADMIN, IdentityRole.MODERATOR, payload=payload)
     user = await service.find_by_identity_id(identity_id)
     return UserInfo(
         name=user.name,
