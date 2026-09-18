@@ -13,16 +13,13 @@ class OrderService:
     async def get_pending_by_client_id(self, client_id : UUID):
         return await self.order_repository.get_pending_by_client_id(client_id)
 
-    async def get_pending_by_client_id_and_corresponding_order(self, client_id : UUID, data : ListOrderDTO):
-        return await self.order_repository.get_pending_by_client_id_and_corresponding_order(client_id, data)
-
     async def get_all_orders(self):
         return await self.order_repository.get_all_orders()
 
     async def create_order(self, data : ListOrderDTO, client_id : UUID) -> Order:
-        pending_order = await self.get_pending_by_client_id_and_corresponding_order(client_id, data)
+        pending_order = await self.get_pending_by_client_id(client_id)
         if pending_order is not None:
-            return pending_order
+            pending_order.status = OrderStatus.CANCELLED_BEFORE
         total_sum = 0
         for order_item in data.order_items:
             total_sum += order_item.price * order_item.quantity
