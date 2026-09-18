@@ -11,13 +11,16 @@ class OrderService:
         self.order_repository=order_repository
 
     async def get_pending_by_client_id(self, client_id : UUID):
-        return await self.get_pending_by_client_id(client_id)
+        return await self.order_repository.get_pending_by_client_id(client_id)
+
+    async def get_pending_by_client_id_and_corresponding_order(self, client_id : UUID, data : ListOrderDTO):
+        return await self.order_repository.get_pending_by_client_id_and_corresponding_order(client_id, data)
 
     async def get_all_orders(self):
         return await self.order_repository.get_all_orders()
 
     async def create_order(self, data : ListOrderDTO, client_id : UUID) -> Order:
-        pending_order = await self.get_pending_by_client_id(client_id)
+        pending_order = await self.get_pending_by_client_id_and_corresponding_order(client_id, data)
         if pending_order is not None:
             return pending_order
         total_sum = 0
@@ -33,3 +36,6 @@ class OrderService:
 
     async def create_order_address(self, order_id : int, delivery_data : DeliveryAddressDTO):
         return self.order_repository.create_order_address(order_id, delivery_data)
+
+    async def mark_order_as_expired(self):
+        return await self.order_repository.mark_order_as_expired()

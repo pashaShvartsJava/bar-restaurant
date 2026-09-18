@@ -1,8 +1,11 @@
+from datetime import datetime, timezone, timedelta
 from decimal import Decimal
 
-from sqlalchemy import select
+from sqlalchemy import select, or_
 from sqlalchemy.ext.asyncio import AsyncSession
 from uuid import UUID
+
+from sqlalchemy.orm import selectinload
 
 from ..models.delivery_address import DeliveryAddress
 from ..models.order_items import OrderItem
@@ -17,11 +20,21 @@ class OrderRepository:
         self.db=db
 
     async def get_pending_by_client_id(self, client_id : UUID) -> Order:
-        result = await self.db.execute(select(Order).where(Order.client_id==client_id, Order.status==OrderStatus.PENDING))
+        result = await self.db.execute(select(Order).options(selectinload(Order.order_items))
+                                       .where(Order.client_id==client_id, Order.status==OrderStatus.PENDING)
+                                       .order_by(Order.created_at.desc()).limit(1))
         return result.scalar_one_or_none()
 
+    async def get_pending_by_client_id_and_corresponding_order(self, client_id : UUID, data : ListOrderDTO):
+        result = await self.db.execute(select(Order).options(selectinload(Order.order_items)).where(Order.client_id==client_id, Order.status==OrderStatus.PENDING))
+        orders = result.scalars().all()
+        for order in orders:
+            if order.order_items == data.order_items:
+                return order
+        return None
+
     async def get_all_orders(self):
-        result = await self.db.execute(select(Order))
+        result = await self.db.execute(select(Order).options(selectinload(Order.order_items)))
         return result.scalars().all()
 
     async def get_unpaid_order_by_client(self, client_id : UUID) -> Order:
@@ -74,5 +87,17 @@ class OrderRepository:
         old_order.status = status
         await self.db.commit()
         await self.db.refresh(old_order)
+
+    async def mark_order_as_expired(self):
+        now = datetime.now(timezone.utc)
+        expiration_time = now - timedelta(minutes=10)
+        result = await self.db.execute(
+            select(Order).where(Order.created_at <= expiration_time))
+        orders = result.scalars().all()
+        for order in orders:
+            if order.status == OrderStatus.PENDING or order.status == OrderStatus.CONFIRMED_ADDRESS:
+                order.status = OrderStatus.EXPIRED
+                order.updated_status = now
+        await self.db.commit()
 
 

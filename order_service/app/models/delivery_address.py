@@ -12,13 +12,13 @@ class DeliveryAddress(Base):
     __tablename__ = "delivery_addresses"
 
     id = Column(Integer, primary_key=True, index=True)
-    order_id = Column(Integer, ForeignKey("orders.id") , nullable=False)
+    order_id = Column(Integer, ForeignKey("orders.id") , nullable=False, unique=True)
     city = Column(String, nullable=False)
     postal_code = Column(String, nullable=False)
     street = Column(String, nullable=False)
     house = Column(Integer, nullable=False)
     apartment = Column(Integer)
 
-    order = relationship("Order", back_populates="address_id")
+    order = relationship("Order", back_populates="address")
 
 
