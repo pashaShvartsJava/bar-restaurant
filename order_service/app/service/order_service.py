@@ -63,3 +63,6 @@ class OrderService:
 
     async def get_user_active_orders(self, client_id: UUID):
         return await self.order_repository.get_user_active_orders(client_id)
+
+    async def get_user_last_completed_order(self, client_id: UUID):
+        return await self.order_repository.get_user_last_completed_order(client_id)

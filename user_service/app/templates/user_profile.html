@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Профиль — BAR</title>
-
     <style>
         * {
             margin: 0;
@@ -916,11 +915,8 @@
         }
     </style>
 </head>
-
 <body>
-
 <div class="page">
-
     <header class="top">
         <div class="logo">
             BAR.
@@ -936,7 +932,6 @@
     </header>
 
     <main class="content">
-
         <div class="heading">
             <div class="heading-label">
                 PERSONAL AREA
@@ -952,11 +947,8 @@
         </div>
 
         <div class="layout">
-
             <section class="profile-card">
-
                 <div class="profile-header">
-
                     <div class="avatar">
                         {{ user.name[0] }}
                     </div>
@@ -970,13 +962,10 @@
                             Зарегистрированный клиент
                         </div>
                     </div>
-
                 </div>
 
                 <div class="data">
-
                     <div class="data-item">
-
                         <div class="data-label">
                             Email
                         </div>
@@ -984,11 +973,9 @@
                         <div class="data-value">
                             {{ user.email }}
                         </div>
-
                     </div>
 
                     <div class="data-item">
-
                         <div class="data-label">
                             Телефон
                         </div>
@@ -996,11 +983,9 @@
                         <div class="data-value">
                             {{ user.phone }}
                         </div>
-
                     </div>
 
                     <div class="data-item">
-
                         <div class="data-label">
                             Дата рождения
                         </div>
@@ -1008,19 +993,15 @@
                         <div class="data-value">
                             {{ user.birthday }}
                         </div>
-
                     </div>
 
                     <div class="data-item">
-
                         <div class="data-label">
                             Адрес
                         </div>
 
                         <div class="address">
-
                             <div class="address-item">
-
                                 <div class="address-label">
                                     Город
                                 </div>
@@ -1028,11 +1009,9 @@
                                 <div class="address-value">
                                     {{ address.city }}
                                 </div>
-
                             </div>
 
                             <div class="address-item">
-
                                 <div class="address-label">
                                     Индекс
                                 </div>
@@ -1040,11 +1019,9 @@
                                 <div class="address-value">
                                     {{ address.postal_code }}
                                 </div>
-
                             </div>
 
                             <div class="address-item address-street">
-
                                 <div class="address-label">
                                     Улица
                                 </div>
@@ -1052,11 +1029,9 @@
                                 <div class="address-value">
                                     {{ address.street }}
                                 </div>
-
                             </div>
 
                             <div class="address-item">
-
                                 <div class="address-label">
                                     Дом
                                 </div>
@@ -1064,11 +1039,9 @@
                                 <div class="address-value">
                                     {{ address.house }}
                                 </div>
-
                             </div>
 
                             <div class="address-item">
-
                                 <div class="address-label">
                                     Квартира
                                 </div>
@@ -1076,25 +1049,18 @@
                                 <div class="address-value">
                                     {{ address.apartment }}
                                 </div>
-
                             </div>
-
                         </div>
-
                     </div>
-
                 </div>
 
                 <a href="/user/edit" class="edit-profile">
                     Изменить личные данные
                 </a>
-
             </section>
 
             <section class="actions-card">
-
                 <div class="actions-title">
-
                     <h2>
                         Что хотите сделать?
                     </h2>
@@ -1102,19 +1068,15 @@
                     <p>
                         Выберите необходимый раздел
                     </p>
-
                 </div>
 
                 <div class="actions">
-
                     <a href="/menu_page/orders/users" class="action main-action">
-
                         <div class="action-icon">
                             +
                         </div>
 
                         <div>
-
                             <div class="action-name">
                                 Сделать заказ
                             </div>
@@ -1122,43 +1084,35 @@
                             <div class="action-description">
                                 Меню
                             </div>
-
                         </div>
-
                     </a>
 
                     <button type="button" class="action" id="repeatLastOrder">
-
                         <div class="action-icon">
                             ☰
                         </div>
 
                         <div>
-
                             <div class="action-name">
                                 Повторить последний заказ
                             </div>
 
                             <div class="action-description">
-                                {% if active_orders %}
+                                {% if last_order %}
                                     Оформление доставки по последнему заказу
                                 {% else %}
-                                    У вас пока нет заказов
+                                    У вас пока нет завершённых заказов
                                 {% endif %}
                             </div>
-
                         </div>
-
                     </button>
 
                     <a href="/orders/my_history_orders" class="action">
-
                         <div class="action-icon">
                             ◷
                         </div>
 
                         <div>
-
                             <div class="action-name">
                                 История заказов
                             </div>
@@ -1166,17 +1120,12 @@
                             <div class="action-description">
                                 Ваши предыдущие заказы
                             </div>
-
                         </div>
-
                     </a>
-
                 </div>
 
                 <div class="active-orders">
-
                     <div class="active-orders-header">
-
                         <div>
                             <h3>
                                 Активные заказы
@@ -1188,31 +1137,22 @@
                         </div>
 
                         <span class="active-dot"></span>
-
                     </div>
 
                     {% if active_orders %}
-
                         <div class="active-orders-list">
-
                             {% for order in active_orders %}
-
                                 {% set status = order.status.value if order.status.value is defined else order.status %}
 
                                 <div class="active-order">
-
                                     <div class="active-order-info">
-
                                         <div class="active-order-number">
                                             Заказ #{{ order.order_number }}
                                         </div>
 
                                         <div class="active-order-items">
-
                                             {% for item in order.order_items %}
-
                                                 <div class="active-order-item">
-
                                                     <span>
                                                         {{ item.dish_name }}
                                                     </span>
@@ -1220,42 +1160,27 @@
                                                     <span>
                                                         × {{ item.quantity }}
                                                     </span>
-
                                                 </div>
-
                                             {% endfor %}
-
                                         </div>
 
                                         <div class="active-order-meta">
-
                                             <span class="active-order-price">
                                                 {{ order.sum }} €
                                             </span>
 
                                             <span>
-
                                                 {% if order.created_at is string %}
-
-                                                    {{ order.created_at[8:10] }}.{{ order.created_at[5:7] }}.{{ order.created_at[0:4] }}
-                                                    {{ order.created_at[11:16] }}
-
+                                                    {{ order.created_at[8:10] }}.{{ order.created_at[5:7] }}.{{ order.created_at[0:4] }} {{ order.created_at[11:16] }}
                                                 {% else %}
-
                                                     {{ order.created_at.strftime("%d.%m.%Y %H:%M") }}
-
                                                 {% endif %}
-
                                             </span>
-
                                         </div>
-
                                     </div>
 
                                     <div class="active-order-right">
-
                                         <span class="active-order-status status-{{ status }}">
-
                                             {% if status == "paid" %}
                                                 Оплачен
                                             {% elif status == "preparing" %}
@@ -1265,21 +1190,13 @@
                                             {% else %}
                                                 {{ status }}
                                             {% endif %}
-
                                         </span>
-
                                     </div>
-
                                 </div>
-
                             {% endfor %}
-
                         </div>
-
                     {% else %}
-
                         <div class="order-empty">
-
                             <div class="order-icon">
                                 ◷
                             </div>
@@ -1287,45 +1204,31 @@
                             <span>
                                 Сейчас нет активных заказов
                             </span>
-
                         </div>
-
                     {% endif %}
-
                 </div>
-
             </section>
-
         </div>
 
         <div class="bottom">
-
             <form method="post" action="/logout">
-
                 <button type="submit" class="logout">
                     Выйти из аккаунта
                 </button>
-
             </form>
 
             <a href="/support/user" class="support">
                 Техподдержка
             </a>
-
         </div>
-
     </main>
-
 </div>
 
 <div class="cart-overlay" id="cartOverlay"></div>
 
 <aside class="cart-sidebar" id="cartSidebar">
-
     <header class="cart-header">
-
         <div>
-
             <span class="cart-title">
                 Корзина
             </span>
@@ -1333,26 +1236,17 @@
             <span class="cart-header-count" id="cartHeaderCount">
                 0 предметов
             </span>
-
         </div>
 
-        <button
-            type="button"
-            class="cart-close"
-            id="cartClose"
-            title="Свернуть корзину"
-        >
+        <button type="button" class="cart-close" id="cartClose" title="Свернуть корзину">
             ×
         </button>
-
     </header>
 
     <div class="cart-content" id="cartContent"></div>
 
     <footer class="cart-footer">
-
         <div class="cart-total">
-
             <span class="cart-total-label">
                 Итого
             </span>
@@ -1360,31 +1254,21 @@
             <span class="cart-total-price" id="cartTotalPrice">
                 0.00 €
             </span>
-
         </div>
 
-        <button
-            type="button"
-            class="checkout-button"
-            id="checkoutButton"
-        >
+        <button type="button" class="checkout-button" id="checkoutButton">
             Оформить заказ
         </button>
 
-        <button
-            type="button"
-            class="clear-cart-button"
-            id="clearCartButton"
-        >
+        <button type="button" class="clear-cart-button" id="clearCartButton">
             Очистить корзину
         </button>
-
     </footer>
-
 </aside>
 
 <script>
 const CART_STORAGE_KEY = "restaurant_cart";
+const lastOrder = {{ last_order | tojson }};
 
 const cartButton = document.getElementById("cartButton");
 const cartSidebar = document.getElementById("cartSidebar");
@@ -1493,7 +1377,6 @@ function renderCart() {
 
         return `
             <div class="cart-item">
-
                 <div class="cart-item-image">
                     ${
                         image
@@ -1503,22 +1386,14 @@ function renderCart() {
                 </div>
 
                 <div class="cart-item-info">
-
                     <div class="cart-item-top">
-
                         <div class="cart-item-name">
                             ${name}
                         </div>
 
-                        <button
-                            type="button"
-                            class="cart-item-remove"
-                            data-index="${index}"
-                            title="Удалить"
-                        >
+                        <button type="button" class="cart-item-remove" data-index="${index}" title="Удалить">
                             ×
                         </button>
-
                     </div>
 
                     <div class="cart-item-price">
@@ -1526,14 +1401,8 @@ function renderCart() {
                     </div>
 
                     <div class="cart-item-bottom">
-
                         <div class="cart-quantity">
-
-                            <button
-                                type="button"
-                                data-action="decrease"
-                                data-index="${index}"
-                            >
+                            <button type="button" data-action="decrease" data-index="${index}">
                                 −
                             </button>
 
@@ -1541,24 +1410,16 @@ function renderCart() {
                                 ${quantity}
                             </span>
 
-                            <button
-                                type="button"
-                                data-action="increase"
-                                data-index="${index}"
-                            >
+                            <button type="button" data-action="increase" data-index="${index}">
                                 +
                             </button>
-
                         </div>
 
                         <div class="cart-item-total">
                             ${formatPrice(itemTotal)}
                         </div>
-
                     </div>
-
                 </div>
-
             </div>
         `;
     }).join("");
@@ -1611,9 +1472,7 @@ function escapeHtml(value) {
 }
 
 cartButton.addEventListener("click", openCart);
-
 cartClose.addEventListener("click", closeCart);
-
 cartOverlay.addEventListener("click", closeCart);
 
 cartContent.addEventListener("click", event => {
@@ -1633,10 +1492,7 @@ cartContent.addEventListener("click", event => {
     const index = Number(quantityButton.dataset.index);
     const action = quantityButton.dataset.action;
 
-    updateQuantity(
-        index,
-        action === "increase" ? 1 : -1
-    );
+    updateQuantity(index, action === "increase" ? 1 : -1);
 });
 
 clearCartButton.addEventListener("click", () => {
@@ -1664,10 +1520,7 @@ checkoutButton.addEventListener("click", async () => {
         }))
     };
 
-    console.log(
-        "ORDER DTO:",
-        JSON.stringify(orderData, null, 2)
-    );
+    console.log("ORDER DTO:", JSON.stringify(orderData, null, 2));
 
     try {
         const response = await fetch("/orders/create", {
@@ -1678,27 +1531,15 @@ checkoutButton.addEventListener("click", async () => {
             body: JSON.stringify(orderData)
         });
 
-        console.log(
-            "ORDER RESPONSE:",
-            response.status,
-            response.url
-        );
+        console.log("ORDER RESPONSE:", response.status, response.url);
 
         if (!response.ok) {
             const errorData = await response.json();
-
-            console.error(
-                "ORDER ERROR:",
-                errorData
-            );
-
-            throw new Error(
-                `HTTP error: ${response.status}`
-            );
+            console.error("ORDER ERROR:", errorData);
+            throw new Error(`HTTP error: ${response.status}`);
         }
 
         window.location.href = "/users/confirm_address";
-
     } catch (error) {
         console.error("ORDER ERROR:", error);
         alert("Не удалось оформить заказ.");
@@ -1707,18 +1548,8 @@ checkoutButton.addEventListener("click", async () => {
 
 if (repeatLastOrderButton) {
     repeatLastOrderButton.addEventListener("click", () => {
-
-        const activeOrders = {{ active_orders | tojson }};
-
-        if (!activeOrders.length) {
-            alert("У вас пока нет заказов.");
-            return;
-        }
-
-        const lastOrder = activeOrders[0];
-
-        if (!lastOrder.order_items || lastOrder.order_items.length === 0) {
-            alert("В последнем заказе нет блюд.");
+        if (!lastOrder || !lastOrder.order_items || lastOrder.order_items.length === 0) {
+            alert("У вас пока нет завершённых заказов.");
             return;
         }
 

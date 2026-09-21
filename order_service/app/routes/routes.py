@@ -102,6 +102,14 @@ async def get_my_active_orders(request : Request, service : OrderService = Depen
     active_orders = await service.get_user_active_orders(client_id)
     return active_orders
 
+@router.get("/orders/get_user_last_completed_order")
+async def get_last_user_order(request : Request, service : OrderService = Depends(get_order_service_dependency)):
+    payload = get_payload(request)
+    required_roles(IdentityRole.USER, payload=payload)
+    client_id = UUID(payload["sub"])
+    last_order = await service.get_user_last_completed_order(client_id)
+    return last_order
+
 
 @router.get("/orders/{order_id}")
 async def get_order_info(request : Request, order_id : int, service : OrderService = Depends(get_order_service_dependency)):
