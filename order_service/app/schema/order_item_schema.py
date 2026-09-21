@@ -1,4 +1,3 @@
-import re
 from decimal import Decimal
 
 from pydantic import BaseModel, Field, EmailStr, field_validator, ConfigDict

@@ -8,6 +8,8 @@
       <excludeFolder url="file://$MODULE_DIR$/admin_service/venv" />
       <excludeFolder url="file://$MODULE_DIR$/menu_service/.venv" />
       <excludeFolder url="file://$MODULE_DIR$/reservation_service/.venv" />
+      <excludeFolder url="file://$MODULE_DIR$/order_service/.venv" />
+      <excludeFolder url="file://$MODULE_DIR$/payment_service/.venv" />
     </content>
     <orderEntry type="jdk" jdkName="Python 3.12 (user-service)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
