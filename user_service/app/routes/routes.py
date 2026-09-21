@@ -171,6 +171,9 @@ async def confirm_address(request : Request,
         response = await client.post(url="http://order-service:8007/orders/confirm_address",
                                      json=data.model_dump(mode="json"),
                                      cookies={"access_token": request.cookies.get("access_token")})
+        if response.status_code == 303:
+            return RedirectResponse(url=response.headers["location"], status_code=303)
         response.raise_for_status()
+        return response.json()
 
 

@@ -84,11 +84,12 @@ class OrderRepository:
         await self.db.commit()
         await self.db.refresh(old_order)
 
-    async def update_order_status(self, client_id : UUID, status : OrderStatus):
+    async def update_order_status(self, client_id : UUID, status : OrderStatus) -> Order:
         old_order = await self.get_pending_by_client_id(client_id)
         old_order.status = status
         await self.db.commit()
         await self.db.refresh(old_order)
+        return old_order
 
     async def mark_order_as_expired(self):
         now = datetime.now(timezone.utc)

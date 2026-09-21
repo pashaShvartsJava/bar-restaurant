@@ -15,4 +15,5 @@ async def create_payment(request : Request, data : PaymentDTO,
     payload = get_payload(request)
     required_roles(IdentityRole.USER, payload=payload)
     client_id = payload["sub"]
-    payment = await service.create_payment(data, client_id)
+    payment, checkout_url = await service.create_payment(data, client_id)
+    return {"payment_id": payment.id,  "checkout_url": checkout_url}

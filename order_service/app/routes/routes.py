@@ -73,6 +73,10 @@ async def create_delivering_address(request : Request,
                                          json=data.model_dump(mode="json"),
                                          cookies={"access_token" : request.cookies.get("access_token")})
             response.raise_for_status()
+            payment_data = response.json()
+        return RedirectResponse(url=payment_data["checkout_url"], status_code=303)
+    return None
+
 
 @router.get("/orders/get_orders/search_or_sorting")
 async def search_and_sorting(request : Request,
