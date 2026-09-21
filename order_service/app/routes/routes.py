@@ -84,11 +84,30 @@ async def get_user_orders(request : Request, identity_id : UUID, service : Order
     orders = await service.find_order_by_client_id(identity_id)
     return orders
 
+@router.get("/orders/my_history_orders")
+async def get_user_history_orders(request : Request, service : OrderService = Depends(get_order_service_dependency)):
+    payload = get_payload(request)
+    required_roles(IdentityRole.USER, payload=payload)
+    client_id = UUID(payload["sub"])
+    history_orders = await service.get_user_history_orders(client_id)
+    return templates.TemplateResponse("user_history_orders.html", {"request" : request, "orders" : history_orders})
+
+@router.get("/orders/get_user_active_orders")
+async def get_my_active_orders(request : Request, service : OrderService = Depends(get_order_service_dependency)):
+    payload = get_payload(request)
+    required_roles(IdentityRole.USER, payload=payload)
+    client_id = UUID(payload["sub"])
+    active_orders = await service.get_user_active_orders(client_id)
+    return active_orders
+
+
 @router.get("/orders/{order_id}")
 async def get_order_info(request : Request, order_id : int, service : OrderService = Depends(get_order_service_dependency)):
     payload = get_payload(request)
     required_roles(IdentityRole.ADMIN, IdentityRole.MODERATOR, payload=payload)
     order = await service.get_order_by_id(order_id)
     return templates.TemplateResponse("order_info.html", {"request" : request, "order" : order})
+
+
 
 

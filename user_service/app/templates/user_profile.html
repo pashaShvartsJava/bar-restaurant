@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>Профиль — BAR</title>
 
     <style>
@@ -16,22 +15,9 @@
         body {
             min-height: 100vh;
             background:
-                radial-gradient(
-                    circle at 15% 20%,
-                    rgba(213, 166, 91, 0.12),
-                    transparent 30%
-                ),
-                radial-gradient(
-                    circle at 85% 75%,
-                    rgba(130, 80, 120, 0.12),
-                    transparent 32%
-                ),
-                linear-gradient(
-                    135deg,
-                    #0b0b0e,
-                    #151417 50%,
-                    #0d0d10
-                );
+                radial-gradient(circle at 15% 20%, rgba(213, 166, 91, 0.12), transparent 30%),
+                radial-gradient(circle at 85% 75%, rgba(130, 80, 120, 0.12), transparent 32%),
+                linear-gradient(135deg, #0b0b0e, #151417 50%, #0d0d10);
             color: #fff;
             font-family: Arial, sans-serif;
         }
@@ -297,6 +283,7 @@
             color: #ddd;
             text-decoration: none;
             transition: 0.3s;
+            cursor: pointer;
         }
 
         .action:hover {
@@ -324,21 +311,13 @@
         .main-action {
             grid-column: span 2;
             min-height: 125px;
-            background: linear-gradient(
-                135deg,
-                #d5a65b,
-                #b9863e
-            );
+            background: linear-gradient(135deg, #d5a65b, #b9863e);
             border-color: #d5a65b;
             color: #111;
         }
 
         .main-action:hover {
-            background: linear-gradient(
-                135deg,
-                #e4b971,
-                #c9954a
-            );
+            background: linear-gradient(135deg, #e4b971, #c9954a);
             border-color: #e4b971;
         }
 
@@ -381,6 +360,102 @@
             border-radius: 50%;
             background: #70a870;
             box-shadow: 0 0 9px #70a870;
+        }
+
+        .active-orders-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .active-order {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            padding: 14px 15px;
+            border: 1px solid #29292d;
+            border-radius: 8px;
+            background: #1b1b1e;
+            transition: 0.25s;
+        }
+
+        .active-order:hover {
+            border-color: #444448;
+            background: #202023;
+        }
+
+        .active-order-info {
+            min-width: 0;
+        }
+
+        .active-order-number {
+            color: #ddd;
+            font-family: Georgia, serif;
+            font-size: 13px;
+        }
+
+        .active-order-items {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            margin-top: 8px;
+        }
+
+        .active-order-item {
+            display: flex;
+            gap: 8px;
+            color: #888;
+            font-size: 10px;
+        }
+
+        .active-order-item span:last-child {
+            color: #666;
+        }
+
+        .active-order-meta {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-top: 8px;
+            color: #666;
+            font-size: 9px;
+        }
+
+        .active-order-price {
+            color: #d5a65b;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .active-order-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-shrink: 0;
+        }
+
+        .active-order-status {
+            padding: 6px 9px;
+            border: 1px solid;
+            border-radius: 5px;
+            font-size: 9px;
+            white-space: nowrap;
+        }
+
+        .active-order-status.status-paid {
+            color: #70a870;
+            border-color: #426842;
+        }
+
+        .active-order-status.status-preparing {
+            color: #d5a65b;
+            border-color: #6b552f;
+        }
+
+        .active-order-status.status-delivering {
+            color: #d98b4a;
+            border-color: #704726;
         }
 
         .order-empty {
@@ -452,8 +527,6 @@
             color: #d98282;
             border-color: #704848;
         }
-
-        /* Корзина */
 
         .cart-sidebar {
             position: fixed;
@@ -779,6 +852,18 @@
             }
         }
 
+        @media (max-width: 650px) {
+            .active-order {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .active-order-right {
+                width: 100%;
+                justify-content: space-between;
+            }
+        }
+
         @media (max-width: 550px) {
             .page {
                 padding: 20px 15px;
@@ -837,28 +922,22 @@
 <div class="page">
 
     <header class="top">
-
         <div class="logo">
             BAR.
         </div>
 
         <nav class="top-menu">
-
             <button type="button" class="cart-button" id="cartButton">
                 <span class="cart-icon">🛒</span>
                 <span>Корзина</span>
                 <span class="cart-badge" id="cartBadge">0</span>
             </button>
-
         </nav>
-
     </header>
-
 
     <main class="content">
 
         <div class="heading">
-
             <div class="heading-label">
                 PERSONAL AREA
             </div>
@@ -870,9 +949,7 @@
             <p>
                 Управляйте заказами и своим профилем
             </p>
-
         </div>
-
 
         <div class="layout">
 
@@ -885,7 +962,6 @@
                     </div>
 
                     <div>
-
                         <div class="user-name">
                             {{ user.name }} {{ user.surname }}
                         </div>
@@ -893,11 +969,9 @@
                         <div class="user-status">
                             Зарегистрированный клиент
                         </div>
-
                     </div>
 
                 </div>
-
 
                 <div class="data">
 
@@ -913,7 +987,6 @@
 
                     </div>
 
-
                     <div class="data-item">
 
                         <div class="data-label">
@@ -926,7 +999,6 @@
 
                     </div>
 
-
                     <div class="data-item">
 
                         <div class="data-label">
@@ -938,7 +1010,6 @@
                         </div>
 
                     </div>
-
 
                     <div class="data-item">
 
@@ -960,7 +1031,6 @@
 
                             </div>
 
-
                             <div class="address-item">
 
                                 <div class="address-label">
@@ -972,7 +1042,6 @@
                                 </div>
 
                             </div>
-
 
                             <div class="address-item address-street">
 
@@ -986,7 +1055,6 @@
 
                             </div>
 
-
                             <div class="address-item">
 
                                 <div class="address-label">
@@ -998,7 +1066,6 @@
                                 </div>
 
                             </div>
-
 
                             <div class="address-item">
 
@@ -1018,13 +1085,11 @@
 
                 </div>
 
-
                 <a href="/user/edit" class="edit-profile">
                     Изменить личные данные
                 </a>
 
             </section>
-
 
             <section class="actions-card">
 
@@ -1039,7 +1104,6 @@
                     </p>
 
                 </div>
-
 
                 <div class="actions">
 
@@ -1063,8 +1127,7 @@
 
                     </a>
 
-
-                    <a href="/menu" class="action">
+                    <button type="button" class="action" id="repeatLastOrder">
 
                         <div class="action-icon">
                             ☰
@@ -1077,15 +1140,18 @@
                             </div>
 
                             <div class="action-description">
-                                Оформление доставки по последнему заказу
+                                {% if active_orders %}
+                                    Оформление доставки по последнему заказу
+                                {% else %}
+                                    У вас пока нет заказов
+                                {% endif %}
                             </div>
 
                         </div>
 
-                    </a>
+                    </button>
 
-
-                    <a href="/orders/history" class="action">
+                    <a href="/orders/my_history_orders" class="action">
 
                         <div class="action-icon">
                             ◷
@@ -1107,13 +1173,11 @@
 
                 </div>
 
-
                 <div class="active-orders">
 
                     <div class="active-orders-header">
 
                         <div>
-
                             <h3>
                                 Активные заказы
                             </h3>
@@ -1121,32 +1185,118 @@
                             <p>
                                 Ваши текущие заказы
                             </p>
-
                         </div>
 
                         <span class="active-dot"></span>
 
                     </div>
 
+                    {% if active_orders %}
 
-                    <div class="order-empty">
+                        <div class="active-orders-list">
 
-                        <div class="order-icon">
-                            ◷
+                            {% for order in active_orders %}
+
+                                {% set status = order.status.value if order.status.value is defined else order.status %}
+
+                                <div class="active-order">
+
+                                    <div class="active-order-info">
+
+                                        <div class="active-order-number">
+                                            Заказ #{{ order.order_number }}
+                                        </div>
+
+                                        <div class="active-order-items">
+
+                                            {% for item in order.order_items %}
+
+                                                <div class="active-order-item">
+
+                                                    <span>
+                                                        {{ item.dish_name }}
+                                                    </span>
+
+                                                    <span>
+                                                        × {{ item.quantity }}
+                                                    </span>
+
+                                                </div>
+
+                                            {% endfor %}
+
+                                        </div>
+
+                                        <div class="active-order-meta">
+
+                                            <span class="active-order-price">
+                                                {{ order.sum }} €
+                                            </span>
+
+                                            <span>
+
+                                                {% if order.created_at is string %}
+
+                                                    {{ order.created_at[8:10] }}.{{ order.created_at[5:7] }}.{{ order.created_at[0:4] }}
+                                                    {{ order.created_at[11:16] }}
+
+                                                {% else %}
+
+                                                    {{ order.created_at.strftime("%d.%m.%Y %H:%M") }}
+
+                                                {% endif %}
+
+                                            </span>
+
+                                        </div>
+
+                                    </div>
+
+                                    <div class="active-order-right">
+
+                                        <span class="active-order-status status-{{ status }}">
+
+                                            {% if status == "paid" %}
+                                                Оплачен
+                                            {% elif status == "preparing" %}
+                                                Готовится
+                                            {% elif status == "delivering" %}
+                                                Ваш заказ уже в пути
+                                            {% else %}
+                                                {{ status }}
+                                            {% endif %}
+
+                                        </span>
+
+                                    </div>
+
+                                </div>
+
+                            {% endfor %}
+
                         </div>
 
-                        <span>
-                            Сейчас нет активных заказов
-                        </span>
+                    {% else %}
 
-                    </div>
+                        <div class="order-empty">
+
+                            <div class="order-icon">
+                                ◷
+                            </div>
+
+                            <span>
+                                Сейчас нет активных заказов
+                            </span>
+
+                        </div>
+
+                    {% endif %}
 
                 </div>
 
             </section>
 
         </div>
-
 
         <div class="bottom">
 
@@ -1168,9 +1318,7 @@
 
 </div>
 
-
 <div class="cart-overlay" id="cartOverlay"></div>
-
 
 <aside class="cart-sidebar" id="cartSidebar">
 
@@ -1199,9 +1347,7 @@
 
     </header>
 
-
     <div class="cart-content" id="cartContent"></div>
-
 
     <footer class="cart-footer">
 
@@ -1217,7 +1363,6 @@
 
         </div>
 
-
         <button
             type="button"
             class="checkout-button"
@@ -1225,7 +1370,6 @@
         >
             Оформить заказ
         </button>
-
 
         <button
             type="button"
@@ -1238,7 +1382,6 @@
     </footer>
 
 </aside>
-
 
 <script>
 const CART_STORAGE_KEY = "restaurant_cart";
@@ -1253,6 +1396,7 @@ const cartHeaderCount = document.getElementById("cartHeaderCount");
 const cartTotalPrice = document.getElementById("cartTotalPrice");
 const clearCartButton = document.getElementById("clearCartButton");
 const checkoutButton = document.getElementById("checkoutButton");
+const repeatLastOrderButton = document.getElementById("repeatLastOrder");
 
 function getCart() {
     try {
@@ -1349,6 +1493,7 @@ function renderCart() {
 
         return `
             <div class="cart-item">
+
                 <div class="cart-item-image">
                     ${
                         image
@@ -1358,7 +1503,9 @@ function renderCart() {
                 </div>
 
                 <div class="cart-item-info">
+
                     <div class="cart-item-top">
+
                         <div class="cart-item-name">
                             ${name}
                         </div>
@@ -1371,6 +1518,7 @@ function renderCart() {
                         >
                             ×
                         </button>
+
                     </div>
 
                     <div class="cart-item-price">
@@ -1378,7 +1526,9 @@ function renderCart() {
                     </div>
 
                     <div class="cart-item-bottom">
+
                         <div class="cart-quantity">
+
                             <button
                                 type="button"
                                 data-action="decrease"
@@ -1398,13 +1548,17 @@ function renderCart() {
                             >
                                 +
                             </button>
+
                         </div>
 
                         <div class="cart-item-total">
                             ${formatPrice(itemTotal)}
                         </div>
+
                     </div>
+
                 </div>
+
             </div>
         `;
     }).join("");
@@ -1544,11 +1698,42 @@ checkoutButton.addEventListener("click", async () => {
         }
 
         window.location.href = "/users/confirm_address";
+
     } catch (error) {
         console.error("ORDER ERROR:", error);
         alert("Не удалось оформить заказ.");
     }
 });
+
+if (repeatLastOrderButton) {
+    repeatLastOrderButton.addEventListener("click", () => {
+
+        const activeOrders = {{ active_orders | tojson }};
+
+        if (!activeOrders.length) {
+            alert("У вас пока нет заказов.");
+            return;
+        }
+
+        const lastOrder = activeOrders[0];
+
+        if (!lastOrder.order_items || lastOrder.order_items.length === 0) {
+            alert("В последнем заказе нет блюд.");
+            return;
+        }
+
+        const cart = lastOrder.order_items.map(item => ({
+            dish_id: Number(item.dish_id),
+            dish_name: item.dish_name,
+            price: Number(item.price),
+            quantity: Number(item.quantity)
+        }));
+
+        saveCart(cart);
+        renderCart();
+        openCart();
+    });
+}
 
 window.addEventListener("storage", event => {
     if (event.key === CART_STORAGE_KEY) {

@@ -141,6 +141,19 @@ class OrderRepository:
         result = await self.db.execute(select(Order).options(selectinload(Order.order_items)).where(Order.client_id==client_id).order_by(Order.created_at.desc()))
         return result.scalars().all()
 
+    async def get_user_history_orders(self, client_id : UUID):
+        result = await self.db.execute(
+            select(Order).options(selectinload(Order.order_items)).where(Order.client_id == client_id, Order.status==OrderStatus.COMPLETED))
+        return result.scalars().all()
+
+    async def get_user_active_orders(self, client_id : UUID):
+        result = await self.db.execute(
+            select(Order).options(selectinload(Order.order_items)).where(Order.client_id == client_id,
+                                                                         Order.status.in_([OrderStatus.PAID,
+                                                                                          OrderStatus.PREPARING,
+                                                                                          OrderStatus.DELIVERING])))
+        return result.scalars().all()
+
 
 
 

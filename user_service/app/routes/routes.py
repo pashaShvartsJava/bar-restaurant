@@ -28,7 +28,11 @@ router = APIRouter()
 async def get_user_profile(request : Request, service : UserService = Depends(get_service_dependency)):
     payload = get_payload(request)
     user = await service.find_by_identity_id(payload["sub"])
-    return templates.TemplateResponse("user_profile.html", context={"request": request, "user": user, "address": user.address})
+    async with httpx.AsyncClient() as client:
+        response = await client.get("http://order-service:8007/orders/get_user_active_orders", cookies={"access_token": request.cookies.get("access_token")})
+        response.raise_for_status()
+    active_orders = response.json()
+    return templates.TemplateResponse("user_profile.html", context={"request": request, "user": user, "address": user.address, "active_orders" : active_orders})
 
 @router.post("/users/add_user")
 async def register_user(data : RegisterRequest, service : UserService = Depends(get_service_dependency)):
