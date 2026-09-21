@@ -156,6 +156,12 @@ class OrderRepository:
                                                                                           OrderStatus.DELIVERING])))
         return result.scalars().all()
 
+    async def get_user_last_completed_order(self, client_id : UUID):
+        result = await self.db.execute(select(Order).options(selectinload(Order.order_items), selectinload(Order.address))
+                                 .where(Order.client_id == client_id, Order.status==OrderStatus.COMPLETED)
+                                 .order_by(Order.created_at.desc()).limit(1))
+        return result.scalar_one_or_none()
+
 
 
 
