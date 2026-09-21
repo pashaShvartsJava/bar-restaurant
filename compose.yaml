@@ -141,6 +141,24 @@ services:
       - --port
       - "8007"
       - --reload
+  payment-service:
+    build:
+      context: ./payment_service
+    container_name: payment-service
+    ports:
+      - "8008:8008"
+    env_file:
+      - ./payment_service/.env
+    volumes:
+      - ./payment_service:/payment_service
+    command:
+      - uvicorn
+      - app.main:app
+      - --host
+      - 0.0.0.0
+      - --port
+      - "8008"
+      - --reload
 
   db-authentication:
     image: postgres:16
@@ -219,6 +237,17 @@ services:
       - "5438:5432"
     volumes:
       - postgres_order_data:/var/lib/postgresql/data
+  db-payment:
+    image: postgres:16
+    container_name: db-payment
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: payment_db
+    ports:
+      - "5439:5432"
+    volumes:
+      - postgres_payment_data:/var/lib/postgresql/data
 volumes:
   postgres_auth_data:
   postgres_user_data:
@@ -227,3 +256,4 @@ volumes:
   postgres_reservation_data:
   postgres_support_data:
   postgres_order_data:
+  postgres_payment_data:

@@ -1,6 +1,5 @@
 from datetime import date
 from decimal import Decimal
-from multiprocessing.connection import address_type
 
 import httpx
 from fastapi import APIRouter, Request, Depends
@@ -11,6 +10,7 @@ from ..dependencies.dependencies import get_order_service_dependency
 from ..models.orders import OrderStatus
 from ..schema.delivery_address_schema import DeliveryAddressDTO
 from ..schema.order_item_schema import ListOrderDTO
+from ..schema.payment_schema import PaymentDTO
 from ..security.jwt.jwt import get_payload
 from ..security.authorization.authorization import required_roles
 from ..security.role.role import IdentityRole
@@ -61,8 +61,18 @@ async def create_delivering_address(request : Request,
     client_id = UUID(payload["sub"])
     order = await service.get_pending_by_client_id(client_id)
     await service.create_order_address(order.id, data)
-    await service.update_order_status(client_id, OrderStatus.CONFIRMED_ADDRESS)
-    return RedirectResponse(url="/payment/registered_users")
+    updated_order = await service.update_order_status(client_id, OrderStatus.CONFIRMED_ADDRESS)
+    data = PaymentDTO(
+        order_id=order.id,
+        order_number=order.order_number,
+        sum=order.sum
+    )
+    if updated_order.status==OrderStatus.CONFIRMED_ADDRESS:
+        async with httpx.AsyncClient() as client:
+            response = await client.post(url="http://payment-service:8008/payment/create",
+                                         json=data.model_dump(mode="json"),
+                                         cookies={"access_token" : request.cookies.get("access_token")})
+            response.raise_for_status()
 
 @router.get("/orders/get_orders/search_or_sorting")
 async def search_and_sorting(request : Request,
