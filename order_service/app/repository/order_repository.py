@@ -143,7 +143,9 @@ class OrderRepository:
 
     async def get_user_history_orders(self, client_id : UUID):
         result = await self.db.execute(
-            select(Order).options(selectinload(Order.order_items)).where(Order.client_id == client_id, Order.status==OrderStatus.COMPLETED))
+            select(Order).options(selectinload(Order.order_items) ,selectinload(Order.address)).where(Order.client_id == client_id,
+                                                                         Order.status==OrderStatus.COMPLETED)
+                                                                         .order_by(Order.created_at.desc()))
         return result.scalars().all()
 
     async def get_user_active_orders(self, client_id : UUID):
