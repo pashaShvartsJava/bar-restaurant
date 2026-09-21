@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>История заказов</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            background:
+                radial-gradient(ellipse at 50% 0%, rgba(145, 85, 75, 0.20) 0%, rgba(55, 35, 40, 0.22) 38%, rgba(9, 9, 11, 1) 78%),
+                linear-gradient(180deg, #211a1c 0%, #121214 50%, #09090b 100%);
+            color: #ffffff;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 60px 35px;
+        }
+
+        .top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 45px;
+        }
+
+        .back {
+            color: #77777d;
+            font-size: 11px;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .back:hover {
+            color: #d5a65b;
+        }
+
+        .brand {
+            color: #d5a65b;
+            font-family: Georgia, serif;
+            font-size: 11px;
+            letter-spacing: 3px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        .header-label {
+            margin-bottom: 10px;
+            color: #d5a65b;
+            font-size: 9px;
+            letter-spacing: 3px;
+        }
+
+        .header h1 {
+            font-family: Georgia, serif;
+            font-size: 42px;
+            font-weight: normal;
+            letter-spacing: 3px;
+        }
+
+        .description {
+            margin-top: 12px;
+            color: #77777d;
+            font-size: 13px;
+        }
+
+        .orders {
+            width: 100%;
+            background: rgba(27, 25, 27, 0.96);
+            border: 1px solid rgba(213, 166, 91, 0.16);
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+        }
+
+        .table-header,
+        .order {
+            display: grid;
+            grid-template-columns: 1.7fr 1.15fr 160px 160px 120px 150px;
+            align-items: center;
+        }
+
+        .table-header {
+            min-height: 48px;
+            padding: 0 22px;
+            background: rgba(40, 34, 32, 0.98);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+            color: #77777d;
+            font-size: 9px;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+
+        .order {
+            min-height: 105px;
+            padding: 16px 22px;
+            background: rgba(30, 29, 31, 0.97);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.055);
+            transition: background 0.2s, border-color 0.2s;
+        }
+
+        .order:last-child {
+            border-bottom: none;
+        }
+
+        .order:hover {
+            background: rgba(38, 36, 38, 0.98);
+            border-color: rgba(213, 166, 91, 0.18);
+        }
+
+        .order-number {
+            color: #ffffff;
+            font-size: 12px;
+            font-weight: 600;
+            word-break: break-all;
+        }
+
+        .order-date {
+            color: #aaa9ae;
+            font-size: 10px;
+            line-height: 1.5;
+        }
+
+        .order-sum {
+            color: #d5a65b;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            width: fit-content;
+            padding: 7px 10px;
+            border-radius: 6px;
+            font-size: 9px;
+            white-space: nowrap;
+        }
+
+        .status::before {
+            content: "";
+            width: 5px;
+            height: 5px;
+            flex-shrink: 0;
+            border-radius: 50%;
+            background: currentColor;
+        }
+
+        .status.completed {
+            background: rgba(100, 130, 80, 0.12);
+            border: 1px solid rgba(120, 150, 95, 0.25);
+            color: #9aaa8b;
+        }
+
+        .action {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 34px;
+            padding: 8px 13px;
+            background: rgba(42, 40, 42, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 6px;
+            color: #aaa9ae;
+            font-family: Arial, sans-serif;
+            font-size: 9px;
+            text-decoration: none;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: background 0.2s, border-color 0.2s, color 0.2s;
+        }
+
+        .action:hover {
+            background: rgba(52, 49, 52, 0.98);
+            border-color: #d5a65b;
+            color: #d5a65b;
+        }
+
+        .empty {
+            padding: 55px 30px;
+            background: rgba(27, 25, 27, 0.96);
+            border: 1px solid rgba(213, 166, 91, 0.16);
+            border-radius: 14px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+        }
+
+        .empty-title {
+            color: #ffffff;
+            font-family: Georgia, serif;
+            font-size: 18px;
+        }
+
+        .empty-description {
+            margin-top: 9px;
+            color: #77777d;
+            font-size: 10px;
+        }
+
+        .footer {
+            padding-top: 35px;
+            text-align: center;
+            color: #4f4f54;
+            font-size: 9px;
+            letter-spacing: 1px;
+        }
+
+        @media (max-width: 1200px) {
+            .table-header {
+                display: none;
+            }
+
+            .order {
+                grid-template-columns: 1fr 1fr;
+                gap: 18px;
+                padding: 20px;
+            }
+
+            .order-number {
+                grid-column: 1 / -1;
+            }
+        }
+
+        @media (max-width: 700px) {
+            .container {
+                padding: 35px 18px;
+            }
+
+            .top {
+                margin-bottom: 35px;
+            }
+
+            .header {
+                margin-bottom: 30px;
+            }
+
+            .header h1 {
+                font-size: 34px;
+            }
+
+            .order {
+                display: flex;
+                flex-direction: column;
+                align-items: stretch;
+                gap: 14px;
+            }
+
+            .action {
+                width: 100%;
+            }
+        }
+        .order-items {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: 8px;
+}
+
+.order-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 9px;
+    border: 1px solid #29292d;
+    border-radius: 5px;
+    background: #1b1b1e;
+    color: #aaa;
+    font-size: 10px;
+}
+
+.order-item span:first-child {
+    color: #ddd;
+    flex: 1;
+}
+
+.order-item span:nth-child(2) {
+    color: #666;
+}
+
+.order-item span:last-child {
+    color: #d5a65b;
+    font-weight: 600;
+}
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="top">
+        <a href="/user/my_profile" class="back">← НАЗАД</a>
+        <div class="brand">RESTAURANT</div>
+    </div>
+
+    <div class="header">
+        <div class="header-label">ORDER HISTORY</div>
+        <h1>История заказов</h1>
+        <p class="description">Ваши завершённые заказы</p>
+    </div>
+
+    {% if orders %}
+    <div class="orders">
+        <div class="table-header">
+            <div>Номер заказа</div>
+            <div>Статус</div>
+            <div>Создан</div>
+            <div>Сумма</div>
+            <div>Действия</div>
+        </div>
+
+        <div>
+            {% for order in orders %}
+            {% set current_status = order.status %}
+
+            <div class="order">
+                <div>
+                    <div class="order-number">
+                        {{ order.order_number }}
+                    </div>
+                </div>
+
+                <div>
+                    <span class="status completed">
+                        Завершён
+                    </span>
+                </div>
+
+                <div class="order-date">
+                    {% if order.created_at %}
+                        {{ order.created_at.strftime("%d.%m.%Y %H:%M") }}
+                    {% else %}
+                        —
+                    {% endif %}
+                </div>
+
+                <div class="order-sum">
+                    {{ order.sum }} €
+                </div>
+
+                <div class="order-items">
+    {% for item in order.order_items %}
+        <div class="order-item">
+            <span>{{ item.dish_name }}</span>
+            <span>× {{ item.quantity }}</span>
+            <span>{{ item.price }} €</span>
+        </div>
+    {% endfor %}
+</div>
+            {% endfor %}
+        </div>
+    </div>
+    {% else %}
+    <div class="empty">
+        <div class="empty-title">История заказов пуста</div>
+        <div class="empty-description">
+            У вас пока нет завершённых заказов.
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="footer">
+        RESTAURANT
+    </div>
+</div>
+</body>
+</html>

@@ -57,3 +57,9 @@ class OrderService:
 
     async def find_order_by_client_id(self, client_id: UUID):
         return await self.order_repository.find_order_by_client_id(client_id)
+
+    async def get_user_history_orders(self, client_id : UUID):
+        return await self.order_repository.get_user_history_orders(client_id)
+
+    async def get_user_active_orders(self, client_id: UUID):
+        return await self.order_repository.get_user_active_orders(client_id)
