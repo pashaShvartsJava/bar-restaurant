@@ -18,11 +18,12 @@
                 linear-gradient(180deg, #211a1c 0%, #121214 50%, #09090b 100%);
             color: #ffffff;
             font-family: Arial, sans-serif;
+            overflow-x: hidden;
         }
 
         .container {
             width: 100%;
-            max-width: 1400px;
+            max-width: 1500px;
             margin: 0 auto;
             padding: 60px 35px;
         }
@@ -50,6 +51,7 @@
             font-family: Georgia, serif;
             font-size: 11px;
             letter-spacing: 3px;
+            white-space: nowrap;
         }
 
         .header {
@@ -89,7 +91,7 @@
         .table-header,
         .order {
             display: grid;
-            grid-template-columns: 1.7fr 1.15fr 160px 160px 120px 150px;
+            grid-template-columns: minmax(190px, 1.5fr) 110px 135px 100px minmax(220px, 1.5fr) minmax(260px, 2fr);
             align-items: center;
         }
 
@@ -105,8 +107,8 @@
         }
 
         .order {
-            min-height: 105px;
-            padding: 16px 22px;
+            min-height: 120px;
+            padding: 18px 22px;
             background: rgba(30, 29, 31, 0.97);
             border-bottom: 1px solid rgba(255, 255, 255, 0.055);
             transition: background 0.2s, border-color 0.2s;
@@ -132,12 +134,14 @@
             color: #aaa9ae;
             font-size: 10px;
             line-height: 1.5;
+            white-space: nowrap;
         }
 
         .order-sum {
             color: #d5a65b;
             font-size: 12px;
             font-weight: 600;
+            white-space: nowrap;
         }
 
         .status {
@@ -166,28 +170,66 @@
             color: #9aaa8b;
         }
 
-        .action {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 34px;
-            padding: 8px 13px;
-            background: rgba(42, 40, 42, 0.95);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 6px;
+        .order-address {
             color: #aaa9ae;
-            font-family: Arial, sans-serif;
-            font-size: 9px;
-            text-decoration: none;
-            white-space: nowrap;
-            cursor: pointer;
-            transition: background 0.2s, border-color 0.2s, color 0.2s;
+            font-size: 10px;
+            line-height: 1.5;
+            min-width: 0;
         }
 
-        .action:hover {
-            background: rgba(52, 49, 52, 0.98);
-            border-color: #d5a65b;
-            color: #d5a65b;
+        .address-main {
+            color: #bbb;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .address-details {
+            margin-top: 3px;
+            color: #666;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .order-items {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            min-width: 0;
+        }
+
+        .order-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            min-width: 0;
+            color: #aaa9ae;
+            font-size: 10px;
+        }
+
+        .order-item-name {
+            min-width: 0;
+            flex: 1;
+            color: #bbb;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .order-item-quantity {
+            flex-shrink: 0;
+            color: #666;
+            white-space: nowrap;
+        }
+
+        .order-item-price {
+            flex-shrink: 0;
+            min-width: 55px;
+            color: #999;
+            font-weight: 600;
+            text-align: right;
+            white-space: nowrap;
         }
 
         .empty {
@@ -219,7 +261,7 @@
             letter-spacing: 1px;
         }
 
-        @media (max-width: 1200px) {
+        @media (max-width: 1250px) {
             .table-header {
                 display: none;
             }
@@ -231,6 +273,14 @@
             }
 
             .order-number {
+                grid-column: 1 / -1;
+            }
+
+            .order-items {
+                grid-column: 1 / -1;
+            }
+
+            .order-address {
                 grid-column: 1 / -1;
             }
         }
@@ -259,42 +309,34 @@
                 gap: 14px;
             }
 
-            .action {
+            .order-items,
+            .order-address {
                 width: 100%;
             }
+
+            .order-date,
+            .order-sum,
+            .status {
+                width: 100%;
+            }
+
+            .order-sum {
+                text-align: left;
+            }
+
+            .status {
+                justify-content: flex-start;
+            }
+
+            .order-item-price {
+                margin-left: auto;
+            }
+
+            .brand {
+                font-size: 9px;
+                letter-spacing: 2px;
+            }
         }
-        .order-items {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    margin-top: 8px;
-}
-
-.order-item {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 7px 9px;
-    border: 1px solid #29292d;
-    border-radius: 5px;
-    background: #1b1b1e;
-    color: #aaa;
-    font-size: 10px;
-}
-
-.order-item span:first-child {
-    color: #ddd;
-    flex: 1;
-}
-
-.order-item span:nth-child(2) {
-    color: #666;
-}
-
-.order-item span:last-child {
-    color: #d5a65b;
-    font-weight: 600;
-}
     </style>
 </head>
 <body>
@@ -317,49 +359,72 @@
             <div>Статус</div>
             <div>Создан</div>
             <div>Сумма</div>
-            <div>Действия</div>
+            <div>Адрес</div>
+            <div>Состав заказа</div>
         </div>
 
-        <div>
-            {% for order in orders %}
-            {% set current_status = order.status %}
+        {% for order in orders %}
+        <div class="order">
+            <div class="order-number">
+                {{ order.order_number }}
+            </div>
 
-            <div class="order">
-                <div>
-                    <div class="order-number">
-                        {{ order.order_number }}
+            <div>
+                <span class="status completed">
+                    Завершён
+                </span>
+            </div>
+
+            <div class="order-date">
+                {% if order.created_at %}
+                    {{ order.created_at.strftime("%d.%m.%Y %H:%M") }}
+                {% else %}
+                    —
+                {% endif %}
+            </div>
+
+            <div class="order-sum">
+                {{ order.sum }} €
+            </div>
+
+            <div class="order-address">
+                {% if order.address %}
+                    <div class="address-main">
+                        {{ order.address.city }}, {{ order.address.street }} {{ order.address.house }}
                     </div>
-                </div>
 
-                <div>
-                    <span class="status completed">
-                        Завершён
+                    <div class="address-details">
+                        {{ order.address.postal_code }}
+                        {% if order.address.apartment %}
+                            · кв. {{ order.address.apartment }}
+                        {% endif %}
+                    </div>
+                {% else %}
+                    <div class="address-main">
+                        Адрес не указан
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="order-items">
+                {% for item in order.order_items %}
+                <div class="order-item">
+                    <span class="order-item-name">
+                        {{ item.dish_name }}
+                    </span>
+
+                    <span class="order-item-quantity">
+                        × {{ item.quantity }}
+                    </span>
+
+                    <span class="order-item-price">
+                        {{ item.price }} €
                     </span>
                 </div>
-
-                <div class="order-date">
-                    {% if order.created_at %}
-                        {{ order.created_at.strftime("%d.%m.%Y %H:%M") }}
-                    {% else %}
-                        —
-                    {% endif %}
-                </div>
-
-                <div class="order-sum">
-                    {{ order.sum }} €
-                </div>
-
-                <div class="order-items">
-    {% for item in order.order_items %}
-        <div class="order-item">
-            <span>{{ item.dish_name }}</span>
-            <span>× {{ item.quantity }}</span>
-            <span>{{ item.price }} €</span>
+                {% endfor %}
+            </div>
         </div>
-    {% endfor %}
-</div>
-            {% endfor %}
-        </div>
+        {% endfor %}
     </div>
     {% else %}
     <div class="empty">
