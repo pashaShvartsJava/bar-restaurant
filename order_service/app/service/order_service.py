@@ -37,7 +37,7 @@ class OrderService:
     async def cancel_order_before_payment(self, client_id : UUID):
         return await self.order_repository.cancel_order_before_payment(client_id)
 
-    async def update_order_status(self, client_id : UUID, status : OrderStatus):
+    async def update_order_status(self, client_id : UUID, status : OrderStatus) -> Order:
         return await self.order_repository.update_order_status(client_id, status)
 
     async def create_order_address(self, order_id : int, delivery_data : DeliveryAddressDTO):
