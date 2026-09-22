@@ -1,4 +1,5 @@
 from .stripe_service import StripeService
+from ..models.payments import PaymentStatus
 from ..schemas.payment_schema import PaymentDTO
 from ..repository.payment_repository import PaymentRepository
 from uuid import UUID
@@ -17,3 +18,16 @@ class PaymentService:
         payment.stripe_payment_intent_id = session.payment_intent
         await self.payment_repository.save(payment)
         return payment, session.url
+
+    async def handle_webhook(self, event):
+        if event["type"] != "checkout.session.completed":
+            return
+        session = event["data"]["object"]
+        if session["payment_status"] != "paid":
+            return
+        payment_id = session["metadata"]["payment_id"]
+        payment = await self.payment_repository.get_by_id(int(payment_id))
+        payment.stripe_session_id = session["id"]
+        payment.stripe_payment_intent_id = session["payment_intent"]
+        payment.status = PaymentStatus.PAID
+        await self.payment_repository.save(payment)

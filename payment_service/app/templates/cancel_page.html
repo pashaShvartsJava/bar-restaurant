@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Cancelled</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: "Segoe UI", sans-serif;
+            background:
+                radial-gradient(circle at 15% 15%, rgba(213,166,91,.2), transparent 30%),
+                radial-gradient(circle at 85% 85%, rgba(180,70,110,.16), transparent 30%),
+                linear-gradient(135deg, #24191f, #39252c, #21191e);
+            color: #fff;
+            padding: 40px 20px;
+            display: flex;
+            align-items: center;
+        }
+
+        .page {
+            width: 650px;
+            max-width: 100%;
+            margin: auto;
+        }
+
+        .top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .back {
+            color: #aaa;
+            text-decoration: none;
+            font-size: 12px;
+        }
+
+        .back:hover {
+            color: #d5a65b;
+        }
+
+        .brand {
+            color: #d5a65b;
+            font-family: Georgia, serif;
+            letter-spacing: 3px;
+            font-size: 11px;
+        }
+
+        .card {
+            background: rgba(39,32,38,.96);
+            border: 1px solid rgba(255,255,255,.1);
+            border-radius: 18px;
+            padding: 45px 35px;
+            box-shadow: 0 25px 60px rgba(0,0,0,.4);
+            text-align: center;
+        }
+
+        .icon {
+            width: 58px;
+            height: 58px;
+            margin: 0 auto 25px;
+            border-radius: 50%;
+            border: 1px solid #714449;
+            color: #d98282;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 23px;
+        }
+
+        .header-label {
+            color: #d98282;
+            font-size: 9px;
+            letter-spacing: 3px;
+            margin-bottom: 9px;
+        }
+
+        h1 {
+            margin: 0;
+            font-family: Georgia, serif;
+            font-size: 30px;
+            font-weight: normal;
+        }
+
+        .description {
+            color: #999;
+            font-size: 12px;
+            line-height: 1.7;
+            margin: 12px auto 0;
+            max-width: 430px;
+        }
+
+        .notice {
+            margin-top: 30px;
+            padding: 18px;
+            border-radius: 12px;
+            background: rgba(130,55,65,.08);
+            border: 1px solid #40383e;
+            color: #aaa;
+            font-size: 11px;
+            line-height: 1.6;
+        }
+
+        .bottom {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 30px;
+            padding-top: 25px;
+            border-top: 1px solid #40383e;
+        }
+
+        .save,
+        .delete {
+            padding: 12px 22px;
+            border-radius: 8px;
+            font-size: 12px;
+            text-decoration: none;
+            transition: .2s;
+        }
+
+        .save {
+            border: none;
+            background: #d5a65b;
+            color: #211a15;
+            font-weight: 600;
+        }
+
+        .save:hover {
+            background: #e5b970;
+        }
+
+        .delete {
+            border: 1px solid #714449;
+            background: rgba(130,55,65,.12);
+            color: #d98282;
+        }
+
+        .delete:hover {
+            background: rgba(150,60,70,.22);
+            border-color: #a85c64;
+        }
+
+        @media (max-width: 700px) {
+            .card {
+                padding: 35px 20px;
+            }
+
+            .bottom {
+                flex-direction: column;
+            }
+
+            .save,
+            .delete {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <div class="top">
+            <div class="brand">TBILISI BAR</div>
+        </div>
+
+        <div class="card">
+            <div class="icon">×</div>
+
+            <div class="header-label">PAYMENT NOT COMPLETED</div>
+
+            <div class="notice">
+                You can return to the order and try the payment again.
+                If the amount was charged, please contact us before making another payment.
+            </div>
+
+            <div class="bottom">
+                <a href="/menu_page/orders/users" class="save">TRY AGAIN</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
