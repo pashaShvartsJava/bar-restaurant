@@ -8,6 +8,10 @@ class Settings(BaseSettings):
     internal_token: str
     stripe_secret_key: str
     stripe_webhook_secret: str
+    RABBITMQ_HOST: str
+    RABBITMQ_PORT: int
+    RABBITMQ_USER: str
+    RABBITMQ_PASSWORD: str
 
     model_config = SettingsConfigDict(
         env_file=".env",
