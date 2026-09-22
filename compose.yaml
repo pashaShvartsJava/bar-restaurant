@@ -9,6 +9,19 @@ services:
       - authentication-service
       - user-service
 
+  rabbitmq:
+    image: rabbitmq:4-management
+    container_name: rabbitmq
+    restart: unless-stopped
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: rabit
+      RABBITMQ_DEFAULT_PASS: rabbit
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+
   authentication-service:
     build:
       context: ./authentication_service
@@ -257,3 +270,4 @@ volumes:
   postgres_support_data:
   postgres_order_data:
   postgres_payment_data:
+  rabbitmq_data:

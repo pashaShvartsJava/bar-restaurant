@@ -144,13 +144,7 @@ async def get_order_info(request : Request, order_id : int, service : OrderServi
     order = await service.get_order_by_id(order_id)
     return templates.TemplateResponse("order_info.html", {"request" : request, "order" : order})
 
-@router.post("/orders/mark_order_as_paid")
-async def mark_order_as_paid(client_id : UUID,
-                             internal_token : str = Header(..., alias="internal_token"),
-                             service : OrderService = Depends(get_order_service_dependency)):
-    if internal_token != INTERNAL_TOKEN or internal_token is None:
-        raise HTTPException(detail="Forbidden", status_code=403)
-    await service.mark_order_as_paid(client_id, OrderStatus.PAID)
+
 
 
 

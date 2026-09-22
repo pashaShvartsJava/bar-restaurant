@@ -32,15 +32,8 @@ async def stripe_webhook(request: Request, service: PaymentService = Depends(get
         event = service.stripe_service.construct_webhook_event(payload, signature)
     except (ValueError, stripe.error.SignatureVerificationError):
         raise HTTPException(status_code=400, detail="Invalid webhook")
-    payment = await service.handle_webhook(event)
-    if payment.status == PaymentStatus.PAID:
-        async with httpx.AsyncClient() as client:
-            response = await client.post("http://order-service:8007/orders/mark_order_as_paid",
-                                         params={"client_id": payment.client_id},
-                                         headers={"internal_token": INTERNAL_TOKEN})
-            response.raise_for_status()
-        return {"status": "ok"}
-    return None
+    await service.handle_webhook(event)
+    return {"status": "ok"}
 
 @router.get("/payment/success")
 async def success_page(request : Request):
