@@ -7,6 +7,7 @@ class Settings(BaseSettings):
     jwt_public_key_path: str
     internal_token: str
     stripe_secret_key: str
+    stripe_webhook_secret: str
 
     model_config = SettingsConfigDict(
         env_file=".env",

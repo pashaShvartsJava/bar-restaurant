@@ -596,7 +596,7 @@
                         Адрес подтверждён
                     {% elif current_status == "paid" %}
                         Оплачен
-                    {% elif current_status == "prepared" %}
+                    {% elif current_status == "preparing" %}
                         Готовится
                     {% elif current_status == "delivering" %}
                         Доставляется
@@ -653,13 +653,13 @@
                     <button
                         class="status-option"
                         type="button"
-                        onclick="changeOrderStatus('{{ order.order_number }}', 'prepared')"
+                        onclick="changeOrderStatus('{{ order.order_number }}', 'preparing')"
                     >
                         Готовится
                     </button>
                     {% endif %}
 
-                    {% if current_status in ["paid", "prepared"] %}
+                    {% if current_status in ["paid", "preparing"] %}
                     <button
                         class="status-option"
                         type="button"
@@ -669,7 +669,7 @@
                     </button>
                     {% endif %}
 
-                    {% if current_status in ["paid", "prepared", "delivering"] %}
+                    {% if current_status in ["paid", "preparing", "delivering"] %}
                     <button
                         class="status-option"
                         type="button"

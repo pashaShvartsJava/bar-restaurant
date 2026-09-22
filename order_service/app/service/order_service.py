@@ -34,6 +34,9 @@ class OrderService:
             total_sum += order_item.price * order_item.quantity
         return await self.order_repository.create_order(data , client_id, total_sum)
 
+    async def mark_order_as_paid(self, client_id: UUID, status: OrderStatus) -> Order:
+        return await self.order_repository.mark_order_as_paid(client_id, status)
+
     async def cancel_order_before_payment(self, client_id : UUID):
         return await self.order_repository.cancel_order_before_payment(client_id)
 
@@ -66,3 +69,6 @@ class OrderService:
 
     async def get_user_last_completed_order(self, client_id: UUID):
         return await self.order_repository.get_user_last_completed_order(client_id)
+
+    async def change_order_status(self, order_number: UUID, status: OrderStatus):
+        return await self.order_repository.change_order_status(order_number, status)

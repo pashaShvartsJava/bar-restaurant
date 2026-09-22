@@ -36,4 +36,4 @@ class StripeService:
         return session
 
     def construct_webhook_event(self, payload: bytes, signature: str):
-        return stripe.Webhook.construct_event(payload, signature, settings.STRIPE_WEBHOOK_SECRET)
+        return stripe.Webhook.construct_event(payload, signature, settings.stripe_webhook_secret)
