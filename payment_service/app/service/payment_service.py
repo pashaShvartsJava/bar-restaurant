@@ -1,5 +1,7 @@
+from datetime import timezone, datetime
+
 from .stripe_service import StripeService
-from ..models.payments import PaymentStatus
+from ..models.payments import PaymentStatus, Payment
 from ..schemas.payment_schema import PaymentDTO
 from ..repository.payment_repository import PaymentRepository
 from uuid import UUID
@@ -19,15 +21,17 @@ class PaymentService:
         await self.payment_repository.save(payment)
         return payment, session.url
 
-    async def handle_webhook(self, event):
+    async def handle_webhook(self, event) -> Payment | None:
         if event["type"] != "checkout.session.completed":
-            return
+            return None
         session = event["data"]["object"]
         if session["payment_status"] != "paid":
-            return
+            return None
         payment_id = session["metadata"]["payment_id"]
         payment = await self.payment_repository.get_by_id(int(payment_id))
         payment.stripe_session_id = session["id"]
         payment.stripe_payment_intent_id = session["payment_intent"]
         payment.status = PaymentStatus.PAID
-        await self.payment_repository.save(payment)
+        payment.updated_status = datetime.now(timezone.utc)
+        payment = await self.payment_repository.save(payment)
+        return payment

@@ -2,7 +2,7 @@ from datetime import date
 from decimal import Decimal
 
 import httpx
-from fastapi import APIRouter, Request, Depends
+from fastapi import APIRouter, Request, Depends, Header, HTTPException
 from starlette.responses import RedirectResponse
 from starlette.templating import Jinja2Templates
 
@@ -10,6 +10,7 @@ from ..dependencies.dependencies import get_order_service_dependency
 from ..models.orders import OrderStatus
 from ..schema.delivery_address_schema import DeliveryAddressDTO
 from ..schema.order_item_schema import ListOrderDTO
+from ..schema.orders_schema import StatusDTO
 from ..schema.payment_schema import PaymentDTO
 from ..security.jwt.jwt import get_payload
 from ..security.authorization.authorization import required_roles
@@ -17,9 +18,11 @@ from ..security.role.role import IdentityRole
 from uuid import UUID
 
 from ..service.order_service import OrderService
+from ..config.config import settings
 
 router = APIRouter()
 templates = Jinja2Templates(directory="app/templates")
+INTERNAL_TOKEN=settings.internal_token
 
 @router.get("/orders/history")
 async def orders_history_page(request : Request, service : OrderService = Depends(get_order_service_dependency)):
@@ -34,6 +37,15 @@ async def get_all_orders(request : Request, service : OrderService = Depends(get
     required_roles(IdentityRole.ADMIN, IdentityRole.MODERATOR, payload=payload)
     orders = await service.get_all_orders()
     return templates.TemplateResponse("all_orders.html", {"request" : request, "orders" : orders})
+
+@router.patch("/orders/{order_number}/status")
+async def change_order_status(request : Request,
+                              order_number : str ,
+                              data : StatusDTO,
+                              service : OrderService = Depends(get_order_service_dependency)):
+    payload = get_payload(request)
+    required_roles(IdentityRole.ADMIN, IdentityRole.MODERATOR, payload=payload)
+    await service.change_order_status(UUID(order_number), data.status)
 
 @router.post("/orders/create")
 async def make_order(request : Request, data : ListOrderDTO,
@@ -131,6 +143,15 @@ async def get_order_info(request : Request, order_id : int, service : OrderServi
     required_roles(IdentityRole.ADMIN, IdentityRole.MODERATOR, payload=payload)
     order = await service.get_order_by_id(order_id)
     return templates.TemplateResponse("order_info.html", {"request" : request, "order" : order})
+
+@router.post("/orders/mark_order_as_paid")
+async def mark_order_as_paid(client_id : UUID,
+                             internal_token : str = Header(..., alias="internal_token"),
+                             service : OrderService = Depends(get_order_service_dependency)):
+    if internal_token != INTERNAL_TOKEN or internal_token is None:
+        raise HTTPException(detail="Forbidden", status_code=403)
+    await service.mark_order_as_paid(client_id, OrderStatus.PAID)
+
 
 
 

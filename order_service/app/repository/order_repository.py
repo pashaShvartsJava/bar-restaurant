@@ -24,9 +24,22 @@ class OrderRepository:
         result = await self.db.execute(select(Order).options(selectinload(Order.order_items), selectinload(Order.address)).where(Order.id==order_id))
         return result.scalar_one_or_none()
 
+    async def get_order_by_order_number(self, order_number : UUID) -> Order:
+        result = await self.db.execute(
+            select(Order).options(selectinload(Order.order_items), selectinload(Order.address)).where(
+                Order.order_number == order_number))
+        return result.scalar_one_or_none()
+
+    async def get_order_by_client_id(self, client_id : UUID) -> Order:
+        result = await self.db.execute(select(Order).options(selectinload(Order.order_items), selectinload(Order.address))
+                                       .where(Order.client_id==client_id, Order.status==OrderStatus.CONFIRMED_ADDRESS)
+                                       .order_by(Order.created_at.desc()).limit(1))
+        return result.scalar_one_or_none()
+
     async def get_pending_by_client_id(self, client_id : UUID) -> Order:
         result = await self.db.execute(select(Order).options(selectinload(Order.order_items))
-                                       .where(Order.client_id==client_id, Order.status==OrderStatus.PENDING))
+                                       .where(Order.client_id==client_id, Order.status==OrderStatus.PENDING)
+                                       .order_by(Order.created_at.desc()).limit(1))
         return result.scalar_one_or_none()
 
     async def get_all_orders_history(self):
@@ -35,7 +48,7 @@ class OrderRepository:
         return result.scalars().all()
 
     async def get_all_orders(self):
-        result = await self.db.execute(select(Order).options(selectinload(Order.order_items)))
+        result = await self.db.execute(select(Order).options(selectinload(Order.order_items)).order_by(Order.created_at.desc()))
         return result.scalars().all()
 
     async def get_unpaid_order_by_client(self, client_id : UUID) -> Order:
@@ -86,6 +99,13 @@ class OrderRepository:
 
     async def update_order_status(self, client_id : UUID, status : OrderStatus) -> Order:
         old_order = await self.get_pending_by_client_id(client_id)
+        old_order.status = status
+        await self.db.commit()
+        await self.db.refresh(old_order)
+        return old_order
+
+    async def mark_order_as_paid(self, client_id : UUID, status : OrderStatus) -> Order:
+        old_order = await self.get_order_by_client_id(client_id)
         old_order.status = status
         await self.db.commit()
         await self.db.refresh(old_order)
@@ -162,6 +182,13 @@ class OrderRepository:
                                  .where(Order.client_id == client_id, Order.status==OrderStatus.COMPLETED)
                                  .order_by(Order.created_at.desc()).limit(1))
         return result.scalar_one_or_none()
+
+    async def change_order_status(self, order_number : UUID, status : OrderStatus):
+        order = await self.get_order_by_order_number(order_number)
+        order.status = status
+        await self.db.commit()
+        await self.db.refresh(order)
+
 
 
 
