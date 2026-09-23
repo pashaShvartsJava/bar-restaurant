@@ -20,8 +20,7 @@ class OutboxPaymentEventsRepository:
 
     async def mark_event_as_published(self, event : OutboxPaymentEvents):
         event.published_at = datetime.now(timezone.utc)
-        await self.db.commit()
-        await self.db.refresh(event)
+        await self.db.flush()
 
     async def create_outbox_event(self, payment_id : int, payMent_order_id : UUID, payment_client_id : UUID) -> OutboxPaymentEvents:
         outbox_event = OutboxPaymentEvents(
@@ -33,6 +32,5 @@ class OutboxPaymentEventsRepository:
             }
         )
         self.db.add(outbox_event)
-        await self.db.commit()
-        await self.db.refresh(outbox_event)
+        await self.db.flush()
         return outbox_event
