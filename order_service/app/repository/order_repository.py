@@ -107,8 +107,7 @@ class OrderRepository:
     async def mark_order_as_paid(self, client_id : UUID, status : OrderStatus) -> Order:
         old_order = await self.get_order_by_client_id(client_id)
         old_order.status = status
-        await self.db.commit()
-        await self.db.refresh(old_order)
+        await self.db.flush()
         return old_order
 
     async def mark_order_as_expired(self):
