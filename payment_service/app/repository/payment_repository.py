@@ -25,3 +25,8 @@ class PaymentRepository:
         self.db.add(new_payment)
         await self.db.flush()
         return new_payment
+
+    async def save(self, payment : Payment) -> Payment:
+        await self.db.commit()
+        await self.db.refresh(payment)
+        return payment

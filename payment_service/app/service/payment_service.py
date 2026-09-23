@@ -41,8 +41,8 @@ class PaymentService:
         if session["payment_status"] != "paid":
             return None
         payment_id = session["metadata"]["payment_id"]
-        payment = await self.payment_repository.get_by_id(int(payment_id))
         async with self.db.begin():
+            payment = await self.payment_repository.get_by_id(int(payment_id))
             payment.stripe_session_id = session["id"]
             payment.stripe_payment_intent_id = session["payment_intent"]
             payment.status = PaymentStatus.PAID

@@ -1,3 +1,4 @@
+import asyncio
 import json
 from uuid import UUID
 import aio_pika
@@ -12,19 +13,23 @@ class RabbitMQ:
         self.channel = None
 
     async def connect(self):
-        self.connection = await connect_robust(
-            host=settings.RABBITMQ_HOST,
-            port=settings.RABBITMQ_PORT,
-            login=settings.RABBITMQ_USER,
-            password=settings.RABBITMQ_PASSWORD
-        )
+        while True:
+            try:
+                self.connection = await connect_robust(
+                    host=settings.RABBITMQ_HOST,
+                    port=settings.RABBITMQ_PORT,
+                    login=settings.RABBITMQ_USER,
+                    password=settings.RABBITMQ_PASSWORD
+                )
+                break
+            except Exception as e:
+                print(f"RabbitMQ unavailable: {e}. Retry in 5 seconds...")
+                await asyncio.sleep(5)
         self.channel = await self.connection.channel(publisher_confirms=True)
 
         self.exchange = await self.channel.declare_exchange("payment_events",
                                                             aio_pika.ExchangeType.DIRECT,
                                                             durable=True)
-        self.queue = await self.channel.declare_queue("order_payment", durable=True)
-        await self.queue.bind(self.exchange, routing_key="payment_paid")
 
     async def close(self):
         if self.connection:
