@@ -13,3 +13,7 @@ class OrderItemDTO(BaseModel):
 
 class ListOrderDTO(BaseModel):
     order_items : list[OrderItemDTO]
+
+class ListOrderGuestDTO(BaseModel):
+    client_id : UUID= Field(...)
+    order_items: list[OrderItemDTO]

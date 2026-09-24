@@ -102,3 +102,10 @@ async def menu_page_for_users(request : Request, category_service : CategoryServ
     required_roles(IdentityRole.USER, payload=payload)
     categories = await category_service.get_all_categories_for_users()
     return templates.TemplateResponse("menu_for_users.html", {"request" : request, "categories" : categories})
+
+
+@router.get("/bar_name/delivery")
+async def create_order_for_guest(request: Request, category_service : CategoryService = Depends(get_category_service_dependency)):
+    categories = await category_service.get_all_categories_for_users()
+    return templates.TemplateResponse("order_for_guest.html", {"request": request, "categories" : categories})
+

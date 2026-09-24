@@ -8,8 +8,8 @@ from starlette.templating import Jinja2Templates
 
 from ..dependencies.dependencies import get_order_service_dependency
 from ..models.orders import OrderStatus
-from ..schema.delivery_address_schema import DeliveryAddressDTO
-from ..schema.order_item_schema import ListOrderDTO
+from ..schema.delivery_address_schema import DeliveryAddressDTO, GuestDTO
+from ..schema.order_item_schema import ListOrderDTO, ListOrderGuestDTO
 from ..schema.orders_schema import StatusDTO
 from ..schema.payment_schema import PaymentDTO
 from ..security.jwt.jwt import get_payload
@@ -55,6 +55,50 @@ async def make_order(request : Request, data : ListOrderDTO,
     client_id = UUID(payload["sub"])
     await service.create_order(data, client_id)
     return RedirectResponse(url="/users/confirm_address", status_code=303)
+
+
+
+@router.post("/orders/create/guest")
+async def make_order_for_guest(data : ListOrderGuestDTO, service : OrderService = Depends(get_order_service_dependency)):
+    await service.create_order_for_guest(data)
+    return RedirectResponse(url="/orders/confirm_address/guest", status_code=303)
+
+@router.get("/orders/confirm_address/guest")
+async def confirm_address(request : Request):
+    return templates.TemplateResponse("confirm_address_guest.html", {"request" : request})
+
+@router.post("/orders/confirm_address/guest")
+async def create_delivering_address(request : Request,
+                                    data : GuestDTO,
+                                    service : OrderService = Depends(get_order_service_dependency)):
+    client_id = UUID(request.cookies.get("guest_client_id"))
+    address_data = DeliveryAddressDTO(
+        city=data.city,
+        street=data.street,
+        postal_code=data.postal_code,
+        house=data.house,
+        apartment=data.apartment
+    )
+    order = await service.get_pending_by_client_id(client_id)
+    await service.create_order_address(order.id, address_data)
+    updated_order = await service.update_order_status(client_id, OrderStatus.CONFIRMED_ADDRESS)
+    payment_data = PaymentDTO(
+        order_id=order.id,
+        order_number=order.order_number,
+        sum=order.sum
+    )
+    if updated_order.status==OrderStatus.CONFIRMED_ADDRESS:
+        async with httpx.AsyncClient() as client:
+            response = await client.post(url="http://payment-service:8008/payment/create/guest",
+                                         json=payment_data.model_dump(mode="json"))
+            response.raise_for_status()
+            payment_data = response.json()
+        return RedirectResponse(url=payment_data["checkout_url"], status_code=303)
+    return None
+
+
+
+
 
 @router.post("/orders/cancel_order/before_payment")
 async def cancel_order_before_payment(request : Request, service : OrderService = Depends(get_order_service_dependency)):

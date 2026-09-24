@@ -1,0 +1,2360 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>MARANI — Заказ</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --gold: #f0bd62;
+            --gold-light: #ffe0a0;
+
+            --wine: #8e243b;
+            --wine-dark: #421321;
+
+            --cream: #fff4df;
+            --muted: rgba(255, 244, 223, 0.62);
+
+            --background: #12070c;
+            --panel: rgba(48, 17, 30, 0.88);
+            --panel-light: rgba(85, 27, 46, 0.72);
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            min-height: 100vh;
+
+            color: var(--cream);
+
+            font-family:
+                "Segoe UI",
+                Arial,
+                sans-serif;
+
+            background:
+                linear-gradient(
+                    rgba(34, 7, 19, 0.48),
+                    rgba(15, 4, 10, 0.88)
+                ),
+                url("https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?auto=format&fit=crop&w=1920&q=90")
+                center center / cover fixed no-repeat;
+
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: "";
+
+            position: fixed;
+            inset: 0;
+
+            pointer-events: none;
+
+            opacity: 0.06;
+
+            background-image:
+                repeating-linear-gradient(
+                    45deg,
+                    transparent 0,
+                    transparent 16px,
+                    var(--gold) 16px,
+                    var(--gold) 17px
+                );
+
+            z-index: 0;
+        }
+
+        /* =========================
+           NAVBAR
+           ========================= */
+
+        .navbar {
+            position: sticky;
+
+            top: 0;
+
+            z-index: 1000;
+
+            width: 100%;
+
+            padding: 18px 35px;
+
+            background:
+                rgba(28, 7, 17, 0.86);
+
+            border-bottom:
+                1px solid rgba(240, 189, 98, 0.18);
+
+            backdrop-filter: blur(14px);
+        }
+
+        .nav-container {
+            width: min(1250px, 100%);
+
+            margin: 0 auto;
+
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            gap: 25px;
+        }
+
+        .brand {
+            color: var(--gold);
+
+            text-decoration: none;
+
+            font-family: Georgia, serif;
+
+            font-size: 27px;
+
+            font-weight: bold;
+
+            letter-spacing: 5px;
+        }
+
+        .brand span {
+            display: block;
+
+            margin-top: 3px;
+
+            color:
+                rgba(255, 244, 223, 0.52);
+
+            font-family:
+                "Segoe UI",
+                Arial,
+                sans-serif;
+
+            font-size: 8px;
+
+            font-weight: normal;
+
+            letter-spacing: 3px;
+        }
+
+        .nav-actions {
+            display: flex;
+
+            align-items: center;
+
+            gap: 10px;
+        }
+
+        .nav-link {
+            padding: 9px 15px;
+
+            color: var(--cream);
+
+            text-decoration: none;
+
+            border:
+                1px solid rgba(240, 189, 98, 0.24);
+
+            border-radius: 7px;
+
+            background:
+                rgba(255, 244, 223, 0.035);
+
+            font-size: 12px;
+
+            transition:
+                transform 0.25s ease,
+                background 0.25s ease,
+                border-color 0.25s ease;
+        }
+
+        .nav-link:hover {
+            transform: translateY(-2px);
+
+            background:
+                rgba(240, 189, 98, 0.11);
+
+            border-color:
+                rgba(240, 189, 98, 0.65);
+        }
+
+        /* =========================
+           PAGE
+           ========================= */
+
+        .page {
+            position: relative;
+
+            z-index: 1;
+
+            width: min(1250px, 100%);
+
+            margin: 0 auto;
+
+            padding:
+                55px 25px 45px;
+        }
+
+        /* =========================
+           HERO
+           ========================= */
+
+        .hero {
+            margin-bottom: 38px;
+
+            text-align: center;
+
+            animation:
+                fadeUp 0.7s ease forwards;
+        }
+
+        .hero-label {
+            margin-bottom: 14px;
+
+            color: var(--gold);
+
+            font-size: 11px;
+
+            letter-spacing: 5px;
+
+            text-transform: uppercase;
+        }
+
+        .hero h1 {
+            font-family: Georgia, serif;
+
+            font-size:
+                clamp(38px, 6vw, 62px);
+
+            font-weight: normal;
+
+            letter-spacing: 1px;
+
+            text-shadow:
+                0 5px 30px rgba(0, 0, 0, 0.45);
+        }
+
+        .hero p {
+            max-width: 650px;
+
+            margin:
+                15px auto 0;
+
+            color: var(--muted);
+
+            font-size: 15px;
+
+            line-height: 1.7;
+        }
+
+        /* =========================
+           ORDER LAYOUT
+           ========================= */
+
+        .order-layout {
+            display: grid;
+
+            grid-template-columns:
+                minmax(0, 1fr)
+                350px;
+
+            gap: 25px;
+
+            align-items: start;
+        }
+
+        /* =========================
+           MENU
+           ========================= */
+
+        .menu-panel {
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(81, 26, 45, 0.86),
+                    rgba(27, 8, 17, 0.93)
+                );
+
+            border:
+                1px solid rgba(240, 189, 98, 0.20);
+
+            border-radius: 16px;
+
+            overflow: hidden;
+
+            box-shadow:
+                0 25px 70px rgba(0, 0, 0, 0.35);
+
+            backdrop-filter: blur(12px);
+        }
+
+        .menu-header {
+            padding: 22px 25px;
+
+            border-bottom:
+                1px solid rgba(255, 244, 223, 0.08);
+        }
+
+        .menu-header h2 {
+            font-family: Georgia, serif;
+
+            font-size: 24px;
+
+            font-weight: normal;
+        }
+
+        .menu-header p {
+            margin-top: 6px;
+
+            color: var(--muted);
+
+            font-size: 12px;
+        }
+
+        /* =========================
+           CATEGORY
+           ========================= */
+
+        .category {
+            border-bottom:
+                1px solid rgba(255, 244, 223, 0.08);
+        }
+
+        .category:last-child {
+            border-bottom: none;
+        }
+
+        .category-header {
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            padding: 17px 22px;
+
+            background:
+                rgba(240, 189, 98, 0.045);
+        }
+
+        .category-name {
+            color: var(--gold);
+
+            font-family: Georgia, serif;
+
+            font-size: 18px;
+
+            font-weight: normal;
+
+            letter-spacing: 1px;
+        }
+
+        /* =========================
+           DISH
+           ========================= */
+
+        .dish {
+            display: grid;
+
+            grid-template-columns:
+                80px
+                minmax(0, 1fr)
+                90px
+                auto;
+
+            gap: 16px;
+
+            align-items: center;
+
+            padding: 16px 22px;
+
+            border-top:
+                1px solid rgba(255, 244, 223, 0.055);
+
+            transition:
+                background 0.25s ease,
+                transform 0.25s ease;
+        }
+
+        .dish:hover {
+            background:
+                rgba(240, 189, 98, 0.055);
+        }
+
+        .dish-image,
+        .dish-no-image {
+            width: 70px;
+            height: 70px;
+
+            border-radius: 10px;
+        }
+
+        .dish-image {
+            object-fit: cover;
+
+            border:
+                1px solid rgba(240, 189, 98, 0.22);
+
+            box-shadow:
+                0 5px 20px rgba(0, 0, 0, 0.25);
+        }
+
+        .dish-no-image {
+            display: flex;
+
+            justify-content: center;
+            align-items: center;
+
+            color:
+                rgba(255, 244, 223, 0.38);
+
+            font-size: 9px;
+
+            text-align: center;
+
+            background:
+                rgba(255, 244, 223, 0.045);
+
+            border:
+                1px dashed rgba(255, 244, 223, 0.15);
+        }
+
+        .dish-info {
+            min-width: 0;
+        }
+
+        .dish-name {
+            margin-bottom: 5px;
+
+            color: var(--cream);
+
+            font-size: 15px;
+
+            font-weight: 600;
+        }
+
+        .dish-description {
+            color: var(--muted);
+
+            font-size: 11px;
+
+            line-height: 1.5;
+        }
+
+        .dish-price {
+            color: var(--gold);
+
+            font-size: 15px;
+
+            font-weight: 600;
+
+            white-space: nowrap;
+
+            text-align: right;
+        }
+
+        .dish-price span {
+            color:
+                rgba(255, 244, 223, 0.45);
+
+            font-size: 10px;
+
+            margin-left: 3px;
+        }
+
+        /* =========================
+           QUANTITY
+           ========================= */
+
+        .dish-actions {
+            display: flex;
+
+            align-items: center;
+
+            gap: 6px;
+        }
+
+        .quantity-control {
+            display: flex;
+
+            align-items: center;
+
+            overflow: hidden;
+
+            height: 32px;
+
+            border:
+                1px solid rgba(240, 189, 98, 0.25);
+
+            border-radius: 7px;
+
+            background:
+                rgba(20, 5, 12, 0.5);
+        }
+
+        .quantity-button {
+            width: 30px;
+            height: 32px;
+
+            border: none;
+
+            background: transparent;
+
+            color: var(--gold);
+
+            font-size: 16px;
+
+            cursor: pointer;
+
+            transition:
+                background 0.2s ease;
+        }
+
+        .quantity-button:hover {
+            background:
+                rgba(240, 189, 98, 0.14);
+        }
+
+        .quantity-value {
+            min-width: 28px;
+
+            color: var(--cream);
+
+            font-size: 11px;
+
+            text-align: center;
+        }
+
+        .add-button {
+            height: 32px;
+
+            padding:
+                0 12px;
+
+            border:
+                1px solid rgba(240, 189, 98, 0.35);
+
+            border-radius: 7px;
+
+            background:
+                rgba(240, 189, 98, 0.08);
+
+            color: var(--gold);
+
+            font-size: 10px;
+
+            font-weight: 600;
+
+            cursor: pointer;
+
+            transition:
+                background 0.2s ease,
+                transform 0.2s ease;
+        }
+
+        .add-button:hover {
+            transform: translateY(-1px);
+
+            background:
+                rgba(240, 189, 98, 0.18);
+        }
+
+        .unavailable {
+            opacity: 0.38;
+        }
+
+        .unavailable-label {
+            color:
+                rgba(255, 244, 223, 0.4);
+
+            font-size: 10px;
+        }
+
+        /* =========================
+           CART
+           ========================= */
+
+        .cart-panel {
+            position: sticky;
+
+            top: 95px;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(84, 27, 46, 0.94),
+                    rgba(25, 7, 15, 0.97)
+                );
+
+            border:
+                1px solid rgba(240, 189, 98, 0.28);
+
+            border-radius: 16px;
+
+            overflow: hidden;
+
+            box-shadow:
+                0 25px 70px rgba(0, 0, 0, 0.42);
+
+            backdrop-filter: blur(14px);
+        }
+
+        .cart-header {
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            padding: 22px;
+
+            background:
+                rgba(240, 189, 98, 0.055);
+
+            border-bottom:
+                1px solid rgba(255, 244, 223, 0.09);
+        }
+
+        .cart-title {
+            font-family: Georgia, serif;
+
+            font-size: 23px;
+
+            font-weight: normal;
+        }
+
+        .cart-count {
+            color: var(--gold);
+
+            font-size: 11px;
+        }
+
+        .cart-content {
+            max-height: 470px;
+
+            overflow-y: auto;
+
+            padding: 15px;
+        }
+
+        .cart-content::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        .cart-content::-webkit-scrollbar-thumb {
+            background:
+                rgba(240, 189, 98, 0.28);
+
+            border-radius: 10px;
+        }
+
+        /* =========================
+           CART ITEM
+           ========================= */
+
+        .cart-item {
+            display: grid;
+
+            grid-template-columns:
+                55px
+                minmax(0, 1fr)
+                auto;
+
+            gap: 10px;
+
+            align-items: center;
+
+            padding: 10px;
+
+            margin-bottom: 9px;
+
+            background:
+                rgba(255, 244, 223, 0.045);
+
+            border:
+                1px solid rgba(255, 244, 223, 0.08);
+
+            border-radius: 10px;
+
+            animation:
+                itemAppear 0.25s ease;
+        }
+
+        .cart-item-image,
+        .cart-item-no-image {
+            width: 55px;
+            height: 55px;
+
+            border-radius: 8px;
+        }
+
+        .cart-item-image {
+            object-fit: cover;
+        }
+
+        .cart-item-no-image {
+            display: flex;
+
+            justify-content: center;
+            align-items: center;
+
+            background:
+                rgba(255, 244, 223, 0.05);
+
+            color:
+                rgba(255, 244, 223, 0.4);
+
+            font-size: 8px;
+
+            text-align: center;
+        }
+
+        .cart-item-name {
+            margin-bottom: 4px;
+
+            color: var(--cream);
+
+            font-size: 12px;
+
+            font-weight: 600;
+        }
+
+        .cart-item-price {
+            color: var(--muted);
+
+            font-size: 10px;
+
+            line-height: 1.5;
+        }
+
+        .cart-item-price strong {
+            color: var(--gold);
+        }
+
+        .cart-controls {
+            display: flex;
+
+            flex-direction: column;
+
+            align-items: flex-end;
+
+            gap: 5px;
+        }
+
+        .cart-quantity {
+            display: flex;
+
+            align-items: center;
+
+            height: 27px;
+
+            overflow: hidden;
+
+            border:
+                1px solid rgba(240, 189, 98, 0.22);
+
+            border-radius: 6px;
+        }
+
+        .cart-quantity button {
+            width: 25px;
+            height: 27px;
+
+            border: none;
+
+            background: transparent;
+
+            color: var(--gold);
+
+            cursor: pointer;
+        }
+
+        .cart-quantity button:hover {
+            background:
+                rgba(240, 189, 98, 0.12);
+        }
+
+        .cart-quantity span {
+            min-width: 24px;
+
+            color: var(--cream);
+
+            font-size: 9px;
+
+            text-align: center;
+        }
+
+        .remove-button {
+            border: none;
+
+            background: transparent;
+
+            color:
+                rgba(255, 244, 223, 0.42);
+
+            font-size: 9px;
+
+            cursor: pointer;
+        }
+
+        .remove-button:hover {
+            color: #ff9b9b;
+        }
+
+        /* =========================
+           EMPTY CART
+           ========================= */
+
+        .empty-cart {
+            padding: 45px 20px;
+
+            text-align: center;
+        }
+
+        .empty-cart-icon {
+            margin-bottom: 12px;
+
+            font-size: 38px;
+        }
+
+        .empty-cart-title {
+            font-family: Georgia, serif;
+
+            font-size: 19px;
+        }
+
+        .empty-cart-text {
+            margin-top: 7px;
+
+            color: var(--muted);
+
+            font-size: 11px;
+
+            line-height: 1.5;
+        }
+
+        /* =========================
+           CART FOOTER
+           ========================= */
+
+        .cart-footer {
+            padding: 20px;
+
+            border-top:
+                1px solid rgba(255, 244, 223, 0.09);
+
+            background:
+                rgba(20, 5, 12, 0.35);
+        }
+
+        .total-row {
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            margin-bottom: 15px;
+        }
+
+        .total-label {
+            color: var(--muted);
+
+            font-size: 12px;
+
+            letter-spacing: 1px;
+
+            text-transform: uppercase;
+        }
+
+        .total-price {
+            color: var(--gold);
+
+            font-size: 24px;
+
+            font-weight: 600;
+        }
+
+        .checkout-button {
+            width: 100%;
+
+            min-height: 48px;
+
+            border:
+                1px solid var(--gold);
+
+            border-radius: 8px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #d69a3d,
+                    #f0bd62
+                );
+
+            color: #35121f;
+
+            font-size: 13px;
+
+            font-weight: bold;
+
+            cursor: pointer;
+
+            transition:
+                transform 0.25s ease,
+                box-shadow 0.25s ease,
+                filter 0.25s ease;
+        }
+
+        .checkout-button:hover:not(:disabled) {
+            transform: translateY(-2px);
+
+            filter: brightness(1.08);
+
+            box-shadow:
+                0 10px 30px rgba(240, 189, 98, 0.25);
+        }
+
+        .checkout-button:disabled {
+            opacity: 0.4;
+
+            cursor: not-allowed;
+        }
+
+        .clear-button {
+            width: 100%;
+
+            min-height: 36px;
+
+            margin-top: 8px;
+
+            border:
+                1px solid rgba(255, 140, 140, 0.2);
+
+            border-radius: 7px;
+
+            background:
+                rgba(120, 25, 48, 0.2);
+
+            color: #df9999;
+
+            font-size: 10px;
+
+            cursor: pointer;
+
+            transition:
+                background 0.2s ease;
+        }
+
+        .clear-button:hover {
+            background:
+                rgba(150, 35, 55, 0.35);
+        }
+
+        .cart-note {
+            margin-top: 12px;
+
+            color:
+                rgba(255, 244, 223, 0.38);
+
+            font-size: 9px;
+
+            line-height: 1.5;
+
+            text-align: center;
+        }
+
+        /* =========================
+           FOOTER
+           ========================= */
+
+        .footer {
+            display: flex;
+
+            justify-content: space-between;
+
+            gap: 20px;
+
+            margin-top: 55px;
+
+            padding-top: 22px;
+
+            border-top:
+                1px solid rgba(240, 189, 98, 0.16);
+
+            color:
+                rgba(255, 244, 223, 0.38);
+
+            font-size: 11px;
+        }
+
+        .footer a {
+            color: var(--gold);
+
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* =========================
+           ANIMATIONS
+           ========================= */
+
+        @keyframes fadeUp {
+
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes itemAppear {
+
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* =========================
+           RESPONSIVE
+           ========================= */
+
+        @media (max-width: 950px) {
+
+            .order-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .cart-panel {
+                position: static;
+            }
+
+            .cart-content {
+                max-height: none;
+            }
+        }
+
+        @media (max-width: 700px) {
+
+            .navbar {
+                padding: 15px 18px;
+            }
+
+            .nav-container {
+                align-items: flex-start;
+            }
+
+            .nav-actions {
+                flex-wrap: wrap;
+
+                justify-content: flex-end;
+            }
+
+            .page {
+                padding:
+                    40px 15px 35px;
+            }
+
+            .dish {
+                grid-template-columns:
+                    65px
+                    minmax(0, 1fr);
+            }
+
+            .dish-image,
+            .dish-no-image {
+                width: 60px;
+                height: 60px;
+            }
+
+            .dish-price {
+                grid-column: 2;
+
+                text-align: left;
+            }
+
+            .dish-actions {
+                grid-column: 1 / -1;
+
+                justify-content: flex-start;
+            }
+        }
+
+        @media (max-width: 500px) {
+
+            .brand {
+                font-size: 22px;
+            }
+
+            .brand span {
+                font-size: 7px;
+            }
+
+            .nav-actions {
+                display: none;
+            }
+
+            .hero h1 {
+                font-size: 40px;
+            }
+
+            .category-header {
+                padding:
+                    15px;
+            }
+
+            .dish {
+                padding:
+                    15px;
+            }
+
+            .cart-item {
+                grid-template-columns:
+                    50px
+                    minmax(0, 1fr);
+            }
+
+            .cart-item-image,
+            .cart-item-no-image {
+                width: 50px;
+                height: 50px;
+            }
+
+            .cart-controls {
+                grid-column: 1 / -1;
+
+                flex-direction: row;
+
+                justify-content: space-between;
+
+                align-items: center;
+            }
+
+            .footer {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<nav class="navbar">
+
+    <div class="nav-container">
+
+        <a href="/" class="brand">
+            MARANI
+
+            <span>
+                GEORGIAN COCKTAIL BAR
+            </span>
+        </a>
+
+        <div class="nav-actions">
+
+            <a href="/bar_name" class="nav-link">
+                Главная
+            </a>
+
+            <a href="/login" class="nav-link">
+                Войти в аккаунт
+            </a>
+
+        </div>
+
+    </div>
+
+</nav>
+
+
+<div class="page">
+
+    <section class="hero">
+
+        <div class="hero-label">
+            ქართული • MARANI
+        </div>
+
+        <h1>
+            Выберите напитки
+        </h1>
+
+        <p>
+            Соберите свой заказ из наших коктейлей и напитков.
+            Выбранные позиции появятся справа в вашей корзине.
+        </p>
+
+    </section>
+
+
+    <main class="order-layout">
+
+        <!-- =========================
+             МЕНЮ
+             ========================= -->
+
+        <section class="menu-panel">
+
+            <header class="menu-header">
+
+                <h2>
+                    Меню MARANI
+                </h2>
+
+                <p>
+                    Авторские коктейли, вино и напитки
+                </p>
+
+            </header>
+
+
+            {% if categories %}
+
+                {% for category in categories %}
+
+                    {% if category.dishes %}
+
+                        <section class="category">
+
+                            <header class="category-header">
+
+                                <h2 class="category-name">
+                                    {{ category.category_name }}
+                                </h2>
+
+                            </header>
+
+
+                            <div class="dishes">
+
+                                {% for dish in category.dishes %}
+
+                                    <article
+                                        class="dish{% if dish.dish_status.value != 'available' %} unavailable{% endif %}"
+                                        data-dish-id="{{ dish.id }}"
+                                        data-dish-name="{{ dish.dish_name }}"
+                                        data-dish-price="{{ dish.price }}"
+                                        data-dish-image="{{ dish.image_url or '' }}"
+                                    >
+
+                                        <!-- Фото -->
+
+                                        <div>
+
+                                            {% if dish.image_url %}
+
+                                                <img
+                                                    src="{{ dish.image_url }}"
+                                                    alt="{{ dish.dish_name }}"
+                                                    class="dish-image"
+                                                >
+
+                                            {% else %}
+
+                                                <div class="dish-no-image">
+                                                    Нет<br>фото
+                                                </div>
+
+                                            {% endif %}
+
+                                        </div>
+
+
+                                        <!-- Информация -->
+
+                                        <div class="dish-info">
+
+                                            <h3 class="dish-name">
+                                                {{ dish.dish_name }}
+                                            </h3>
+
+                                            {% if dish.description %}
+
+                                                <p class="dish-description">
+                                                    {{ dish.description }}
+                                                </p>
+
+                                            {% else %}
+
+                                                <p class="dish-description">
+                                                    Авторский напиток MARANI
+                                                </p>
+
+                                            {% endif %}
+
+                                        </div>
+
+
+                                        <!-- Цена -->
+
+                                        <div class="dish-price">
+
+                                            {{ "%.2f"|format(dish.price) }}
+
+                                            <span>
+                                                €
+                                            </span>
+
+                                        </div>
+
+
+                                        <!-- Управление -->
+
+                                        <div class="dish-actions">
+
+                                            {% if dish.dish_status.value == "available" %}
+
+                                                <div class="quantity-control">
+
+                                                    <button
+                                                        type="button"
+                                                        class="quantity-button quantity-minus"
+                                                        data-dish-id="{{ dish.id }}"
+                                                    >
+                                                        −
+                                                    </button>
+
+                                                    <span
+                                                        class="quantity-value"
+                                                        data-quantity-id="{{ dish.id }}"
+                                                    >
+                                                        0
+                                                    </span>
+
+                                                    <button
+                                                        type="button"
+                                                        class="quantity-button quantity-plus"
+                                                        data-dish-id="{{ dish.id }}"
+                                                    >
+                                                        +
+                                                    </button>
+
+                                                </div>
+
+
+                                                <button
+                                                    type="button"
+                                                    class="add-button"
+                                                    data-dish-id="{{ dish.id }}"
+                                                >
+                                                    Добавить
+                                                </button>
+
+                                            {% else %}
+
+                                                <span class="unavailable-label">
+                                                    Сейчас недоступно
+                                                </span>
+
+                                            {% endif %}
+
+                                        </div>
+
+                                    </article>
+
+                                {% endfor %}
+
+                            </div>
+
+                        </section>
+
+                    {% endif %}
+
+                {% endfor %}
+
+            {% else %}
+
+                <div class="empty-cart">
+
+                    <div class="empty-cart-icon">
+                        🍷
+                    </div>
+
+                    <div class="empty-cart-title">
+                        Меню пока пусто
+                    </div>
+
+                    <div class="empty-cart-text">
+                        В данный момент нет доступных напитков.
+                    </div>
+
+                </div>
+
+            {% endif %}
+
+        </section>
+
+
+        <!-- =========================
+             КОРЗИНА
+             ========================= -->
+
+        <aside class="cart-panel">
+
+            <header class="cart-header">
+
+                <h2 class="cart-title">
+                    Ваш заказ
+                </h2>
+
+                <span
+                    class="cart-count"
+                    id="cartCount"
+                >
+                    0 предметов
+                </span>
+
+            </header>
+
+
+            <div
+                class="cart-content"
+                id="cartContent"
+            ></div>
+
+
+            <footer class="cart-footer">
+
+                <div class="total-row">
+
+                    <span class="total-label">
+                        Итого
+                    </span>
+
+                    <span
+                        class="total-price"
+                        id="cartTotal"
+                    >
+                        0.00 €
+                    </span>
+
+                </div>
+
+
+                <button
+                    type="button"
+                    class="checkout-button"
+                    id="checkoutButton"
+                    disabled
+                >
+                    Оформить заказ
+                </button>
+
+
+                <button
+                    type="button"
+                    class="clear-button"
+                    id="clearButton"
+                >
+                    Очистить корзину
+                </button>
+
+
+                <p class="cart-note">
+                    После оформления вы сможете указать
+                    адрес доставки и подтвердить заказ.
+                </p>
+
+            </footer>
+
+        </aside>
+
+    </main>
+
+
+    <footer class="footer">
+
+        <span>
+            © 2026 MARANI Georgian Cocktail Bar
+        </span>
+
+    </footer>
+
+</div>
+
+
+<script>
+
+const CART_STORAGE_KEY = "restaurant_cart";
+
+
+const cartContent =
+    document.getElementById("cartContent");
+
+const cartCount =
+    document.getElementById("cartCount");
+
+const cartTotal =
+    document.getElementById("cartTotal");
+
+const checkoutButton =
+    document.getElementById("checkoutButton");
+
+const clearButton =
+    document.getElementById("clearButton");
+
+
+/*
+ * =========================
+ * CART
+ * =========================
+ */
+
+function getCart() {
+
+    try {
+
+        const saved =
+            localStorage.getItem(CART_STORAGE_KEY);
+
+        if (!saved) {
+            return [];
+        }
+
+        const cart =
+            JSON.parse(saved);
+
+        return Array.isArray(cart)
+            ? cart
+            : [];
+
+    } catch (error) {
+
+        console.error(
+            "CART LOAD ERROR:",
+            error
+        );
+
+        return [];
+    }
+}
+
+
+function saveCart(cart) {
+
+    localStorage.setItem(
+        CART_STORAGE_KEY,
+        JSON.stringify(cart)
+    );
+}
+
+
+/*
+ * =========================
+ * HELPERS
+ * =========================
+ */
+
+function getRussianItemText(number) {
+
+    const value =
+        Math.abs(number) % 100;
+
+    const lastDigit =
+        value % 10;
+
+
+    if (value >= 11 && value <= 19) {
+        return `${number} предметов`;
+    }
+
+    if (lastDigit === 1) {
+        return `${number} предмет`;
+    }
+
+    if (
+        lastDigit >= 2 &&
+        lastDigit <= 4
+    ) {
+        return `${number} предмета`;
+    }
+
+    return `${number} предметов`;
+}
+
+
+function escapeHTML(value) {
+
+    return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+
+function getTotalQuantity(cart) {
+
+    return cart.reduce(
+        (total, item) =>
+            total + Number(item.quantity),
+        0
+    );
+}
+
+
+function getTotalPrice(cart) {
+
+    return cart.reduce(
+        (total, item) =>
+            total +
+            Number(item.price) *
+            Number(item.quantity),
+
+        0
+    );
+}
+
+
+/*
+ * =========================
+ * QUANTITY
+ * =========================
+ */
+
+function getQuantity(dishId) {
+
+    const cart = getCart();
+
+    const item =
+        cart.find(
+            item =>
+                Number(item.dish_id) ===
+                Number(dishId)
+        );
+
+    return item
+        ? Number(item.quantity)
+        : 0;
+}
+
+
+function setQuantity(
+    dishId,
+    quantity
+) {
+
+    const cart = getCart();
+
+    const index =
+        cart.findIndex(
+            item =>
+                Number(item.dish_id) ===
+                Number(dishId)
+        );
+
+
+    if (quantity <= 0) {
+
+        if (index !== -1) {
+            cart.splice(index, 1);
+        }
+
+    } else {
+
+        if (index !== -1) {
+
+            cart[index].quantity =
+                quantity;
+
+        } else {
+
+            const dish =
+                document.querySelector(
+                    `.dish[data-dish-id="${dishId}"]`
+                );
+
+            if (!dish) {
+                return;
+            }
+
+
+            cart.push({
+
+                dish_id:
+                    Number(dish.dataset.dishId),
+
+                quantity:
+                    quantity,
+
+                dish_name:
+                    dish.dataset.dishName,
+
+                price:
+                    Number(dish.dataset.dishPrice),
+
+                image:
+                    dish.dataset.dishImage
+
+            });
+        }
+    }
+
+
+    saveCart(cart);
+
+    updateInterface();
+}
+
+
+function addDish(dishId) {
+
+    setQuantity(
+        dishId,
+        getQuantity(dishId) + 1
+    );
+
+
+    const dish =
+        document.querySelector(
+            `.dish[data-dish-id="${dishId}"]`
+        );
+
+    if (dish) {
+
+        dish.style.transform =
+            "translateX(5px)";
+
+        setTimeout(() => {
+
+            dish.style.transform =
+                "";
+
+        }, 180);
+    }
+}
+
+
+function removeDish(dishId) {
+
+    setQuantity(
+        dishId,
+        0
+    );
+}
+
+
+/*
+ * =========================
+ * UPDATE DISH COUNTERS
+ * =========================
+ */
+
+function updateDishQuantities() {
+
+    document
+        .querySelectorAll(
+            ".quantity-value"
+        )
+        .forEach(element => {
+
+            element.textContent =
+                getQuantity(
+                    element.dataset.quantityId
+                );
+
+        });
+}
+
+
+/*
+ * =========================
+ * RENDER CART
+ * =========================
+ */
+
+function renderCart() {
+
+    const cart = getCart();
+
+
+    const quantity =
+        getTotalQuantity(cart);
+
+    const total =
+        getTotalPrice(cart);
+
+
+    cartCount.textContent =
+        getRussianItemText(quantity);
+
+    cartTotal.textContent =
+        `${total.toFixed(2)} €`;
+
+
+    if (cart.length === 0) {
+
+        cartContent.innerHTML = `
+
+            <div class="empty-cart">
+
+                <div class="empty-cart-icon">
+                    🍷
+                </div>
+
+                <div class="empty-cart-title">
+                    Корзина пуста
+                </div>
+
+                <div class="empty-cart-text">
+                    Выберите напитки из меню,
+                    чтобы начать заказ.
+                </div>
+
+            </div>
+
+        `;
+
+
+        checkoutButton.disabled =
+            true;
+
+        return;
+    }
+
+
+    checkoutButton.disabled =
+        false;
+
+
+    cartContent.innerHTML = "";
+
+
+    cart.forEach(item => {
+
+        const quantity =
+            Number(item.quantity);
+
+        const price =
+            Number(item.price);
+
+        const itemTotal =
+            price * quantity;
+
+
+        const element =
+            document.createElement("article");
+
+
+        element.className =
+            "cart-item";
+
+
+        const imageHTML =
+            item.image
+
+                ? `
+                    <img
+                        src="${escapeHTML(item.image)}"
+                        alt="${escapeHTML(item.dish_name)}"
+                        class="cart-item-image"
+                    >
+                `
+
+                : `
+                    <div class="cart-item-no-image">
+                        Нет<br>фото
+                    </div>
+                `;
+
+
+        element.innerHTML = `
+
+            ${imageHTML}
+
+            <div>
+
+                <div class="cart-item-name">
+                    ${escapeHTML(item.dish_name)}
+                </div>
+
+                <div class="cart-item-price">
+
+                    ${quantity}
+                    ×
+                    <strong>
+                        ${price.toFixed(2)} €
+                    </strong>
+
+                    <br>
+
+                    Всего:
+                    <strong>
+                        ${itemTotal.toFixed(2)} €
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <div class="cart-controls">
+
+                <div class="cart-quantity">
+
+                    <button
+                        type="button"
+                        data-minus="${item.dish_id}"
+                    >
+                        −
+                    </button>
+
+                    <span>
+                        ${quantity}
+                    </span>
+
+                    <button
+                        type="button"
+                        data-plus="${item.dish_id}"
+                    >
+                        +
+                    </button>
+
+                </div>
+
+
+                <button
+                    type="button"
+                    class="remove-button"
+                    data-remove="${item.dish_id}"
+                >
+                    Убрать
+                </button>
+
+            </div>
+
+        `;
+
+
+        cartContent.appendChild(element);
+
+    });
+
+
+    cartContent
+        .querySelectorAll(
+            "[data-minus]"
+        )
+        .forEach(button => {
+
+            button.addEventListener(
+                "click",
+                () => {
+
+                    const dishId =
+                        button.dataset.minus;
+
+                    setQuantity(
+                        dishId,
+                        getQuantity(dishId) - 1
+                    );
+
+                }
+            );
+
+        });
+
+
+    cartContent
+        .querySelectorAll(
+            "[data-plus]"
+        )
+        .forEach(button => {
+
+            button.addEventListener(
+                "click",
+                () => {
+
+                    const dishId =
+                        button.dataset.plus;
+
+                    setQuantity(
+                        dishId,
+                        getQuantity(dishId) + 1
+                    );
+
+                }
+            );
+
+        });
+
+
+    cartContent
+        .querySelectorAll(
+            "[data-remove]"
+        )
+        .forEach(button => {
+
+            button.addEventListener(
+                "click",
+                () => {
+
+                    removeDish(
+                        button.dataset.remove
+                    );
+
+                }
+            );
+
+        });
+}
+
+
+/*
+ * =========================
+ * INTERFACE
+ * =========================
+ */
+
+function updateInterface() {
+
+    updateDishQuantities();
+
+    renderCart();
+}
+
+
+/*
+ * =========================
+ * MENU BUTTONS
+ * =========================
+ */
+
+document
+    .querySelectorAll(
+        ".add-button"
+    )
+    .forEach(button => {
+
+        button.addEventListener(
+            "click",
+            () => {
+
+                addDish(
+                    button.dataset.dishId
+                );
+
+            }
+        );
+
+    });
+
+
+document
+    .querySelectorAll(
+        ".quantity-plus"
+    )
+    .forEach(button => {
+
+        button.addEventListener(
+            "click",
+            () => {
+
+                addDish(
+                    button.dataset.dishId
+                );
+
+            }
+        );
+
+    });
+
+
+document
+    .querySelectorAll(
+        ".quantity-minus"
+    )
+    .forEach(button => {
+
+        button.addEventListener(
+            "click",
+            () => {
+
+                const dishId =
+                    button.dataset.dishId;
+
+                setQuantity(
+                    dishId,
+                    getQuantity(dishId) - 1
+                );
+
+            }
+        );
+
+    });
+
+
+/*
+ * =========================
+ * CLEAR CART
+ * =========================
+ */
+
+clearButton.addEventListener(
+    "click",
+    () => {
+
+        const cart =
+            getCart();
+
+        if (cart.length === 0) {
+            return;
+        }
+
+
+        if (
+            confirm(
+                "Очистить всю корзину?"
+            )
+        ) {
+
+            localStorage.removeItem(
+                CART_STORAGE_KEY
+            );
+
+            updateInterface();
+        }
+
+    }
+);
+
+
+/*
+ * =========================
+ * CHECKOUT
+ * =========================
+ */
+
+let isSubmitting = false;
+
+checkoutButton.addEventListener(
+    "click",
+    async () => {
+
+        if (isSubmitting) {
+            return;
+        }
+
+
+        const cart =
+            getCart();
+
+
+        if (cart.length === 0) {
+
+            alert(
+                "Корзина пуста."
+            );
+
+            return;
+        }
+
+
+        /*
+         * Создаём client_id
+         * для текущего гостевого заказа.
+         */
+
+        const clientId =
+            crypto.randomUUID();
+
+
+        /*
+         * Сохраняем client_id
+         * в cookie.
+         *
+         * Этот cookie будет отправляться
+         * браузером на следующие запросы
+         * к этому же домену.
+         */
+
+        document.cookie =
+            `guest_client_id=${encodeURIComponent(clientId)}; Path=/; SameSite=Lax`;
+
+
+        /*
+         * Формируем ListOrderGuestDTO.
+         */
+
+        const orderData = {
+
+            client_id:
+                clientId,
+
+            order_items:
+
+                cart.map(item => ({
+
+                    dish_id:
+                        Number(item.dish_id),
+
+                    dish_name:
+                        item.dish_name,
+
+                    price:
+                        Number(item.price),
+
+                    quantity:
+                        Number(item.quantity)
+
+                }))
+
+        };
+
+
+        console.log(
+            "GUEST CLIENT ID:",
+            clientId
+        );
+
+        console.log(
+            "ORDER DATA:",
+            orderData
+        );
+
+
+        isSubmitting = true;
+
+        checkoutButton.disabled =
+            true;
+
+        checkoutButton.textContent =
+            "Создание заказа...";
+
+
+        try {
+
+            const response =
+                await fetch(
+                    "/orders/create/guest",
+                    {
+                        method: "POST",
+
+                        headers: {
+                            "Content-Type":
+                                "application/json"
+                        },
+
+                        body:
+                            JSON.stringify(
+                                orderData
+                            )
+                    }
+                );
+
+
+            if (!response.ok) {
+
+                let errorData = null;
+
+                try {
+
+                    errorData =
+                        await response.json();
+
+                } catch (error) {
+
+                    console.error(
+                        "Не удалось прочитать ответ:",
+                        error
+                    );
+                }
+
+                console.error(
+                    "ORDER ERROR:",
+                    errorData
+                );
+
+                throw new Error(
+                    `HTTP ${response.status}`
+                );
+            }
+
+
+            /*
+             * Заказ создан.
+             *
+             * guest_client_id уже находится
+             * в cookie браузера.
+             *
+             * Поэтому на следующем endpoint
+             * его можно получить через:
+             *
+             * request.cookies.get("guest_client_id")
+             */
+
+            window.location.href =
+                "/orders/confirm_address/guest";
+
+
+        } catch (error) {
+
+            console.error(
+                "CHECKOUT ERROR:",
+                error
+            );
+
+
+            alert(
+                "Не удалось оформить заказ. Попробуйте ещё раз."
+            );
+
+
+            isSubmitting = false;
+
+            checkoutButton.disabled =
+                false;
+
+            checkoutButton.textContent =
+                "Оформить заказ";
+        }
+
+    }
+);
+
+
+/*
+ * =========================
+ * INITIAL LOAD
+ * =========================
+ */
+
+updateInterface();
+
+
+console.log(
+    "MARANI ORDER PAGE LOADED"
+);
+
+console.log(
+    "CART:",
+    getCart()
+);
+
+</script>
+
+</body>
+</html>
