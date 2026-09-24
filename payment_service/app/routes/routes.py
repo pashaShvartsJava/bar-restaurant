@@ -1,6 +1,6 @@
 import httpx
 import stripe
-from fastapi import APIRouter, Request, Depends, HTTPException
+from fastapi import APIRouter, Request, Depends, HTTPException, Header
 from starlette.templating import Jinja2Templates
 
 from ..models.payments import PaymentStatus
@@ -17,7 +17,9 @@ templates = Jinja2Templates(directory="app/templates")
 INTERNAL_TOKEN=settings.internal_token
 
 @router.post("/payment/create")
-async def create_payment(request : Request, data : PaymentDTO, service : PaymentService = Depends(get_payment_service_dependency)):
+async def create_payment(request : Request,
+                         data: PaymentDTO,
+                         service : PaymentService = Depends(get_payment_service_dependency)):
     payload = get_payload(request)
     required_roles(IdentityRole.USER, payload=payload)
     client_id = payload["sub"]

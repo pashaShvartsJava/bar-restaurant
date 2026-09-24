@@ -3,13 +3,14 @@ from decimal import Decimal
 import stripe
 
 from ..config.config import settings
+from ..models.payments import Payment
 
 
 class StripeService:
     def __init__(self):
         self.client = stripe.StripeClient(settings.stripe_secret_key)
 
-    async def create_checkout_session(self, payment):
+    async def create_checkout_session(self, payment : Payment):
         session = await self.client.v1.checkout.sessions.create_async(
             params={
                 "mode": "payment",
@@ -31,7 +32,7 @@ class StripeService:
                 },
                 "success_url": "http://localhost:8080/payment/success",
                 "cancel_url": "http://localhost:8080/payment/cancel"
-            }
+            }, options={"idempotency_key" : f"payment:{payment.id}"}
         )
         return session
 

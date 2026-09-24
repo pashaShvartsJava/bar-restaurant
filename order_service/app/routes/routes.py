@@ -15,7 +15,7 @@ from ..schema.payment_schema import PaymentDTO
 from ..security.jwt.jwt import get_payload
 from ..security.authorization.authorization import required_roles
 from ..security.role.role import IdentityRole
-from uuid import UUID
+from uuid import UUID, uuid4
 
 from ..service.order_service import OrderService
 from ..config.config import settings
