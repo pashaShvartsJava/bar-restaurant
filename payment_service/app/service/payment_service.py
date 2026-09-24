@@ -41,11 +41,12 @@ class PaymentService:
         if session["payment_status"] != "paid":
             return None
         payment_id = session["metadata"]["payment_id"]
+        event_id = event["id"]
         async with self.db.begin():
             payment = await self.payment_repository.get_by_id(int(payment_id))
             payment.stripe_session_id = session["id"]
             payment.stripe_payment_intent_id = session["payment_intent"]
             payment.status = PaymentStatus.PAID
             payment.updated_status = datetime.now(timezone.utc)
-            await self.outbox_repository.create_outbox_event(payment.id, payment.order_id, payment.client_id)
+            await self.outbox_repository.create_outbox_event(payment.id, payment.order_id, payment.client_id, event_id)
         return payment

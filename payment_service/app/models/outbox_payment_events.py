@@ -16,4 +16,5 @@ class OutboxPaymentEvents(Base):
     payload = Column(JSONB, nullable=False)
     created_at = Column(DateTime(timezone=True), nullable=False, default=lambda: datetime.now(timezone.utc))
     published_at  = Column(DateTime(timezone=True), nullable=True)
+    event_id = Column(String, nullable=True, unique=True)
 
