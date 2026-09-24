@@ -4,15 +4,16 @@ from decimal import Decimal
 
 from sqlalchemy import select, or_
 from sqlalchemy.ext.asyncio import AsyncSession
-from uuid import UUID
+from uuid import UUID, uuid4
 
 from sqlalchemy.orm import selectinload
+from stripe import client_id
 
 from ..models.delivery_address import DeliveryAddress
 from ..models.order_items import OrderItem
 from ..models.orders import Order, OrderStatus
 from ..schema.delivery_address_schema import DeliveryAddressDTO
-from ..schema.order_item_schema import ListOrderDTO
+from ..schema.order_item_schema import ListOrderDTO, ListOrderGuestDTO
 
 
 class OrderRepository:
@@ -78,6 +79,28 @@ class OrderRepository:
         await self.db.flush()
 
         for order_item in order_items.order_items:
+            new_order_item = OrderItem(
+                order_id=new_order.id,
+                dish_id=order_item.dish_id,
+                dish_name=order_item.dish_name,
+                quantity=order_item.quantity,
+                price=order_item.price
+            )
+            self.db.add(new_order_item)
+
+        await self.db.commit()
+        await self.db.refresh(new_order)
+        return new_order
+
+    async def create_order_for_guest(self, data : ListOrderGuestDTO, total_sum : Decimal):
+        new_order = Order(
+            client_id=data.client_id,
+            sum=total_sum
+        )
+        self.db.add(new_order)
+        await self.db.flush()
+
+        for order_item in data.order_items:
             new_order_item = OrderItem(
                 order_id=new_order.id,
                 dish_id=order_item.dish_id,

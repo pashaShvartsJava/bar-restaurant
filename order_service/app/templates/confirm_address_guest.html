@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Данные для доставки | Bar & Lounge</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: "Segoe UI", sans-serif;
+
+            background:
+                radial-gradient(
+                    circle at 15% 10%,
+                    rgba(213,166,91,.18),
+                    transparent 30%
+                ),
+                radial-gradient(
+                    circle at 85% 90%,
+                    rgba(180,70,110,.15),
+                    transparent 30%
+                ),
+                linear-gradient(
+                    135deg,
+                    #24191f,
+                    #39252c,
+                    #21191e
+                );
+
+            color: #fff;
+            padding: 40px 20px;
+        }
+
+        .page {
+            width: 700px;
+            max-width: 100%;
+            margin: 0 auto;
+        }
+
+        /* TOP */
+
+        .top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .back {
+            color: #aaa;
+            text-decoration: none;
+            font-size: 12px;
+            transition: .2s;
+        }
+
+        .back:hover {
+            color: #d5a65b;
+        }
+
+        .brand {
+            color: #d5a65b;
+            font-family: Georgia, serif;
+            letter-spacing: 3px;
+            font-size: 11px;
+        }
+
+        /* CARD */
+
+        .card {
+            background: rgba(39,32,38,.97);
+            border: 1px solid rgba(255,255,255,.1);
+            border-radius: 18px;
+            padding: 35px;
+
+            box-shadow:
+                0 25px 60px rgba(0,0,0,.4);
+
+            animation: appear .45s ease;
+        }
+
+        @keyframes appear {
+            from {
+                opacity: 0;
+                transform: translateY(12px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* HEADER */
+
+        .header {
+            margin-bottom: 30px;
+        }
+
+        .header-label {
+            color: #d5a65b;
+            font-size: 9px;
+            letter-spacing: 3px;
+            margin-bottom: 8px;
+        }
+
+        h1 {
+            margin: 0;
+
+            font-family: Georgia, serif;
+            font-size: 30px;
+            font-weight: normal;
+        }
+
+        .description {
+            color: #999;
+            font-size: 12px;
+            line-height: 1.7;
+            margin-top: 9px;
+            max-width: 550px;
+        }
+
+        /* SECTIONS */
+
+        .section {
+            background: rgba(255,255,255,.025);
+            border: 1px solid #40383e;
+            border-radius: 14px;
+            padding: 22px;
+            margin-bottom: 16px;
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+
+            color: #d5a65b;
+            font-size: 10px;
+            letter-spacing: 2px;
+
+            margin-bottom: 20px;
+        }
+
+        .section-number {
+            width: 22px;
+            height: 22px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 50%;
+
+            background: rgba(213,166,91,.1);
+            border: 1px solid rgba(213,166,91,.35);
+
+            color: #d5a65b;
+            font-size: 9px;
+        }
+
+        /* FORM */
+
+        .field {
+            margin-bottom: 15px;
+        }
+
+        .field:last-child {
+            margin-bottom: 0;
+        }
+
+        .row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+
+            color: #ccc;
+            font-size: 11px;
+        }
+
+        .required {
+            color: #d5a65b;
+            margin-left: 2px;
+        }
+
+        input {
+            width: 100%;
+
+            padding: 12px 13px;
+
+            background: #302a30;
+            border: 1px solid #51484e;
+            border-radius: 8px;
+
+            color: white;
+            font-family: inherit;
+            font-size: 13px;
+
+            outline: none;
+
+            transition:
+                border-color .2s,
+                box-shadow .2s,
+                background .2s;
+        }
+
+        input::placeholder {
+            color: #686168;
+        }
+
+        input:hover {
+            border-color: #62585f;
+        }
+
+        input:focus {
+            border-color: #d5a65b;
+
+            background: #332d33;
+
+            box-shadow:
+                0 0 0 3px rgba(213,166,91,.07);
+        }
+
+        input:invalid:not(:placeholder-shown) {
+            border-color: #9d5c5c;
+        }
+
+        /* SMALL TEXT */
+
+        .hint {
+            color: #777;
+            font-size: 10px;
+            line-height: 1.5;
+            margin-top: 6px;
+        }
+
+        /* BOTTOM */
+
+        .bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            margin-top: 25px;
+            padding-top: 22px;
+
+            border-top: 1px solid #40383e;
+        }
+
+        .cancel {
+            color: #999;
+            text-decoration: none;
+            font-size: 12px;
+
+            transition: .2s;
+        }
+
+        .cancel:hover {
+            color: white;
+        }
+
+        .continue {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+
+            padding: 13px 22px;
+
+            border: none;
+            border-radius: 8px;
+
+            background: #d5a65b;
+            color: #211a15;
+
+            font-size: 12px;
+            font-weight: 600;
+
+            cursor: pointer;
+
+            transition:
+                background .2s,
+                transform .2s,
+                box-shadow .2s;
+        }
+
+        .continue:hover {
+            background: #e5b970;
+
+            transform: translateY(-1px);
+
+            box-shadow:
+                0 8px 20px rgba(213,166,91,.18);
+        }
+
+        .continue:active {
+            transform: translateY(0);
+        }
+
+        .field-error {
+            color: #d98282;
+            font-size: 11px;
+            margin-top: 5px;
+        }
+
+        /* MOBILE */
+
+        @media (max-width: 700px) {
+            body {
+                padding: 25px 15px;
+            }
+
+            .card {
+                padding: 25px 18px;
+            }
+
+            .top {
+                margin-bottom: 20px;
+            }
+
+            h1 {
+                font-size: 26px;
+            }
+
+            .row {
+                grid-template-columns: 1fr;
+                gap: 0;
+            }
+
+            .bottom {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 15px;
+            }
+
+            .continue {
+                width: 100%;
+            }
+
+            .cancel {
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="page">
+
+    <!-- TOP -->
+
+    <div class="top">
+
+        <a href="/bar_name/delivery" class="back">
+            ← Вернуться к меню
+        </a>
+
+        <div class="brand">
+            BAR & LOUNGE
+        </div>
+
+    </div>
+
+
+    <!-- CARD -->
+
+    <div class="card">
+
+        <div class="header">
+
+            <div class="header-label">
+                GUEST DELIVERY
+            </div>
+
+            <h1>
+                Данные для доставки
+            </h1>
+
+            <div class="description">
+                Заполните контактные данные и адрес доставки.
+                После проверки информации вы сможете перейти к оплате заказа.
+            </div>
+
+        </div>
+
+
+        <form
+            id="guestOrderForm"
+            method="POST"
+            action="/orders/confirm_address/guest"
+        >
+
+            <!-- CONTACT INFORMATION -->
+
+            <div class="section">
+
+                <div class="section-title">
+
+                    <div class="section-number">
+                        1
+                    </div>
+
+                    КОНТАКТНЫЕ ДАННЫЕ
+
+                </div>
+
+
+                <div class="row">
+
+                    <div class="field">
+
+                        <label for="first_name">
+                            Имя<span class="required">*</span>
+                        </label>
+
+                        <input
+                            id="first_name"
+                            type="text"
+                            name="first_name"
+                            placeholder="Введите имя"
+                            autocomplete="given-name"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label for="last_name">
+                            Фамилия<span class="required">*</span>
+                        </label>
+
+                        <input
+                            id="last_name"
+                            type="text"
+                            name="last_name"
+                            placeholder="Введите фамилию"
+                            autocomplete="family-name"
+                            required
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <div class="row">
+
+                    <div class="field">
+
+                        <label for="birth_date">
+                            Дата рождения<span class="required">*</span>
+                        </label>
+
+                        <input
+                            id="birth_date"
+                            type="date"
+                            name="birth_date"
+                            autocomplete="bday"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label for="phone">
+                            Номер телефона<span class="required">*</span>
+                        </label>
+
+                        <input
+                            id="phone"
+                            type="tel"
+                            name="phone"
+                            placeholder="+49 123 456789"
+                            autocomplete="tel"
+                            required
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <div class="field">
+
+                    <label for="email">
+                        Электронная почта<span class="required">*</span>
+                    </label>
+
+                    <input
+                        id="email"
+                        type="email"
+                        name="email"
+                        placeholder="example@email.com"
+                        autocomplete="email"
+                        required
+                    >
+
+                    <div class="hint">
+                        На этот адрес можно отправить подтверждение заказа.
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- DELIVERY ADDRESS -->
+
+            <div class="section">
+
+                <div class="section-title">
+
+                    <div class="section-number">
+                        2
+                    </div>
+
+                    АДРЕС ДОСТАВКИ
+
+                </div>
+
+
+                <div class="field">
+
+                    <label for="city">
+                        Город<span class="required">*</span>
+                    </label>
+
+                    <input
+                        id="city"
+                        type="text"
+                        name="city"
+                        placeholder="Введите город"
+                        autocomplete="address-level2"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="field">
+
+                    <label for="postal_code">
+                        Почтовый индекс<span class="required">*</span>
+                    </label>
+
+                    <input
+                        id="postal_code"
+                        type="text"
+                        name="postal_code"
+                        placeholder="Например, 47051"
+                        autocomplete="postal-code"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="field">
+
+                    <label for="street">
+                        Улица<span class="required">*</span>
+                    </label>
+
+                    <input
+                        id="street"
+                        type="text"
+                        name="street"
+                        placeholder="Введите улицу"
+                        autocomplete="street-address"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="row">
+
+                    <div class="field">
+
+                        <label for="house">
+                            Дом<span class="required">*</span>
+                        </label>
+
+                        <input
+                            id="house"
+                            type="text"
+                            name="house"
+                            placeholder="Например, 15"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label for="apartment">
+                            Квартира
+                        </label>
+
+                        <input
+                            id="apartment"
+                            type="text"
+                            name="apartment"
+                            placeholder="Например, 24"
+                            autocomplete="address-line2"
+                        >
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- BOTTOM -->
+
+            <div class="bottom">
+
+                <a
+                    href="/bar_name/delivery"
+                    class="cancel"
+                >
+                    Вернуться к меню
+                </a>
+
+
+                <button
+                    type="submit"
+                    class="continue"
+                >
+                    Перейти к оплате
+                    <span>→</span>
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+</body>
+</html>

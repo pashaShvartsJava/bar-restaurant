@@ -4,7 +4,7 @@ from decimal import Decimal
 from ..models.orders import Order, OrderStatus
 from ..repository.order_repository import OrderRepository
 from ..schema.delivery_address_schema import DeliveryAddressDTO
-from ..schema.order_item_schema import ListOrderDTO
+from ..schema.order_item_schema import ListOrderDTO, ListOrderGuestDTO
 from uuid import UUID
 
 
@@ -25,7 +25,7 @@ class OrderService:
     async def get_all_orders(self):
         return await self.order_repository.get_all_orders()
 
-    async def create_order(self, data : ListOrderDTO, client_id : UUID) -> Order:
+    async def create_order(self, data : ListOrderDTO, client_id : UUID | None) -> Order:
         pending_order = await self.get_pending_by_client_id(client_id)
         if pending_order is not None:
             pending_order.status = OrderStatus.CANCELLED_BEFORE
@@ -33,6 +33,12 @@ class OrderService:
         for order_item in data.order_items:
             total_sum += order_item.price * order_item.quantity
         return await self.order_repository.create_order(data , client_id, total_sum)
+
+    async def create_order_for_guest(self, data : ListOrderGuestDTO):
+        total_sum = 0
+        for order_item in data.order_items:
+            total_sum += order_item.price * order_item.quantity
+        return await self.order_repository.create_order_for_guest(data , total_sum)
 
     async def mark_order_as_paid(self, client_id: UUID, status: OrderStatus) -> Order:
         return await self.order_repository.mark_order_as_paid(client_id, status)

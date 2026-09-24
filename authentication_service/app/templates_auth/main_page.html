@@ -2,167 +2,1070 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Bar & Lounge</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>MARANI — Georgian Cocktail Bar</title>
+
     <style>
-        body {
+        * {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: "Segoe UI", sans-serif;
-            background:
-    linear-gradient(rgba(10, 8, 12, 0.68), rgba(10, 8, 12, 0.78)),
-    url('https://images.unsplash.com/photo-1572116469696-31de0f17cc34?auto=format&fit=crop&w=1920&q=85')
-    no-repeat center center fixed;
-background-size: cover;
-            color: #fff;
         }
 
-        /* Навигационное меню */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: "Segoe UI", Arial, sans-serif;
+            color: #fff;
+            background: #120d0d;
+            overflow-x: hidden;
+        }
+
+        /* =========================
+           HERO
+        ========================= */
+
+        .hero {
+            min-height: 100vh;
+            position: relative;
+
+            background:
+                linear-gradient(
+                    rgba(18, 10, 10, 0.60),
+                    rgba(18, 10, 10, 0.88)
+                ),
+                url("https://images.unsplash.com/photo-1572116469696-31de0f17cc34?auto=format&fit=crop&w=1920&q=85")
+                center center / cover no-repeat;
+
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* декоративный грузинский узор */
+
+        .hero::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+
+            opacity: 0.08;
+
+            background-image:
+                repeating-linear-gradient(
+                    45deg,
+                    transparent 0,
+                    transparent 12px,
+                    #d5a85c 12px,
+                    #d5a85c 14px
+                );
+        }
+
+        /* =========================
+           NAVBAR
+        ========================= */
+
         .navbar {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
+
             padding: 20px 40px;
-            background: rgba(0, 0, 0, 0.55);
-            backdrop-filter: blur(6px);
-            box-sizing: border-box;
+
+            background: rgba(12, 7, 7, 0.78);
+            backdrop-filter: blur(10px);
+
+            border-bottom: 1px solid rgba(210, 165, 88, 0.18);
+
             z-index: 1000;
+
+            transition: 0.35s ease;
+        }
+
+        .navbar.scrolled {
+            padding: 13px 40px;
+            background: rgba(12, 7, 7, 0.94);
         }
 
         .nav-container {
-            max-width: 1200px;
-            margin: 0 auto;
+            max-width: 1250px;
+            margin: auto;
+
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
-        .nav-left {
-            font-size: 20px;
-            font-weight: 600;
-            letter-spacing: 1px;
+        .logo {
+            text-decoration: none;
+            color: #d7ad61;
+
+            font-size: 25px;
+            font-weight: 700;
+
+            letter-spacing: 4px;
+
+            white-space: nowrap;
+        }
+
+        .logo span {
+            color: #fff;
+            font-size: 11px;
+            letter-spacing: 3px;
+
+            display: block;
+            margin-top: 2px;
+
+            opacity: 0.65;
         }
 
         .nav-right {
             display: flex;
-            gap: 18px;
             align-items: center;
+            gap: 8px;
         }
 
         .nav-btn {
+            position: relative;
+
             color: #fff;
             text-decoration: none;
-            font-size: 16px;
-            padding: 8px 18px;
+
+            font-size: 15px;
+
+            padding: 9px 16px;
+
             border-radius: 5px;
-            transition: 0.3s;
+
+            transition: 0.3s ease;
+        }
+
+        .nav-btn::after {
+            content: "";
+
+            position: absolute;
+
+            left: 50%;
+            bottom: 3px;
+
+            width: 0;
+            height: 1px;
+
+            background: #d5a85c;
+
+            transform: translateX(-50%);
+
+            transition: 0.3s ease;
         }
 
         .nav-btn:hover {
-            background: rgba(255, 255, 255, 0.15);
+            color: #d9b46e;
         }
 
-        .nav-btn.primary {
-            background: #c59d5f;
+        .nav-btn:hover::after {
+            width: 55%;
         }
 
-        .nav-btn.primary:hover {
-            background: #a8844d;
+        .login-btn {
+            border: 1px solid rgba(213, 168, 92, 0.5);
+            margin-left: 8px;
         }
 
-        /* Кнопка администратора */
-        .admin-btn {
-            font-size: 14px;
-            opacity: 0.75;
-            padding: 6px 14px;
-            border: 1px solid rgba(255, 255, 255, 0.4);
-            border-radius: 5px;
+        .login-btn:hover {
+            background: rgba(213, 168, 92, 0.12);
         }
 
-        .admin-btn:hover {
-            opacity: 1;
-            background: rgba(255, 255, 255, 0.1);
-        }
+        /* =========================
+           HERO CONTENT
+        ========================= */
 
-        /* Основной контент */
-        .overlay {
-            background: rgba(0, 0, 0, 0.65);
-            width: 100%;
-            height: 100vh;
-            padding: 40px;
-            box-sizing: border-box;
-        }
+        .hero-content {
+            position: relative;
+            z-index: 2;
 
-        .container {
-            max-width: 700px;
-            margin: 160px auto 0 auto;
+            width: min(850px, 90%);
+
+            margin: auto;
+
+            padding-top: 100px;
+
             text-align: center;
         }
 
-        h1 {
-            font-size: 48px;
+        .georgian-label {
+            color: #d5a85c;
+
+            font-size: 14px;
+            letter-spacing: 5px;
+
+            text-transform: uppercase;
+
             margin-bottom: 20px;
-            letter-spacing: 2px;
         }
 
-        p {
-            font-size: 20px;
-            line-height: 1.6;
+        .hero-content h1 {
+            font-size: clamp(42px, 6vw, 76px);
+
+            line-height: 1.05;
+
+            letter-spacing: 2px;
+
             margin-bottom: 25px;
+
+            font-weight: 600;
+        }
+
+        .hero-content h1 span {
+            color: #d5a85c;
+        }
+
+        .hero-content p {
+            max-width: 720px;
+            margin: auto;
+
+            font-size: 18px;
+
+            line-height: 1.8;
+
+            color: rgba(255, 255, 255, 0.82);
+        }
+
+        .hero-buttons {
+            margin-top: 38px;
+
+            display: flex;
+            justify-content: center;
+            gap: 14px;
+
+            flex-wrap: wrap;
         }
 
         .btn {
             display: inline-block;
-            padding: 12px 28px;
-            background: #c59d5f;
-            color: #fff;
+
+            padding: 14px 28px;
+
+            border-radius: 5px;
+
             text-decoration: none;
-            font-size: 18px;
-            border-radius: 6px;
-            transition: 0.3s;
+
+            font-size: 16px;
+
+            transition:
+                transform 0.25s ease,
+                background 0.25s ease,
+                box-shadow 0.25s ease;
         }
 
-        .btn:hover {
-            background: #a8844d;
+        .btn-primary {
+            background: #b88a42;
+            color: #fff;
+
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
+        }
+
+        .btn-primary:hover {
+            background: #d0a45b;
+
+            transform: translateY(-3px);
+
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        .btn-secondary {
+            border: 1px solid rgba(255, 255, 255, 0.4);
+
+            color: #fff;
+
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        .btn-secondary:hover {
+            border-color: #d5a85c;
+
+            background: rgba(213, 168, 92, 0.1);
+
+            transform: translateY(-3px);
+        }
+
+        /* =========================
+           SCROLL INDICATOR
+        ========================= */
+
+        .scroll-down {
+            position: absolute;
+
+            bottom: 28px;
+            left: 50%;
+
+            transform: translateX(-50%);
+
+            color: rgba(255, 255, 255, 0.6);
+
+            font-size: 12px;
+
+            letter-spacing: 3px;
+
+            text-transform: uppercase;
+
+            animation: float 2s infinite;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translate(-50%, 0);
+            }
+
+            50% {
+                transform: translate(-50%, 7px);
+            }
+        }
+
+        /* =========================
+           ABOUT
+        ========================= */
+
+        .section {
+            padding: 110px 30px;
+
+            background: #120d0d;
+        }
+
+        .section-dark {
+            background:
+                radial-gradient(
+                    circle at top,
+                    rgba(131, 57, 42, 0.16),
+                    transparent 55%
+                ),
+                #120d0d;
+        }
+
+        .section-container {
+            max-width: 1100px;
+            margin: auto;
+        }
+
+        .section-heading {
+            text-align: center;
+
+            margin-bottom: 60px;
+        }
+
+        .section-heading small {
+            color: #d5a85c;
+
+            text-transform: uppercase;
+
+            letter-spacing: 4px;
+
+            font-size: 12px;
+        }
+
+        .section-heading h2 {
+            font-size: 38px;
+
+            margin-top: 12px;
+
+            font-weight: 500;
+        }
+
+        .section-heading p {
+            max-width: 650px;
+
+            margin: 18px auto 0;
+
+            color: rgba(255, 255, 255, 0.62);
+
+            line-height: 1.7;
+        }
+
+        /* =========================
+           CARDS
+        ========================= */
+
+        .cards {
+            display: grid;
+
+            grid-template-columns: repeat(3, 1fr);
+
+            gap: 22px;
+        }
+
+        .card {
+            position: relative;
+
+            padding: 35px 28px;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(255, 255, 255, 0.06),
+                    rgba(255, 255, 255, 0.015)
+                );
+
+            border: 1px solid rgba(213, 168, 92, 0.16);
+
+            border-radius: 8px;
+
+            transition: 0.35s ease;
+
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: "";
+
+            position: absolute;
+
+            top: 0;
+            left: 0;
+
+            width: 100%;
+            height: 2px;
+
+            background: #b88a42;
+
+            transform: scaleX(0);
+
+            transform-origin: left;
+
+            transition: 0.35s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-8px);
+
+            border-color: rgba(213, 168, 92, 0.4);
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(213, 168, 92, 0.08),
+                    rgba(255, 255, 255, 0.02)
+                );
+        }
+
+        .card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .card-icon {
+            font-size: 32px;
+
+            margin-bottom: 20px;
+        }
+
+        .card h3 {
+            font-size: 21px;
+
+            margin-bottom: 12px;
+
+            color: #e0bb72;
+        }
+
+        .card p {
+            color: rgba(255, 255, 255, 0.62);
+
+            line-height: 1.7;
+
+            font-size: 15px;
+        }
+
+        /* =========================
+           GEORGIAN QUOTE
+        ========================= */
+
+        .quote-section {
+            padding: 100px 30px;
+
+            background:
+                linear-gradient(
+                    rgba(36, 14, 14, 0.9),
+                    rgba(36, 14, 14, 0.9)
+                );
+        }
+
+        .quote {
+            max-width: 800px;
+
+            margin: auto;
+
+            text-align: center;
+        }
+
+        .quote-symbol {
+            color: #d5a85c;
+
+            font-size: 45px;
+
+            margin-bottom: 15px;
+        }
+
+        .quote p {
+            font-size: 27px;
+
+            line-height: 1.6;
+
+            font-style: italic;
+
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .quote small {
+            display: block;
+
+            margin-top: 20px;
+
+            color: #d5a85c;
+
+            letter-spacing: 2px;
+        }
+
+        /* =========================
+           CONTACTS
+        ========================= */
+
+        footer {
+            background: #090606;
+
+            padding: 70px 30px 30px;
+
+            border-top: 1px solid rgba(213, 168, 92, 0.15);
+        }
+
+        .footer-container {
+            max-width: 1100px;
+            margin: auto;
+
+            display: grid;
+
+            grid-template-columns: 1.3fr 1fr 1fr;
+
+            gap: 50px;
+        }
+
+        .footer-brand h2 {
+            color: #d5a85c;
+
+            letter-spacing: 4px;
+
+            margin-bottom: 15px;
+        }
+
+        .footer-brand p {
+            color: rgba(255, 255, 255, 0.55);
+
+            line-height: 1.7;
+
+            max-width: 350px;
+        }
+
+        .footer-column h3 {
+            color: #fff;
+
+            font-size: 17px;
+
+            margin-bottom: 20px;
+        }
+
+        .footer-column p,
+        .footer-column a {
+            display: block;
+
+            color: rgba(255, 255, 255, 0.58);
+
+            text-decoration: none;
+
+            margin-bottom: 11px;
+
+            transition: 0.25s;
+        }
+
+        .footer-column a:hover {
+            color: #d5a85c;
+
+            transform: translateX(4px);
+        }
+
+        .footer-bottom {
+            max-width: 1100px;
+
+            margin: 50px auto 0;
+
+            padding-top: 20px;
+
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+
+            color: rgba(255, 255, 255, 0.35);
+
+            font-size: 13px;
+
+            display: flex;
+            justify-content: space-between;
+        }
+
+        /* =========================
+           REVEAL ANIMATION
+        ========================= */
+
+        .reveal {
+            opacity: 0;
+
+            transform: translateY(35px);
+
+            transition:
+                opacity 0.8s ease,
+                transform 0.8s ease;
+        }
+
+        .reveal.visible {
+            opacity: 1;
+
+            transform: translateY(0);
+        }
+
+        /* =========================
+           MOBILE
+        ========================= */
+
+        @media (max-width: 850px) {
+
+            .navbar {
+                padding: 15px 20px;
+            }
+
+            .nav-right {
+                gap: 2px;
+            }
+
+            .nav-btn {
+                padding: 8px 8px;
+                font-size: 13px;
+            }
+
+            .login-btn {
+                display: none;
+            }
+
+            .cards {
+                grid-template-columns: 1fr;
+            }
+
+            .footer-container {
+                grid-template-columns: 1fr;
+                gap: 35px;
+            }
+
+            .footer-bottom {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+
+        @media (max-width: 560px) {
+
+            .logo {
+                font-size: 20px;
+            }
+
+            .logo span {
+                display: none;
+            }
+
+            .nav-right .nav-btn:nth-child(2) {
+                display: none;
+            }
+
+            .hero-content {
+                padding-top: 80px;
+            }
+
+            .hero-content h1 {
+                font-size: 42px;
+            }
+
+            .hero-content p {
+                font-size: 16px;
+            }
+
+            .section {
+                padding: 80px 20px;
+            }
+
+            .quote p {
+                font-size: 21px;
+            }
         }
     </style>
 </head>
+
 <body>
 
-<nav class="navbar">
+<!-- =========================
+     NAVIGATION
+========================= -->
+
+<nav class="navbar" id="navbar">
+
     <div class="nav-container">
-        <div class="nav-left">Bar & Lounge</div>
+
+        <a href="/" class="logo">
+            MARANI
+            <span>GEORGIAN COCKTAIL BAR</span>
+        </a>
 
         <div class="nav-right">
-            <a href="/menu" class="nav-btn">Меню</a>
-            <a href="/delivery" class="nav-btn">Доставка</a>
-            <a href="/contacts" class="nav-btn">Контакты</a>
-            <a href="/support" class="nav-btn">Техподдержка</a>
-            <a href="/login" class="nav-btn admin-btn">Войти в аккаунт?</a>
+
+            <a href="/menu" class="nav-btn">
+                Меню
+            </a>
+
+            <a href="#cocktails" class="nav-btn">
+                Коктейли
+            </a>
+
+            <a href="/bar_name/delivery" class="nav-btn">
+                Заказать домой
+            </a>
+
+            <a href="/login" class="nav-btn login-btn">
+                Войти в аккаунт
+            </a>
+
         </div>
+
     </div>
+
 </nav>
 
-<div class="overlay">
-    <div class="container">
-        <h1>Добро пожаловать в Bar & Lounge</h1>
+
+<!-- =========================
+     HERO
+========================= -->
+
+<section class="hero">
+
+    <div class="hero-content">
+
+        <div class="georgian-label">
+            ქართული • თბილისი • ღვინო
+        </div>
+
+        <h1>
+            Вкус Грузии<br>
+            в каждом <span>коктейле</span>
+        </h1>
 
         <p>
-            Мы — место, где каждый гость чувствует себя как дома.
-            Наш бар сочетает атмосферу уюта, стильный интерьер и авторские напитки,
-            созданные с любовью и вниманием к деталям.
+            MARANI — камерный коктейльный бар с грузинским характером.
+            Авторские напитки, грузинские вина, пряные ароматы
+            и атмосфера старого Тбилиси в современном исполнении.
         </p>
 
-        <p>
-            Здесь вы можете расслабиться после рабочего дня, встретиться с друзьями,
-            попробовать уникальные коктейли и насладиться живой музыкой.
-            Мы ценим каждого гостя и делаем всё, чтобы ваш вечер стал особенным.
-        </p>
+        <div class="hero-buttons">
 
-        <a href="/booking" class="btn">Забронировать столик</a>
+            <a href="/bar_name/delivery" class="btn btn-primary">
+                Заказать напитки домой
+            </a>
+
+        </div>
+
     </div>
-</div>
+
+    <div class="scroll-down">
+        ↓ &nbsp; Узнать больше
+    </div>
+
+</section>
+
+
+<!-- =========================
+     COCKTAILS
+========================= -->
+
+<section class="section section-dark" id="cocktails">
+
+    <div class="section-container">
+
+        <div class="section-heading reveal">
+
+            <small>Наш характер</small>
+
+            <h2>Грузинская душа. Современный бар.</h2>
+
+            <p>
+                Мы взяли знакомые грузинские вкусы и превратили их
+                в коктейльную историю.
+            </p>
+
+        </div>
+
+
+        <div class="cards">
+
+            <div class="card reveal">
+
+                <div class="card-icon">🍷</div>
+
+                <h3>Грузинское вино</h3>
+
+                <p>
+                    Классические и редкие сорта грузинских вин
+                    от небольших виноделен.
+                </p>
+
+            </div>
+
+
+            <div class="card reveal">
+
+                <div class="card-icon">🍸</div>
+
+                <h3>Авторские коктейли</h3>
+
+                <p>
+                    Чача, гранат, виноград, специи и травы —
+                    необычные сочетания в современной подаче.
+                </p>
+
+            </div>
+
+
+            <div class="card reveal">
+
+                <div class="card-icon">🥃</div>
+
+                <h3>Чача & Spirits</h3>
+
+                <p>
+                    Традиционные грузинские напитки
+                    в классических и авторских интерпретациях.
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================
+     QUOTE
+========================= -->
+
+<section class="quote-section">
+
+    <div class="quote reveal">
+
+        <div class="quote-symbol">“</div>
+
+        <p>
+            კარგი ღვინო კარგ მეგობარს ჰგავს —
+            დროსთან ერთად უკეთესი ხდება.
+        </p>
+
+        <small>
+            კარგი ღვინო კარგ მეგობარს ჰგავს
+        </small>
+
+    </div>
+
+</section>
+
+
+<!-- =========================
+     FOOTER / CONTACTS
+========================= -->
+
+<footer id="contacts">
+
+    <div class="footer-container">
+
+        <div class="footer-brand">
+
+            <h2>MARANI</h2>
+
+            <p>
+                Georgian Cocktail Bar —
+                место для хороших разговоров,
+                необычных коктейлей и долгих вечеров.
+            </p>
+
+        </div>
+
+
+        <div class="footer-column">
+
+            <h3>Контакты</h3>
+
+            <p>📍 Tbilisi Street 12, Berlin</p>
+
+            <a href="tel:+493012345678">
+                ☎ +49 30 12345678
+            </a>
+
+            <a href="tel:+4915112345678">
+                📱 +49 151 12345678
+            </a>
+
+            <a href="mailto:hello@marani-bar.de">
+                ✉ hello@marani-bar.de
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <div class="footer-bottom">
+
+        <span>
+            © 2026 MARANI Georgian Cocktail Bar
+        </span>
+
+        <span>
+            Made with Georgian soul
+        </span>
+
+    </div>
+
+</footer>
+
+
+<script>
+
+    /* =========================
+       NAVBAR EFFECT
+    ========================= */
+
+    const navbar = document.getElementById("navbar");
+
+    window.addEventListener("scroll", () => {
+
+        if (window.scrollY > 50) {
+            navbar.classList.add("scrolled");
+        } else {
+            navbar.classList.remove("scrolled");
+        }
+
+    });
+
+
+    /* =========================
+       REVEAL ANIMATION
+    ========================= */
+
+    const revealElements =
+        document.querySelectorAll(".reveal");
+
+    const observer =
+        new IntersectionObserver(
+            (entries) => {
+
+                entries.forEach((entry) => {
+
+                    if (entry.isIntersecting) {
+
+                        entry.target.classList.add("visible");
+
+                        observer.unobserve(entry.target);
+
+                    }
+
+                });
+
+            },
+            {
+                threshold: 0.15
+            }
+        );
+
+
+    revealElements.forEach((element) => {
+        observer.observe(element);
+    });
+
+
+    /* =========================
+       PAGE TRANSITION
+    ========================= */
+
+    document
+        .querySelectorAll("a[href]")
+        .forEach((link) => {
+
+            const href = link.getAttribute("href");
+
+            /*
+             * Не применяем анимацию к:
+             * якорям
+             * tel:
+             * mailto:
+             * внешним ссылкам
+             */
+
+            if (
+                !href ||
+                href.startsWith("#") ||
+                href.startsWith("tel:") ||
+                href.startsWith("mailto:") ||
+                href.startsWith("http")
+            ) {
+                return;
+            }
+
+
+            link.addEventListener("click", (event) => {
+
+                event.preventDefault();
+
+                document.body.style.opacity = "0";
+
+                document.body.style.transition =
+                    "opacity 0.25s ease";
+
+                setTimeout(() => {
+
+                    window.location.href = href;
+
+                }, 250);
+
+            });
+
+        });
+
+
+    /* =========================
+       BUTTON RIPPLE
+    ========================= */
+
+    document
+        .querySelectorAll(".btn")
+        .forEach((button) => {
+
+            button.addEventListener("click", () => {
+
+                button.style.transform =
+                    "scale(0.96)";
+
+                setTimeout(() => {
+
+                    button.style.transform = "";
+
+                }, 150);
+
+            });
+
+        });
+
+</script>
 
 </body>
 </html>
-

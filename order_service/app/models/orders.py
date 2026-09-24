@@ -26,7 +26,7 @@ class Order(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     order_number = Column(UUID(as_uuid=True), index=True, nullable=False, default=uuid.uuid4)
-    client_id = Column(UUID(as_uuid=True), nullable=False)
+    client_id = Column(UUID(as_uuid=True))
     status = Column(SQLEnum(OrderStatus), nullable=False, default=OrderStatus.PENDING)
     created_at = Column(DateTime(timezone=True), nullable=False, default=lambda: datetime.now(timezone.utc))
     updated_status = Column(DateTime(timezone=True), nullable=False, default=lambda: datetime.now(timezone.utc))
