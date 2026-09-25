@@ -1,13 +1,10 @@
-import decimal
 from datetime import datetime, timezone, timedelta, date
 from decimal import Decimal
+from uuid import UUID
 
 from sqlalchemy import select, or_
 from sqlalchemy.ext.asyncio import AsyncSession
-from uuid import UUID, uuid4
-
 from sqlalchemy.orm import selectinload
-from stripe import client_id
 
 from ..models.delivery_address import DeliveryAddress
 from ..models.order_items import OrderItem

@@ -5,6 +5,7 @@ from uuid import UUID
 
 
 class PaymentDTO(BaseModel):
+    client_id : UUID = Field(...)
     order_id: int = Field(...)
     order_number: UUID = Field(...)
     sum: Decimal = Field(...)

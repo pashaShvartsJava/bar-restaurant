@@ -4,6 +4,7 @@ from uuid import UUID
 from .rabbitmq import RabbitMQ
 from ..database.database import SessionLocal
 from ..models.orders import OrderStatus
+from ..repository.guest_repository import GuestRepository
 from ..repository.processed_events_repository import ProcessedEventsRepository
 from ..repository.order_repository import OrderRepository
 from ..service.order_service import OrderService
@@ -25,7 +26,8 @@ class OrderPaidConsumer:
                             async with db.begin():
                                 event_repository = ProcessedEventsRepository(db)
                                 order_repository = OrderRepository(db)
-                                order_service = OrderService(order_repository)
+                                guest_repository = GuestRepository(db)
+                                order_service = OrderService(order_repository, guest_repository)
                                 event = await event_repository.get_event_by_event_id(event_id)
                                 if event is None:
                                     await order_service.mark_order_as_paid(UUID(data["client_id"]),OrderStatus.PAID)

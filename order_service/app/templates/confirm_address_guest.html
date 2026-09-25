@@ -44,8 +44,6 @@
             margin: 0 auto;
         }
 
-        /* TOP */
-
         .top {
             display: flex;
             justify-content: space-between;
@@ -71,8 +69,6 @@
             font-size: 11px;
         }
 
-        /* CARD */
-
         .card {
             background: rgba(39,32,38,.97);
             border: 1px solid rgba(255,255,255,.1);
@@ -96,8 +92,6 @@
                 transform: translateY(0);
             }
         }
-
-        /* HEADER */
 
         .header {
             margin-bottom: 30px;
@@ -125,8 +119,6 @@
             margin-top: 9px;
             max-width: 550px;
         }
-
-        /* SECTIONS */
 
         .section {
             background: rgba(255,255,255,.025);
@@ -164,8 +156,6 @@
             color: #d5a65b;
             font-size: 9px;
         }
-
-        /* FORM */
 
         .field {
             margin-bottom: 15px;
@@ -236,16 +226,12 @@
             border-color: #9d5c5c;
         }
 
-        /* SMALL TEXT */
-
         .hint {
             color: #777;
             font-size: 10px;
             line-height: 1.5;
             margin-top: 6px;
         }
-
-        /* BOTTOM */
 
         .bottom {
             display: flex;
@@ -313,8 +299,6 @@
             font-size: 11px;
             margin-top: 5px;
         }
-
-        /* MOBILE */
 
         @media (max-width: 700px) {
             body {
@@ -421,14 +405,14 @@
 
                     <div class="field">
 
-                        <label for="first_name">
+                        <label for="name">
                             Имя<span class="required">*</span>
                         </label>
 
                         <input
-                            id="first_name"
+                            id="name"
                             type="text"
-                            name="first_name"
+                            name="name"
                             placeholder="Введите имя"
                             autocomplete="given-name"
                             required
@@ -439,14 +423,14 @@
 
                     <div class="field">
 
-                        <label for="last_name">
+                        <label for="surname">
                             Фамилия<span class="required">*</span>
                         </label>
 
                         <input
-                            id="last_name"
+                            id="surname"
                             type="text"
-                            name="last_name"
+                            name="surname"
                             placeholder="Введите фамилию"
                             autocomplete="family-name"
                             required
@@ -461,14 +445,14 @@
 
                     <div class="field">
 
-                        <label for="birth_date">
+                        <label for="birthday">
                             Дата рождения<span class="required">*</span>
                         </label>
 
                         <input
-                            id="birth_date"
+                            id="birthday"
                             type="date"
-                            name="birth_date"
+                            name="birthday"
                             autocomplete="bday"
                             required
                         >
@@ -599,9 +583,10 @@
 
                         <input
                             id="house"
-                            type="text"
+                            type="number"
                             name="house"
                             placeholder="Например, 15"
+                            min="1"
                             required
                         >
 
@@ -616,10 +601,10 @@
 
                         <input
                             id="apartment"
-                            type="text"
+                            type="number"
                             name="apartment"
                             placeholder="Например, 24"
-                            autocomplete="address-line2"
+                            min="1"
                         >
 
                     </div>
