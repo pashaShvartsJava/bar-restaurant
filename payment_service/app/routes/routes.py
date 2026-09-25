@@ -1,9 +1,9 @@
-import httpx
+from uuid import UUID
+
 import stripe
-from fastapi import APIRouter, Request, Depends, HTTPException, Header
+from fastapi import APIRouter, Request, Depends, HTTPException
 from starlette.templating import Jinja2Templates
 
-from ..models.payments import PaymentStatus
 from ..schemas.payment_schema import PaymentDTO
 from ..security.authorization.authorization import required_roles
 from ..security.jwt.jwt import get_payload
@@ -20,9 +20,20 @@ INTERNAL_TOKEN=settings.internal_token
 async def create_payment(request : Request,
                          data: PaymentDTO,
                          service : PaymentService = Depends(get_payment_service_dependency)):
-    payload = get_payload(request)
-    required_roles(IdentityRole.USER, payload=payload)
-    client_id = payload["sub"]
+    access_token = request.cookies.get("access_token")
+    if access_token is not None:
+        payload = get_payload(request)
+        client_id = UUID(payload["sub"])
+    else:
+        guest_client_id = request.cookies.get("guest_client_id")
+        if guest_client_id is None:
+            raise HTTPException(status_code=401, detail="Client ID not found")
+        try:
+            client_id = UUID(guest_client_id)
+        except ValueError:
+            raise HTTPException(status_code=400, detail="Invalid guest client ID")
+    if data.client_id != client_id:
+        raise HTTPException(detail="invalid customer id", status_code=403)
     payment, checkout_url = await service.create_payment(data, client_id)
     return {"payment_id": payment.id,  "checkout_url": checkout_url}
 
@@ -39,12 +50,9 @@ async def stripe_webhook(request: Request, service: PaymentService = Depends(get
 
 @router.get("/payment/success")
 async def success_page(request : Request):
-    payload = get_payload(request)
-    required_roles(IdentityRole.USER, payload=payload)
     return templates.TemplateResponse("success_page.html", {"request" : request})
 
 @router.get("/payment/cancel")
 async def success_page(request : Request):
-    payload = get_payload(request)
-    required_roles(IdentityRole.USER, payload=payload)
     return templates.TemplateResponse("cancel_page.html", {"request" : request})
+

@@ -170,9 +170,14 @@
                 <div class="status">PAID</div>
             </div>
 
-            <div class="bottom">
-                <a href="/user/my_profile" class="save">BACK TO MENU</a>
-            </div>
+<div class="bottom">
+    {% if request.cookies.get("access_token") %}
+        <a href="/user/my_profile" class="save">BACK TO MENU</a>
+    {% else %}
+        <a href="/bar_name" class="save">BACK TO MENU</a>
+    {% endif %}
+</div>
+
         </div>
     </div>
 </body>

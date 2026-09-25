@@ -181,8 +181,12 @@
             </div>
 
             <div class="bottom">
-                <a href="/menu_page/orders/users" class="save">TRY AGAIN</a>
-            </div>
+    {% if request.cookies.get("access_token") %}
+        <a href="/menu_page/urders/users" class="save">Попробовать ещё раз</a>
+    {% else %}
+        <a href="/orders/create/guest" class="save">Попробовать ещё раз</a>
+    {% endif %}
+</div>
         </div>
     </div>
 </body>

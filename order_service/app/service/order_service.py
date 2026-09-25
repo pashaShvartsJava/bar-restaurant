@@ -2,16 +2,18 @@ from datetime import date
 from decimal import Decimal
 
 from ..models.orders import Order, OrderStatus
+from ..repository.guest_repository import GuestRepository
 from ..repository.order_repository import OrderRepository
-from ..schema.delivery_address_schema import DeliveryAddressDTO
+from ..schema.delivery_address_schema import DeliveryAddressDTO, GuestCustomerDTO
 from ..schema.order_item_schema import ListOrderDTO, ListOrderGuestDTO
 from uuid import UUID
 
 
 class OrderService:
 
-    def __init__(self, order_repository : OrderRepository):
+    def __init__(self, order_repository : OrderRepository, guest_repository : GuestRepository):
         self.order_repository=order_repository
+        self.guest_repository = guest_repository
 
     async def get_order_by_id(self, order_id: int) -> Order:
         return await self.order_repository.get_order_by_id(order_id)
@@ -24,6 +26,9 @@ class OrderService:
 
     async def get_all_orders(self):
         return await self.order_repository.get_all_orders()
+
+    async def create_guest_order(self, data : GuestCustomerDTO, client_id : UUID):
+        return await self.guest_repository.create_guest_order(data, client_id)
 
     async def create_order(self, data : ListOrderDTO, client_id : UUID | None) -> Order:
         pending_order = await self.get_pending_by_client_id(client_id)

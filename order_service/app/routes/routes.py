@@ -1,14 +1,15 @@
 from datetime import date
 from decimal import Decimal
+from typing import Annotated
 
 import httpx
-from fastapi import APIRouter, Request, Depends, Header, HTTPException
+from fastapi import APIRouter, Request, Depends, Header, HTTPException, Form
 from starlette.responses import RedirectResponse
 from starlette.templating import Jinja2Templates
 
 from ..dependencies.dependencies import get_order_service_dependency
 from ..models.orders import OrderStatus
-from ..schema.delivery_address_schema import DeliveryAddressDTO, GuestDTO
+from ..schema.delivery_address_schema import DeliveryAddressDTO, GuestDTO, GuestCustomerDTO
 from ..schema.order_item_schema import ListOrderDTO, ListOrderGuestDTO
 from ..schema.orders_schema import StatusDTO
 from ..schema.payment_schema import PaymentDTO
@@ -69,9 +70,17 @@ async def confirm_address(request : Request):
 
 @router.post("/orders/confirm_address/guest")
 async def create_delivering_address(request : Request,
-                                    data : GuestDTO,
+                                    data : Annotated[GuestDTO, Form(...,)],
                                     service : OrderService = Depends(get_order_service_dependency)):
     client_id = UUID(request.cookies.get("guest_client_id"))
+    guest_data = GuestCustomerDTO(
+        name=data.name,
+        surname=data.surname,
+        email=data.email,
+        birthday=data.birthday,
+        phone=data.phone
+    )
+    await service.create_guest_order(guest_data, client_id)
     address_data = DeliveryAddressDTO(
         city=data.city,
         street=data.street,
@@ -83,14 +92,16 @@ async def create_delivering_address(request : Request,
     await service.create_order_address(order.id, address_data)
     updated_order = await service.update_order_status(client_id, OrderStatus.CONFIRMED_ADDRESS)
     payment_data = PaymentDTO(
+        client_id=client_id,
         order_id=order.id,
         order_number=order.order_number,
         sum=order.sum
     )
     if updated_order.status==OrderStatus.CONFIRMED_ADDRESS:
         async with httpx.AsyncClient() as client:
-            response = await client.post(url="http://payment-service:8008/payment/create/guest",
-                                         json=payment_data.model_dump(mode="json"))
+            response = await client.post(url="http://payment-service:8008/payment/create",
+                                         json=payment_data.model_dump(mode="json"),
+                                         cookies={"guest_client_id" : str(client_id)})
             response.raise_for_status()
             payment_data = response.json()
         return RedirectResponse(url=payment_data["checkout_url"], status_code=303)
@@ -119,6 +130,7 @@ async def create_delivering_address(request : Request,
     await service.create_order_address(order.id, data)
     updated_order = await service.update_order_status(client_id, OrderStatus.CONFIRMED_ADDRESS)
     data = PaymentDTO(
+        client_id=client_id,
         order_id=order.id,
         order_number=order.order_number,
         sum=order.sum

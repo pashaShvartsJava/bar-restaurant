@@ -16,10 +16,10 @@ class GuestCustomer(Base):
     __tablename__ = "guest_customers"
 
     id = Column(Integer, primary_key=True, index=True)
-    client_id = Column(UUID, unique=True, index=True)
+    client_id = Column(UUID(as_uuid=True), unique=True, nullable=False,  index=True)
     name = Column(String, nullable=False, index=True)
     surname = Column(String, nullable=False, index=True)
-    email = Column(String, unique=True, nullable=False)
+    email = Column(String, nullable=False)
     birthday = Column(Date, nullable=False, index=True)
     phone = Column(String, nullable=False)
     created_at = Column(DateTime(timezone=True), nullable=False, default=lambda: datetime.now(timezone.utc))
