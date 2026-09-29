@@ -50,7 +50,12 @@ async def register_user(data : RegisterRequest, service : UserService = Depends(
         await service.create_user(data.user_data, data.address_data)
     except Exception:
         async with httpx.AsyncClient() as client:
-            response = await client.patch("http://authentication-service:8000/edit_status", params={"status" : Status.FAILED, "email" : str(data.email)})
+            response = await client.patch("http://authentication-service:8000/edit_status",
+                                          params={"status" : Status.FAILED.value, "email" : str(data.user_data.email), "identity_id": str(data.user_data.identity_id)},
+                                          headers={ "internal_token": settings.internal_token})
+
+            print("EDIT STATUS:", response.status_code)
+            print("EDIT STATUS BODY:", response.text)
             response.raise_for_status()
         raise InternalClientError("Ошибка регистрации")
     return {"message": "User created successfully"}

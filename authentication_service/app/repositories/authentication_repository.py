@@ -8,6 +8,7 @@ from fastapi import HTTPException
 from pydantic import EmailStr
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
 from ..broker.producer import publish_email_verification
 from ..model.confirmation_token_model import EmailVerificationToken
@@ -129,6 +130,10 @@ class AuthenticationRepository:
     # verification email process #
     #################################################
 
+    async def find_verification_token(self, token : str) -> EmailVerificationToken | None:
+        result = await self.db.execute(select(EmailVerificationToken).where(EmailVerificationToken.token_hash==token))
+        return result.scalar_one_or_none()
+
     async def create_verification_token(self, identity_id: UUID, hashed_token : str) -> EmailVerificationToken:
         new_token = EmailVerificationToken(
             identity_id=identity_id,
@@ -169,3 +174,19 @@ class AuthenticationRepository:
     async def get_event_by_event_id(self, event_id : str) -> OutboxEmailVerificationEvents | None:
         result = await self.db.execute(select(OutboxEmailVerificationEvents).where(OutboxEmailVerificationEvents.event_id==event_id))
         return result.scalar_one_or_none()
+
+    async def find_identity_by_token(self, token) -> Identity | None:
+        result = await self.db.execute(select(Identity).options(selectinload(Identity.tokens)).where(
+            Identity.verified_email==False,
+                        Identity.tokens==token))
+        return result.scalar_one_or_none()
+
+    async def verify_email(self, hashed_token: str):
+        async with self.db.begin():
+            found_token = await self.find_verification_token(hashed_token)
+            now = datetime.now(timezone.utc)
+            if found_token is not None and found_token.expires_at > now:
+                found_token.used_at = now
+            found_identity = await self.find_identity_by_token(hashed_token)
+            found_identity.verified_email = True
+        await self.db.refresh(found_identity)

@@ -55,9 +55,9 @@ async def authentication(email: EmailStr = Form(...),
     ])
     user = await service.find_by_email(email)
     if user.status != Status.ACTIVE:
-        raise HTTPException(detail="Этот аккаунт в состоянии незавершенной регистрации или заблокирован",
-                            status_code=403)
-
+        raise HTTPException(detail="Этот аккаунт в состоянии незавершенной регистрации или заблокирован", status_code=403)
+    if not user.verified_email:
+        raise HTTPException(detail="У этого аккаунта не верифицирован email", status_code=403)
     redirect = RedirectResponse(url="/user/my_profile", status_code=303)
     redirect.set_cookie(key="access_token", value=token, httponly=True, secure=False, max_age=3600, samesite="lax")
     return redirect
@@ -173,6 +173,9 @@ async def get_status(identity_id : UUID, internal_token : str = Header(..., alia
     user = await service.find_by_identity(identity_id)
     return IdentityDto.model_validate(user).model_dump(mode="json")
 
+@router.post("/verify_email")
+async def verify_email(token : str, service: AuthenticationService = Depends(get_service_dependency)):
+    await service.verify_email(token)
 
 
 
