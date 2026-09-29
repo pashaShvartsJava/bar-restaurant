@@ -172,6 +172,24 @@ services:
       - --port
       - "8008"
       - --reload
+  email-service:
+    build:
+      context: ./email_service
+    container_name: email-service
+    ports:
+      - "8009:8009"
+    env_file:
+      - ./email_service/.env
+    volumes:
+      - ./email_service:/email_service
+    command:
+      - uvicorn
+      - app.main:app
+      - --host
+      - 0.0.0.0
+      - --port
+      - "8009"
+      - --reload
 
   db-authentication:
     image: postgres:16
@@ -261,6 +279,17 @@ services:
       - "5439:5432"
     volumes:
       - postgres_payment_data:/var/lib/postgresql/data
+  db-email:
+    image: postgres:16
+    container_name: db-email
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: email_db
+    ports:
+      - "5440:5432"
+    volumes:
+      - postgres_email_data:/var/lib/postgresql/data
 volumes:
   postgres_auth_data:
   postgres_user_data:
@@ -271,3 +300,4 @@ volumes:
   postgres_order_data:
   postgres_payment_data:
   rabbitmq_data:
+  postgres_email_data:
