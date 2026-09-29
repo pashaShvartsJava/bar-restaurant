@@ -36,11 +36,17 @@ class EmailService:
 
         message.set_content("Для подтверждения email перейдите по ссылке: "+verification_url)
         message.add_alternative(html, subtype="html",)
-        await aiosmtplib.send(
-            message,
+        smtp = aiosmtplib.SMTP(
             hostname=settings.EMAIL_HOST,
             port=settings.EMAIL_PORT,
-            username=settings.EMAIL_USERNAME,
-            password=settings.EMAIL_PASSWORD,
-            start_tls=True,
+            timeout=20,
         )
+
+        await smtp.connect()
+        await smtp.login(
+            settings.EMAIL_USERNAME,
+            settings.EMAIL_PASSWORD,
+        )
+        await smtp.send_message(message)
+        await smtp.quit()
+
