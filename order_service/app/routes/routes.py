@@ -108,9 +108,6 @@ async def create_delivering_address(request : Request,
     return None
 
 
-
-
-
 @router.post("/orders/cancel_order/before_payment")
 async def cancel_order_before_payment(request : Request, service : OrderService = Depends(get_order_service_dependency)):
     payload = get_payload(request)
