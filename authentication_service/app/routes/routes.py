@@ -1,3 +1,5 @@
+import hashlib
+import secrets
 from typing import Annotated
 
 from fastapi import Request, APIRouter, HTTPException, Form
@@ -18,6 +20,7 @@ from ..services.authentication_service import AuthenticationService, send_new_us
 import httpx
 from uuid import UUID
 from ..config.config import settings
+from ..broker.producer import publish_email_verification
 
 INTERNAL_TOKEN = settings.internal_token
 templates = Jinja2Templates(directory="app/templates_auth")
