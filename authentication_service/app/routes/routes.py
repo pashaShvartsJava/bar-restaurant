@@ -173,7 +173,7 @@ async def get_status(identity_id : UUID, internal_token : str = Header(..., alia
     user = await service.find_by_identity(identity_id)
     return IdentityDto.model_validate(user).model_dump(mode="json")
 
-@router.post("/verify_email")
+@router.get("/verify_email")
 async def verify_email(token : str, service: AuthenticationService = Depends(get_service_dependency)):
     await service.verify_email(token)
 

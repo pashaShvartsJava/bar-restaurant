@@ -2,6 +2,7 @@ import asyncio
 import aio_pika
 from aio_pika import connect_robust
 
+from .consumer import EmailVerificationConsumer
 from ..config.config import settings
 
 
@@ -11,6 +12,7 @@ class RabbitMQ:
         self.channel = None
         self.exchange = None
         self.queue = None
+        self.consume = None
 
     async def connect(self):
         while True:
@@ -39,6 +41,7 @@ class RabbitMQ:
             self.exchange,
             routing_key="email_verification_event",
         )
+        self.consume = EmailVerificationConsumer(self.queue)
 
     async def close(self):
         if self.connection:

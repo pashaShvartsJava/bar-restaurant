@@ -1,18 +1,18 @@
 import json
 from uuid import UUID
+
 from ..database.database import SessionLocal
-from .rabbitmq import RabbitMQ
 from ..repository.email_repository import EmailRepository
 from ..service.email_service import EmailService
 
 
-class OrderPaidConsumer:
+class EmailVerificationConsumer:
 
-    def __init__(self, rabbitmq: RabbitMQ):
-        self.rabbitmq = rabbitmq
+    def __init__(self, queue):
+        self.queue = queue
 
     async def consume(self):
-        async with self.rabbitmq.queue.iterator() as queue_iter:
+        async with self.queue.iterator() as queue_iter:
             async for message in queue_iter:
                 try:
                     async with message.process():
