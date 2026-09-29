@@ -79,6 +79,7 @@ class AuthenticationService:
         return token
 
     async def create_identity(self, email : EmailStr, password : str):
+        await self.authentication_repository.db.rollback()
         hashed_token = await generate_verification_hashed_token()
         return await self.authentication_repository.create_identity(email, hash_password(password), hashed_token)
 
@@ -114,6 +115,10 @@ class AuthenticationService:
         hashed_password = hash_password(data.password)
         data.password = hashed_password
         return await self.authentication_repository.add_new_identity(data)
+
+    async def verify_email(self, token : str):
+        hashed_token = hashlib.sha256(token.encode("utf-8")).hexdigest()
+        return await self.authentication_repository.verify_email(hashed_token)
 
 
 
