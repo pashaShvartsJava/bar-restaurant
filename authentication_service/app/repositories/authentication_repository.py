@@ -1,10 +1,19 @@
+import hashlib
+import secrets
+import uuid
+from datetime import datetime, timezone, timedelta
+from typing import List
+
 from fastapi import HTTPException
 from pydantic import EmailStr
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from ..broker.producer import publish_email_verification
+from ..model.confirmation_token_model import EmailVerificationToken
 from ..model.identity_model import IdentityRole, Status
 from ..model.key_model import Key
+from ..model.outbox_email_verification_events import OutboxEmailVerificationEvents
 from ..schemas.admin_schema import IdentityEdit, AddAdminRequest
 from ..security.password.password import hash_password
 
@@ -34,25 +43,29 @@ class AuthenticationRepository:
         # registration process #
 #################################################
 
-    async def create_identity(self, email : EmailStr, hashed_password : str) -> Identity:
-        new_identity = Identity(
-            email = email,
-            password_hash = hashed_password
-        )
-        self.db.add(new_identity)
-        await self.db.commit()
-        await self.db.refresh(new_identity)
+    async def create_identity(self, email : EmailStr, hashed_password : str, hashed_token : str) -> Identity:
+        async with self.db.begin():
+            new_identity = Identity(
+                email=email,
+                password_hash=hashed_password
+            )
+            self.db.add(new_identity)
+            await self.db.flush()
+            token = await self.create_verification_token(new_identity.id, hashed_token)
+            await self.create_outbox_event(str(uuid.uuid4()), new_identity.email, token)
         return new_identity
 
-    async def create_admin_identity(self, email : EmailStr, hashed_password : str) -> Identity:
-        new_identity = Identity(
-            email = email,
-            password_hash = hashed_password,
-            role=IdentityRole.ADMIN
-        )
-        self.db.add(new_identity)
-        await self.db.commit()
-        await self.db.refresh(new_identity)
+    async def create_admin_identity(self, email : EmailStr, hashed_password : str, hashed_token) -> Identity:
+        async with self.db.begin():
+            new_identity = Identity(
+                email=email,
+                password_hash=hashed_password,
+                role=IdentityRole.ADMIN
+            )
+            self.db.add(new_identity)
+            await self.db.flush()
+            token = await self.create_verification_token(new_identity.id, hashed_token)
+            await self.create_outbox_event(str(uuid.uuid4()), new_identity.email, token)
         return new_identity
 
     async def get_by_identity(self, identity_id : UUID) -> Identity:
@@ -111,3 +124,48 @@ class AuthenticationRepository:
         self.db.add(new_identity)
         await self.db.commit()
         await self.db.refresh(new_identity)
+
+    #################################################
+    # verification email process #
+    #################################################
+
+    async def create_verification_token(self, identity_id: UUID, hashed_token : str) -> EmailVerificationToken:
+        new_token = EmailVerificationToken(
+            identity_id=identity_id,
+            token_hash=hashed_token,
+            expires_at=datetime.now(timezone.utc) + timedelta(hours=24)
+        )
+        self.db.add(new_token)
+        await self.db.flush()
+        return new_token
+
+
+    async def get_all_unpublished_events(self) -> List[OutboxEmailVerificationEvents]:
+        result = await self.db.execute(select(OutboxEmailVerificationEvents).where(OutboxEmailVerificationEvents.published_at == None))
+        return result.scalars().all()
+
+    async def mark_event_as_published(self, event: OutboxEmailVerificationEvents):
+        event.published_at = datetime.now(timezone.utc)
+        await self.db.flush()
+
+
+
+    async def create_outbox_event(self, event_id : str, email : EmailStr, token : str) -> OutboxEmailVerificationEvents:
+        found_event = await self.get_event_by_event_id(event_id)
+        if found_event is not None:
+            return found_event
+        outbox_event = OutboxEmailVerificationEvents(
+            event_type="EmailVerification",
+            payload={
+                "email": email,
+                "token": str(token),
+            },
+            event_id=event_id
+        )
+        self.db.add(outbox_event)
+        await self.db.flush()
+        return outbox_event
+
+    async def get_event_by_event_id(self, event_id : str) -> OutboxEmailVerificationEvents | None:
+        result = await self.db.execute(select(OutboxEmailVerificationEvents).where(OutboxEmailVerificationEvents.event_id==event_id))
+        return result.scalar_one_or_none()

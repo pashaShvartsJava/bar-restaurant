@@ -1,3 +1,4 @@
+import secrets
 from typing import Annotated
 
 from fastapi import Request, APIRouter, HTTPException, Form
@@ -6,6 +7,7 @@ from pydantic import EmailStr, TypeAdapter
 from starlette.responses import HTMLResponse, RedirectResponse
 from starlette.templating import Jinja2Templates
 
+from ..broker.producer import publish_email_verification
 from ..exceptions.exceptions import InvalidCredentialsError
 from ..model.identity_model import Status
 from ..schemas.admin_schema import AdminRegistration, AdminRegistrationDTO, AdminLogin
