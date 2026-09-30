@@ -27,3 +27,7 @@ class GuestRepository:
         await self.db.commit()
         await self.db.refresh(new_guest)
         return new_guest
+
+    async def get_customer_by_client_id(self, client_id : UUID):
+        result = await self.db.execute(select(GuestCustomer).where(GuestCustomer.client_id==client_id))
+        return result.scalar_one_or_none()
