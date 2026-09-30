@@ -2,7 +2,7 @@ import asyncio
 import aio_pika
 from aio_pika import connect_robust
 
-from .consumer import EmailVerificationConsumer
+from .consumer import EmailVerificationConsumer, ChangePasswordVerificationConsumer
 from ..config.config import settings
 
 
@@ -11,8 +11,10 @@ class RabbitMQ:
         self.connection = None
         self.channel = None
         self.exchange = None
-        self.queue = None
-        self.consume = None
+        self.email_verification_queue = None
+        self.change_password_verification_queue = None
+        self.consume_email_verification = None
+        self.consume_change_password_verification = None
 
     async def connect(self):
         while True:
@@ -32,16 +34,17 @@ class RabbitMQ:
         self.exchange = await self.channel.declare_exchange("email_verification_event",
                                                             aio_pika.ExchangeType.DIRECT,
                                                             durable=True)
-        self.queue = await self.channel.declare_queue(
-            "email_verification",
-            durable=True,
-        )
+        self.email_verification_queue = await self.channel.declare_queue(
+            "email_verification", durable=True)
+        await self.email_verification_queue.bind(
+            self.exchange, routing_key="email_verification_event")
 
-        await self.queue.bind(
-            self.exchange,
-            routing_key="email_verification_event",
-        )
-        self.consume = EmailVerificationConsumer(self.queue)
+        self.change_password_verification_queue = await self.channel.declare_queue(
+            "change_password_verification", durable=True)
+        await self.change_password_verification_queue.bind(
+            self.exchange, routing_key="change_password_verification_event")
+        self.consume_email_verification = EmailVerificationConsumer(self.email_verification_queue)
+        self.consume_change_password_verification = ChangePasswordVerificationConsumer(self.change_password_verification_queue)
 
     async def close(self):
         if self.connection:

@@ -10,7 +10,8 @@ class RabbitMQ:
         self.connection = None
         self.channel = None
         self.exchange = None
-        self.queue = None
+        self.email_verification_queue = None
+        self.change_password_verification_queue = None
 
     async def connect(self):
         while True:
@@ -30,15 +31,15 @@ class RabbitMQ:
         self.exchange = await self.channel.declare_exchange("email_verification_event",
                                                             aio_pika.ExchangeType.DIRECT,
                                                             durable=True)
-        self.queue = await self.channel.declare_queue(
-            "email_verification",
-            durable=True,
-        )
+        self.email_verification_queue = await self.channel.declare_queue(
+            "email_verification", durable=True)
+        await self.email_verification_queue.bind(
+            self.exchange, routing_key="email_verification_event")
 
-        await self.queue.bind(
-            self.exchange,
-            routing_key="email_verification_event",
-        )
+        self.change_password_verification_queue = await self.channel.declare_queue(
+     "change_password_verification", durable=True)
+        await self.change_password_verification_queue.bind(
+            self.exchange, routing_key="change_password_verification_event")
 
     async def close(self):
         if self.connection:
