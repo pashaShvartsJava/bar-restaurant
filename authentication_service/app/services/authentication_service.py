@@ -5,6 +5,7 @@ from pydantic import EmailStr
 from watchfiles import awatch
 
 from ..model.confirmation_token_model import EmailVerificationToken
+from ..model.update_password_email_token_model import UpdatePasswordEmailToken
 from ..repositories.authentication_repository import AuthenticationRepository
 from ..schemas.admin_schema import IdentityEdit, AddAdminRequest
 from ..schemas.schema import LoginSchema, RegisterIdentitySchema, RegisterRequestDTO, AddressResponseDTO
@@ -60,6 +61,10 @@ class AuthenticationService:
         identity = await self.authentication_repository.get_by_email(email)
         return identity
 
+    async def find_change_password_verification_token(self, token: str) -> UpdatePasswordEmailToken | None:
+        hashed_token = hashlib.sha256(token.encode("utf-8")).hexdigest()
+        return await self.authentication_repository.find_change_password_verification_token(hashed_token)
+
     async def verify_credentials(self, email : EmailStr, password : str) -> Identity | None:
         identity = await self.find_by_email(email)
         if identity is None or not verify_password(password, identity.password_hash):
@@ -78,6 +83,9 @@ class AuthenticationService:
 
     async  def update_password(self, identity_id : UUID, new_password : str):
         return await self.authentication_repository.update_password(identity_id, new_password)
+
+    async def update_already_hashed_password(self, identity_id : UUID, new_hashed_password : str):
+        return await self.authentication_repository.update_already_hashed_password(identity_id, new_hashed_password)
 
     async def update_email(self, identity : Identity, new_email : EmailStr):
         return await self.authentication_repository.update_email(identity, new_email)
@@ -112,8 +120,9 @@ class AuthenticationService:
         hashed_token = hashlib.sha256(token.encode("utf-8")).hexdigest()
         return await self.authentication_repository.verify_email(hashed_token)
 
-    async def create_verify_change_password_token(self, identity_id : UUID):
-        return await self.authentication_repository.create_verify_change_password_token(identity_id)
+    async def create_verify_change_password_token(self, identity_id : UUID, new_password : str):
+        await self.authentication_repository.db.rollback()
+        return await self.authentication_repository.create_verify_change_password_token(identity_id, new_password)
 
 
 

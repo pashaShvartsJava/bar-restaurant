@@ -128,7 +128,6 @@ async def edit_password(request: Request,service: UserService = Depends(get_serv
             raise HTTPException(status_code=401,detail="Неверный старый пароль")
         raise HTTPException(status_code=500,detail="Ошибка при смене пароля")
     response = JSONResponse({"success": True})
-    response.delete_cookie("access_token")
     return response
 
 @router.get("/get_all_users")

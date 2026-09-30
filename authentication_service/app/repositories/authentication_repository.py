@@ -88,6 +88,12 @@ class AuthenticationRepository:
         await self.db.commit()
         await self.db.refresh(identity)
 
+    async def update_already_hashed_password(self, identity_id: UUID, new_hashed_password: str):
+        identity = await self.get_by_identity(identity_id)
+        identity.password_hash = new_hashed_password
+        await self.db.commit()
+        await self.db.refresh(identity)
+
     async def update_email(self, identity : Identity, new_email : EmailStr):
         identity.email = new_email
         await self.db.commit()
@@ -142,6 +148,12 @@ class AuthenticationRepository:
                                        .where(EmailVerificationToken.token_hash==hashed_token))
         return result.scalar_one_or_none()
 
+    async def find_change_password_verification_token(self, hashed_token : str) -> UpdatePasswordEmailToken | None:
+        result = await self.db.execute(select(UpdatePasswordEmailToken)
+                                       .options(selectinload(UpdatePasswordEmailToken.identity))
+                                       .where(UpdatePasswordEmailToken.token_hash==hashed_token))
+        return result.scalar_one_or_none()
+
     async def create_verification_token(self, identity_id: UUID, hashed_token : str) -> EmailVerificationToken:
         new_token = EmailVerificationToken(
             identity_id=identity_id,
@@ -152,14 +164,16 @@ class AuthenticationRepository:
         await self.db.flush()
         return new_token
 
-    async def create_verify_change_password_token(self, identity_id: UUID) -> UpdatePasswordEmailToken:
+    async def create_verify_change_password_token(self, identity_id: UUID, new_password : str) -> UpdatePasswordEmailToken:
+        hashed_new_password = hash_password(new_password)
         async with self.db.begin():
             token = secrets.token_urlsafe(32)
             hashed_token = hashlib.sha256(token.encode("utf-8")).hexdigest()
             new_token = UpdatePasswordEmailToken(
                 identity_id=identity_id,
                 token_hash=hashed_token,
-                expires_at=datetime.now(timezone.utc) + timedelta(minutes=15)
+                expires_at=datetime.now(timezone.utc) + timedelta(minutes=15),
+                new_hashed_password=hashed_new_password
             )
             self.db.add(new_token)
             await self.db.flush()
@@ -225,7 +239,6 @@ class AuthenticationRepository:
     async def verify_email(self, hashed_token: str):
         async with self.db.begin():
             found_token = await self.find_verification_token(hashed_token)
-            print("FOUND TOKEN::::::: ", found_token)
             now = datetime.now(timezone.utc)
             if found_token is not None and found_token.expires_at > now:
                 found_token.used_at = now
