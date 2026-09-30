@@ -101,7 +101,7 @@ async def registration( data : Annotated[RegistrationSchema, Form()],
     return RedirectResponse(url="/login", status_code=303)
 
 @router.get("/get_identity")
-async def update_password(identity_id: UUID, old_password: str, new_password: str,
+async def verify_change_password(identity_id: UUID, old_password: str, new_password: str,
     service: AuthenticationService = Depends(get_service_dependency)):
     identity = await service.find_by_identity(identity_id)
 
@@ -112,8 +112,12 @@ async def update_password(identity_id: UUID, old_password: str, new_password: st
 
     if not checked_passwords:
         raise HTTPException(status_code=401, detail="Incorrect old password")
-    await service.create_verify_change_password_token(identity_id)
-    return await service.update_password(identity_id, new_password)
+    await service.create_verify_change_password_token(identity_id, new_password)
+
+@router.get("/verify_change_password")
+async def change_password(token : str, service: AuthenticationService = Depends(get_service_dependency)):
+    token = await service.find_change_password_verification_token(token)
+    await service.update_already_hashed_password(token.identity_id, token.new_hashed_password)
 
 @router.patch("/edit_password")
 async def update_password(data : PasswordUpdateDTO, service: AuthenticationService = Depends(get_service_dependency)):
