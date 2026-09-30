@@ -30,3 +30,4 @@ class Identity(Base):
     verified_email = Column(Boolean, nullable=False, default=False)
 
     tokens = relationship("EmailVerificationToken",  back_populates="identity", cascade="all, delete-orphan")
+    change_password_tokens = relationship("UpdatePasswordEmailToken", back_populates="identity", cascade="all, delete-orphan")

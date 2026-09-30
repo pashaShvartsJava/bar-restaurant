@@ -112,6 +112,7 @@ async def update_password(identity_id: UUID, old_password: str, new_password: st
 
     if not checked_passwords:
         raise HTTPException(status_code=401, detail="Incorrect old password")
+    await service.create_verify_change_password_token(identity_id)
     return await service.update_password(identity_id, new_password)
 
 @router.patch("/edit_password")

@@ -16,3 +16,12 @@ async def publish_email_verification(email : EmailStr, token : str, event_id : s
             "token": token})
         .encode(), message_id=event_id, delivery_mode=aio_pika.DeliveryMode.PERSISTENT, content_type="application/json")
     await rabbitmq.exchange.publish(message, routing_key="email_verification_event")
+
+async def publish_change_password_verification(email : EmailStr, token : str, event_id : str):
+    message = aio_pika.Message(
+        body=json.dumps({
+            "event": "change_password_verification",
+            "email": email,
+            "token": token})
+        .encode(), message_id=event_id, delivery_mode=aio_pika.DeliveryMode.PERSISTENT, content_type="application/json")
+    await rabbitmq.exchange.publish(message, routing_key="change_password_verification_event")

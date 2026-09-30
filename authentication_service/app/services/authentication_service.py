@@ -112,6 +112,9 @@ class AuthenticationService:
         hashed_token = hashlib.sha256(token.encode("utf-8")).hexdigest()
         return await self.authentication_repository.verify_email(hashed_token)
 
+    async def create_verify_change_password_token(self, identity_id : UUID):
+        return await self.authentication_repository.create_verify_change_password_token(identity_id)
+
 
 
 

@@ -14,6 +14,7 @@ from ..model.confirmation_token_model import EmailVerificationToken
 from ..model.identity_model import IdentityRole, Status
 from ..model.key_model import Key
 from ..model.outbox_email_verification_events import OutboxEmailVerificationEvents
+from ..model.update_password_email_token_model import UpdatePasswordEmailToken
 from ..schemas.admin_schema import IdentityEdit, AddAdminRequest
 from ..security.password.password import hash_password
 
@@ -59,7 +60,7 @@ class AuthenticationRepository:
             self.db.add(new_identity)
             await self.db.flush()
             await self.create_verification_token(new_identity.id, hashed_token)
-            await self.create_outbox_event(event_id=str(uuid.uuid4()), email=new_identity.email, token=token)
+            await self.create_outbox_event_email_verification(event_id=str(uuid.uuid4()), email=new_identity.email, token=token)
         return new_identity
 
     async def create_admin_identity(self, email : EmailStr, hashed_password : str) -> Identity:
@@ -74,7 +75,7 @@ class AuthenticationRepository:
             self.db.add(new_identity)
             await self.db.flush()
             await self.create_verification_token(new_identity.id, hashed_token)
-            await self.create_outbox_event(str(uuid.uuid4()), new_identity.email, token)
+            await self.create_outbox_event_email_verification(str(uuid.uuid4()), new_identity.email, token)
         return new_identity
 
     async def get_by_identity(self, identity_id : UUID) -> Identity:
@@ -93,10 +94,7 @@ class AuthenticationRepository:
         await self.db.refresh(identity)
 
     async def delete_identity(self, identity_id : UUID):
-        print("IDENTITY ID:", identity_id)
-        print("IDENTITY ID TYPE:", type(identity_id))
         identity = await self.get_by_identity(identity_id)
-        print("FOUND IDENTITY:", identity)
         if identity is None:
             raise HTTPException(status_code=404,detail="Пользователь не найден")
         await self.db.delete(identity)
@@ -154,6 +152,24 @@ class AuthenticationRepository:
         await self.db.flush()
         return new_token
 
+    async def create_verify_change_password_token(self, identity_id: UUID) -> UpdatePasswordEmailToken:
+        async with self.db.begin():
+            token = secrets.token_urlsafe(32)
+            hashed_token = hashlib.sha256(token.encode("utf-8")).hexdigest()
+            new_token = UpdatePasswordEmailToken(
+                identity_id=identity_id,
+                token_hash=hashed_token,
+                expires_at=datetime.now(timezone.utc) + timedelta(minutes=15)
+            )
+            self.db.add(new_token)
+            await self.db.flush()
+            identity = await self.get_by_identity(identity_id)
+            await self.create_outbox_event_change_password_verification(event_id=str(uuid.uuid4()),
+                                                                        email=identity.email,
+                                                                        token=token)
+        await self.db.refresh(new_token)
+        return new_token
+
 
     async def get_all_unpublished_events(self) -> List[OutboxEmailVerificationEvents]:
         result = await self.db.execute(select(OutboxEmailVerificationEvents).where(OutboxEmailVerificationEvents.published_at == None))
@@ -165,12 +181,28 @@ class AuthenticationRepository:
 
 
 
-    async def create_outbox_event(self, event_id : str, email : EmailStr, token : str) -> OutboxEmailVerificationEvents:
+    async def create_outbox_event_email_verification(self, event_id : str, email : EmailStr, token : str) -> OutboxEmailVerificationEvents:
         found_event = await self.get_event_by_event_id(event_id)
         if found_event is not None:
             return found_event
         outbox_event = OutboxEmailVerificationEvents(
             event_type="EmailVerification",
+            payload={
+                "email": email,
+                "token": str(token),
+            },
+            event_id=event_id
+        )
+        self.db.add(outbox_event)
+        await self.db.flush()
+        return outbox_event
+
+    async def create_outbox_event_change_password_verification(self, event_id : str, email : EmailStr, token : str) -> OutboxEmailVerificationEvents:
+        found_event = await self.get_event_by_event_id(event_id)
+        if found_event is not None:
+            return found_event
+        outbox_event = OutboxEmailVerificationEvents(
+            event_type="ChangePasswordVerification",
             payload={
                 "email": email,
                 "token": str(token),
