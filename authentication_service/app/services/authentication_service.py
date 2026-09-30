@@ -45,12 +45,6 @@ def send_address(city: str, postal_code : str, street : str, house : int, apartm
     return created_address
 
 
-async def generate_verification_hashed_token() -> str:
-    token = secrets.token_urlsafe(32)
-    hashed_token = hashlib.sha256(token.encode("utf-8")).hexdigest()
-    return hashed_token
-
-
 class AuthenticationService:
 
     def __init__(self, authentication_repository : AuthenticationRepository):
@@ -80,8 +74,7 @@ class AuthenticationService:
 
     async def create_identity(self, email : EmailStr, password : str):
         await self.authentication_repository.db.rollback()
-        hashed_token = await generate_verification_hashed_token()
-        return await self.authentication_repository.create_identity(email, hash_password(password), hashed_token)
+        return await self.authentication_repository.create_identity(email, hash_password(password))
 
     async  def update_password(self, identity_id : UUID, new_password : str):
         return await self.authentication_repository.update_password(identity_id, new_password)
@@ -93,8 +86,7 @@ class AuthenticationService:
         return await self.authentication_repository.delete_identity(identity_id)
 
     async def create_admin_identity(self, email : EmailStr, password : str):
-        hashed_token = await generate_verification_hashed_token()
-        return await self.authentication_repository.create_admin_identity(email, hash_password(password), hashed_token)
+        return await self.authentication_repository.create_admin_identity(email, hash_password(password))
 
     async def verify_registration_key(self, key : str) -> str | None:
         return await self.authentication_repository.verify_registration_key(key)
