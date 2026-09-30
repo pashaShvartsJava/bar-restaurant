@@ -1,3 +1,4 @@
+import uuid
 from datetime import datetime, timezone, timedelta, date
 from decimal import Decimal
 from uuid import UUID
@@ -7,8 +8,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from ..models.delivery_address import DeliveryAddress
+from ..models.guest_customers import GuestCustomer
 from ..models.order_items import OrderItem
 from ..models.orders import Order, OrderStatus
+from ..models.outbox_change_status_events_model import OutboxChangeStatusEvents
 from ..schema.delivery_address_schema import DeliveryAddressDTO
 from ..schema.order_item_schema import ListOrderDTO, ListOrderGuestDTO
 
@@ -68,46 +71,44 @@ class OrderRepository:
         return new_delivery_address
 
     async def create_order(self, order_items : ListOrderDTO, client_id : UUID, total_sum : Decimal) -> Order:
-        new_order = Order(
-            client_id=client_id,
-            sum=total_sum
-        )
-        self.db.add(new_order)
-        await self.db.flush()
-
-        for order_item in order_items.order_items:
-            new_order_item = OrderItem(
-                order_id=new_order.id,
-                dish_id=order_item.dish_id,
-                dish_name=order_item.dish_name,
-                quantity=order_item.quantity,
-                price=order_item.price
+        async with self.db.begin():
+            new_order = Order(
+                client_id=client_id,
+                sum=total_sum
             )
-            self.db.add(new_order_item)
+            self.db.add(new_order)
+            await self.db.flush()
 
-        await self.db.commit()
+            for order_item in order_items.order_items:
+                new_order_item = OrderItem(
+                    order_id=new_order.id,
+                    dish_id=order_item.dish_id,
+                    dish_name=order_item.dish_name,
+                    quantity=order_item.quantity,
+                    price=order_item.price
+                )
+                self.db.add(new_order_item)
         await self.db.refresh(new_order)
         return new_order
 
     async def create_order_for_guest(self, data : ListOrderGuestDTO, total_sum : Decimal):
-        new_order = Order(
-            client_id=data.client_id,
-            sum=total_sum
-        )
-        self.db.add(new_order)
-        await self.db.flush()
-
-        for order_item in data.order_items:
-            new_order_item = OrderItem(
-                order_id=new_order.id,
-                dish_id=order_item.dish_id,
-                dish_name=order_item.dish_name,
-                quantity=order_item.quantity,
-                price=order_item.price
+        async with self.db.begin():
+            new_order = Order(
+                client_id=data.client_id,
+                sum=total_sum
             )
-            self.db.add(new_order_item)
+            self.db.add(new_order)
+            await self.db.flush()
 
-        await self.db.commit()
+            for order_item in data.order_items:
+                new_order_item = OrderItem(
+                    order_id=new_order.id,
+                    dish_id=order_item.dish_id,
+                    dish_name=order_item.dish_name,
+                    quantity=order_item.quantity,
+                    price=order_item.price
+                )
+                self.db.add(new_order_item)
         await self.db.refresh(new_order)
         return new_order
 
@@ -202,11 +203,28 @@ class OrderRepository:
                                  .order_by(Order.created_at.desc()).limit(1))
         return result.scalar_one_or_none()
 
-    async def change_order_status(self, order_number : UUID, status : OrderStatus):
-        order = await self.get_order_by_order_number(order_number)
-        order.status = status
-        await self.db.commit()
+    async def change_order_status(self, order_number : UUID, status : OrderStatus, email : str):
+        async with self.db.begin():
+            order = await self.get_order_by_order_number(order_number)
+            order.status = status
+            await self.create_outbox_change_status_event(order.id, order.client_id, order_number, status, email)
         await self.db.refresh(order)
+
+    async def create_outbox_change_status_event(self, order_id : UUID, client_id : UUID, order_number : UUID, status : OrderStatus, email : str) -> OutboxChangeStatusEvents:
+        new_outbox = OutboxChangeStatusEvents(
+            event_type="ChangeOrderStatus",
+            payload={
+                "order_id" : order_id,
+                "client_id" : client_id,
+                "order_number" : order_number,
+                "order_status" : status,
+                "email" : email
+            },
+            event_id=str(uuid.uuid4())
+        )
+        self.db.add(new_outbox)
+        await self.db.flush()
+        return new_outbox
 
 
 

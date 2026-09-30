@@ -182,6 +182,14 @@ async def get_status(identity_id : UUID, internal_token : str = Header(..., alia
 async def verify_email(token : str, service: AuthenticationService = Depends(get_service_dependency)):
     await service.verify_email(token)
 
+@router.get("/get_client")
+async def get_identity(request : Request,
+                       internal_token : str = Header(..., alias="internal_token"),
+                       service: AuthenticationService = Depends(get_service_dependency)):
+    if internal_token != INTERNAL_TOKEN or internal_token is None:
+        raise HTTPException(detail="Forbidden", status_code=403)
+    client = await service.find_by_identity(UUID(request.cookies.get("guest_client_id")))
+    return client.email
 
 
 

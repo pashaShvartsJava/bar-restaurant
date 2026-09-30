@@ -1,6 +1,7 @@
 from datetime import date
 from decimal import Decimal
 
+from ..models.guest_customers import GuestCustomer
 from ..models.orders import Order, OrderStatus
 from ..repository.guest_repository import GuestRepository
 from ..repository.order_repository import OrderRepository
@@ -17,6 +18,12 @@ class OrderService:
 
     async def get_order_by_id(self, order_id: int) -> Order:
         return await self.order_repository.get_order_by_id(order_id)
+
+    async def get_customer_by_client_id(self, client_id: UUID) -> GuestCustomer:
+        return await self.guest_repository.get_customer_by_client_id(client_id)
+
+    async def get_order_by_order_number(self, order_number: UUID) -> Order:
+        return await self.order_repository.get_order_by_order_number(order_number)
 
     async def get_all_orders_history(self):
         return await self.order_repository.get_all_orders_history()
@@ -37,12 +44,14 @@ class OrderService:
         total_sum = 0
         for order_item in data.order_items:
             total_sum += order_item.price * order_item.quantity
+        await self.order_repository.db.rollback()
         return await self.order_repository.create_order(data , client_id, total_sum)
 
     async def create_order_for_guest(self, data : ListOrderGuestDTO):
         total_sum = 0
         for order_item in data.order_items:
             total_sum += order_item.price * order_item.quantity
+        await self.order_repository.db.rollback()
         return await self.order_repository.create_order_for_guest(data , total_sum)
 
     async def mark_order_as_paid(self, client_id: UUID, status: OrderStatus) -> Order:
@@ -81,5 +90,6 @@ class OrderService:
     async def get_user_last_completed_order(self, client_id: UUID):
         return await self.order_repository.get_user_last_completed_order(client_id)
 
-    async def change_order_status(self, order_number: UUID, status: OrderStatus):
-        return await self.order_repository.change_order_status(order_number, status)
+    async def change_order_status(self, order_number: UUID, status: OrderStatus, email : str):
+        await self.order_repository.db.rollback()
+        return await self.order_repository.change_order_status(order_number, status, email)
