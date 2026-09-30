@@ -7,7 +7,6 @@ from pydantic import EmailStr, TypeAdapter
 from starlette.responses import HTMLResponse, RedirectResponse
 from starlette.templating import Jinja2Templates
 
-from ..broker.producer import publish_email_verification
 from ..exceptions.exceptions import InvalidCredentialsError
 from ..model.identity_model import Status
 from ..schemas.admin_schema import AdminRegistration, AdminRegistrationDTO, AdminLogin
@@ -75,6 +74,8 @@ async def admin_login(data : Annotated[AdminLogin, Form()], service : Authentica
     if authentication_key is None:
         raise HTTPException(detail="Доступ запрещен", status_code=403)
     admin = await service.find_by_email(data.email)
+    if not admin.verified_email:
+        raise HTTPException(detail="У этого аккаунта не верифицирован email", status_code=403)
     if admin.status != Status.ACTIVE:
         raise HTTPException(detail="Этот аккаунт в состоянии незавершенной регистрации или заблокирован", status_code=403)
     redirect = RedirectResponse(url="/admin_panel", status_code=303)

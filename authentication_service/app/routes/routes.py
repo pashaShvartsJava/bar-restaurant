@@ -20,7 +20,6 @@ from ..services.authentication_service import AuthenticationService, send_new_us
 import httpx
 from uuid import UUID
 from ..config.config import settings
-from ..broker.producer import publish_email_verification
 
 INTERNAL_TOKEN = settings.internal_token
 templates = Jinja2Templates(directory="app/templates_auth")
@@ -54,10 +53,10 @@ async def authentication(email: EmailStr = Form(...),
         }
     ])
     user = await service.find_by_email(email)
-    if user.status != Status.ACTIVE:
-        raise HTTPException(detail="Этот аккаунт в состоянии незавершенной регистрации или заблокирован", status_code=403)
     if not user.verified_email:
         raise HTTPException(detail="У этого аккаунта не верифицирован email", status_code=403)
+    if user.status != Status.ACTIVE:
+        raise HTTPException(detail="Этот аккаунт в состоянии незавершенной регистрации или заблокирован", status_code=403)
     redirect = RedirectResponse(url="/user/my_profile", status_code=303)
     redirect.set_cookie(key="access_token", value=token, httponly=True, secure=False, max_age=3600, samesite="lax")
     return redirect
@@ -98,6 +97,7 @@ async def registration( data : Annotated[RegistrationSchema, Form()],
     async with httpx.AsyncClient() as client:
         response = await client.post("http://user-service:8005/users/add_user", json=register_dto.model_dump(mode="json"))
         response.raise_for_status()
+    await service.update_status_identity(created_user, Status.ACTIVE)
     return RedirectResponse(url="/login", status_code=303)
 
 @router.get("/get_identity")

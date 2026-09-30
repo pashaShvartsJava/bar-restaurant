@@ -10,7 +10,6 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
-from ..broker.producer import publish_email_verification
 from ..model.confirmation_token_model import EmailVerificationToken
 from ..model.identity_model import IdentityRole, Status
 from ..model.key_model import Key
@@ -20,6 +19,11 @@ from ..security.password.password import hash_password
 
 from ..model.identity_model import Identity
 from uuid import UUID
+
+async def generate_verification_hashed_token() -> str:
+    token = secrets.token_urlsafe(32)
+    hashed_token = hashlib.sha256(token.encode("utf-8")).hexdigest()
+    return hashed_token
 
 
 class AuthenticationRepository:
@@ -44,7 +48,9 @@ class AuthenticationRepository:
         # registration process #
 #################################################
 
-    async def create_identity(self, email : EmailStr, hashed_password : str, hashed_token : str) -> Identity:
+    async def create_identity(self, email : EmailStr, hashed_password : str) -> Identity:
+        token = secrets.token_urlsafe(32)
+        hashed_token = hashlib.sha256(token.encode("utf-8")).hexdigest()
         async with self.db.begin():
             new_identity = Identity(
                 email=email,
@@ -52,11 +58,13 @@ class AuthenticationRepository:
             )
             self.db.add(new_identity)
             await self.db.flush()
-            token = await self.create_verification_token(new_identity.id, hashed_token)
-            await self.create_outbox_event(str(uuid.uuid4()), new_identity.email, token)
+            await self.create_verification_token(new_identity.id, hashed_token)
+            await self.create_outbox_event(event_id=str(uuid.uuid4()), email=new_identity.email, token=token)
         return new_identity
 
-    async def create_admin_identity(self, email : EmailStr, hashed_password : str, hashed_token) -> Identity:
+    async def create_admin_identity(self, email : EmailStr, hashed_password : str) -> Identity:
+        token = secrets.token_urlsafe(32)
+        hashed_token = hashlib.sha256(token.encode("utf-8")).hexdigest()
         async with self.db.begin():
             new_identity = Identity(
                 email=email,
@@ -65,7 +73,7 @@ class AuthenticationRepository:
             )
             self.db.add(new_identity)
             await self.db.flush()
-            token = await self.create_verification_token(new_identity.id, hashed_token)
+            await self.create_verification_token(new_identity.id, hashed_token)
             await self.create_outbox_event(str(uuid.uuid4()), new_identity.email, token)
         return new_identity
 
@@ -130,8 +138,10 @@ class AuthenticationRepository:
     # verification email process #
     #################################################
 
-    async def find_verification_token(self, token : str) -> EmailVerificationToken | None:
-        result = await self.db.execute(select(EmailVerificationToken).where(EmailVerificationToken.token_hash==token))
+    async def find_verification_token(self, hashed_token : str) -> EmailVerificationToken | None:
+        result = await self.db.execute(select(EmailVerificationToken)
+                                       .options(selectinload(EmailVerificationToken.identity))
+                                       .where(EmailVerificationToken.token_hash==hashed_token))
         return result.scalar_one_or_none()
 
     async def create_verification_token(self, identity_id: UUID, hashed_token : str) -> EmailVerificationToken:
@@ -175,18 +185,18 @@ class AuthenticationRepository:
         result = await self.db.execute(select(OutboxEmailVerificationEvents).where(OutboxEmailVerificationEvents.event_id==event_id))
         return result.scalar_one_or_none()
 
-    async def find_identity_by_token(self, token) -> Identity | None:
-        result = await self.db.execute(select(Identity).options(selectinload(Identity.tokens)).where(
-            Identity.verified_email==False,
-                        Identity.tokens==token))
+    async def find_identity_by_token(self, hashed_token) -> Identity | None:
+        result = await self.db.execute(select(EmailVerificationToken).options(selectinload(EmailVerificationToken.identity))
+        .where(EmailVerificationToken.token_hash == hashed_token, EmailVerificationToken.used_at.is_(None)))
         return result.scalar_one_or_none()
 
     async def verify_email(self, hashed_token: str):
         async with self.db.begin():
             found_token = await self.find_verification_token(hashed_token)
+            print("FOUND TOKEN::::::: ", found_token)
             now = datetime.now(timezone.utc)
             if found_token is not None and found_token.expires_at > now:
                 found_token.used_at = now
-            found_identity = await self.find_identity_by_token(hashed_token)
+            found_identity : Identity = found_token.identity
             found_identity.verified_email = True
         await self.db.refresh(found_identity)
