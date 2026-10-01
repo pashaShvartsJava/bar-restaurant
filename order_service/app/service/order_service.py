@@ -78,8 +78,8 @@ class OrderService:
                                     sort: str):
         return await self.order_repository.search_or_sort_orders(search, status, date_from, date_to, sum_from, sum_to, sort)
 
-    async def find_order_by_client_id(self, client_id: UUID):
-        return await self.order_repository.find_order_by_client_id(client_id)
+    async def find_orders_by_client_id(self, client_id: UUID):
+        return await self.order_repository.find_orders_by_client_id(client_id)
 
     async def get_user_history_orders(self, client_id : UUID):
         return await self.order_repository.get_user_history_orders(client_id)
@@ -90,6 +90,6 @@ class OrderService:
     async def get_user_last_completed_order(self, client_id: UUID):
         return await self.order_repository.get_user_last_completed_order(client_id)
 
-    async def change_order_status(self, order_number: UUID, status: OrderStatus, email : str):
+    async def change_order_status(self, status: OrderStatus, email : str, order_number : UUID):
         await self.order_repository.db.rollback()
-        return await self.order_repository.change_order_status(order_number, status, email)
+        return await self.order_repository.change_order_status(status, email, order_number)

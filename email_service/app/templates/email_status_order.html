@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Статус заказа</title>
+</head>
+
+<body style="
+    margin: 0;
+    padding: 0;
+    background-color: #f4f1eb;
+    font-family: Arial, Helvetica, sans-serif;
+    color: #2b2b2b;
+">
+
+{% if order_status == "paid" %}
+    {% set status_text = "Успешно оплачен" %}
+    {% set status_description = "Ваш заказ успешно оплачен и принят в обработку." %}
+{% elif order_status == "preparing" %}
+    {% set status_text = "Готовится" %}
+    {% set status_description = "Мы уже начали готовить ваш заказ." %}
+{% elif order_status == "delivering" %}
+    {% set status_text = "Передан курьеру" %}
+    {% set status_description = "Ваш заказ передан курьеру и скоро будет доставлен." %}
+{% elif order_status == "completed" %}
+    {% set status_text = "Доставлен" %}
+    {% set status_description = "Ваш заказ успешно доставлен. Спасибо за заказ!" %}
+{% else %}
+    {% set status_text = order_status %}
+    {% set status_description = "Статус вашего заказа был обновлён." %}
+{% endif %}
+
+
+<table width="100%" cellpadding="0" cellspacing="0" border="0"
+       style="
+           background-color: #f4f1eb;
+           padding: 30px 15px;
+       ">
+
+    <tr>
+        <td align="center">
+
+            <table width="100%" cellpadding="0" cellspacing="0" border="0"
+                   style="
+                       max-width: 620px;
+                       background-color: #ffffff;
+                       border-radius: 18px;
+                       overflow: hidden;
+                       box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+                   ">
+
+                <!-- HEADER -->
+                <tr>
+                    <td style="
+                        background: linear-gradient(135deg, #171717, #292929);
+                        padding: 32px 35px;
+                        text-align: center;
+                    ">
+
+                        <div style="
+                            color: #d5a65b;
+                            font-size: 28px;
+                            font-weight: bold;
+                            letter-spacing: 1px;
+                        ">
+                            Tbilisi Bar
+                        </div>
+
+                        <div style="
+                            margin-top: 8px;
+                            color: #ffffff;
+                            font-size: 14px;
+                            opacity: 0.85;
+                        ">
+                            Информация о вашем заказе
+                        </div>
+
+                    </td>
+                </tr>
+
+
+                <!-- CONTENT -->
+                <tr>
+                    <td style="padding: 35px;">
+
+                        <h1 style="
+                            margin: 0 0 10px 0;
+                            font-size: 25px;
+                            color: #222222;
+                        ">
+                            Статус заказа изменён
+                        </h1>
+
+                        <p style="
+                            margin: 0 0 25px 0;
+                            color: #666666;
+                            font-size: 15px;
+                            line-height: 1.6;
+                        ">
+                            Ваш заказ
+                            <strong style="color: #222222;">
+                                №{{ order_number }}
+                            </strong>
+                            получил новый статус.
+                        </p>
+
+
+                        <!-- STATUS -->
+                        <table width="100%" cellpadding="0" cellspacing="0" border="0"
+                               style="
+                                   background-color: #faf7f1;
+                                   border: 1px solid #eadfcf;
+                                   border-radius: 12px;
+                               ">
+
+                            <tr>
+                                <td style="padding: 20px 22px;">
+
+                                    <div style="
+                                        color: #777777;
+                                        font-size: 12px;
+                                        text-transform: uppercase;
+                                        letter-spacing: 0.8px;
+                                        margin-bottom: 8px;
+                                    ">
+                                        Текущий статус
+                                    </div>
+
+                                    <div style="
+                                        color: #a87932;
+                                        font-size: 21px;
+                                        font-weight: bold;
+                                    ">
+                                        {{ status_text }}
+                                    </div>
+
+                                </td>
+                            </tr>
+
+                        </table>
+
+
+                        <!-- STATUS DESCRIPTION -->
+                        <div style="
+                            margin-top: 20px;
+                            padding: 18px 20px;
+                            background-color: #f7f7f7;
+                            border-radius: 10px;
+                            color: #666666;
+                            font-size: 14px;
+                            line-height: 1.6;
+                        ">
+                            {{ status_description }}
+                        </div>
+
+
+                        <!-- ORDER -->
+                        <h2 style="
+                            margin: 30px 0 15px 0;
+                            font-size: 19px;
+                            color: #222222;
+                        ">
+                            Ваш заказ
+                        </h2>
+
+
+                        <!-- ORDER ITEMS -->
+                        <table width="100%" cellpadding="0" cellspacing="0" border="0">
+
+                            <tr>
+                                <td style="
+                                    padding: 0 0 10px 0;
+                                    color: #888888;
+                                    font-size: 12px;
+                                ">
+                                    Блюдо
+                                </td>
+
+                                <td align="center"
+                                    style="
+                                        padding: 0 0 10px 0;
+                                        color: #888888;
+                                        font-size: 12px;
+                                    ">
+                                    Кол-во
+                                </td>
+
+                                <td align="right"
+                                    style="
+                                        padding: 0 0 10px 0;
+                                        color: #888888;
+                                        font-size: 12px;
+                                    ">
+                                    Цена
+                                </td>
+                            </tr>
+
+
+                            {% for item in order_items %}
+
+                            <tr>
+
+                                <td style="
+                                    padding: 14px 5px 14px 0;
+                                    border-top: 1px solid #eeeeee;
+                                    color: #333333;
+                                    font-size: 15px;
+                                    font-weight: bold;
+                                ">
+                                    {{ item.dish_name }}
+                                </td>
+
+                                <td align="center"
+                                    style="
+                                        padding: 14px 5px;
+                                        border-top: 1px solid #eeeeee;
+                                        color: #666666;
+                                        font-size: 14px;
+                                    ">
+                                    {{ item.quantity }}
+                                </td>
+
+                                <td align="right"
+                                    style="
+                                        padding: 14px 0 14px 5px;
+                                        border-top: 1px solid #eeeeee;
+                                        color: #333333;
+                                        font-size: 15px;
+                                        font-weight: bold;
+                                        white-space: nowrap;
+                                    ">
+                                    {{ item.price }} €
+                                </td>
+
+                            </tr>
+
+                            {% endfor %}
+
+                        </table>
+
+
+                        <!-- TOTAL -->
+                        <table width="100%" cellpadding="0" cellspacing="0" border="0"
+                               style="
+                                   margin-top: 20px;
+                                   border-top: 2px solid #222222;
+                               ">
+
+                            <tr>
+
+                                <td style="
+                                    padding-top: 15px;
+                                    color: #333333;
+                                    font-size: 17px;
+                                    font-weight: bold;
+                                ">
+                                    Итого
+                                </td>
+
+                                <td align="right"
+                                    style="
+                                        padding-top: 15px;
+                                        color: #a87932;
+                                        font-size: 21px;
+                                        font-weight: bold;
+                                    ">
+                                    {{ sum }} €
+                                </td>
+
+                            </tr>
+
+                        </table>
+
+                    </td>
+                </tr>
+
+
+                <!-- FOOTER -->
+                <tr>
+                    <td style="
+                        background-color: #fafafa;
+                        padding: 22px 35px;
+                        text-align: center;
+                        border-top: 1px solid #eeeeee;
+                    ">
+
+                        <div style="
+                            font-size: 13px;
+                            color: #777777;
+                            line-height: 1.6;
+                        ">
+                            Это автоматическое уведомление
+                            о состоянии вашего заказа.
+                            <br>
+                            Пожалуйста, не отвечайте на это письмо.
+                        </div>
+
+                        <div style="
+                            margin-top: 12px;
+                            color: #a87932;
+                            font-size: 13px;
+                            font-weight: bold;
+                        ">
+                            Tbilisi Bar
+                        </div>
+
+                    </td>
+                </tr>
+
+            </table>
+
+        </td>
+    </tr>
+
+</table>
+
+</body>
+</html>
