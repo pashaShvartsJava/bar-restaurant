@@ -2,7 +2,7 @@ import asyncio
 import aio_pika
 from aio_pika import connect_robust
 
-from .consumer import EmailVerificationConsumer, ChangePasswordVerificationConsumer
+from .consumer import EmailVerificationConsumer, ChangePasswordVerificationConsumer, ChangeStatusConsumer
 from ..config.config import settings
 
 
@@ -15,6 +15,7 @@ class RabbitMQ:
         self.change_password_verification_queue = None
         self.consume_email_verification = None
         self.consume_change_password_verification = None
+        self.change_status_queue = None
 
     async def connect(self):
         while True:
@@ -38,13 +39,17 @@ class RabbitMQ:
             "email_verification", durable=True)
         await self.email_verification_queue.bind(
             self.exchange, routing_key="email_verification_event")
+        self.consume_email_verification = EmailVerificationConsumer(self.email_verification_queue)
 
         self.change_password_verification_queue = await self.channel.declare_queue(
             "change_password_verification", durable=True)
         await self.change_password_verification_queue.bind(
             self.exchange, routing_key="change_password_verification_event")
-        self.consume_email_verification = EmailVerificationConsumer(self.email_verification_queue)
         self.consume_change_password_verification = ChangePasswordVerificationConsumer(self.change_password_verification_queue)
+
+        self.change_status_queue = await self.channel.declare_queue("change_status", durable=True)
+        await self.change_status_queue.bind(self.exchange, routing_key="change_status_event")
+        self.change_status_queue =ChangeStatusConsumer(self.change_status_queue)
 
     async def close(self):
         if self.connection:

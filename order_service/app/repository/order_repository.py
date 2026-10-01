@@ -1,6 +1,7 @@
 import uuid
 from datetime import datetime, timezone, timedelta, date
 from decimal import Decimal
+from typing import List
 from uuid import UUID
 
 from sqlalchemy import select, or_
@@ -178,7 +179,7 @@ class OrderRepository:
         result = await self.db.execute(query)
         return result.scalars().all()
 
-    async def find_order_by_client_id(self, client_id : UUID):
+    async def find_orders_by_client_id(self, client_id : UUID):
         result = await self.db.execute(select(Order).options(selectinload(Order.order_items)).where(Order.client_id==client_id).order_by(Order.created_at.desc()))
         return result.scalars().all()
 
@@ -203,28 +204,46 @@ class OrderRepository:
                                  .order_by(Order.created_at.desc()).limit(1))
         return result.scalar_one_or_none()
 
-    async def change_order_status(self, order_number : UUID, status : OrderStatus, email : str):
+    async def change_order_status(self, status : OrderStatus, email : str, order_number : UUID):
         async with self.db.begin():
             order = await self.get_order_by_order_number(order_number)
             order.status = status
-            await self.create_outbox_change_status_event(order.id, order.client_id, order_number, status, email)
+            await self.create_outbox_change_status_event(email, order)
         await self.db.refresh(order)
 
-    async def create_outbox_change_status_event(self, order_id : UUID, client_id : UUID, order_number : UUID, status : OrderStatus, email : str) -> OutboxChangeStatusEvents:
+    async def create_outbox_change_status_event(self, email : str, order : Order) -> OutboxChangeStatusEvents:
+        order_items = [
+            {
+                "dish_id": item.dish_id,
+                "dish_name": item.dish_name,
+                "quantity": item.quantity,
+                "price": str(item.price),
+            }
+            for item in order.order_items
+        ]
         new_outbox = OutboxChangeStatusEvents(
             event_type="ChangeOrderStatus",
             payload={
-                "order_id" : order_id,
-                "client_id" : client_id,
-                "order_number" : order_number,
-                "order_status" : status,
-                "email" : email
+                "client_id" : str(order.client_id),
+                "order_number" : str(order.order_number),
+                "order_status" : order.status.value,
+                "email" : email,
+                "order_items" : order_items,
+                "sum" : str(order.sum)
             },
             event_id=str(uuid.uuid4())
         )
         self.db.add(new_outbox)
         await self.db.flush()
         return new_outbox
+
+    async def get_all_unpublished_events(self):
+        result = await self.db.execute(select(OutboxChangeStatusEvents).where(OutboxChangeStatusEvents.published_at.is_(None)))
+        return result.scalars().all()
+
+    async def mark_event_as_published(self, event: OutboxChangeStatusEvents):
+        event.published_at = datetime.now(timezone.utc)
+        await self.db.flush()
 
 
 

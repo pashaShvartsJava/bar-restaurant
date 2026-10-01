@@ -1,9 +1,12 @@
 from email.message import EmailMessage
 
 import aiosmtplib
+from starlette.templating import Jinja2Templates
 
 from ..repository.email_repository import EmailRepository
 from ..config.config import settings
+
+templates = Jinja2Templates(directory="app/templates")
 
 
 class EmailService:
@@ -87,3 +90,34 @@ class EmailService:
         await smtp.send_message(message)
         await smtp.quit()
 
+
+    async def send_change_status(self, client_id : str, order_number : str, order_status : str, email : str, order_items, sum : str):
+        message = EmailMessage()
+
+        message["From"] = settings.EMAIL_FROM
+        message["To"] = email
+        message["Subject"] = "Ваш заказ номер: " + order_number + " сменил статус"
+        html = templates.get_template("email_status_order.html").render(
+            client_id=client_id,
+            order_number=order_number,
+            order_status=order_status,
+            email=email,
+            order_items=order_items,
+            sum=sum,
+        )
+
+
+        message.add_alternative(html, subtype="html", )
+        smtp = aiosmtplib.SMTP(
+            hostname=settings.EMAIL_HOST,
+            port=settings.EMAIL_PORT,
+            timeout=20,
+        )
+
+        await smtp.connect()
+        await smtp.login(
+            settings.EMAIL_USERNAME,
+            settings.EMAIL_PASSWORD,
+        )
+        await smtp.send_message(message)
+        await smtp.quit()

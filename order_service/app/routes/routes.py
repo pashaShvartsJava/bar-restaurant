@@ -41,13 +41,13 @@ async def get_all_orders(request : Request, service : OrderService = Depends(get
 
 @router.patch("/orders/{order_number}/status")
 async def change_order_status(request : Request,
-                              order_number : str ,
+                              order_number : str,
                               data : StatusDTO,
                               service : OrderService = Depends(get_order_service_dependency)):
     payload = get_payload(request)
     required_roles(IdentityRole.ADMIN, IdentityRole.MODERATOR, payload=payload)
-    client = await service.get_order_by_order_number(UUID(order_number))
-    client_id = client.client_id
+    order = await service.get_order_by_order_number(UUID(order_number))
+    client_id = order.client_id
     customer = await service.get_customer_by_client_id(client_id)
     if customer is not None:
         email = customer.email
@@ -58,7 +58,7 @@ async def change_order_status(request : Request,
                                         headers={"internal_token" : INTERNAL_TOKEN})
             response.raise_for_status()
         email = response.json()
-    await service.change_order_status(UUID(order_number), data.status, email)
+    await service.change_order_status(data.status, email, UUID(order_number))
 
 @router.post("/orders/create")
 async def make_order(request : Request, data : ListOrderDTO,

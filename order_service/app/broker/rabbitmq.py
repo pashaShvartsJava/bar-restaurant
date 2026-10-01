@@ -9,7 +9,9 @@ class RabbitMQ:
     def __init__(self):
         self.connection = None
         self.channel = None
+        self.exchange = None
         self.queue = None
+        self.change_status_queue = None
 
     async def connect(self):
         while True:
@@ -26,11 +28,16 @@ class RabbitMQ:
                 await asyncio.sleep(5)
         self.channel = await self.connection.channel(publisher_confirms=True)
 
-        exchange = await self.channel.declare_exchange("payment_events",
+        self.exchange = await self.channel.declare_exchange("payment_events",
                                                        aio_pika.ExchangeType.DIRECT,
                                                        durable=True)
         self.queue = await self.channel.declare_queue("order_payment", durable=True)
-        await self.queue.bind(exchange, routing_key="payment_paid")
+        await self.queue.bind(self.exchange, routing_key="payment_paid")
+
+
+
+        self.change_status_queue = await self.channel.declare_queue("change_status", durable=True)
+        await self.change_status_queue.bind(self.exchange, routing_key="change_status_event")
 
     async def close(self):
         if self.connection:
