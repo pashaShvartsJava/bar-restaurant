@@ -48,16 +48,7 @@ async def change_order_status(request : Request,
     required_roles(IdentityRole.ADMIN, IdentityRole.MODERATOR, payload=payload)
     order = await service.get_order_by_order_number(UUID(order_number))
     client_id = order.client_id
-    customer = await service.get_customer_by_client_id(client_id)
-    if customer is not None:
-        email = customer.email
-    else:
-        async with httpx.AsyncClient() as client:
-            response = await client.get(url="http://authentication-service:8000/get_client",
-                                        cookies={"guest_client_id" : str(client_id)},
-                                        headers={"internal_token" : INTERNAL_TOKEN})
-            response.raise_for_status()
-        email = response.json()
+    email = await service.get_customer_email(client_id)
     await service.change_order_status(data.status, email, UUID(order_number))
 
 @router.post("/orders/create")

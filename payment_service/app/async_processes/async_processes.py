@@ -15,7 +15,8 @@ async def outbox_publisher():
                     if event.event_type == "PaymentPaid":
                         await rabbitmq.publish_payment_paid(payment_id=event.payload["payment_id"],
                                                             client_id=event.payload["client_id"],
-                                                            event_id=event.id)
+                                                            event_id=event.id,
+                                                            order_id=event.payload["order_id"])
                     await repository.mark_event_as_published(event)
                     await session.commit()
                 except Exception:

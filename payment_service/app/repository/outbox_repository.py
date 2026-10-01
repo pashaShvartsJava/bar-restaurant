@@ -24,7 +24,7 @@ class OutboxPaymentEventsRepository:
         event.published_at = datetime.now(timezone.utc)
         await self.db.flush()
 
-    async def create_outbox_event(self, payment_id : int, payMent_order_id : UUID, payment_client_id : UUID, event_id : str) -> OutboxPaymentEvents:
+    async def create_outbox_event(self, payment_id : int, payment_order_id : int, payment_client_id : UUID, event_id : str) -> OutboxPaymentEvents:
         found_event = await self.get_event_by_event_id(event_id)
         if found_event is not None:
             return found_event
@@ -32,7 +32,7 @@ class OutboxPaymentEventsRepository:
             event_type="PaymentPaid",
             payload={
                 "payment_id": str(payment_id),
-                "order_id": str(payMent_order_id),
+                "order_id": str(payment_order_id),
                 "client_id": str(payment_client_id),
             },
             event_id=event_id
