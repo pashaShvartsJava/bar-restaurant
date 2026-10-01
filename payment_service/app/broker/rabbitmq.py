@@ -35,11 +35,12 @@ class RabbitMQ:
         if self.connection:
             await self.connection.close()
 
-    async def publish_payment_paid(self, payment_id: int, client_id: UUID, event_id : UUID):
+    async def publish_payment_paid(self, payment_id: int, client_id: UUID, event_id : UUID, order_id : int):
         message = aio_pika.Message(
             body=json.dumps({
                 "event": "payment_paid",
                 "payment_id": payment_id,
-                "client_id": str(client_id)})
+                "client_id": str(client_id),
+                "order_id" : str(order_id)})
             .encode(), message_id=str(event_id), delivery_mode=aio_pika.DeliveryMode.PERSISTENT, content_type="application/json")
         await self.exchange.publish(message, routing_key="payment_paid")
