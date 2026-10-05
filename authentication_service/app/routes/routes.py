@@ -17,6 +17,7 @@ from ..schemas.schema import LoginSchema, RegisterRequest, RegisterRequestDTO, A
 from ..dependencies.dependency import get_service_dependency
 from ..security.password.password import verify_password
 from ..security.rate_limit import check_login_rate_limit, reset_login_rate_limit
+from ..security.internal_security import verify_internal_token
 from ..services.authentication_service import AuthenticationService, send_new_user_dto, send_address
 import httpx
 from uuid import UUID
@@ -84,7 +85,8 @@ async def registration( data : Annotated[RegistrationSchema, Form()],
         old_register_dto = RegisterRequest(user_data=old_user_request_dto, address_data=old_address_request_dto)
         async with httpx.AsyncClient() as client:
             response = await client.post("http://user-service:8005/users/add_user",
-                                         json=old_register_dto.model_dump(mode="json"))
+                                         json=old_register_dto.model_dump(mode="json"),
+                                         headers={"internal_token" : INTERNAL_TOKEN})
             response.raise_for_status()
         return RedirectResponse(url="/login", status_code=303)
 
@@ -99,21 +101,21 @@ async def registration( data : Annotated[RegistrationSchema, Form()],
                                                                  data.apartment)
     register_dto = RegisterRequest(user_data=user_request_dto, address_data=address_request_dto)
     async with httpx.AsyncClient() as client:
-        response = await client.post("http://user-service:8005/users/add_user", json=register_dto.model_dump(mode="json"))
+        response = await client.post("http://user-service:8005/users/add_user",
+                                     json=register_dto.model_dump(mode="json"),
+                                     headers={"internal_token" : INTERNAL_TOKEN})
         response.raise_for_status()
     await service.update_status_identity(created_user, Status.ACTIVE)
     return RedirectResponse(url="/login", status_code=303)
 
 @router.get("/get_identity")
-async def verify_change_password(identity_id: UUID, old_password: str, new_password: str,
-    service: AuthenticationService = Depends(get_service_dependency)):
+async def verify_change_password( identity_id: UUID, old_password: str,
+                                  new_password: str,
+                                  service: AuthenticationService = Depends(get_service_dependency),
+                                  internal_token : str = Header(..., alias="internal_token")):
+    await verify_internal_token(internal_token)
     identity = await service.find_by_identity(identity_id)
-
-    checked_passwords = verify_password(
-        old_password,
-        identity.password_hash
-    )
-
+    checked_passwords = verify_password(old_password, identity.password_hash)
     if not checked_passwords:
         raise HTTPException(status_code=401, detail="Incorrect old password")
     await service.create_verify_change_password_token(identity_id, new_password)
@@ -128,7 +130,10 @@ async def update_password(data : PasswordUpdateDTO, service: AuthenticationServi
     await service.update_password(data.identity_id, data.new_password)
 
 @router.patch("/edit_email")
-async def edit_email(data : EmailRequest, service: AuthenticationService = Depends(get_service_dependency)):
+async def edit_email(data : EmailRequest,
+                     service: AuthenticationService = Depends(get_service_dependency),
+                     internal_token : str = Header(..., alias="internal_token")):
+    await verify_internal_token(internal_token)
     identity = await service.find_by_email(data.old_email)
     already_existed_identity = await service.find_by_email(data.new_email)
     if already_existed_identity is not None:
@@ -136,14 +141,19 @@ async def edit_email(data : EmailRequest, service: AuthenticationService = Depen
     await service.update_email(identity, data.new_email)
 
 @router.delete("/delete_identity")
-async def delete_identity(identity_id : UUID, service: AuthenticationService = Depends(get_service_dependency)):
+async def delete_identity(identity_id : UUID,
+                          service: AuthenticationService = Depends(get_service_dependency),
+                          internal_token : str = Header(..., alias="internal_token")):
+    await verify_internal_token(internal_token)
     try:
         await service.delete_identity(identity_id)
     except Exception:
         raise HTTPException(status_code=500, detail="Ошибка удаления")
 
 @router.patch("/edit_identity")
-async def edit_identity(data : IdentityEdit, service: AuthenticationService = Depends(get_service_dependency)):
+async def edit_identity(data : IdentityEdit, service: AuthenticationService = Depends(get_service_dependency),
+                        internal_token : str = Header(..., alias="internal_token")):
+    await verify_internal_token(internal_token)
     taken_identity = await service.find_by_email(data.email)
     if taken_identity is not None and taken_identity.id != data.identity_id:
         raise HTTPException(detail="Этот email уже занят", status_code=409)
@@ -169,16 +179,14 @@ async def get_all_identities(service: AuthenticationService = Depends(get_servic
 async def edit_status(identity_id : UUID, status : Status,
                       internal_token : str = Header(..., alias="internal_token"),
                       service: AuthenticationService = Depends(get_service_dependency)):
-    if internal_token != INTERNAL_TOKEN or internal_token is None:
-        raise HTTPException(status_code=403, detail="Forbidden")
+    await verify_internal_token(internal_token)
     identity = await service.find_by_identity(identity_id)
     await service.update_status_identity(identity, status)
 
 @router.get("/get_status")
 async def get_status(identity_id : UUID, internal_token : str = Header(..., alias="internal_token"),
                      service: AuthenticationService = Depends(get_service_dependency)):
-    if internal_token != INTERNAL_TOKEN or internal_token is None:
-        raise HTTPException(status_code=403, detail="Forbidden")
+    await verify_internal_token(internal_token)
     user = await service.find_by_identity(identity_id)
     return IdentityDto.model_validate(user).model_dump(mode="json")
 
@@ -190,8 +198,7 @@ async def verify_email(token : str, service: AuthenticationService = Depends(get
 async def get_identity(request : Request,
                        internal_token : str = Header(..., alias="internal_token"),
                        service: AuthenticationService = Depends(get_service_dependency)):
-    if internal_token != INTERNAL_TOKEN or internal_token is None:
-        raise HTTPException(detail="Forbidden", status_code=403)
+    await verify_internal_token(internal_token)
     client = await service.find_by_identity(UUID(request.cookies.get("guest_client_id")))
     return client.email
 

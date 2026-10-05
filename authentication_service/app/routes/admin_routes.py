@@ -2,7 +2,7 @@ import secrets
 from typing import Annotated
 
 from fastapi import Request, APIRouter, HTTPException, Form
-from fastapi.params import Depends
+from fastapi.params import Depends, Header
 from pydantic import EmailStr, TypeAdapter
 from starlette.responses import HTMLResponse, RedirectResponse
 from starlette.templating import Jinja2Templates
@@ -12,12 +12,15 @@ from ..model.identity_model import Status
 from ..schemas.admin_schema import AdminRegistration, AdminRegistrationDTO, AdminLogin
 from ..schemas.schema import LoginSchema
 from ..dependencies.dependency import get_service_dependency
+from ..security.internal_security import verify_internal_token
 from ..services.authentication_service import AuthenticationService
 from ..security.rate_limit import check_login_rate_limit, reset_login_rate_limit
 import httpx
+from ..config.config import settings
 
 templates = Jinja2Templates(directory="app/templates_auth")
 router = APIRouter()
+INTERNAL_TOKEN = settings.internal_token
 
 @router.get("/admin/login", response_class=HTMLResponse)
 def admin_login(request : Request):
@@ -28,9 +31,9 @@ def admin_registration(request : Request):
     return templates.TemplateResponse("admin_registration.html", {"request" : request})
 
 @router.post("/admin/registration")
-async def admin_registration(data : Annotated[AdminRegistration, Form()], service : AuthenticationService = Depends(get_service_dependency)):
+async def admin_registration(data : Annotated[AdminRegistration, Form()],
+                             service : AuthenticationService = Depends(get_service_dependency)):
     existing_admin = await service.find_by_email(data.email)
-
     if existing_admin is not None and (existing_admin.status==Status.ACTIVE or existing_admin.status==Status.BLOCKED):
         raise HTTPException(detail="Такой пользователь уже существует", status_code=409)
 
@@ -44,7 +47,8 @@ async def admin_registration(data : Annotated[AdminRegistration, Form()], servic
                                              birthday=data.birthday, email=existing_admin.email)
         async with httpx.AsyncClient() as client:
             response = await client.post("http://admin-service:8002/admins/add_admin",
-                                         json=old_admin_dto.model_dump(mode="json"))
+                                         json=old_admin_dto.model_dump(mode="json"),
+                                         headers={"internal_token" : INTERNAL_TOKEN})
             response.raise_for_status()
         await service.update_status_identity(existing_admin, Status.ACTIVE)
         return RedirectResponse(url="/admin/login", status_code=303)
@@ -54,7 +58,8 @@ async def admin_registration(data : Annotated[AdminRegistration, Form()], servic
 
     async with httpx.AsyncClient() as client:
         response = await client.post("http://admin-service:8002/admins/add_admin",
-                                     json=admin_dto.model_dump(mode="json"))
+                                     json=admin_dto.model_dump(mode="json"),
+                                     headers={"internal_token" : INTERNAL_TOKEN})
         response.raise_for_status()
     await service.update_status_identity(created_admin, Status.ACTIVE)
     return RedirectResponse(url="/admin/login", status_code=303)

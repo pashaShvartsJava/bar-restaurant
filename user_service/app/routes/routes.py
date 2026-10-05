@@ -10,6 +10,7 @@ from starlette.templating import Jinja2Templates
 
 from ..model.user_model import Status
 from ..schema.address_schema import AddressEditSchema
+from ..security.internal_security import verify_internal_token
 from ..security.jwt.jwt import get_payload
 from ..security.authorization.authorization import required_roles, required_role
 from ..security.role.roles import IdentityRole
@@ -36,12 +37,14 @@ async def get_user_profile(request : Request, service : UserService = Depends(ge
     user = await service.find_by_identity_id(payload["sub"])
     async with httpx.AsyncClient() as client:
         response = await client.get("http://order-service:8007/orders/get_user_active_orders",
-                                    cookies={"access_token": request.cookies.get("access_token")})
+                                    cookies={"access_token": request.cookies.get("access_token")},
+                                    headers={"internal_token" : INTERNAL_TOKEN})
         response.raise_for_status()
     active_orders = response.json()
     async with httpx.AsyncClient() as client:
         response2 = await client.get("http://order-service:8007/orders/get_user_last_completed_order",
-                                     cookies={"access_token": request.cookies.get("access_token")})
+                                     cookies={"access_token": request.cookies.get("access_token")},
+                                     headers={"internal_token" : INTERNAL_TOKEN})
         response2.raise_for_status()
     last_order = response2.json()
     return templates.TemplateResponse("user_profile.html", context={"request": request,
@@ -51,7 +54,10 @@ async def get_user_profile(request : Request, service : UserService = Depends(ge
                                                                     "last_order" : last_order})
 
 @router.post("/users/add_user")
-async def register_user(data : RegisterRequest, service : UserService = Depends(get_service_dependency)):
+async def register_user(data : RegisterRequest,
+                        service : UserService = Depends(get_service_dependency),
+                        internal_token : str = Header(..., alias="internal_token")):
+    await verify_internal_token(internal_token)
     try:
         await service.create_user(data.user_data, data.address_data)
     except Exception:
@@ -92,7 +98,9 @@ async def edit_user(request : Request, data : Annotated[UserEditSchema, Form()],
         request_email = EmailRequest(old_email=user.email, new_email=data.email)
         async with httpx.AsyncClient() as client:
             try:
-                response = await client.patch(url="http://authentication-service:8000/edit_email", json=request_email.model_dump(mode="json"))
+                response = await client.patch(url="http://authentication-service:8000/edit_email",
+                                              json=request_email.model_dump(mode="json"),
+                                              headers={"internal_token" : INTERNAL_TOKEN})
                 response.raise_for_status()
             except httpx.HTTPStatusError as error:
                 if error.response.status_code == 409:
@@ -110,7 +118,9 @@ async def delete_user(request : Request, service : UserService = Depends(get_ser
     user = await service.find_by_identity_id(payload["sub"])
     await service.delete_user(user)
     async with httpx.AsyncClient() as client:
-        response = await client.delete(url="http://authentication-service:8000/delete_identity", params={"identity_id" : user.identity_id})
+        response = await client.delete(url="http://authentication-service:8000/delete_identity",
+                                       params={"identity_id" : user.identity_id},
+                                       headers={"internal_token" : INTERNAL_TOKEN})
         response.raise_for_status()
     return RedirectResponse(url="/bar_name", status_code=303)
 
@@ -137,7 +147,8 @@ async def edit_password(request: Request,service: UserService = Depends(get_serv
         async with httpx.AsyncClient() as client:
             response = await client.get(
                 url="http://authentication-service:8000/get_identity",
-                params={"identity_id": user.identity_id,"old_password": old_password,"new_password": new_password})
+                params={"identity_id": user.identity_id,"old_password": old_password,"new_password": new_password},
+                headers={"internal_token" : INTERNAL_TOKEN})
             response.raise_for_status()
 
     except httpx.HTTPStatusError as e:
@@ -156,7 +167,11 @@ async def get_all_users(service : UserService = Depends(get_service_dependency),
     return [UserDto.model_validate(user).model_dump(mode="json") for user in users]
 
 @router.get("/get_user_address")
-async def get_user_address(request : Request, identity_id : UUID, service : UserService = Depends(get_service_dependency)):
+async def get_user_address(request : Request,
+                           identity_id : UUID,
+                           service : UserService = Depends(get_service_dependency),
+                           internal_token : str = Header(..., alias="internal_token")):
+    await verify_internal_token(internal_token)
     payload = get_payload(request)
     required_roles(IdentityRole.ADMIN, IdentityRole.MODERATOR, payload=payload)
     user = await service.find_by_identity_id(identity_id)
@@ -192,7 +207,8 @@ async def confirm_address(request : Request,
     async with httpx.AsyncClient() as client:
         response = await client.post(url="http://order-service:8007/orders/confirm_address",
                                      json=data.model_dump(mode="json"),
-                                     cookies={"access_token": request.cookies.get("access_token")})
+                                     cookies={"access_token": request.cookies.get("access_token")},
+                                     headers={"internal_token" : INTERNAL_TOKEN})
         if response.status_code == 303:
             return RedirectResponse(url=response.headers["location"], status_code=303)
         response.raise_for_status()

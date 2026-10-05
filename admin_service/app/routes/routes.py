@@ -4,7 +4,7 @@ from datetime import date
 import httpx
 from asyncpg import InternalClientError
 from fastapi import Request, APIRouter, Form, HTTPException
-from fastapi.params import Depends
+from fastapi.params import Depends, Header
 from pydantic import EmailStr
 from starlette.responses import HTMLResponse, RedirectResponse, JSONResponse
 from starlette.templating import Jinja2Templates
@@ -12,6 +12,7 @@ from ..schema.admin import AdminUpdateDTO, AdminRegistrationDTO, IdentityEdit, A
 from typing import Annotated
 
 from ..dependencies.dependencies import get_service_dependency
+from ..security.internal_security import verify_internal_token
 from ..security.role.role import IdentityRole
 from ..service.admin_service import AdminService
 from ..security.jwt.jwt import get_payload
@@ -46,10 +47,7 @@ async def show_admin_panel(request: Request):
     payload = get_payload(request)
     required_roles(IdentityRole.ADMIN, IdentityRole.MODERATOR, payload=payload)
     async with httpx.AsyncClient() as client:
-        response = await client.get(
-            "http://support-service:8006/support/unread/count"
-        )
-
+        response = await client.get("http://support-service:8006/support/unread/count", headers={"internal_token" : INTERNAL_TOKEN})
     support_data = response.json()
     unread_support_count = support_data["count"]
     return templates.TemplateResponse("admin_panel.html", {"request" : request, "unread_support_count" : unread_support_count})
@@ -77,7 +75,9 @@ async def add_admin(request : Request, data : Annotated[AdminRegistrationForm, F
     new_identity = AddAdminRequest(identity_id=identity_id, email=data.email, password=data.password, role=data.role, status=Status.ACTIVE)
     async with httpx.AsyncClient() as client:
         try:
-            response = await client.post(url="http://authentication-service:8000/add_identity", json=new_identity.model_dump(mode="json"))
+            response = await client.post(url="http://authentication-service:8000/add_identity",
+                                         json=new_identity.model_dump(mode="json"),
+                                         headers={"internal_token" : INTERNAL_TOKEN})
             response.raise_for_status()
         except httpx.HTTPStatusError as error:
             if error.response.status_code == 409:
@@ -95,7 +95,9 @@ async def delete_admin(request : Request, admin_id : int, admin_service : AdminS
     await verify_csrf(request)
     admin = await admin_service.find_by_id(admin_id)
     async with httpx.AsyncClient() as client:
-        response = await client.delete(url="http://authentication-service:8000/delete_identity", params={"identity_id" : admin.identity_id})
+        response = await client.delete(url="http://authentication-service:8000/delete_identity",
+                                       params={"identity_id" : admin.identity_id},
+                                       headers={"internal_token" : INTERNAL_TOKEN})
         response.raise_for_status()
     if response.status_code >= 400:
         detail = response.json().get("detail", "Ошибка удаления")
@@ -135,7 +137,9 @@ async def edit_admin(request : Request, admin_id : int, service : AdminService =
     data = IdentityEdit(identity_id=admin.identity_id, role=role, email=email)
     async with httpx.AsyncClient() as client:
         try:
-            response = await client.patch("http://authentication-service:8000/edit_identity",json=data.model_dump(mode="json"))
+            response = await client.patch("http://authentication-service:8000/edit_identity",
+                                          json=data.model_dump(mode="json"),
+                                          headers={"internal_token" : INTERNAL_TOKEN})
             response.raise_for_status()
         except httpx.HTTPStatusError as error:
             if error.response.status_code == 409:
@@ -148,12 +152,17 @@ async def edit_admin(request : Request, admin_id : int, service : AdminService =
     return RedirectResponse(url="/admin_panel/all_admins", status_code=303)
 
 @router.post("/admins/add_admin")
-async def add_admin(data : AdminRegistrationDTO, service : AdminService = Depends(get_service_dependency)):
+async def add_admin(data : AdminRegistrationDTO,
+                    service : AdminService = Depends(get_service_dependency),
+                    internal_token : str = Header(..., alias="internal_token")):
+    await verify_internal_token(internal_token)
     try:
         await service.create_new_admin(data)
     except Exception:
         async with httpx.AsyncClient() as client:
-            response = await client.patch("http://authentication-service:8000/edit_status", params={"status" : Status.FAILED.value, "str_email" : str(data.email)})
+            response = await client.patch("http://authentication-service:8000/edit_status",
+                                          params={"status" : Status.FAILED.value, "str_email" : str(data.email)},
+                                          headers={"internal_token" : INTERNAL_TOKEN})
             response.raise_for_status()
         raise InternalClientError("Ошибка регистрации")
 
@@ -183,7 +192,8 @@ async def edit_password(request: Request, service: AdminService = Depends(get_se
         async with httpx.AsyncClient() as client:
             response = await client.get(
                 url="http://authentication-service:8000/get_identity",
-                params={"identity_id": admin.identity_id,"old_password": old_password,"new_password": new_password})
+                params={"identity_id": admin.identity_id,"old_password": old_password,"new_password": new_password},
+                headers={"internal_token" : INTERNAL_TOKEN})
             response.raise_for_status()
 
     except httpx.HTTPStatusError as e:
@@ -267,7 +277,8 @@ async def customer_info(request : Request, identity_id : UUID):
     async with httpx.AsyncClient() as client:
         response = await client.get(url="http://user-service:8005/get_user_address",
                                     params={"identity_id" : str(identity_id)},
-                                    cookies={"access_token": request.cookies.get("access_token")})
+                                    cookies={"access_token": request.cookies.get("access_token")},
+                                    headers={"internal_token" : INTERNAL_TOKEN})
         response.raise_for_status()
     info_user = response.json()
 
@@ -287,7 +298,8 @@ async def customer_info(request : Request, identity_id : UUID):
     async with httpx.AsyncClient() as client:
         response = await client.get("http://order-service:8007/orders/get_customer_orders",
                                     params={"identity_id": str(identity_id)},
-                                    cookies={"access_token": request.cookies.get("access_token")})
+                                    cookies={"access_token": request.cookies.get("access_token")},
+                                    headers={"internal_token": INTERNAL_TOKEN})
     orders = response.json()
     return templates.TemplateResponse("user_orders_history.html", {"request" : request, "orders" : orders})
 

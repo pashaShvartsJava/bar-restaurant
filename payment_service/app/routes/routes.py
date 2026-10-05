@@ -2,10 +2,12 @@ from uuid import UUID
 
 import stripe
 from fastapi import APIRouter, Request, Depends, HTTPException
+from fastapi.params import Header
 from starlette.templating import Jinja2Templates
 
 from ..schemas.payment_schema import PaymentDTO
 from ..security.authorization.authorization import required_roles
+from ..security.internal_security import verify_internal_token
 from ..security.jwt.jwt import get_payload
 from ..security.role.role import IdentityRole
 from ..dependencies.dependencies import get_payment_service_dependency
@@ -26,7 +28,9 @@ async def verify_csrf(request: Request):
 @router.post("/payment/create")
 async def create_payment(request : Request,
                          data: PaymentDTO,
-                         service : PaymentService = Depends(get_payment_service_dependency)):
+                         service : PaymentService = Depends(get_payment_service_dependency),
+                         internal_token : str = Header(..., alias="internal_token")):
+    await verify_internal_token(internal_token)
     access_token = request.cookies.get("access_token")
     if access_token is not None:
         payload = get_payload(request)

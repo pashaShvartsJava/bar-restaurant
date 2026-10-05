@@ -1,6 +1,6 @@
 import httpx
 from fastapi import APIRouter, Request, HTTPException
-from fastapi.params import Depends
+from fastapi.params import Depends, Header
 from starlette.responses import RedirectResponse
 from starlette.templating import Jinja2Templates
 
@@ -50,6 +50,9 @@ async def general_support(request : Request, conversation_service : Conversation
     return templates.TemplateResponse("general_support.html", {"request" : request, "conversations" : conversations})
 
 @router.get("/support/unread/count")
-async def get_unread_support_count(conversation_service: ConversationService = Depends(get_conversation_service_dependency)):
+async def get_unread_support_count(internal_token : str = Header(..., alias="internal_token"),
+                                   conversation_service: ConversationService = Depends(get_conversation_service_dependency)):
+    if internal_token != INTERNAL_TOKEN or internal_token is None:
+        raise HTTPException(detail="Forbidden", status_code=403)
     count = await conversation_service.count_unread_conversations()
     return {"count": count}

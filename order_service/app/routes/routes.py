@@ -13,6 +13,7 @@ from ..schema.delivery_address_schema import DeliveryAddressDTO, GuestDTO, Guest
 from ..schema.order_item_schema import ListOrderDTO, ListOrderGuestDTO
 from ..schema.orders_schema import StatusDTO
 from ..schema.payment_schema import PaymentDTO
+from ..security.internal_security import verify_internal_token
 from ..security.jwt.jwt import get_payload
 from ..security.authorization.authorization import required_roles
 from ..security.role.role import IdentityRole
@@ -113,7 +114,8 @@ async def create_delivering_address(request : Request,
         async with httpx.AsyncClient() as client:
             response = await client.post(url="http://payment-service:8008/payment/create",
                                          json=payment_data.model_dump(mode="json"),
-                                         cookies={"guest_client_id" : str(client_id)})
+                                         cookies={"guest_client_id" : str(client_id)},
+                                         headers={"internal_token" : INTERNAL_TOKEN})
             response.raise_for_status()
             payment_data = response.json()
         return RedirectResponse(url=payment_data["checkout_url"], status_code=303)
@@ -132,7 +134,9 @@ async def cancel_order_before_payment(request : Request, service : OrderService 
 @router.post("/orders/confirm_address")
 async def create_delivering_address(request : Request,
                                     data : DeliveryAddressDTO,
-                                    service : OrderService = Depends(get_order_service_dependency)):
+                                    service : OrderService = Depends(get_order_service_dependency),
+                                    internal_token : str = Header(..., alias="internal_token")):
+    await verify_internal_token(internal_token)
     payload = get_payload(request)
     required_roles(IdentityRole.USER, payload=payload)
     await verify_csrf(request)
@@ -150,7 +154,8 @@ async def create_delivering_address(request : Request,
         async with httpx.AsyncClient() as client:
             response = await client.post(url="http://payment-service:8008/payment/create",
                                          json=data.model_dump(mode="json"),
-                                         cookies={"access_token" : request.cookies.get("access_token")})
+                                         cookies={"access_token" : request.cookies.get("access_token")},
+                                         headers={"internal_token" : INTERNAL_TOKEN})
             response.raise_for_status()
             payment_data = response.json()
         return RedirectResponse(url=payment_data["checkout_url"], status_code=303)
@@ -174,10 +179,14 @@ async def search_and_sorting(request : Request,
     return templates.TemplateResponse("all_orders.html", {"request" : request, "orders" : orders})
 
 @router.get("/orders/get_customer_orders")
-async def get_user_orders(request : Request, identity_id : UUID, service : OrderService = Depends(get_order_service_dependency)):
+async def get_user_orders(request : Request,
+                          identity_id : UUID,
+                          service : OrderService = Depends(get_order_service_dependency),
+                          internal_token : str = Header(..., alias="internal_token")):
+    await verify_internal_token(internal_token)
     payload = get_payload(request)
     required_roles(IdentityRole.ADMIN, IdentityRole.MODERATOR, payload=payload)
-    orders = await service.find_order_by_client_id(identity_id)
+    orders = await service.find_orders_by_client_id(identity_id)
     return orders
 
 @router.get("/orders/my_history_orders")
@@ -189,7 +198,10 @@ async def get_user_history_orders(request : Request, service : OrderService = De
     return templates.TemplateResponse("user_history_orders.html", {"request" : request, "orders" : history_orders})
 
 @router.get("/orders/get_user_active_orders")
-async def get_my_active_orders(request : Request, service : OrderService = Depends(get_order_service_dependency)):
+async def get_my_active_orders(request : Request,
+                               service : OrderService = Depends(get_order_service_dependency),
+                               internal_token : str = Header(..., alias="internal_token")):
+    await verify_internal_token(internal_token)
     payload = get_payload(request)
     required_roles(IdentityRole.USER, payload=payload)
     client_id = UUID(payload["sub"])
@@ -197,7 +209,10 @@ async def get_my_active_orders(request : Request, service : OrderService = Depen
     return active_orders
 
 @router.get("/orders/get_user_last_completed_order")
-async def get_last_user_order(request : Request, service : OrderService = Depends(get_order_service_dependency)):
+async def get_last_user_order(request : Request,
+                              service : OrderService = Depends(get_order_service_dependency),
+                              internal_token : str = Header(..., alias="internal_token")):
+    await verify_internal_token(internal_token)
     payload = get_payload(request)
     required_roles(IdentityRole.USER, payload=payload)
     client_id = UUID(payload["sub"])
