@@ -24,6 +24,12 @@ INTERNAL_TOKEN = settings.internal_token
 templates = Jinja2Templates(directory="app/templates")
 router = APIRouter()
 
+async def verify_csrf(request: Request):
+    cookie_token = request.cookies.get("csrf_token")
+    header_token = request.headers.get("X-CSRF-Token")
+    if not cookie_token or cookie_token != header_token:
+        raise HTTPException(status_code=403)
+
 @router.get("/user/my_profile")
 async def get_user_profile(request : Request, service : UserService = Depends(get_service_dependency)):
     payload = get_payload(request)
@@ -61,7 +67,8 @@ async def register_user(data : RegisterRequest, service : UserService = Depends(
     return {"message": "User created successfully"}
 
 @router.post("/logout")
-async def logout():
+async def logout(request : Request):
+    await verify_csrf(request)
     redirect = RedirectResponse(url="/login", status_code=303)
     redirect.delete_cookie("access_token")
     return redirect
@@ -69,6 +76,8 @@ async def logout():
 @router.get("/user/edit")
 async def edit(request : Request, service : UserService = Depends(get_service_dependency)):
     payload = get_payload(request)
+    required_roles(IdentityRole.USER, payload=payload)
+    await verify_csrf(request)
     user = await service.find_by_identity_id(payload["sub"])
     return templates.TemplateResponse("user_edit.html", context={"request" : request, "user" : user, "address" : user.address})
 
@@ -76,6 +85,8 @@ async def edit(request : Request, service : UserService = Depends(get_service_de
 @router.patch("/user/edit")
 async def edit_user(request : Request, data : Annotated[UserEditSchema, Form()], service : UserService = Depends(get_service_dependency)):
     payload  = get_payload(request)
+    required_roles(IdentityRole.USER, payload=payload)
+    await verify_csrf(request)
     user = await service.find_by_identity_id(payload["sub"])
     if data.email is not None and data.email != user.email:
         request_email = EmailRequest(old_email=user.email, new_email=data.email)
@@ -94,6 +105,8 @@ async def edit_user(request : Request, data : Annotated[UserEditSchema, Form()],
 @router.delete("/user/delete")
 async def delete_user(request : Request, service : UserService = Depends(get_service_dependency)):
     payload = get_payload(request)
+    required_roles(IdentityRole.USER, payload=payload)
+    await verify_csrf(request)
     user = await service.find_by_identity_id(payload["sub"])
     await service.delete_user(user)
     async with httpx.AsyncClient() as client:
@@ -104,6 +117,8 @@ async def delete_user(request : Request, service : UserService = Depends(get_ser
 @router.get("/user/password")
 async def edit_password(request: Request,  service : UserService = Depends(get_service_dependency)):
     payload = get_payload(request)
+    required_roles(IdentityRole.USER, payload=payload)
+    await verify_csrf(request)
     user = await service.find_by_identity_id(payload["sub"])
     return templates.TemplateResponse("edit_password.html", context={"request" : request, "user" : user})
 
@@ -111,6 +126,8 @@ async def edit_password(request: Request,  service : UserService = Depends(get_s
 async def edit_password(request: Request,service: UserService = Depends(get_service_dependency),
                         old_password: str = Form(), new_password: str = Form(), confirmed_password: str = Form()):
     payload = get_payload(request)
+    required_roles(IdentityRole.USER, payload=payload)
+    await verify_csrf(request)
     user = await service.find_by_identity_id(payload["sub"])
 
     if new_password != confirmed_password:
@@ -171,6 +188,7 @@ async def confirm_address(request : Request,
                           data : Annotated[AddressEditSchema, Form()]):
     payload = get_payload(request)
     required_role(IdentityRole.USER, payload)
+    await verify_csrf(request)
     async with httpx.AsyncClient() as client:
         response = await client.post(url="http://order-service:8007/orders/confirm_address",
                                      json=data.model_dump(mode="json"),

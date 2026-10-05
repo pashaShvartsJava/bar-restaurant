@@ -18,6 +18,13 @@ from ..service.reservation_service import ReservationService
 router = APIRouter()
 templates = Jinja2Templates(directory="app/templates")
 
+async def verify_csrf(request: Request):
+    cookie_token = request.cookies.get("csrf_token")
+    header_token = request.headers.get("X-CSRF-Token")
+
+    if not cookie_token or cookie_token != header_token:
+        raise HTTPException(status_code=403)
+
 @router.get("/tables")
 async def show_tables_page(request : Request, table_service : TableService = Depends(get_table_service_dependency)):
     payload = get_payload(request)
@@ -38,6 +45,7 @@ async def add_table(request : Request,
                     table_service : TableService = Depends(get_table_service_dependency)):
     payload = get_payload(request)
     required_roles(IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
+    await verify_csrf(request)
     await table_service.create_table(table_number, capacity)
     return RedirectResponse(url="/tables", status_code=303)
 
@@ -45,6 +53,7 @@ async def add_table(request : Request,
 async def take_table(request : Request, table_id : int,  service : TableSessionService = Depends(get_table_session_service_dependency)):
     payload = get_payload(request)
     required_roles(IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
+    await verify_csrf(request)
     await service.start_session(table_id)
     return RedirectResponse(url="/tables", status_code=303)
 
@@ -52,6 +61,7 @@ async def take_table(request : Request, table_id : int,  service : TableSessionS
 async def take_table(request : Request, table_id : int,  service : TableSessionService = Depends(get_table_session_service_dependency)):
     payload = get_payload(request)
     required_roles(IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
+    await verify_csrf(request)
     await service.end_session(table_id)
     return RedirectResponse(url="/tables", status_code=303)
 
@@ -74,6 +84,7 @@ async def create_reservation(request : Request,
                              table_service : TableService = Depends(get_table_service_dependency)):
     payload = get_payload(request)
     required_roles(IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
+    await verify_csrf(request)
     reservation_start = reservation_start.replace(tzinfo=timezone.utc)
     reservation_end = reservation_end.replace(tzinfo=timezone.utc)
     now = datetime.now(timezone.utc)
@@ -99,6 +110,7 @@ async def reservations_page(request : Request, reservation_service : Reservation
 async def cancel_reservation(request : Request, reservation_id : int, reservation_service : ReservationService = Depends(get_reservation_service_dependency)):
     payload = get_payload(request)
     required_roles(IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
+    await verify_csrf(request)
     await reservation_service.cancel_reservation(reservation_id)
     return RedirectResponse(url="/tables/reservations/history", status_code=303)
 

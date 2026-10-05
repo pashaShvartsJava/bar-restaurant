@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from fastapi import APIRouter, Request, Depends, Form, UploadFile, File
+from fastapi import APIRouter, Request, Depends, Form, UploadFile, File, HTTPException
 from starlette.responses import HTMLResponse, RedirectResponse
 from starlette.templating import Jinja2Templates
 
@@ -14,6 +14,13 @@ from ..security.authorization.authorization import required_roles
 
 router = APIRouter()
 templates = Jinja2Templates(directory="app/templates_menu")
+
+async def verify_csrf(request: Request):
+    cookie_token = request.cookies.get("csrf_token")
+    header_token = request.headers.get("X-CSRF-Token")
+
+    if not cookie_token or cookie_token != header_token:
+        raise HTTPException(status_code=403)
 
 @router.get("/menu_page", response_class=HTMLResponse)
 async def get_menu_page(request: Request, category_service : CategoryService = Depends(get_category_service_dependency)):
@@ -34,6 +41,7 @@ async def create_category(request : Request, category_name : str = Form(),
                               category_service : CategoryService = Depends(get_category_service_dependency)):
     payload = get_payload(request)
     required_roles(IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
+    await verify_csrf(request)
     await category_service.create_category(category_name)
     return RedirectResponse(url="/menu_page/add_category", status_code=303)
 
@@ -53,6 +61,7 @@ async def create_dish(request : Request, dish_name : str = Form(...,),
                                menu_service : MenuService = Depends(get_menu_service_dependency)):
     payload = get_payload(request)
     required_roles(IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
+    await verify_csrf(request)
     image_url = None
     if image:
         upload_dir = "app/templates_menu/media/dishes"
@@ -67,6 +76,7 @@ async def create_dish(request : Request, dish_name : str = Form(...,),
 async def take_away_dish_from_menu(request : Request, id : int, menu_service : MenuService = Depends(get_menu_service_dependency)):
     payload = get_payload(request)
     required_roles(IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
+    await verify_csrf(request)
     await menu_service.update_dish_status(id)
 
 @router.get("/menu_page/edit_dish/{id}")
@@ -86,6 +96,7 @@ async def edit_dish(request : Request,
                     menu_service : MenuService = Depends(get_menu_service_dependency)):
     payload = get_payload(request)
     required_roles(IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
+    await verify_csrf(request)
     image_url = None
     if image is not None and image.filename:
         upload_dir = "app/templates_menu/media/dishes"

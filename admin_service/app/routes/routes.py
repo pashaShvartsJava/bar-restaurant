@@ -26,8 +26,17 @@ INTERNAL_TOKEN = settings.internal_token
 templates = Jinja2Templates(directory="app/templates_admin")
 router = APIRouter()
 
+async def verify_csrf(request: Request):
+    cookie_token = request.cookies.get("csrf_token")
+    header_token = request.headers.get("X-CSRF-Token")
+    if not cookie_token or cookie_token != header_token:
+        raise HTTPException(status_code=403)
+
 @router.post("/admin/logout")
-def logout():
+def logout(request : Request):
+    payload = get_payload(request)
+    required_roles(IdentityRole.ADMIN, IdentityRole.MODERATOR, payload=payload)
+    verify_csrf(request)
     redirect = RedirectResponse(url="/admin/login", status_code=303)
     redirect.delete_cookie("access_token")
     return redirect
@@ -63,6 +72,7 @@ async def add_admin(request : Request, data : Annotated[AdminRegistrationForm, F
                     admin_service : AdminService = Depends(get_service_dependency)):
     payload = get_payload(request)
     required_role(IdentityRole.MODERATOR, payload)
+    await verify_csrf(request)
     identity_id = uuid.uuid4()
     new_identity = AddAdminRequest(identity_id=identity_id, email=data.email, password=data.password, role=data.role, status=Status.ACTIVE)
     async with httpx.AsyncClient() as client:
@@ -82,6 +92,7 @@ async def add_admin(request : Request, data : Annotated[AdminRegistrationForm, F
 async def delete_admin(request : Request, admin_id : int, admin_service : AdminService = Depends(get_service_dependency)):
     payload = get_payload(request)
     required_role(IdentityRole.MODERATOR, payload)
+    await verify_csrf(request)
     admin = await admin_service.find_by_id(admin_id)
     async with httpx.AsyncClient() as client:
         response = await client.delete(url="http://authentication-service:8000/delete_identity", params={"identity_id" : admin.identity_id})
@@ -113,6 +124,7 @@ async def edit_admin(request : Request, admin_id : int, service : AdminService =
                ):
     payload = get_payload(request)
     required_roles(IdentityRole.ADMIN, IdentityRole.MODERATOR, payload=payload)
+    await verify_csrf(request)
     updated_admin = AdminUpdateDTO(name = name,
                                    surname = surname,
                                    phone=phone,
@@ -161,6 +173,7 @@ async def edit_password(request: Request, service: AdminService = Depends(get_se
                         confirmed_password: str = Form(..., min_length=8, description="password")):
     payload = get_payload(request)
     required_roles(IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
+    await verify_csrf(request)
     admin = await service.find_by_identity(payload["sub"])
 
     if new_password != confirmed_password:
@@ -201,7 +214,10 @@ async def show_all_customers(request : Request):
     return templates.TemplateResponse("all_users.html", {"request" : request, "users" : users})
 
 @router.patch("/admin_panel/all_customers/{identity_id}/block")
-async def block_customer(identity_id: UUID):
+async def block_customer(request : Request, identity_id: UUID):
+    payload = get_payload(request)
+    required_roles(IdentityRole.MODERATOR, payload=payload)
+    await verify_csrf(request)
     async with httpx.AsyncClient() as client:
         response = await client.patch("http://authentication-service:8000/edit_status",
                                       params={"identity_id" : str(identity_id), "status" : Status.BLOCKED.value},
@@ -209,7 +225,10 @@ async def block_customer(identity_id: UUID):
         response.raise_for_status()
 
 @router.patch("/admin_panel/all_customers/{identity_id}/unblock")
-async def unblock_customer(identity_id: UUID):
+async def unblock_customer(request : Request, identity_id: UUID):
+    payload = get_payload(request)
+    required_roles(IdentityRole.MODERATOR, payload=payload)
+    await verify_csrf(request)
     async with httpx.AsyncClient() as client:
         response = await client.patch("http://authentication-service:8000/edit_status",
                                       params={"identity_id" : str(identity_id), "status" : Status.ACTIVE.value},

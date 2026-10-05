@@ -58,7 +58,9 @@ async def authentication(email: EmailStr = Form(...),
     if user.status != Status.ACTIVE:
         raise HTTPException(detail="Этот аккаунт в состоянии незавершенной регистрации или заблокирован", status_code=403)
     redirect = RedirectResponse(url="/user/my_profile", status_code=303)
+    csrf_token = secrets.token_urlsafe(32)
     redirect.set_cookie(key="access_token", value=token, httponly=True, secure=False, max_age=3600, samesite="lax")
+    redirect.set_cookie(key="csrf_token", value=csrf_token, httponly=False, secure=False, max_age=3600, samesite="lax")
     return redirect
 
 @router.post("/registration")

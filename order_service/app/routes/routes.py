@@ -16,7 +16,7 @@ from ..schema.payment_schema import PaymentDTO
 from ..security.jwt.jwt import get_payload
 from ..security.authorization.authorization import required_roles
 from ..security.role.role import IdentityRole
-from uuid import UUID, uuid4
+from uuid import UUID
 
 from ..service.order_service import OrderService
 from ..config.config import settings
@@ -24,6 +24,13 @@ from ..config.config import settings
 router = APIRouter()
 templates = Jinja2Templates(directory="app/templates")
 INTERNAL_TOKEN=settings.internal_token
+
+async def verify_csrf(request: Request):
+    cookie_token = request.cookies.get("csrf_token")
+    header_token = request.headers.get("X-CSRF-Token")
+
+    if not cookie_token or cookie_token != header_token:
+        raise HTTPException(status_code=403)
 
 @router.get("/orders/history")
 async def orders_history_page(request : Request, service : OrderService = Depends(get_order_service_dependency)):
@@ -46,6 +53,7 @@ async def change_order_status(request : Request,
                               service : OrderService = Depends(get_order_service_dependency)):
     payload = get_payload(request)
     required_roles(IdentityRole.ADMIN, IdentityRole.MODERATOR, payload=payload)
+    await verify_csrf(request)
     order = await service.get_order_by_order_number(UUID(order_number))
     client_id = order.client_id
     email = await service.get_customer_email(client_id)
@@ -56,6 +64,7 @@ async def make_order(request : Request, data : ListOrderDTO,
                      service : OrderService = Depends(get_order_service_dependency)):
     payload = get_payload(request)
     required_roles(IdentityRole.USER, payload=payload)
+    await verify_csrf(request)
     client_id = UUID(payload["sub"])
     await service.create_order(data, client_id)
     return RedirectResponse(url="/users/confirm_address", status_code=303)
@@ -115,6 +124,7 @@ async def create_delivering_address(request : Request,
 async def cancel_order_before_payment(request : Request, service : OrderService = Depends(get_order_service_dependency)):
     payload = get_payload(request)
     required_roles(IdentityRole.USER, payload=payload)
+    await verify_csrf(request)
     client_id = UUID(payload["sub"])
     await service.cancel_order_before_payment(client_id)
     return RedirectResponse(url="/my_profile/users", status_code=303)
@@ -125,6 +135,7 @@ async def create_delivering_address(request : Request,
                                     service : OrderService = Depends(get_order_service_dependency)):
     payload = get_payload(request)
     required_roles(IdentityRole.USER, payload=payload)
+    await verify_csrf(request)
     client_id = UUID(payload["sub"])
     order = await service.get_pending_by_client_id(client_id)
     await service.create_order_address(order.id, data)
@@ -158,6 +169,7 @@ async def search_and_sorting(request : Request,
                              service : OrderService = Depends(get_order_service_dependency)):
     payload = get_payload(request)
     required_roles(IdentityRole.ADMIN, IdentityRole.MODERATOR, payload=payload)
+    await verify_csrf(request)
     orders = await service.search_or_sort_orders(search, status, date_from, date_to, sum_from, sum_to, sort)
     return templates.TemplateResponse("all_orders.html", {"request" : request, "orders" : orders})
 
