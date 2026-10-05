@@ -635,6 +635,11 @@
             return false;
         }
 
+        if (response.status === 429) {
+            formError.textContent = "Слишком много попыток входа. Попробуйте позже.";
+            return false;
+        }
+
         if (response.status >= 500) {
             formError.textContent =
                 "Ошибка сервера. Попробуйте позже.";

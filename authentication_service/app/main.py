@@ -4,11 +4,15 @@ from contextlib import asynccontextmanager
 from authx  import AuthXConfig
 
 from fastapi import FastAPI
+from fastapi_cli.cli import app
 
 from .async_processes.async_processes import outbox_publisher
 from .broker.instance import rabbitmq
 from .routes.routes import router as auth_router
 from .routes.admin_routes import router as router
+
+
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):

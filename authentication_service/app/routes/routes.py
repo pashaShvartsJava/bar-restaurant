@@ -16,6 +16,7 @@ from ..schemas.schema import LoginSchema, RegisterRequest, RegisterRequestDTO, A
     EmailRequest, RegistrationSchema, IdentityDto
 from ..dependencies.dependency import get_service_dependency
 from ..security.password.password import verify_password
+from ..security.rate_limit import check_login_rate_limit, reset_login_rate_limit
 from ..services.authentication_service import AuthenticationService, send_new_user_dto, send_address
 import httpx
 from uuid import UUID
@@ -24,7 +25,6 @@ from ..config.config import settings
 INTERNAL_TOKEN = settings.internal_token
 templates = Jinja2Templates(directory="app/templates_auth")
 router = APIRouter()
-
 
 @router.get("/bar_name", response_class=HTMLResponse)
 def main_page(request: Request):
@@ -43,8 +43,10 @@ async def authentication(email: EmailStr = Form(...),
                          password: str = Form(...),
                          service : AuthenticationService = Depends(get_service_dependency)):
     data = LoginSchema(email=email, password=password)
+    await check_login_rate_limit(str(email))
     try:
         token = await service.login(data)
+        await reset_login_rate_limit(str(email))
     except InvalidCredentialsError:
         raise HTTPException(status_code=401, detail=[
         {

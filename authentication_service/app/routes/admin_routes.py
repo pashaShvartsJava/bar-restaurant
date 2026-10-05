@@ -13,6 +13,7 @@ from ..schemas.admin_schema import AdminRegistration, AdminRegistrationDTO, Admi
 from ..schemas.schema import LoginSchema
 from ..dependencies.dependency import get_service_dependency
 from ..services.authentication_service import AuthenticationService
+from ..security.rate_limit import check_login_rate_limit, reset_login_rate_limit
 import httpx
 
 templates = Jinja2Templates(directory="app/templates_auth")
@@ -61,8 +62,10 @@ async def admin_registration(data : Annotated[AdminRegistration, Form()], servic
 @router.post("/admin/login")
 async def admin_login(data : Annotated[AdminLogin, Form()], service : AuthenticationService = Depends(get_service_dependency) ):
     credentials = LoginSchema(email=data.email, password=data.password)
+    await check_login_rate_limit(str(data.email))
     try:
         token = await service.login(credentials)
+        await reset_login_rate_limit(str(data.email))
     except InvalidCredentialsError:
         raise HTTPException(status_code=401, detail=[
         {
