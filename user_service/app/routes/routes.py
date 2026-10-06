@@ -29,9 +29,6 @@ async def verify_csrf(request: Request):
     cookie_token = request.cookies.get("csrf_token")
     header_token = request.headers.get("X-CSRF-Token")
 
-    print("CSRF COOKIE:", cookie_token)
-    print("CSRF HEADER:", header_token)
-
     if not cookie_token or cookie_token != header_token:
         raise HTTPException(status_code=403)
 

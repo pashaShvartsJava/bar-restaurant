@@ -9,7 +9,7 @@ class ChatManager:
         await websocket.accept()
         self.connections.setdefault( conversation_id,[]).append(websocket)
 
-    def disconnect(self, conversation_id: int, websocket: WebSocket):
+    async def disconnect(self, conversation_id: int, websocket: WebSocket):
         connections = self.connections.get(conversation_id)
         if not connections:
             return

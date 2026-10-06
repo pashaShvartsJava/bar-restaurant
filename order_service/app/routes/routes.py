@@ -117,8 +117,7 @@ async def create_delivering_address(request : Request,
                                          cookies={"guest_client_id" : str(client_id)},
                                          headers={"internal_token" : INTERNAL_TOKEN})
             response.raise_for_status()
-            payment_data = response.json()
-        return RedirectResponse(url=payment_data["checkout_url"], status_code=303)
+            return response.json()
     return None
 
 
@@ -139,7 +138,6 @@ async def create_delivering_address(request : Request,
     await verify_internal_token(internal_token)
     payload = get_payload(request)
     required_roles(IdentityRole.USER, payload=payload)
-    await verify_csrf(request)
     client_id = UUID(payload["sub"])
     order = await service.get_pending_by_client_id(client_id)
     await service.create_order_address(order.id, data)
@@ -157,8 +155,7 @@ async def create_delivering_address(request : Request,
                                          cookies={"access_token" : request.cookies.get("access_token")},
                                          headers={"internal_token" : INTERNAL_TOKEN})
             response.raise_for_status()
-            payment_data = response.json()
-        return RedirectResponse(url=payment_data["checkout_url"], status_code=303)
+            return response.json()
     return None
 
 
