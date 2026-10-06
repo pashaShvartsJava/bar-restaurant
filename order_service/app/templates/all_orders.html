@@ -10,7 +10,6 @@
             padding: 0;
             box-sizing: border-box;
         }
-
         body {
             min-height: 100vh;
             background:
@@ -19,76 +18,64 @@
             color: #fff;
             font-family: Arial, sans-serif;
         }
-
         .container {
             width: 100%;
             max-width: 1400px;
             margin: 0 auto;
             padding: 60px 35px;
         }
-
         .top {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 45px;
         }
-
         .back {
             color: #77777d;
             font-size: 11px;
             text-decoration: none;
         }
-
         .back:hover {
             color: #d5a65b;
         }
-
         .brand {
             color: #d5a65b;
             font-family: Georgia, serif;
             font-size: 11px;
             letter-spacing: 3px;
         }
-
         .header {
             text-align: center;
             margin-bottom: 35px;
         }
-
         .header-label {
             margin-bottom: 10px;
             color: #d5a65b;
             font-size: 9px;
             letter-spacing: 3px;
         }
-
         .header h1 {
             font-family: Georgia, serif;
             font-size: 42px;
             font-weight: normal;
             letter-spacing: 3px;
         }
-
         .description {
             margin-top: 12px;
             color: #77777d;
             font-size: 13px;
         }
-
         .controls {
             display: flex;
             align-items: center;
             gap: 8px;
             margin-bottom: 25px;
         }
-
         .search-form {
             display: flex;
             flex: 1;
             gap: 8px;
         }
-
         .search-input {
             flex: 1;
             min-height: 34px;
@@ -100,15 +87,12 @@
             color: #fff;
             font-size: 9px;
         }
-
         .search-input::placeholder {
             color: #77777d;
         }
-
         .search-input:focus {
             border-color: rgba(139, 92, 246, .55);
         }
-
         .search-button,
         .reset-button,
         .sort-button,
@@ -123,26 +107,22 @@
             text-decoration: none;
             cursor: pointer;
         }
-
         .search-button {
             background: rgba(42, 40, 42, .95);
             border: 1px solid rgba(139, 92, 246, .35);
             color: #a78bfa;
         }
-
         .reset-button {
             background: rgba(42, 40, 42, .95);
             border: 1px solid rgba(255, 255, 255, .08);
             color: #aaa9ae;
         }
-
         .sort-button {
             min-width: 105px;
             background: rgba(42, 40, 42, .95);
             border: 1px solid rgba(213, 166, 91, .30);
             color: #d5a65b;
         }
-
         .orders {
             width: 100%;
             background: rgba(27, 25, 27, .96);
@@ -150,14 +130,12 @@
             border-radius: 14px;
             overflow: hidden;
         }
-
         .table-header,
         .order {
             display: grid;
             grid-template-columns: 1.5fr 1.15fr 135px 155px 155px 110px 170px;
             align-items: center;
         }
-
         .table-header {
             min-height: 48px;
             padding: 0 22px;
@@ -168,47 +146,39 @@
             letter-spacing: 1.5px;
             text-transform: uppercase;
         }
-
         .order {
             min-height: 105px;
             padding: 16px 22px;
             background: rgba(30, 29, 31, .97);
             border-bottom: 1px solid rgba(255, 255, 255, .055);
         }
-
         .order:hover {
             background: rgba(38, 36, 38, .98);
         }
-
         .order:last-child {
             border-bottom: none;
         }
-
         .order-number {
             color: #fff;
             font-size: 12px;
             font-weight: 600;
             word-break: break-all;
         }
-
         .order-client {
             color: #77777d;
             font-size: 10px;
             word-break: break-all;
         }
-
         .order-date {
             color: #aaa9ae;
             font-size: 10px;
             line-height: 1.5;
         }
-
         .order-sum {
             color: #d5a65b;
             font-size: 12px;
             font-weight: 600;
         }
-
         .status {
             display: inline-flex;
             align-items: center;
@@ -219,7 +189,6 @@
             font-size: 9px;
             white-space: nowrap;
         }
-
         .status::before {
             content: "";
             width: 5px;
@@ -227,70 +196,59 @@
             border-radius: 50%;
             background: currentColor;
         }
-
         .status.pending {
             background: rgba(170, 130, 70, .13);
             border: 1px solid rgba(210, 166, 91, .28);
             color: #d5a65b;
         }
-
         .status.confirmed_address,
         .status.paid {
             background: rgba(70, 100, 130, .14);
             border: 1px solid rgba(90, 135, 175, .30);
             color: #8db4d3;
         }
-
         .status.prepared {
             background: rgba(110, 80, 135, .15);
             border: 1px solid rgba(145, 110, 175, .30);
             color: #b59bc9;
         }
-
         .status.delivering {
             background: rgba(70, 110, 100, .15);
             border: 1px solid rgba(90, 145, 125, .30);
             color: #8db9a9;
         }
-
         .status.completed {
             background: rgba(100, 130, 80, .12);
             border: 1px solid rgba(120, 150, 95, .25);
             color: #9aaa8b;
         }
-
         .status.cancelled_before,
         .status.cancelled_after {
             background: rgba(150, 55, 65, .16);
             border: 1px solid rgba(210, 85, 90, .32);
             color: #d98282;
         }
-
         .status.expired {
             background: rgba(90, 90, 95, .14);
             border: 1px solid rgba(120, 120, 125, .25);
             color: #85858b;
         }
-
         .status-action {
             position: relative;
             display: flex;
             align-items: center;
             gap: 6px;
         }
-
         .action {
             background: rgba(42, 40, 42, .95);
             border: 1px solid rgba(255, 255, 255, .08);
             color: #aaa9ae;
             white-space: nowrap;
         }
-
         .action:hover {
             border-color: #d5a65b;
             color: #d5a65b;
         }
-
         .change-status-button {
             min-height: 34px;
             padding: 8px 12px;
@@ -301,7 +259,6 @@
             font-size: 9px;
             cursor: pointer;
         }
-
         .status-menu {
             position: absolute;
             top: calc(100% + 7px);
@@ -315,11 +272,9 @@
             box-shadow: -10px 15px 40px rgba(0, 0, 0, .45);
             display: none;
         }
-
         .status-menu.active {
             display: block;
         }
-
         .status-option {
             width: 100%;
             padding: 9px 10px;
@@ -331,12 +286,10 @@
             text-align: left;
             cursor: pointer;
         }
-
         .status-option:hover {
             background: rgba(213, 166, 91, .10);
             color: #d5a65b;
         }
-
         .empty {
             padding: 55px 30px;
             background: rgba(27, 25, 27, .96);
@@ -344,19 +297,16 @@
             border-radius: 14px;
             text-align: center;
         }
-
         .empty-title {
             color: #fff;
             font-family: Georgia, serif;
             font-size: 18px;
         }
-
         .empty-description {
             margin-top: 9px;
             color: #77777d;
             font-size: 10px;
         }
-
         .footer {
             padding-top: 35px;
             text-align: center;
@@ -364,7 +314,6 @@
             font-size: 9px;
             letter-spacing: 1px;
         }
-
         .sort-overlay {
             position: fixed;
             inset: 0;
@@ -375,11 +324,9 @@
             padding: 20px;
             background: rgba(0, 0, 0, .72);
         }
-
         .sort-overlay.active {
             display: flex;
         }
-
         .sort-panel {
             width: 100%;
             max-width: 430px;
@@ -389,18 +336,15 @@
             border-radius: 12px;
             box-shadow: 0 25px 70px rgba(0, 0, 0, .55);
         }
-
         .sort-title {
             margin-bottom: 25px;
             color: #d5a65b;
             font-family: Georgia, serif;
             font-size: 20px;
         }
-
         .sort-field {
             margin-bottom: 15px;
         }
-
         .sort-field label {
             display: block;
             margin-bottom: 7px;
@@ -409,7 +353,6 @@
             letter-spacing: 1px;
             text-transform: uppercase;
         }
-
         .sort-field input,
         .sort-field select {
             width: 100%;
@@ -422,19 +365,16 @@
             color: #fff;
             font-size: 10px;
         }
-
         .sort-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 10px;
         }
-
         .sort-actions {
             display: flex;
             gap: 8px;
             margin-top: 22px;
         }
-
         .sort-apply,
         .sort-reset,
         .sort-close {
@@ -444,70 +384,58 @@
             font-size: 9px;
             cursor: pointer;
         }
-
         .sort-apply {
             background: rgba(213, 166, 91, .12);
             border: 1px solid rgba(213, 166, 91, .35);
             color: #d5a65b;
         }
-
         .sort-reset,
         .sort-close {
             background: #2a282a;
             border: 1px solid rgba(255, 255, 255, .08);
             color: #aaa9ae;
         }
-
         @media (max-width: 1200px) {
             .table-header {
                 display: none;
             }
-
             .order {
                 grid-template-columns: 1fr 1fr;
                 gap: 18px;
                 padding: 20px;
             }
-
             .order-number {
                 grid-column: 1 / -1;
             }
         }
-
         @media (max-width: 700px) {
             .container {
                 padding: 35px 18px;
             }
-
             .controls,
             .search-form {
                 flex-direction: column;
                 align-items: stretch;
             }
-
             .search-input,
             .search-button,
             .reset-button,
             .sort-button {
                 width: 100%;
             }
-
             .order {
                 display: flex;
                 flex-direction: column;
                 align-items: stretch;
             }
-
             .status-action {
                 flex-direction: column;
                 align-items: stretch;
             }
-
             .action,
             .change-status-button {
                 width: 100%;
             }
-
             .status-menu {
                 position: static;
                 width: 100%;
@@ -516,55 +444,27 @@
         }
     </style>
 </head>
-
 <body>
 <div class="container">
-
     <div class="top">
         <a href="/admin_panel" class="back">← НАЗАД</a>
         <div class="brand">RESTAURANT ADMIN</div>
     </div>
-
     <div class="header">
         <div class="header-label">ORDER MANAGEMENT</div>
         <h1>Заказы</h1>
         <p class="description">Все зарегистрированные заказы ресторана</p>
     </div>
-
     <div class="controls">
         <form class="search-form" method="GET" action="/orders/get_orders/search_or_sorting">
-            <input
-                class="search-input"
-                name="search"
-                type="text"
-                placeholder="Введите номер заказа"
-                value="{{ search or '' }}"
-            >
-
-            <button class="search-button" type="submit">
-                Найти
-            </button>
-
-            <a
-                class="reset-button"
-                href="/orders/get_orders"
-            >
-                Сбросить
-            </a>
+            <input class="search-input" name="search" type="text" placeholder="Введите номер заказа" value="{{ search or '' }}">
+            <button class="search-button" type="submit">Найти</button>
+            <a class="reset-button" href="/orders/get_orders">Сбросить</a>
         </form>
-
-        <button
-            class="sort-button"
-            type="button"
-            onclick="openSort()"
-        >
-            Сортировать
-        </button>
+        <button class="sort-button" type="button" onclick="openSort()">Сортировать</button>
     </div>
-
     {% if orders %}
     <div class="orders">
-
         <div class="table-header">
             <div>Номер заказа</div>
             <div>Клиент</div>
@@ -574,20 +474,11 @@
             <div>Сумма</div>
             <div>Действия</div>
         </div>
-
         {% for order in orders %}
         {% set current_status = order.status.value if order.status.value is defined else order.status %}
-
         <div class="order">
-
-            <div class="order-number">
-                {{ order.order_number }}
-            </div>
-
-            <div class="order-client">
-                {{ order.client_id }}
-            </div>
-
+            <div class="order-number">{{ order.order_number }}</div>
+            <div class="order-client">{{ order.client_id }}</div>
             <div>
                 <span class="status {{ current_status }}">
                     {% if current_status == "pending" %}
@@ -613,332 +504,119 @@
                     {% endif %}
                 </span>
             </div>
-
-            <div class="order-date">
-                {{ order.created_at.strftime("%d.%m.%Y %H:%M") if order.created_at else "—" }}
-            </div>
-
-            <div class="order-date">
-                {{ order.updated_status.strftime("%d.%m.%Y %H:%M") if order.updated_status else "—" }}
-            </div>
-
-            <div class="order-sum">
-                {{ order.sum }} €
-            </div>
-
+            <div class="order-date">{{ order.created_at.strftime("%d.%m.%Y %H:%M") if order.created_at else "—" }}</div>
+            <div class="order-date">{{ order.updated_status.strftime("%d.%m.%Y %H:%M") if order.updated_status else "—" }}</div>
+            <div class="order-sum">{{ order.sum }} €</div>
             <div class="status-action">
-
-                <a
-                    class="action"
-                    href="/orders/{{ order.id }}"
-                >
-                    Информация
-                </a>
-
+                <a class="action" href="/orders/{{ order.id }}">Информация</a>
                 {% if current_status not in ["pending", "confirmed_address", "expired", "cancelled_before", "cancelled_after", "completed"] %}
-
-                <button
-                    class="change-status-button"
-                    type="button"
-                    onclick="toggleStatusMenu('{{ order.order_number }}')"
-                >
-                    Статус
-                </button>
-
-                <div
-                    class="status-menu"
-                    id="status-menu-{{ order.order_number }}"
-                >
+                <button class="change-status-button" type="button" onclick="toggleStatusMenu('{{ order.order_number }}')">Статус</button>
+                <div class="status-menu" id="status-menu-{{ order.order_number }}">
                     {% if current_status == "paid" %}
-                    <button
-                        class="status-option"
-                        type="button"
-                        onclick="changeOrderStatus('{{ order.order_number }}', 'preparing')"
-                    >
-                        Готовится
-                    </button>
+                    <button class="status-option" type="button" onclick="changeOrderStatus('{{ order.order_number }}', 'preparing')">Готовится</button>
                     {% endif %}
-
                     {% if current_status in ["paid", "preparing"] %}
-                    <button
-                        class="status-option"
-                        type="button"
-                        onclick="changeOrderStatus('{{ order.order_number }}', 'delivering')"
-                    >
-                        Доставляется
-                    </button>
+                    <button class="status-option" type="button" onclick="changeOrderStatus('{{ order.order_number }}', 'delivering')">Доставляется</button>
                     {% endif %}
-
                     {% if current_status in ["paid", "preparing", "delivering"] %}
-                    <button
-                        class="status-option"
-                        type="button"
-                        onclick="changeOrderStatus('{{ order.order_number }}', 'completed')"
-                    >
-                        Завершён
-                    </button>
-
-                    <button
-                        class="status-option"
-                        type="button"
-                        onclick="changeOrderStatus('{{ order.order_number }}', 'cancelled_after')"
-                    >
-                        Отменён после оплаты
-                    </button>
+                    <button class="status-option" type="button" onclick="changeOrderStatus('{{ order.order_number }}', 'completed')">Завершён</button>
+                    <button class="status-option" type="button" onclick="changeOrderStatus('{{ order.order_number }}', 'cancelled_after')">Отменён после оплаты</button>
                     {% endif %}
                 </div>
-
                 {% endif %}
-
             </div>
         </div>
         {% endfor %}
-
     </div>
     {% else %}
-
     <div class="empty">
         <div class="empty-title">Заказы не найдены</div>
-        <div class="empty-description">
-            По заданным параметрам заказы отсутствуют.
-        </div>
+        <div class="empty-description">По заданным параметрам заказы отсутствуют.</div>
     </div>
-
     {% endif %}
-
-    <div class="footer">
-        RESTAURANT ADMINISTRATION
-    </div>
+    <div class="footer">RESTAURANT ADMINISTRATION</div>
 </div>
 
-<div
-    class="sort-overlay"
-    id="sortOverlay"
-    onclick="closeSortByOverlay(event)"
->
-    <div
-        class="sort-panel"
-        onclick="event.stopPropagation()"
-    >
+<div class="sort-overlay" id="sortOverlay" onclick="closeSortByOverlay(event)">
+    <div class="sort-panel" onclick="event.stopPropagation()">
         <div class="sort-title">Сортировка и фильтры</div>
-
         <form method="GET" action="/orders/get_orders/search_or_sorting">
-
             <div class="sort-field">
                 <label>Статус</label>
-
                 <select name="status">
                     <option value="">Все статусы</option>
-
-                    <option
-                        value="pending"
-                        {% if status == "pending" %}selected{% endif %}
-                    >
-                        Ожидает
-                    </option>
-
-                    <option
-                        value="confirmed_address"
-                        {% if status == "confirmed_address" %}selected{% endif %}
-                    >
-                        Адрес подтверждён
-                    </option>
-
-                    <option
-                        value="paid"
-                        {% if status == "paid" %}selected{% endif %}
-                    >
-                        Оплачен
-                    </option>
-
-                    <option
-                        value="preparing"
-                        {% if status == "preparing" %}selected{% endif %}
-                    >
-                        Готовится
-                    </option>
-
-                    <option
-                        value="delivering"
-                        {% if status == "delivering" %}selected{% endif %}
-                    >
-                        Доставляется
-                    </option>
-
-                    <option
-                        value="completed"
-                        {% if status == "completed" %}selected{% endif %}
-                    >
-                        Завершён
-                    </option>
-
-                    <option
-                        value="cancelled_before"
-                        {% if status == "cancelled_before" %}selected{% endif %}
-                    >
-                        Отменён до оплаты
-                    </option>
-
-                    <option
-                        value="cancelled_after"
-                        {% if status == "cancelled_after" %}selected{% endif %}
-                    >
-                        Отменён после оплаты
-                    </option>
-
-                    <option
-                        value="expired"
-                        {% if status == "expired" %}selected{% endif %}
-                    >
-                        Истёк
-                    </option>
+                    <option value="pending" {% if status == "pending" %}selected{% endif %}>Ожидает</option>
+                    <option value="confirmed_address" {% if status == "confirmed_address" %}selected{% endif %}>Адрес подтверждён</option>
+                    <option value="paid" {% if status == "paid" %}selected{% endif %}>Оплачен</option>
+                    <option value="preparing" {% if status == "preparing" %}selected{% endif %}>Готовится</option>
+                    <option value="delivering" {% if status == "delivering" %}selected{% endif %}>Доставляется</option>
+                    <option value="completed" {% if status == "completed" %}selected{% endif %}>Завершён</option>
+                    <option value="cancelled_before" {% if status == "cancelled_before" %}selected{% endif %}>Отменён до оплаты</option>
+                    <option value="cancelled_after" {% if status == "cancelled_after" %}selected{% endif %}>Отменён после оплаты</option>
+                    <option value="expired" {% if status == "expired" %}selected{% endif %}>Истёк</option>
                 </select>
             </div>
-
             <div class="sort-field">
                 <label>Дата создания</label>
-
                 <div class="sort-row">
-                    <input
-                        type="date"
-                        name="date_from"
-                        value="{{ date_from or '' }}"
-                    >
-
-                    <input
-                        type="date"
-                        name="date_to"
-                        value="{{ date_to or '' }}"
-                    >
+                    <input type="date" name="date_from" value="{{ date_from or '' }}">
+                    <input type="date" name="date_to" value="{{ date_to or '' }}">
                 </div>
             </div>
-
             <div class="sort-field">
                 <label>Сумма</label>
-
                 <div class="sort-row">
-                    <input
-                        type="number"
-                        name="sum_from"
-                        min="0"
-                        step="0.01"
-                        placeholder="От"
-                        value="{{ sum_from or '' }}"
-                    >
-
-                    <input
-                        type="number"
-                        name="sum_to"
-                        min="0"
-                        step="0.01"
-                        placeholder="До"
-                        value="{{ sum_to or '' }}"
-                    >
+                    <input type="number" name="sum_from" min="0" step="0.01" placeholder="От" value="{{ sum_from or '' }}">
+                    <input type="number" name="sum_to" min="0" step="0.01" placeholder="До" value="{{ sum_to or '' }}">
                 </div>
             </div>
-
             <div class="sort-field">
                 <label>Сортировка</label>
-
                 <select name="sort">
-                    <option
-                        value="created_desc"
-                        {% if sort == "created_desc" or not sort %}selected{% endif %}
-                    >
-                        Сначала новые
-                    </option>
-
-                    <option
-                        value="created_asc"
-                        {% if sort == "created_asc" %}selected{% endif %}
-                    >
-                        Сначала старые
-                    </option>
-
-                    <option
-                        value="sum_desc"
-                        {% if sort == "sum_desc" %}selected{% endif %}
-                    >
-                        Сумма: по убыванию
-                    </option>
-
-                    <option
-                        value="sum_asc"
-                        {% if sort == "sum_asc" %}selected{% endif %}
-                    >
-                        Сумма: по возрастанию
-                    </option>
+                    <option value="created_desc" {% if sort == "created_desc" or not sort %}selected{% endif %}>Сначала новые</option>
+                    <option value="created_asc" {% if sort == "created_asc" %}selected{% endif %}>Сначала старые</option>
+                    <option value="sum_desc" {% if sort == "sum_desc" %}selected{% endif %}>Сумма: по убыванию</option>
+                    <option value="sum_asc" {% if sort == "sum_asc" %}selected{% endif %}>Сумма: по возрастанию</option>
                 </select>
             </div>
-
             {% if search %}
-            <input
-                type="hidden"
-                name="search"
-                value="{{ search }}"
-            >
+            <input type="hidden" name="search" value="{{ search }}">
             {% endif %}
-
             <div class="sort-actions">
-                <button
-                    class="sort-apply"
-                    type="submit"
-                >
-                    Применить
-                </button>
-
-                <a
-                    class="sort-reset"
-                    href="/orders/get_orders"
-                    style="display:flex;align-items:center;justify-content:center;text-decoration:none;"
-                >
-                    Сбросить
-                </a>
-
-                <button
-                    class="sort-close"
-                    type="button"
-                    onclick="closeSort()"
-                >
-                    Закрыть
-                </button>
+                <button class="sort-apply" type="submit">Применить</button>
+                <a class="sort-reset" href="/orders/get_orders" style="display:flex;align-items:center;justify-content:center;text-decoration:none;">Сбросить</a>
+                <button class="sort-close" type="button" onclick="closeSort()">Закрыть</button>
             </div>
-
         </form>
     </div>
 </div>
+
 <script src="/static/api.js"></script>
 <script>
     function openSort() {
         document.getElementById("sortOverlay").classList.add("active");
     }
-
     function closeSort() {
         document.getElementById("sortOverlay").classList.remove("active");
     }
-
     function closeSortByOverlay(event) {
         if (event.target.id === "sortOverlay") {
             closeSort();
         }
     }
-
     function toggleStatusMenu(orderNumber) {
         document.querySelectorAll(".status-menu").forEach(menu => {
             if (menu.id !== `status-menu-${orderNumber}`) {
                 menu.classList.remove("active");
             }
         });
-
         const menu = document.getElementById(`status-menu-${orderNumber}`);
-
         if (menu) {
             menu.classList.toggle("active");
         }
     }
-
     async function changeOrderStatus(orderNumber, status) {
-        const response = await fetch(`/orders/${orderNumber}/status`, {
+        const response = await apiFetch(`/orders/${orderNumber}/status`, {
             method: "PATCH",
             headers: {
                 "Content-Type": "application/json"
@@ -947,15 +625,12 @@
                 status: status
             })
         });
-
         if (!response.ok) {
             alert("Не удалось изменить статус заказа");
             return;
         }
-
         location.reload();
     }
-
     document.addEventListener("click", event => {
         if (!event.target.closest(".status-action")) {
             document.querySelectorAll(".status-menu").forEach(menu => {
@@ -964,15 +639,14 @@
         }
     });
     document.querySelectorAll('form[method="GET"]').forEach(form => {
-    form.addEventListener("submit", () => {
-        form.querySelectorAll("input, select").forEach(field => {
-            if (field.value === "") {
-                field.removeAttribute("name");
-            }
+        form.addEventListener("submit", () => {
+            form.querySelectorAll("input, select").forEach(field => {
+                if (field.value === "") {
+                    field.removeAttribute("name");
+                }
+            });
         });
     });
-});
 </script>
-
 </body>
 </html>

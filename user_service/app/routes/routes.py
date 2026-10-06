@@ -28,6 +28,10 @@ router = APIRouter()
 async def verify_csrf(request: Request):
     cookie_token = request.cookies.get("csrf_token")
     header_token = request.headers.get("X-CSRF-Token")
+
+    print("CSRF COOKIE:", cookie_token)
+    print("CSRF HEADER:", header_token)
+
     if not cookie_token or cookie_token != header_token:
         raise HTTPException(status_code=403)
 
@@ -83,7 +87,6 @@ async def logout(request : Request):
 async def edit(request : Request, service : UserService = Depends(get_service_dependency)):
     payload = get_payload(request)
     required_roles(IdentityRole.USER, payload=payload)
-    await verify_csrf(request)
     user = await service.find_by_identity_id(payload["sub"])
     return templates.TemplateResponse("user_edit.html", context={"request" : request, "user" : user, "address" : user.address})
 
@@ -128,7 +131,6 @@ async def delete_user(request : Request, service : UserService = Depends(get_ser
 async def edit_password(request: Request,  service : UserService = Depends(get_service_dependency)):
     payload = get_payload(request)
     required_roles(IdentityRole.USER, payload=payload)
-    await verify_csrf(request)
     user = await service.find_by_identity_id(payload["sub"])
     return templates.TemplateResponse("edit_password.html", context={"request" : request, "user" : user})
 

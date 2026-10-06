@@ -1,549 +1,418 @@
 <!DOCTYPE html>
+
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>Вход | Bar & Lounge</title>
-
     <style>
         * {
             box-sizing: border-box;
         }
 
-        body {
-            margin: 0;
-            min-height: 100vh;
-            font-family: "Segoe UI", sans-serif;
-            color: #fff;
+    body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: "Segoe UI", sans-serif;
+        color: #fff;
+        background:
+            radial-gradient(circle at 10% 20%, rgba(213, 166, 91, 0.20), transparent 28%),
+            radial-gradient(circle at 90% 80%, rgba(155, 65, 95, 0.22), transparent 30%),
+            linear-gradient(125deg, #171216, #302126 45%, #21171e 70%, #121014);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 35px;
+    }
 
-            background:
-                radial-gradient(
-                    circle at 10% 20%,
-                    rgba(213, 166, 91, 0.20),
-                    transparent 28%
-                ),
-                radial-gradient(
-                    circle at 90% 80%,
-                    rgba(155, 65, 95, 0.22),
-                    transparent 30%
-                ),
-                linear-gradient(
-                    125deg,
-                    #171216,
-                    #302126 45%,
-                    #21171e 70%,
-                    #121014
-                );
+    .page {
+        width: 1050px;
+        display: grid;
+        grid-template-columns: 230px 420px 230px;
+        align-items: center;
+        justify-content: space-between;
+        gap: 35px;
+    }
 
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 35px;
+    .side {
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+    }
+
+    .side-card {
+        padding: 20px;
+        background: rgba(31, 26, 31, 0.72);
+        border: 1px solid rgba(255, 255, 255, 0.09);
+        border-radius: 13px;
+        backdrop-filter: blur(8px);
+    }
+
+    .side-label {
+        display: block;
+        margin-bottom: 9px;
+        color: #756d72;
+        font-size: 9px;
+        letter-spacing: 2px;
+    }
+
+    .side-card h3 {
+        margin: 0 0 10px;
+        color: #d5a65b;
+        font-family: Georgia, serif;
+        font-size: 17px;
+        font-weight: normal;
+    }
+
+    .side-card p {
+        margin: 0;
+        color: #aaa1a6;
+        font-size: 11px;
+        line-height: 1.6;
+    }
+
+    .quote {
+        color: #ddd !important;
+        font-family: Georgia, serif;
+        font-size: 14px !important;
+    }
+
+    .drink {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .drink-icon {
+        width: 42px;
+        height: 42px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 10px;
+        background: rgba(213, 166, 91, 0.12);
+        border: 1px solid rgba(213, 166, 91, 0.2);
+        color: #d5a65b;
+        font-size: 20px;
+    }
+
+    .drink-name {
+        color: #ddd;
+        font-size: 11px;
+        font-weight: 600;
+    }
+
+    .drink-description {
+        margin-top: 3px;
+        color: #777;
+        font-size: 9px;
+    }
+
+    .auth-card {
+        width: 420px;
+        padding: 40px 42px;
+        background: rgba(39, 34, 39, 0.95);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 18px;
+        box-shadow:
+            0 25px 70px rgba(0, 0, 0, 0.45),
+            0 0 45px rgba(213, 166, 91, 0.07);
+        backdrop-filter: blur(14px);
+        animation: appear 0.5s ease;
+    }
+
+    .logo {
+        text-align: center;
+        color: #d5a65b;
+        font-family: Georgia, serif;
+        font-size: 13px;
+        letter-spacing: 5px;
+        margin-bottom: 18px;
+    }
+
+    .auth-card h1 {
+        margin: 0;
+        text-align: center;
+        font-family: Georgia, serif;
+        font-size: 30px;
+        font-weight: normal;
+    }
+
+    .subtitle {
+        margin: 10px 0 28px;
+        text-align: center;
+        color: #aaa2a7;
+        font-size: 12px;
+        line-height: 1.5;
+    }
+
+    .field {
+        margin-bottom: 16px;
+    }
+
+    .field label {
+        display: block;
+        margin-bottom: 7px;
+        color: #d8d1d5;
+        font-size: 11px;
+    }
+
+    .required {
+        color: #d5a65b;
+    }
+
+    input {
+        width: 100%;
+        padding: 13px 14px;
+        border: 1px solid #4a4148;
+        border-radius: 8px;
+        background: #302b30;
+        color: #fff;
+        font-size: 13px;
+        outline: none;
+        transition: 0.25s;
+    }
+
+    input::placeholder {
+        color: #827b80;
+    }
+
+    input:focus {
+        border-color: #d5a65b;
+        background: #373137;
+        box-shadow: 0 0 0 3px rgba(213, 166, 91, 0.08);
+    }
+
+    .field-error {
+        margin-top: 5px;
+        color: #d98282;
+        font-size: 11px;
+    }
+
+    #form-error {
+        display: none;
+        margin-bottom: 10px;
+        padding: 10px 12px;
+        border: 1px solid rgba(217, 130, 130, 0.4);
+        border-radius: 8px;
+        background: rgba(217, 130, 130, 0.08);
+        color: #ffb0b0;
+        font-size: 11px;
+        line-height: 1.5;
+    }
+
+    .btn {
+        width: 100%;
+        margin-top: 8px;
+        padding: 14px;
+        border: none;
+        border-radius: 8px;
+        background: linear-gradient(135deg, #dfb46c, #bd8842);
+        color: #211a15;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+    .btn:hover {
+        transform: translateY(-2px);
+        background: linear-gradient(135deg, #ebc17d, #cf9951);
+        box-shadow: 0 8px 22px rgba(213, 166, 91, 0.22);
+    }
+
+    .divider {
+        height: 1px;
+        margin: 25px 0;
+        background: rgba(255, 255, 255, 0.09);
+    }
+
+    .register-link {
+        text-align: center;
+        color: #aaa2a7;
+        font-size: 11px;
+        line-height: 1.6;
+    }
+
+    .register-link a {
+        color: #d5a65b;
+        text-decoration: none;
+    }
+
+    .register-link a:hover {
+        text-decoration: underline;
+    }
+
+    .back-link {
+        display: block;
+        margin-top: 18px;
+        color: #777;
+        text-align: center;
+        text-decoration: none;
+        font-size: 10px;
+        transition: 0.2s;
+    }
+
+    .back-link:hover {
+        color: #fff;
+    }
+
+    @keyframes appear {
+        from {
+            opacity: 0;
+            transform: translateY(12px);
         }
 
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @media (max-width: 950px) {
         .page {
-            width: 1050px;
-
-            display: grid;
-            grid-template-columns: 230px 420px 230px;
-
-            align-items: center;
-            justify-content: space-between;
-
-            gap: 35px;
+            width: 420px;
+            grid-template-columns: 1fr;
         }
 
         .side {
-            display: flex;
-            flex-direction: column;
-            gap: 18px;
+            display: none;
+        }
+    }
+
+    @media (max-width: 500px) {
+        body {
+            padding: 15px;
         }
 
-        .side-card {
-            padding: 20px;
-
-            background: rgba(31, 26, 31, 0.72);
-            border: 1px solid rgba(255, 255, 255, 0.09);
-            border-radius: 13px;
-
-            backdrop-filter: blur(8px);
-        }
-
-        .side-label {
-            display: block;
-
-            margin-bottom: 9px;
-
-            color: #756d72;
-            font-size: 9px;
-            letter-spacing: 2px;
-        }
-
-        .side-card h3 {
-            margin: 0 0 10px;
-
-            color: #d5a65b;
-            font-family: Georgia, serif;
-            font-size: 17px;
-            font-weight: normal;
-        }
-
-        .side-card p {
-            margin: 0;
-
-            color: #aaa1a6;
-            font-size: 11px;
-            line-height: 1.6;
-        }
-
-        .quote {
-            color: #ddd !important;
-            font-family: Georgia, serif;
-            font-size: 14px !important;
-        }
-
-        .drink {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .drink-icon {
-            width: 42px;
-            height: 42px;
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            border-radius: 10px;
-
-            background: rgba(213, 166, 91, 0.12);
-            border: 1px solid rgba(213, 166, 91, 0.2);
-
-            color: #d5a65b;
-            font-size: 20px;
-        }
-
-        .drink-name {
-            color: #ddd;
-            font-size: 11px;
-            font-weight: 600;
-        }
-
-        .drink-description {
-            margin-top: 3px;
-
-            color: #777;
-            font-size: 9px;
+        .page {
+            width: 100%;
         }
 
         .auth-card {
-            width: 420px;
-            padding: 40px 42px;
-
-            background: rgba(39, 34, 39, 0.95);
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            border-radius: 18px;
-
-            box-shadow:
-                0 25px 70px rgba(0, 0, 0, 0.45),
-                0 0 45px rgba(213, 166, 91, 0.07);
-
-            backdrop-filter: blur(14px);
-
-            animation: appear 0.5s ease;
-        }
-
-        .logo {
-            text-align: center;
-
-            color: #d5a65b;
-            font-family: Georgia, serif;
-            font-size: 13px;
-            letter-spacing: 5px;
-
-            margin-bottom: 18px;
-        }
-
-        .auth-card h1 {
-            margin: 0;
-
-            text-align: center;
-
-            font-family: Georgia, serif;
-            font-size: 30px;
-            font-weight: normal;
-        }
-
-        .subtitle {
-            margin: 10px 0 28px;
-
-            text-align: center;
-
-            color: #aaa2a7;
-            font-size: 12px;
-            line-height: 1.5;
-        }
-
-        .field {
-            margin-bottom: 16px;
-        }
-
-        .field label {
-            display: block;
-
-            margin-bottom: 7px;
-
-            color: #d8d1d5;
-            font-size: 11px;
-        }
-
-        .required {
-            color: #d5a65b;
-        }
-
-        input {
             width: 100%;
-            padding: 13px 14px;
-
-            border: 1px solid #4a4148;
-            border-radius: 8px;
-
-            background: #302b30;
-            color: #fff;
-
-            font-size: 13px;
-            outline: none;
-
-            transition: 0.25s;
+            padding: 32px 23px;
         }
+    }
+</style>
 
-        input::placeholder {
-            color: #827b80;
-        }
-
-        input:focus {
-            border-color: #d5a65b;
-            background: #373137;
-
-            box-shadow:
-                0 0 0 3px rgba(213, 166, 91, 0.08);
-        }
-
-        .field-error {
-            margin-top: 5px;
-
-            color: #d98282;
-            font-size: 11px;
-        }
-
-        .btn {
-            width: 100%;
-
-            margin-top: 8px;
-            padding: 14px;
-
-            border: none;
-            border-radius: 8px;
-
-            background: linear-gradient(
-                135deg,
-                #dfb46c,
-                #bd8842
-            );
-
-            color: #211a15;
-
-            font-size: 14px;
-            font-weight: 600;
-
-            cursor: pointer;
-
-            transition: 0.3s;
-        }
-
-        .btn:hover {
-            transform: translateY(-2px);
-
-            background: linear-gradient(
-                135deg,
-                #ebc17d,
-                #cf9951
-            );
-
-            box-shadow:
-                0 8px 22px rgba(213, 166, 91, 0.22);
-        }
-
-        .divider {
-            height: 1px;
-
-            margin: 25px 0;
-
-            background: rgba(255, 255, 255, 0.09);
-        }
-
-        .register-link {
-            text-align: center;
-
-            color: #aaa2a7;
-            font-size: 11px;
-            line-height: 1.6;
-        }
-
-        .register-link a {
-            color: #d5a65b;
-            text-decoration: none;
-        }
-
-        .register-link a:hover {
-            text-decoration: underline;
-        }
-
-        .back-link {
-            display: block;
-
-            margin-top: 18px;
-
-            color: #777;
-            text-align: center;
-            text-decoration: none;
-
-            font-size: 10px;
-
-            transition: 0.2s;
-        }
-
-        .back-link:hover {
-            color: #fff;
-        }
-
-        @keyframes appear {
-            from {
-                opacity: 0;
-                transform: translateY(12px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @media (max-width: 950px) {
-            .page {
-                width: 420px;
-                grid-template-columns: 1fr;
-            }
-
-            .side {
-                display: none;
-            }
-        }
-
-        @media (max-width: 500px) {
-            body {
-                padding: 15px;
-            }
-
-            .page {
-                width: 100%;
-            }
-
-            .auth-card {
-                width: 100%;
-                padding: 32px 23px;
-            }
-        }
-    </style>
 </head>
-
 <body>
-
 <div class="page">
-
     <aside class="side">
-
         <div class="side-card">
-            <span class="side-label">
-                BAR & LOUNGE
-            </span>
-
-            <h3>
-                С возвращением
-            </h3>
-
+            <span class="side-label">BAR & LOUNGE</span>
+            <h3>С возвращением</h3>
             <p>
-                Войдите в свой аккаунт,
-                чтобы продолжить пользоваться
+                Войдите в свой аккаунт, чтобы продолжить пользоваться
                 возможностями Bar & Lounge.
             </p>
         </div>
 
-        <div class="side-card">
-            <span class="side-label">
-                АТМОСФЕРА
-            </span>
+    <div class="side-card">
+        <span class="side-label">АТМОСФЕРА</span>
+        <p class="quote">«Каждый хороший вечер с чего-то начинается»</p>
+    </div>
+</aside>
 
-            <p class="quote">
-                «Каждый хороший вечер
-                с чего-то начинается»
-            </p>
-        </div>
+<main class="auth-card">
+    <div class="logo">BAR & LOUNGE</div>
 
-    </aside>
+    <h1>Вход</h1>
 
-    <main class="auth-card">
+    <div class="subtitle">
+        Войдите в свой аккаунт, чтобы продолжить
+    </div>
 
-        <div class="logo">
-            BAR & LOUNGE
-        </div>
+    <form id="loginForm">
+        <div class="field">
+            <label>
+                Email
+                <span class="required">*</span>
+            </label>
 
-        <h1>
-            Вход
-        </h1>
-
-        <div class="subtitle">
-            Войдите в свой аккаунт,
-            чтобы продолжить
-        </div>
-
-        <form id="loginForm">
-
-            <div class="field">
-
-                <label>
-                    Email
-                    <span class="required">*</span>
-                </label>
-
-                <input
-                    type="email"
-                    name="email"
-                    placeholder="email@example.com"
-                    required
-                >
-
-            </div>
-
-            <div class="field">
-
-                <label>
-                    Пароль
-                    <span class="required">*</span>
-                </label>
-
-                <input
-                    type="password"
-                    name="password"
-                    placeholder="Введите пароль"
-                    required
-                >
-
-            </div>
-            <div id="form-error" class="field-error"></div>
-
-            <button
-                type="submit"
-                class="btn"
+            <input
+                type="email"
+                name="email"
+                placeholder="email@example.com"
+                required
             >
-                Войти
-            </button>
-
-        </form>
-
-        <div class="divider"></div>
-
-        <div class="register-link">
-            Нет аккаунта?
-
-            <a href="/registration">
-                Зарегистрироваться
-            </a>
         </div>
 
+        <div class="field">
+            <label>
+                Пароль
+                <span class="required">*</span>
+            </label>
 
-        <a
-            href="/bar_name"
-            class="back-link"
-        >
-            ← Вернуться на главную
-        </a>
+            <input
+                type="password"
+                name="password"
+                placeholder="Введите пароль"
+                required
+            >
+        </div>
 
-    </main>
+        <div id="form-error" class="field-error"></div>
 
-    <aside class="side">
+        <button type="submit" class="btn">
+            Войти
+        </button>
+    </form>
 
-        <div class="side-card">
-            <span class="side-label">
-                ДЛЯ ГОСТЕЙ
-            </span>
+    <div class="divider"></div>
 
-            <div class="drink">
+    <div class="register-link">
+        Нет аккаунта?
+        <a href="/registration">Зарегистрироваться</a>
+    </div>
 
-                <div class="drink-icon">
-                    ◇
+    <a href="/bar_name" class="back-link">
+        ← Вернуться на главную
+    </a>
+</main>
+
+<aside class="side">
+    <div class="side-card">
+        <span class="side-label">ДЛЯ ГОСТЕЙ</span>
+
+        <div class="drink">
+            <div class="drink-icon">◇</div>
+
+            <div>
+                <div class="drink-name">Ваши заказы</div>
+                <div class="drink-description">
+                    Всё необходимое в одном месте
                 </div>
-
-                <div>
-
-                    <div class="drink-name">
-                        Ваши заказы
-                    </div>
-
-                    <div class="drink-description">
-                        Всё необходимое в одном месте
-                    </div>
-
-                </div>
-
             </div>
         </div>
+    </div>
 
-        <div class="side-card">
+    <div class="side-card">
+        <span class="side-label">BAR SPIRIT</span>
 
-            <span class="side-label">
-                BAR SPIRIT
-            </span>
+        <h3>Хороший вечер</h3>
 
-            <h3>
-                Хороший вечер
-            </h3>
+        <p>
+            Меню, заказы, история покупок и связь с техподдержкой —
+            всё доступно после входа.
+        </p>
+    </div>
 
-            <p>
-                Меню, заказы, история покупок
-                и связь с техподдержкой —
-                всё доступно после входа.
-            </p>
+    <div class="side-card">
+        <span class="side-label">НАСТРОЕНИЕ</span>
+        <p class="quote">Напитки. Музыка. Люди.</p>
+    </div>
 
-        </div>
-
-        <div class="side-card">
-
-            <span class="side-label">
-                НАСТРОЕНИЕ
-            </span>
-
-            <p class="quote">
-                Напитки. Музыка. Люди.
-            </p>
-
-        </div>
-
-         <div class="register-link">
-            Вы администратор?
-
-            <a href="/admin/login">
-                Войти как администратор
-            </a>
-
-        </div>
-
-    </aside>
+    <div class="register-link">
+        Вы администратор?
+        <a href="/admin/login">Войти как администратор</a>
+    </div>
+</aside>
 
 </div>
+
+<script src="/static/api.js"></script>
 
 <script>
     const form = document.getElementById("loginForm");
@@ -563,7 +432,6 @@
 
     function showError(input, message) {
         clearError(input);
-
         input.style.borderColor = "#d98282";
 
         const error = document.createElement("div");
@@ -585,35 +453,51 @@
         });
 
         formError.textContent = "";
+        formError.style.display = "none";
+    }
+
+    function showFormError(message) {
+        formError.textContent = message;
+        formError.style.display = "block";
     }
 
     async function handleFieldErrors(response) {
-        const data = await response.json();
+        let data;
 
-        // Ошибки валидации FastAPI
+        try {
+            data = await response.json();
+        } catch {
+            showFormError("Произошла ошибка.");
+            return;
+        }
+
         if (Array.isArray(data.detail)) {
             data.detail.forEach(error => {
                 const field = error.loc?.at(-1);
-                const input = form.querySelector(
-                    `[name="${field}"]`
-                );
+                const input = form.querySelector(`[name="${field}"]`);
 
                 if (input) {
-                    showError(input, error.msg);
+                    showError(
+                        input,
+                        error.msg || "Некорректное значение."
+                    );
                 }
             });
 
             return;
         }
 
-        // Обычная ошибка backend:
-        // {"detail": "Неверный email или пароль"}
         if (typeof data.detail === "string") {
-            formError.textContent = data.detail;
+            showFormError(data.detail);
             return;
         }
 
-        formError.textContent = "Произошла ошибка.";
+        if (typeof data.message === "string") {
+            showFormError(data.message);
+            return;
+        }
+
+        showFormError("Произошла ошибка.");
     }
 
     async function handleResponse(response) {
@@ -631,32 +515,34 @@
         }
 
         if (response.status === 404) {
-            formError.textContent = "Страница не найдена.";
+            showFormError("Страница не найдена.");
             return false;
         }
 
         if (response.status === 429) {
-            formError.textContent = "Слишком много попыток входа. Попробуйте позже.";
+            showFormError(
+                "Слишком много попыток входа. Попробуйте позже."
+            );
             return false;
         }
 
         if (response.status >= 500) {
-            formError.textContent =
-                "Ошибка сервера. Попробуйте позже.";
+            showFormError(
+                "Ошибка сервера. Попробуйте позже."
+            );
             return false;
         }
 
-        formError.textContent = "Произошла ошибка.";
+        showFormError("Произошла ошибка.");
         return false;
     }
 
     form.addEventListener("submit", async function(event) {
         event.preventDefault();
-
         clearAllErrors();
 
         try {
-            const response = await fetch("/login", {
+            const response = await apiFetch("/login", {
                 method: "POST",
                 body: new FormData(form)
             });
@@ -666,13 +552,10 @@
             }
 
             window.location.href = "/user/my_profile";
-
         } catch (error) {
-            console.error(error);
-
-            formError.textContent =
-                "Не удалось подключиться к серверу. " +
-                "Проверьте соединение.";
+            showFormError(
+                "Не удалось подключиться к серверу. Проверьте соединение."
+            );
         }
     });
 </script>

@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
@@ -11,917 +12,931 @@
             box-sizing: border-box;
         }
 
-        body {
-            min-height: 100vh;
-            background:
-                radial-gradient(circle at 15% 20%, rgba(213, 166, 91, 0.12), transparent 30%),
-                radial-gradient(circle at 85% 75%, rgba(130, 80, 120, 0.12), transparent 32%),
-                linear-gradient(135deg, #0b0b0e, #151417 50%, #0d0d10);
-            color: #fff;
-            font-family: Arial, sans-serif;
+    body {
+        min-height: 100vh;
+        background:
+            radial-gradient(circle at 15% 20%, rgba(213, 166, 91, 0.12), transparent 30%),
+            radial-gradient(circle at 85% 75%, rgba(130, 80, 120, 0.12), transparent 32%),
+            linear-gradient(135deg, #0b0b0e, #151417 50%, #0d0d10);
+        color: #fff;
+        font-family: Arial, sans-serif;
+    }
+
+    .page {
+        min-height: 100vh;
+        padding: 30px 45px;
+    }
+
+    .top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding-bottom: 25px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+    }
+
+    .logo {
+        color: #d5a65b;
+        font-family: Georgia, serif;
+        font-size: 20px;
+        letter-spacing: 4px;
+    }
+
+    .top-menu {
+        display: flex;
+        gap: 10px;
+    }
+
+    .top-button,
+    .cart-button {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 11px 18px;
+        border-radius: 7px;
+        border: 1px solid #333338;
+        background: #19191c;
+        color: #aaa;
+        text-decoration: none;
+        font-size: 11px;
+        cursor: pointer;
+        transition: 0.25s;
+    }
+
+    .top-button:hover,
+    .cart-button:hover {
+        color: #fff;
+        border-color: #d5a65b;
+        transform: translateY(-2px);
+    }
+
+    .cart-icon {
+        font-size: 14px;
+    }
+
+    .cart-badge {
+        min-width: 18px;
+        height: 18px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0 5px;
+        border-radius: 20px;
+        background: #d5a65b;
+        color: #111;
+        font-size: 9px;
+        font-weight: 700;
+    }
+
+    .content {
+        max-width: 1150px;
+        margin: 55px auto 0;
+        animation: show 0.6s ease;
+    }
+
+    .heading {
+        margin-bottom: 35px;
+    }
+
+    .heading-label {
+        color: #d5a65b;
+        font-size: 10px;
+        letter-spacing: 4px;
+        margin-bottom: 10px;
+    }
+
+    .heading h1 {
+        font-family: Georgia, serif;
+        font-size: 34px;
+        font-weight: normal;
+    }
+
+    .heading p {
+        margin-top: 9px;
+        color: #777;
+        font-size: 12px;
+    }
+
+    .page-error {
+        display: none;
+        margin-bottom: 20px;
+        padding: 12px 15px;
+        background: rgba(100, 35, 45, 0.3);
+        border: 1px solid rgba(210, 85, 90, 0.4);
+        border-radius: 8px;
+        color: #d98282;
+        font-size: 11px;
+        line-height: 1.5;
+    }
+
+    .page-error.visible {
+        display: block;
+    }
+
+    .layout {
+        display: grid;
+        grid-template-columns: 330px 1fr;
+        gap: 25px;
+    }
+
+    .profile-card {
+        padding: 27px;
+        background: rgba(24, 24, 27, 0.92);
+        border: 1px solid #29292d;
+        border-radius: 14px;
+    }
+
+    .profile-header {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        padding-bottom: 22px;
+        border-bottom: 1px solid #29292d;
+    }
+
+    .avatar {
+        width: 55px;
+        height: 55px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        border-radius: 50%;
+        background: #252529;
+        color: #d5a65b;
+        font-family: Georgia, serif;
+        font-size: 21px;
+    }
+
+    .user-name {
+        font-family: Georgia, serif;
+        font-size: 21px;
+        line-height: 1.2;
+    }
+
+    .user-status {
+        margin-top: 5px;
+        color: #777;
+        font-size: 10px;
+    }
+
+    .data {
+        margin-top: 22px;
+    }
+
+    .data-item {
+        padding: 13px 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .data-item:last-child {
+        border-bottom: none;
+    }
+
+    .data-label {
+        margin-bottom: 5px;
+        color: #666;
+        font-size: 9px;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+    }
+
+    .data-value {
+        color: #ddd;
+        font-family: Georgia, serif;
+        font-size: 13px;
+    }
+
+    .address {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px 15px;
+        margin-top: 8px;
+    }
+
+    .address-item {
+        padding: 8px 10px;
+        border-radius: 6px;
+        background: #1d1d20;
+    }
+
+    .address-label {
+        margin-bottom: 4px;
+        color: #666;
+        font-size: 8px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .address-value {
+        color: #ddd;
+        font-family: Georgia, serif;
+        font-size: 11px;
+    }
+
+    .address-street {
+        grid-column: span 2;
+    }
+
+    .edit-profile {
+        display: block;
+        margin-top: 18px;
+        padding: 12px;
+        border: 1px solid #444448;
+        border-radius: 7px;
+        background: #202023;
+        color: #d5a65b;
+        text-align: center;
+        text-decoration: none;
+        font-size: 10px;
+        transition: 0.25s;
+    }
+
+    .edit-profile:hover {
+        border-color: #d5a65b;
+        background: #29292d;
+        transform: translateY(-2px);
+    }
+
+    .actions-card {
+        padding: 30px;
+        background: rgba(24, 24, 27, 0.92);
+        border: 1px solid #29292d;
+        border-radius: 14px;
+    }
+
+    .actions-title {
+        margin-bottom: 22px;
+    }
+
+    .actions-title h2 {
+        font-family: Georgia, serif;
+        font-size: 23px;
+        font-weight: normal;
+    }
+
+    .actions-title p {
+        margin-top: 6px;
+        color: #666;
+        font-size: 11px;
+    }
+
+    .actions {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+    }
+
+    .action {
+        min-height: 115px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        padding: 20px;
+        border: 1px solid #303035;
+        border-radius: 10px;
+        background: #1e1e21;
+        color: #ddd;
+        text-decoration: none;
+        transition: 0.3s;
+        cursor: pointer;
+    }
+
+    .action:hover {
+        transform: translateY(-4px);
+        border-color: #d5a65b;
+        background: #242428;
+    }
+
+    .action-icon {
+        color: #d5a65b;
+        font-size: 21px;
+    }
+
+    .action-name {
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    .action-description {
+        margin-top: 5px;
+        color: #666;
+        font-size: 9px;
+    }
+
+    .main-action {
+        grid-column: span 2;
+        min-height: 125px;
+        background: linear-gradient(135deg, #d5a65b, #b9863e);
+        border-color: #d5a65b;
+        color: #111;
+    }
+
+    .main-action:hover {
+        background: linear-gradient(135deg, #e4b971, #c9954a);
+        border-color: #e4b971;
+    }
+
+    .main-action .action-icon {
+        color: #111;
+    }
+
+    .main-action .action-description {
+        color: #493817;
+    }
+
+    .active-orders {
+        margin-top: 25px;
+        padding-top: 22px;
+        border-top: 1px solid #29292d;
+    }
+
+    .active-orders-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 15px;
+    }
+
+    .active-orders-header h3 {
+        font-family: Georgia, serif;
+        font-size: 18px;
+        font-weight: normal;
+    }
+
+    .active-orders-header p {
+        margin-top: 5px;
+        color: #666;
+        font-size: 10px;
+    }
+
+    .active-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #70a870;
+        box-shadow: 0 0 9px #70a870;
+    }
+
+    .active-orders-list {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .active-order {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 15px;
+        padding: 14px 15px;
+        border: 1px solid #29292d;
+        border-radius: 8px;
+        background: #1b1b1e;
+        transition: 0.25s;
+    }
+
+    .active-order:hover {
+        border-color: #444448;
+        background: #202023;
+    }
+
+    .active-order-info {
+        min-width: 0;
+    }
+
+    .active-order-number {
+        color: #ddd;
+        font-family: Georgia, serif;
+        font-size: 13px;
+    }
+
+    .active-order-items {
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
+        margin-top: 8px;
+    }
+
+    .active-order-item {
+        display: flex;
+        gap: 8px;
+        color: #888;
+        font-size: 10px;
+    }
+
+    .active-order-item span:last-child {
+        color: #666;
+    }
+
+    .active-order-meta {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        margin-top: 8px;
+        color: #666;
+        font-size: 9px;
+    }
+
+    .active-order-price {
+        color: #d5a65b;
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+    .active-order-right {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-shrink: 0;
+    }
+
+    .active-order-status {
+        padding: 6px 9px;
+        border: 1px solid;
+        border-radius: 5px;
+        font-size: 9px;
+        white-space: nowrap;
+    }
+
+    .active-order-status.status-paid {
+        color: #70a870;
+        border-color: #426842;
+    }
+
+    .active-order-status.status-preparing {
+        color: #d5a65b;
+        border-color: #6b552f;
+    }
+
+    .active-order-status.status-delivering {
+        color: #d98b4a;
+        border-color: #704726;
+    }
+
+    .order-empty {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        min-height: 60px;
+        padding: 13px 15px;
+        border: 1px solid #29292d;
+        border-radius: 8px;
+        background: #1b1b1e;
+        color: #666;
+        font-size: 10px;
+    }
+
+    .order-icon {
+        color: #777;
+        font-size: 18px;
+    }
+
+    .bottom {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 30px;
+    }
+
+    .support {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        padding: 11px 16px;
+        border-radius: 7px;
+        border: 1px solid #333338;
+        background: #18181b;
+        color: #aaa;
+        text-decoration: none;
+        font-size: 10px;
+        transition: 0.25s;
+    }
+
+    .support::before {
+        content: "";
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: #70a870;
+        box-shadow: 0 0 8px #70a870;
+    }
+
+    .support:hover {
+        color: #fff;
+        border-color: #d5a65b;
+    }
+
+    .logout {
+        padding: 11px 16px;
+        border-radius: 7px;
+        border: 1px solid #333338;
+        background: #18181b;
+        color: #888;
+        text-decoration: none;
+        font-size: 10px;
+        cursor: pointer;
+        transition: 0.25s;
+    }
+
+    .logout:hover {
+        color: #d98282;
+        border-color: #704848;
+    }
+
+    .cart-sidebar {
+        position: fixed;
+        top: 0;
+        right: 0;
+        z-index: 1000;
+        width: 390px;
+        max-width: 100%;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        background: #17171a;
+        border-left: 1px solid #303035;
+        box-shadow: -15px 0 40px rgba(0, 0, 0, 0.35);
+        transform: translateX(100%);
+        transition: transform 0.3s ease;
+    }
+
+    .cart-sidebar.open {
+        transform: translateX(0);
+    }
+
+    .cart-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 25px;
+        border-bottom: 1px solid #29292d;
+    }
+
+    .cart-title {
+        display: block;
+        font-family: Georgia, serif;
+        font-size: 22px;
+    }
+
+    .cart-header-count {
+        display: block;
+        margin-top: 5px;
+        color: #666;
+        font-size: 10px;
+    }
+
+    .cart-close {
+        width: 34px;
+        height: 34px;
+        border: 1px solid #333338;
+        border-radius: 7px;
+        background: #1f1f22;
+        color: #888;
+        font-size: 20px;
+        line-height: 1;
+        cursor: pointer;
+        transition: 0.25s;
+    }
+
+    .cart-close:hover {
+        color: #fff;
+        border-color: #d5a65b;
+    }
+
+    .cart-content {
+        flex: 1;
+        overflow-y: auto;
+        padding: 20px;
+    }
+
+    .cart-empty {
+        min-height: 200px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        gap: 10px;
+        color: #666;
+        text-align: center;
+    }
+
+    .cart-empty-icon {
+        color: #555;
+        font-size: 32px;
+    }
+
+    .cart-empty-text {
+        font-family: Georgia, serif;
+        font-size: 16px;
+        color: #888;
+    }
+
+    .cart-empty-description {
+        max-width: 230px;
+        color: #555;
+        font-size: 10px;
+        line-height: 1.5;
+    }
+
+    .cart-item {
+        display: grid;
+        grid-template-columns: 58px 1fr;
+        gap: 12px;
+        padding: 13px 0;
+        border-bottom: 1px solid #29292d;
+    }
+
+    .cart-item-image {
+        width: 58px;
+        height: 58px;
+        overflow: hidden;
+        border-radius: 7px;
+        background: #222225;
+    }
+
+    .cart-item-image img {
+        width: 100%;
+        height: 100%;
+        display: block;
+        object-fit: cover;
+    }
+
+    .cart-item-image-placeholder {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #555;
+        font-size: 20px;
+    }
+
+    .cart-item-info {
+        min-width: 0;
+    }
+
+    .cart-item-top {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 10px;
+    }
+
+    .cart-item-name {
+        color: #ddd;
+        font-family: Georgia, serif;
+        font-size: 13px;
+        line-height: 1.3;
+    }
+
+    .cart-item-remove {
+        flex-shrink: 0;
+        border: none;
+        background: transparent;
+        color: #666;
+        font-size: 14px;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+
+    .cart-item-remove:hover {
+        color: #d98282;
+    }
+
+    .cart-item-price {
+        margin-top: 4px;
+        color: #d5a65b;
+        font-size: 11px;
+    }
+
+    .cart-item-bottom {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        margin-top: 9px;
+    }
+
+    .cart-quantity {
+        display: flex;
+        align-items: center;
+        border: 1px solid #333338;
+        border-radius: 6px;
+        overflow: hidden;
+        background: #1d1d20;
+    }
+
+    .cart-quantity button {
+        width: 28px;
+        height: 27px;
+        border: none;
+        background: transparent;
+        color: #aaa;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+
+    .cart-quantity button:hover {
+        background: #29292d;
+        color: #fff;
+    }
+
+    .cart-quantity-value {
+        min-width: 27px;
+        color: #ddd;
+        text-align: center;
+        font-size: 10px;
+    }
+
+    .cart-item-total {
+        color: #ddd;
+        font-size: 11px;
+        font-weight: 600;
+    }
+
+    .cart-footer {
+        padding: 20px;
+        border-top: 1px solid #29292d;
+        background: #151518;
+    }
+
+    .cart-total {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 15px;
+    }
+
+    .cart-total-label {
+        color: #777;
+        font-size: 11px;
+    }
+
+    .cart-total-price {
+        color: #d5a65b;
+        font-family: Georgia, serif;
+        font-size: 20px;
+    }
+
+    .checkout-button,
+    .clear-cart-button {
+        width: 100%;
+        border-radius: 7px;
+        cursor: pointer;
+        transition: 0.25s;
+    }
+
+    .checkout-button {
+        padding: 13px;
+        border: 1px solid #d5a65b;
+        background: #d5a65b;
+        color: #111;
+        font-size: 11px;
+        font-weight: 600;
+    }
+
+    .checkout-button:hover {
+        background: #e4b971;
+        border-color: #e4b971;
+    }
+
+    .clear-cart-button {
+        margin-top: 8px;
+        padding: 10px;
+        border: 1px solid #333338;
+        background: #1d1d20;
+        color: #777;
+        font-size: 10px;
+    }
+
+    .clear-cart-button:hover {
+        border-color: #704848;
+        color: #d98282;
+    }
+
+    .cart-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 999;
+        background: rgba(0, 0, 0, 0.55);
+        opacity: 0;
+        visibility: hidden;
+        transition: 0.3s;
+    }
+
+    .cart-overlay.visible {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    body.cart-open {
+        overflow: hidden;
+    }
+
+    @keyframes show {
+        from {
+            opacity: 0;
+            transform: translateY(15px);
         }
 
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @media (max-width: 850px) {
         .page {
-            min-height: 100vh;
-            padding: 30px 45px;
+            padding: 25px 20px;
         }
 
-        .top {
-            display: flex;
-            align-items: center;
+        .content {
+            margin-top: 35px;
+        }
+
+        .layout {
+            grid-template-columns: 1fr;
+        }
+
+        .actions {
+            grid-template-columns: 1fr;
+        }
+
+        .main-action {
+            grid-column: span 1;
+        }
+    }
+
+    @media (max-width: 650px) {
+        .active-order {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+        .active-order-right {
+            width: 100%;
             justify-content: space-between;
-            padding-bottom: 25px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.07);
         }
+    }
 
-        .logo {
-            color: #d5a65b;
-            font-family: Georgia, serif;
-            font-size: 20px;
-            letter-spacing: 4px;
+    @media (max-width: 550px) {
+        .page {
+            padding: 20px 15px;
         }
 
         .top-menu {
             display: flex;
-            gap: 10px;
         }
 
-        .top-button,
+        .top-button {
+            display: none;
+        }
+
         .cart-button {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 11px 18px;
-            border-radius: 7px;
-            border: 1px solid #333338;
-            background: #19191c;
-            color: #aaa;
-            text-decoration: none;
-            font-size: 11px;
-            cursor: pointer;
-            transition: 0.25s;
-        }
-
-        .top-button:hover,
-        .cart-button:hover {
-            color: #fff;
-            border-color: #d5a65b;
-            transform: translateY(-2px);
-        }
-
-        .cart-icon {
-            font-size: 14px;
-        }
-
-        .cart-badge {
-            min-width: 18px;
-            height: 18px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            padding: 0 5px;
-            border-radius: 20px;
-            background: #d5a65b;
-            color: #111;
-            font-size: 9px;
-            font-weight: 700;
-        }
-
-        .content {
-            max-width: 1150px;
-            margin: 55px auto 0;
-            animation: show 0.6s ease;
-        }
-
-        .heading {
-            margin-bottom: 35px;
-        }
-
-        .heading-label {
-            color: #d5a65b;
-            font-size: 10px;
-            letter-spacing: 4px;
-            margin-bottom: 10px;
+            padding: 10px 13px;
         }
 
         .heading h1 {
-            font-family: Georgia, serif;
-            font-size: 34px;
-            font-weight: normal;
+            font-size: 28px;
         }
 
-        .heading p {
-            margin-top: 9px;
-            color: #777;
-            font-size: 12px;
-        }
-
-        .layout {
-            display: grid;
-            grid-template-columns: 330px 1fr;
-            gap: 25px;
-        }
-
-        .profile-card {
-            padding: 27px;
-            background: rgba(24, 24, 27, 0.92);
-            border: 1px solid #29292d;
-            border-radius: 14px;
-        }
-
-        .profile-header {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            padding-bottom: 22px;
-            border-bottom: 1px solid #29292d;
-        }
-
-        .avatar {
-            width: 55px;
-            height: 55px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-            border-radius: 50%;
-            background: #252529;
-            color: #d5a65b;
-            font-family: Georgia, serif;
-            font-size: 21px;
-        }
-
-        .user-name {
-            font-family: Georgia, serif;
-            font-size: 21px;
-            line-height: 1.2;
-        }
-
-        .user-status {
-            margin-top: 5px;
-            color: #777;
-            font-size: 10px;
-        }
-
-        .data {
-            margin-top: 22px;
-        }
-
-        .data-item {
-            padding: 13px 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-        }
-
-        .data-item:last-child {
-            border-bottom: none;
-        }
-
-        .data-label {
-            margin-bottom: 5px;
-            color: #666;
-            font-size: 9px;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-        }
-
-        .data-value {
-            color: #ddd;
-            font-family: Georgia, serif;
-            font-size: 13px;
+        .profile-card,
+        .actions-card {
+            padding: 20px;
         }
 
         .address {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px 15px;
-            margin-top: 8px;
-        }
-
-        .address-item {
-            padding: 8px 10px;
-            border-radius: 6px;
-            background: #1d1d20;
-        }
-
-        .address-label {
-            margin-bottom: 4px;
-            color: #666;
-            font-size: 8px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .address-value {
-            color: #ddd;
-            font-family: Georgia, serif;
-            font-size: 11px;
+            grid-template-columns: 1fr;
         }
 
         .address-street {
-            grid-column: span 2;
-        }
-
-        .edit-profile {
-            display: block;
-            margin-top: 18px;
-            padding: 12px;
-            border: 1px solid #444448;
-            border-radius: 7px;
-            background: #202023;
-            color: #d5a65b;
-            text-align: center;
-            text-decoration: none;
-            font-size: 10px;
-            transition: 0.25s;
-        }
-
-        .edit-profile:hover {
-            border-color: #d5a65b;
-            background: #29292d;
-            transform: translateY(-2px);
-        }
-
-        .actions-card {
-            padding: 30px;
-            background: rgba(24, 24, 27, 0.92);
-            border: 1px solid #29292d;
-            border-radius: 14px;
-        }
-
-        .actions-title {
-            margin-bottom: 22px;
-        }
-
-        .actions-title h2 {
-            font-family: Georgia, serif;
-            font-size: 23px;
-            font-weight: normal;
-        }
-
-        .actions-title p {
-            margin-top: 6px;
-            color: #666;
-            font-size: 11px;
-        }
-
-        .actions {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 14px;
-        }
-
-        .action {
-            min-height: 115px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            padding: 20px;
-            border: 1px solid #303035;
-            border-radius: 10px;
-            background: #1e1e21;
-            color: #ddd;
-            text-decoration: none;
-            transition: 0.3s;
-            cursor: pointer;
-        }
-
-        .action:hover {
-            transform: translateY(-4px);
-            border-color: #d5a65b;
-            background: #242428;
-        }
-
-        .action-icon {
-            color: #d5a65b;
-            font-size: 21px;
-        }
-
-        .action-name {
-            font-size: 13px;
-            font-weight: 600;
-        }
-
-        .action-description {
-            margin-top: 5px;
-            color: #666;
-            font-size: 9px;
-        }
-
-        .main-action {
-            grid-column: span 2;
-            min-height: 125px;
-            background: linear-gradient(135deg, #d5a65b, #b9863e);
-            border-color: #d5a65b;
-            color: #111;
-        }
-
-        .main-action:hover {
-            background: linear-gradient(135deg, #e4b971, #c9954a);
-            border-color: #e4b971;
-        }
-
-        .main-action .action-icon {
-            color: #111;
-        }
-
-        .main-action .action-description {
-            color: #493817;
-        }
-
-        .active-orders {
-            margin-top: 25px;
-            padding-top: 22px;
-            border-top: 1px solid #29292d;
-        }
-
-        .active-orders-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 15px;
-        }
-
-        .active-orders-header h3 {
-            font-family: Georgia, serif;
-            font-size: 18px;
-            font-weight: normal;
-        }
-
-        .active-orders-header p {
-            margin-top: 5px;
-            color: #666;
-            font-size: 10px;
-        }
-
-        .active-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: #70a870;
-            box-shadow: 0 0 9px #70a870;
-        }
-
-        .active-orders-list {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .active-order {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 15px;
-            padding: 14px 15px;
-            border: 1px solid #29292d;
-            border-radius: 8px;
-            background: #1b1b1e;
-            transition: 0.25s;
-        }
-
-        .active-order:hover {
-            border-color: #444448;
-            background: #202023;
-        }
-
-        .active-order-info {
-            min-width: 0;
-        }
-
-        .active-order-number {
-            color: #ddd;
-            font-family: Georgia, serif;
-            font-size: 13px;
-        }
-
-        .active-order-items {
-            display: flex;
-            flex-direction: column;
-            gap: 3px;
-            margin-top: 8px;
-        }
-
-        .active-order-item {
-            display: flex;
-            gap: 8px;
-            color: #888;
-            font-size: 10px;
-        }
-
-        .active-order-item span:last-child {
-            color: #666;
-        }
-
-        .active-order-meta {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            margin-top: 8px;
-            color: #666;
-            font-size: 9px;
-        }
-
-        .active-order-price {
-            color: #d5a65b;
-            font-size: 12px;
-            font-weight: 700;
-        }
-
-        .active-order-right {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            flex-shrink: 0;
-        }
-
-        .active-order-status {
-            padding: 6px 9px;
-            border: 1px solid;
-            border-radius: 5px;
-            font-size: 9px;
-            white-space: nowrap;
-        }
-
-        .active-order-status.status-paid {
-            color: #70a870;
-            border-color: #426842;
-        }
-
-        .active-order-status.status-preparing {
-            color: #d5a65b;
-            border-color: #6b552f;
-        }
-
-        .active-order-status.status-delivering {
-            color: #d98b4a;
-            border-color: #704726;
-        }
-
-        .order-empty {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            min-height: 60px;
-            padding: 13px 15px;
-            border: 1px solid #29292d;
-            border-radius: 8px;
-            background: #1b1b1e;
-            color: #666;
-            font-size: 10px;
-        }
-
-        .order-icon {
-            color: #777;
-            font-size: 18px;
+            grid-column: span 1;
         }
 
         .bottom {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 30px;
+            align-items: stretch;
+            flex-direction: column;
+            gap: 10px;
         }
 
-        .support {
-            display: flex;
-            align-items: center;
-            gap: 9px;
-            padding: 11px 16px;
-            border-radius: 7px;
-            border: 1px solid #333338;
-            background: #18181b;
-            color: #aaa;
-            text-decoration: none;
-            font-size: 10px;
-            transition: 0.25s;
-        }
-
-        .support::before {
-            content: "";
-            width: 7px;
-            height: 7px;
-            border-radius: 50%;
-            background: #70a870;
-            box-shadow: 0 0 8px #70a870;
-        }
-
-        .support:hover {
-            color: #fff;
-            border-color: #d5a65b;
-        }
-
+        .support,
         .logout {
-            padding: 11px 16px;
-            border-radius: 7px;
-            border: 1px solid #333338;
-            background: #18181b;
-            color: #888;
-            text-decoration: none;
-            font-size: 10px;
-            cursor: pointer;
-            transition: 0.25s;
-        }
-
-        .logout:hover {
-            color: #d98282;
-            border-color: #704848;
+            text-align: center;
+            justify-content: center;
         }
 
         .cart-sidebar {
-            position: fixed;
-            top: 0;
-            right: 0;
-            z-index: 1000;
-            width: 390px;
-            max-width: 100%;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            background: #17171a;
-            border-left: 1px solid #303035;
-            box-shadow: -15px 0 40px rgba(0, 0, 0, 0.35);
-            transform: translateX(100%);
-            transition: transform 0.3s ease;
-        }
-
-        .cart-sidebar.open {
-            transform: translateX(0);
-        }
-
-        .cart-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 25px;
-            border-bottom: 1px solid #29292d;
-        }
-
-        .cart-title {
-            display: block;
-            font-family: Georgia, serif;
-            font-size: 22px;
-        }
-
-        .cart-header-count {
-            display: block;
-            margin-top: 5px;
-            color: #666;
-            font-size: 10px;
-        }
-
-        .cart-close {
-            width: 34px;
-            height: 34px;
-            border: 1px solid #333338;
-            border-radius: 7px;
-            background: #1f1f22;
-            color: #888;
-            font-size: 20px;
-            line-height: 1;
-            cursor: pointer;
-            transition: 0.25s;
-        }
-
-        .cart-close:hover {
-            color: #fff;
-            border-color: #d5a65b;
-        }
-
-        .cart-content {
-            flex: 1;
-            overflow-y: auto;
-            padding: 20px;
-        }
-
-        .cart-empty {
-            min-height: 200px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-            gap: 10px;
-            color: #666;
-            text-align: center;
-        }
-
-        .cart-empty-icon {
-            color: #555;
-            font-size: 32px;
-        }
-
-        .cart-empty-text {
-            font-family: Georgia, serif;
-            font-size: 16px;
-            color: #888;
-        }
-
-        .cart-empty-description {
-            max-width: 230px;
-            color: #555;
-            font-size: 10px;
-            line-height: 1.5;
-        }
-
-        .cart-item {
-            display: grid;
-            grid-template-columns: 58px 1fr;
-            gap: 12px;
-            padding: 13px 0;
-            border-bottom: 1px solid #29292d;
-        }
-
-        .cart-item-image {
-            width: 58px;
-            height: 58px;
-            overflow: hidden;
-            border-radius: 7px;
-            background: #222225;
-        }
-
-        .cart-item-image img {
             width: 100%;
-            height: 100%;
-            display: block;
-            object-fit: cover;
         }
+    }
+</style>
 
-        .cart-item-image-placeholder {
-            width: 100%;
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #555;
-            font-size: 20px;
-        }
-
-        .cart-item-info {
-            min-width: 0;
-        }
-
-        .cart-item-top {
-            display: flex;
-            align-items: flex-start;
-            justify-content: space-between;
-            gap: 10px;
-        }
-
-        .cart-item-name {
-            color: #ddd;
-            font-family: Georgia, serif;
-            font-size: 13px;
-            line-height: 1.3;
-        }
-
-        .cart-item-remove {
-            flex-shrink: 0;
-            border: none;
-            background: transparent;
-            color: #666;
-            font-size: 14px;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-
-        .cart-item-remove:hover {
-            color: #d98282;
-        }
-
-        .cart-item-price {
-            margin-top: 4px;
-            color: #d5a65b;
-            font-size: 11px;
-        }
-
-        .cart-item-bottom {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 10px;
-            margin-top: 9px;
-        }
-
-        .cart-quantity {
-            display: flex;
-            align-items: center;
-            border: 1px solid #333338;
-            border-radius: 6px;
-            overflow: hidden;
-            background: #1d1d20;
-        }
-
-        .cart-quantity button {
-            width: 28px;
-            height: 27px;
-            border: none;
-            background: transparent;
-            color: #aaa;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-
-        .cart-quantity button:hover {
-            background: #29292d;
-            color: #fff;
-        }
-
-        .cart-quantity-value {
-            min-width: 27px;
-            color: #ddd;
-            text-align: center;
-            font-size: 10px;
-        }
-
-        .cart-item-total {
-            color: #ddd;
-            font-size: 11px;
-            font-weight: 600;
-        }
-
-        .cart-footer {
-            padding: 20px;
-            border-top: 1px solid #29292d;
-            background: #151518;
-        }
-
-        .cart-total {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 15px;
-        }
-
-        .cart-total-label {
-            color: #777;
-            font-size: 11px;
-        }
-
-        .cart-total-price {
-            color: #d5a65b;
-            font-family: Georgia, serif;
-            font-size: 20px;
-        }
-
-        .checkout-button,
-        .clear-cart-button {
-            width: 100%;
-            border-radius: 7px;
-            cursor: pointer;
-            transition: 0.25s;
-        }
-
-        .checkout-button {
-            padding: 13px;
-            border: 1px solid #d5a65b;
-            background: #d5a65b;
-            color: #111;
-            font-size: 11px;
-            font-weight: 600;
-        }
-
-        .checkout-button:hover {
-            background: #e4b971;
-            border-color: #e4b971;
-        }
-
-        .clear-cart-button {
-            margin-top: 8px;
-            padding: 10px;
-            border: 1px solid #333338;
-            background: #1d1d20;
-            color: #777;
-            font-size: 10px;
-        }
-
-        .clear-cart-button:hover {
-            border-color: #704848;
-            color: #d98282;
-        }
-
-        .cart-overlay {
-            position: fixed;
-            inset: 0;
-            z-index: 999;
-            background: rgba(0, 0, 0, 0.55);
-            opacity: 0;
-            visibility: hidden;
-            transition: 0.3s;
-        }
-
-        .cart-overlay.visible {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        body.cart-open {
-            overflow: hidden;
-        }
-
-        @keyframes show {
-            from {
-                opacity: 0;
-                transform: translateY(15px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @media (max-width: 850px) {
-            .page {
-                padding: 25px 20px;
-            }
-
-            .content {
-                margin-top: 35px;
-            }
-
-            .layout {
-                grid-template-columns: 1fr;
-            }
-
-            .actions {
-                grid-template-columns: 1fr;
-            }
-
-            .main-action {
-                grid-column: span 1;
-            }
-        }
-
-        @media (max-width: 650px) {
-            .active-order {
-                align-items: flex-start;
-                flex-direction: column;
-            }
-
-            .active-order-right {
-                width: 100%;
-                justify-content: space-between;
-            }
-        }
-
-        @media (max-width: 550px) {
-            .page {
-                padding: 20px 15px;
-            }
-
-            .top-menu {
-                display: flex;
-            }
-
-            .top-button {
-                display: none;
-            }
-
-            .cart-button {
-                padding: 10px 13px;
-            }
-
-            .heading h1 {
-                font-size: 28px;
-            }
-
-            .profile-card,
-            .actions-card {
-                padding: 20px;
-            }
-
-            .address {
-                grid-template-columns: 1fr;
-            }
-
-            .address-street {
-                grid-column: span 1;
-            }
-
-            .bottom {
-                align-items: stretch;
-                flex-direction: column;
-                gap: 10px;
-            }
-
-            .support,
-            .logout {
-                text-align: center;
-                justify-content: center;
-            }
-
-            .cart-sidebar {
-                width: 100%;
-            }
-        }
-    </style>
 </head>
 <body>
 <div class="page">
     <header class="top">
-        <div class="logo">
-            BAR.
-        </div>
-
+        <div class="logo">BAR.</div>
         <nav class="top-menu">
             <button type="button" class="cart-button" id="cartButton">
                 <span class="cart-icon">🛒</span>
@@ -931,297 +946,184 @@
         </nav>
     </header>
 
-    <main class="content">
-        <div class="heading">
-            <div class="heading-label">
-                PERSONAL AREA
+<main class="content">
+    <div class="heading">
+        <div class="heading-label">PERSONAL AREA</div>
+        <h1>Личный кабинет</h1>
+        <p>Управляйте заказами и своим профилем</p>
+    </div>
+
+    <div id="pageError" class="page-error"></div>
+
+    <div class="layout">
+        <section class="profile-card">
+            <div class="profile-header">
+                <div class="avatar">{{ user.name[0] }}</div>
+                <div>
+                    <div class="user-name">{{ user.name }} {{ user.surname }}</div>
+                    <div class="user-status">Зарегистрированный клиент</div>
+                </div>
             </div>
 
-            <h1>
-                Личный кабинет
-            </h1>
+            <div class="data">
+                <div class="data-item">
+                    <div class="data-label">Email</div>
+                    <div class="data-value">{{ user.email }}</div>
+                </div>
 
-            <p>
-                Управляйте заказами и своим профилем
-            </p>
-        </div>
+                <div class="data-item">
+                    <div class="data-label">Телефон</div>
+                    <div class="data-value">{{ user.phone }}</div>
+                </div>
 
-        <div class="layout">
-            <section class="profile-card">
-                <div class="profile-header">
-                    <div class="avatar">
-                        {{ user.name[0] }}
+                <div class="data-item">
+                    <div class="data-label">Дата рождения</div>
+                    <div class="data-value">{{ user.birthday }}</div>
+                </div>
+
+                <div class="data-item">
+                    <div class="data-label">Адрес</div>
+                    <div class="address">
+                        <div class="address-item">
+                            <div class="address-label">Город</div>
+                            <div class="address-value">{{ address.city }}</div>
+                        </div>
+
+                        <div class="address-item">
+                            <div class="address-label">Индекс</div>
+                            <div class="address-value">{{ address.postal_code }}</div>
+                        </div>
+
+                        <div class="address-item address-street">
+                            <div class="address-label">Улица</div>
+                            <div class="address-value">{{ address.street }}</div>
+                        </div>
+
+                        <div class="address-item">
+                            <div class="address-label">Дом</div>
+                            <div class="address-value">{{ address.house }}</div>
+                        </div>
+
+                        <div class="address-item">
+                            <div class="address-label">Квартира</div>
+                            <div class="address-value">{{ address.apartment }}</div>
+                        </div>
                     </div>
+                </div>
+            </div>
 
+            <a href="/user/edit" class="edit-profile">Изменить личные данные</a>
+        </section>
+
+        <section class="actions-card">
+            <div class="actions-title">
+                <h2>Что хотите сделать?</h2>
+                <p>Выберите необходимый раздел</p>
+            </div>
+
+            <div class="actions">
+                <a href="/menu_page/orders/users" class="action main-action">
+                    <div class="action-icon">+</div>
                     <div>
-                        <div class="user-name">
-                            {{ user.name }} {{ user.surname }}
-                        </div>
-
-                        <div class="user-status">
-                            Зарегистрированный клиент
-                        </div>
+                        <div class="action-name">Сделать заказ</div>
+                        <div class="action-description">Меню</div>
                     </div>
-                </div>
-
-                <div class="data">
-                    <div class="data-item">
-                        <div class="data-label">
-                            Email
-                        </div>
-
-                        <div class="data-value">
-                            {{ user.email }}
-                        </div>
-                    </div>
-
-                    <div class="data-item">
-                        <div class="data-label">
-                            Телефон
-                        </div>
-
-                        <div class="data-value">
-                            {{ user.phone }}
-                        </div>
-                    </div>
-
-                    <div class="data-item">
-                        <div class="data-label">
-                            Дата рождения
-                        </div>
-
-                        <div class="data-value">
-                            {{ user.birthday }}
-                        </div>
-                    </div>
-
-                    <div class="data-item">
-                        <div class="data-label">
-                            Адрес
-                        </div>
-
-                        <div class="address">
-                            <div class="address-item">
-                                <div class="address-label">
-                                    Город
-                                </div>
-
-                                <div class="address-value">
-                                    {{ address.city }}
-                                </div>
-                            </div>
-
-                            <div class="address-item">
-                                <div class="address-label">
-                                    Индекс
-                                </div>
-
-                                <div class="address-value">
-                                    {{ address.postal_code }}
-                                </div>
-                            </div>
-
-                            <div class="address-item address-street">
-                                <div class="address-label">
-                                    Улица
-                                </div>
-
-                                <div class="address-value">
-                                    {{ address.street }}
-                                </div>
-                            </div>
-
-                            <div class="address-item">
-                                <div class="address-label">
-                                    Дом
-                                </div>
-
-                                <div class="address-value">
-                                    {{ address.house }}
-                                </div>
-                            </div>
-
-                            <div class="address-item">
-                                <div class="address-label">
-                                    Квартира
-                                </div>
-
-                                <div class="address-value">
-                                    {{ address.apartment }}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <a href="/user/edit" class="edit-profile">
-                    Изменить личные данные
                 </a>
-            </section>
 
-            <section class="actions-card">
-                <div class="actions-title">
-                    <h2>
-                        Что хотите сделать?
-                    </h2>
-
-                    <p>
-                        Выберите необходимый раздел
-                    </p>
-                </div>
-
-                <div class="actions">
-                    <a href="/menu_page/orders/users" class="action main-action">
-                        <div class="action-icon">
-                            +
+                <button type="button" class="action" id="repeatLastOrder">
+                    <div class="action-icon">☰</div>
+                    <div>
+                        <div class="action-name">Повторить последний заказ</div>
+                        <div class="action-description">
+                            {% if last_order %}
+                                Оформление доставки по последнему заказу
+                            {% else %}
+                                У вас пока нет завершённых заказов
+                            {% endif %}
                         </div>
-
-                        <div>
-                            <div class="action-name">
-                                Сделать заказ
-                            </div>
-
-                            <div class="action-description">
-                                Меню
-                            </div>
-                        </div>
-                    </a>
-
-                    <button type="button" class="action" id="repeatLastOrder">
-                        <div class="action-icon">
-                            ☰
-                        </div>
-
-                        <div>
-                            <div class="action-name">
-                                Повторить последний заказ
-                            </div>
-
-                            <div class="action-description">
-                                {% if last_order %}
-                                    Оформление доставки по последнему заказу
-                                {% else %}
-                                    У вас пока нет завершённых заказов
-                                {% endif %}
-                            </div>
-                        </div>
-                    </button>
-
-                    <a href="/orders/my_history_orders" class="action">
-                        <div class="action-icon">
-                            ◷
-                        </div>
-
-                        <div>
-                            <div class="action-name">
-                                История заказов
-                            </div>
-
-                            <div class="action-description">
-                                Ваши предыдущие заказы
-                            </div>
-                        </div>
-                    </a>
-                </div>
-
-                <div class="active-orders">
-                    <div class="active-orders-header">
-                        <div>
-                            <h3>
-                                Активные заказы
-                            </h3>
-
-                            <p>
-                                Ваши текущие заказы
-                            </p>
-                        </div>
-
-                        <span class="active-dot"></span>
                     </div>
+                </button>
 
-                    {% if active_orders %}
-                        <div class="active-orders-list">
-                            {% for order in active_orders %}
-                                {% set status = order.status.value if order.status.value is defined else order.status %}
+                <a href="/orders/my_history_orders" class="action">
+                    <div class="action-icon">◷</div>
+                    <div>
+                        <div class="action-name">История заказов</div>
+                        <div class="action-description">Ваши предыдущие заказы</div>
+                    </div>
+                </a>
+            </div>
 
-                                <div class="active-order">
-                                    <div class="active-order-info">
-                                        <div class="active-order-number">
-                                            Заказ #{{ order.order_number }}
-                                        </div>
+            <div class="active-orders">
+                <div class="active-orders-header">
+                    <div>
+                        <h3>Активные заказы</h3>
+                        <p>Ваши текущие заказы</p>
+                    </div>
+                    <span class="active-dot"></span>
+                </div>
 
-                                        <div class="active-order-items">
-                                            {% for item in order.order_items %}
-                                                <div class="active-order-item">
-                                                    <span>
-                                                        {{ item.dish_name }}
-                                                    </span>
-
-                                                    <span>
-                                                        × {{ item.quantity }}
-                                                    </span>
-                                                </div>
-                                            {% endfor %}
-                                        </div>
-
-                                        <div class="active-order-meta">
-                                            <span class="active-order-price">
-                                                {{ order.sum }} €
-                                            </span>
-
-                                            <span>
-                                                {% if order.created_at is string %}
-                                                    {{ order.created_at[8:10] }}.{{ order.created_at[5:7] }}.{{ order.created_at[0:4] }} {{ order.created_at[11:16] }}
-                                                {% else %}
-                                                    {{ order.created_at.strftime("%d.%m.%Y %H:%M") }}
-                                                {% endif %}
-                                            </span>
-                                        </div>
+                {% if active_orders %}
+                    <div class="active-orders-list">
+                        {% for order in active_orders %}
+                            {% set status = order.status.value if order.status.value is defined else order.status %}
+                            <div class="active-order">
+                                <div class="active-order-info">
+                                    <div class="active-order-number">Заказ #{{ order.order_number }}</div>
+                                    <div class="active-order-items">
+                                        {% for item in order.order_items %}
+                                            <div class="active-order-item">
+                                                <span>{{ item.dish_name }}</span>
+                                                <span>× {{ item.quantity }}</span>
+                                            </div>
+                                        {% endfor %}
                                     </div>
-
-                                    <div class="active-order-right">
-                                        <span class="active-order-status status-{{ status }}">
-                                            {% if status == "paid" %}
-                                                Оплачен
-                                            {% elif status == "preparing" %}
-                                                Готовится
-                                            {% elif status == "delivering" %}
-                                                Ваш заказ уже в пути
+                                    <div class="active-order-meta">
+                                        <span class="active-order-price">{{ order.sum }} €</span>
+                                        <span>
+                                            {% if order.created_at is string %}
+                                                {{ order.created_at[8:10] }}.{{ order.created_at[5:7] }}.{{ order.created_at[0:4] }} {{ order.created_at[11:16] }}
                                             {% else %}
-                                                {{ status }}
+                                                {{ order.created_at.strftime("%d.%m.%Y %H:%M") }}
                                             {% endif %}
                                         </span>
                                     </div>
                                 </div>
-                            {% endfor %}
-                        </div>
-                    {% else %}
-                        <div class="order-empty">
-                            <div class="order-icon">
-                                ◷
+
+                                <div class="active-order-right">
+                                    <span class="active-order-status status-{{ status }}">
+                                        {% if status == "paid" %}
+                                            Оплачен
+                                        {% elif status == "preparing" %}
+                                            Готовится
+                                        {% elif status == "delivering" %}
+                                            Ваш заказ уже в пути
+                                        {% else %}
+                                            {{ status }}
+                                        {% endif %}
+                                    </span>
+                                </div>
                             </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="order-empty">
+                        <div class="order-icon">◷</div>
+                        <span>Сейчас нет активных заказов</span>
+                    </div>
+                {% endif %}
+            </div>
+        </section>
+    </div>
 
-                            <span>
-                                Сейчас нет активных заказов
-                            </span>
-                        </div>
-                    {% endif %}
-                </div>
-            </section>
-        </div>
+    <div class="bottom">
+        <form method="post" action="/logout" id="logoutForm">
+            <button type="submit" class="logout">Выйти из аккаунта</button>
+        </form>
 
-        <div class="bottom">
-            <form method="post" action="/logout">
-                <button type="submit" class="logout">
-                    Выйти из аккаунта
-                </button>
-            </form>
+        <a href="/support/user" class="support">Техподдержка</a>
+    </div>
+</main>
 
-            <a href="/support/user" class="support">
-                Техподдержка
-            </a>
-        </div>
-    </main>
 </div>
 
 <div class="cart-overlay" id="cartOverlay"></div>
@@ -1229,47 +1131,31 @@
 <aside class="cart-sidebar" id="cartSidebar">
     <header class="cart-header">
         <div>
-            <span class="cart-title">
-                Корзина
-            </span>
-
-            <span class="cart-header-count" id="cartHeaderCount">
-                0 предметов
-            </span>
+            <span class="cart-title">Корзина</span>
+            <span class="cart-header-count" id="cartHeaderCount">0 предметов</span>
         </div>
-
-        <button type="button" class="cart-close" id="cartClose" title="Свернуть корзину">
-            ×
-        </button>
+        <button type="button" class="cart-close" id="cartClose" title="Свернуть корзину">×</button>
     </header>
 
-    <div class="cart-content" id="cartContent"></div>
+<div class="cart-content" id="cartContent"></div>
 
-    <footer class="cart-footer">
-        <div class="cart-total">
-            <span class="cart-total-label">
-                Итого
-            </span>
+<footer class="cart-footer">
+    <div class="cart-total">
+        <span class="cart-total-label">Итого</span>
+        <span class="cart-total-price" id="cartTotalPrice">0.00 €</span>
+    </div>
 
-            <span class="cart-total-price" id="cartTotalPrice">
-                0.00 €
-            </span>
-        </div>
+    <button type="button" class="checkout-button" id="checkoutButton">Оформить заказ</button>
+    <button type="button" class="clear-cart-button" id="clearCartButton">Очистить корзину</button>
+</footer>
 
-        <button type="button" class="checkout-button" id="checkoutButton">
-            Оформить заказ
-        </button>
-
-        <button type="button" class="clear-cart-button" id="clearCartButton">
-            Очистить корзину
-        </button>
-    </footer>
 </aside>
+
 <script src="/static/api.js"></script>
+
 <script>
 const CART_STORAGE_KEY = "restaurant_cart";
 const lastOrder = {{ last_order | tojson }};
-
 const cartButton = document.getElementById("cartButton");
 const cartSidebar = document.getElementById("cartSidebar");
 const cartOverlay = document.getElementById("cartOverlay");
@@ -1281,6 +1167,38 @@ const cartTotalPrice = document.getElementById("cartTotalPrice");
 const clearCartButton = document.getElementById("clearCartButton");
 const checkoutButton = document.getElementById("checkoutButton");
 const repeatLastOrderButton = document.getElementById("repeatLastOrder");
+const pageError = document.getElementById("pageError");
+const logoutForm = document.getElementById("logoutForm");
+
+function showError(message) {
+    pageError.textContent = message;
+    pageError.classList.add("visible");
+}
+
+function clearError() {
+    pageError.textContent = "";
+    pageError.classList.remove("visible");
+}
+
+async function getErrorMessage(response, fallback) {
+    try {
+        const data = await response.json();
+
+        if (typeof data.detail === "string") {
+            return data.detail;
+        }
+
+        if (Array.isArray(data.detail)) {
+            return data.detail.map(error => error.msg).join(", ");
+        }
+
+        if (typeof data.message === "string") {
+            return data.message;
+        }
+    } catch {}
+
+    return fallback;
+}
 
 function getCart() {
     try {
@@ -1308,9 +1226,7 @@ function closeCart() {
 }
 
 function getCartCount() {
-    return getCart().reduce((total, item) => {
-        return total + Number(item.quantity || 0);
-    }, 0);
+    return getCart().reduce((total, item) => total + Number(item.quantity || 0), 0);
 }
 
 function formatPrice(price) {
@@ -1353,9 +1269,7 @@ function renderCart() {
             <div class="cart-empty">
                 <div class="cart-empty-icon">🛒</div>
                 <div class="cart-empty-text">Корзина пуста</div>
-                <div class="cart-empty-description">
-                    Добавьте блюда из меню, и они появятся здесь.
-                </div>
+                <div class="cart-empty-description">Добавьте блюда из меню, и они появятся здесь.</div>
             </div>
         `;
 
@@ -1384,40 +1298,19 @@ function renderCart() {
                             : `<div class="cart-item-image-placeholder">🍽</div>`
                     }
                 </div>
-
                 <div class="cart-item-info">
                     <div class="cart-item-top">
-                        <div class="cart-item-name">
-                            ${name}
-                        </div>
-
-                        <button type="button" class="cart-item-remove" data-index="${index}" title="Удалить">
-                            ×
-                        </button>
+                        <div class="cart-item-name">${name}</div>
+                        <button type="button" class="cart-item-remove" data-index="${index}" title="Удалить">×</button>
                     </div>
-
-                    <div class="cart-item-price">
-                        ${formatPrice(price)}
-                    </div>
-
+                    <div class="cart-item-price">${formatPrice(price)}</div>
                     <div class="cart-item-bottom">
                         <div class="cart-quantity">
-                            <button type="button" data-action="decrease" data-index="${index}">
-                                −
-                            </button>
-
-                            <span class="cart-quantity-value">
-                                ${quantity}
-                            </span>
-
-                            <button type="button" data-action="increase" data-index="${index}">
-                                +
-                            </button>
+                            <button type="button" data-action="decrease" data-index="${index}">−</button>
+                            <span class="cart-quantity-value">${quantity}</span>
+                            <button type="button" data-action="increase" data-index="${index}">+</button>
                         </div>
-
-                        <div class="cart-item-total">
-                            ${formatPrice(itemTotal)}
-                        </div>
+                        <div class="cart-item-total">${formatPrice(itemTotal)}</div>
                     </div>
                 </div>
             </div>
@@ -1452,7 +1345,6 @@ function removeItem(index) {
     }
 
     cart.splice(index, 1);
-
     saveCart(cart);
     renderCart();
 }
@@ -1504,10 +1396,12 @@ clearCartButton.addEventListener("click", () => {
 });
 
 checkoutButton.addEventListener("click", async () => {
+    clearError();
+
     const cart = getCart();
 
     if (cart.length === 0) {
-        alert("Корзина пуста.");
+        showError("Корзина пуста.");
         return;
     }
 
@@ -1520,10 +1414,10 @@ checkoutButton.addEventListener("click", async () => {
         }))
     };
 
-    console.log("ORDER DTO:", JSON.stringify(orderData, null, 2));
+    checkoutButton.disabled = true;
 
     try {
-        const response = await fetch("/orders/create", {
+        const response = await apiFetch("/orders/create", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -1531,25 +1425,25 @@ checkoutButton.addEventListener("click", async () => {
             body: JSON.stringify(orderData)
         });
 
-        console.log("ORDER RESPONSE:", response.status, response.url);
-
         if (!response.ok) {
-            const errorData = await response.json();
-            console.error("ORDER ERROR:", errorData);
-            throw new Error(`HTTP error: ${response.status}`);
+            showError(await getErrorMessage(response, "Не удалось оформить заказ."));
+            checkoutButton.disabled = false;
+            return;
         }
 
         window.location.href = "/users/confirm_address";
-    } catch (error) {
-        console.error("ORDER ERROR:", error);
-        alert("Не удалось оформить заказ.");
+    } catch {
+        showError("Не удалось связаться с сервером. Попробуйте ещё раз.");
+        checkoutButton.disabled = false;
     }
 });
 
 if (repeatLastOrderButton) {
     repeatLastOrderButton.addEventListener("click", () => {
+        clearError();
+
         if (!lastOrder || !lastOrder.order_items || lastOrder.order_items.length === 0) {
-            alert("У вас пока нет завершённых заказов.");
+            showError("У вас пока нет завершённых заказов.");
             return;
         }
 
@@ -1565,6 +1459,32 @@ if (repeatLastOrderButton) {
         openCart();
     });
 }
+
+logoutForm.addEventListener("submit", async event => {
+    event.preventDefault();
+    clearError();
+
+    const button = logoutForm.querySelector(".logout");
+    button.disabled = true;
+
+    try {
+        const response = await apiFetch("/logout", {
+            method: "POST",
+            body: new FormData(logoutForm)
+        });
+
+        if (!response.ok) {
+            showError(await getErrorMessage(response, "Не удалось выйти из аккаунта."));
+            button.disabled = false;
+            return;
+        }
+
+        window.location.href = "/login";
+    } catch {
+        showError("Не удалось связаться с сервером. Попробуйте ещё раз.");
+        button.disabled = false;
+    }
+});
 
 window.addEventListener("storage", event => {
     if (event.key === CART_STORAGE_KEY) {

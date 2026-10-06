@@ -1,940 +1,721 @@
 <!DOCTYPE html>
+
 <html lang="ru">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Регистрация | Bar & Lounge</title>
+<title>Регистрация | Bar & Lounge</title>
 
-    <style>
+<style>
+    * {
+        box-sizing: border-box;
+    }
 
-        * {
-            box-sizing: border-box;
-        }
+    body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: "Segoe UI", sans-serif;
+        background:
+            radial-gradient(
+                circle at 15% 20%,
+                rgba(213, 166, 91, 0.25),
+                transparent 30%
+            ),
+            radial-gradient(
+                circle at 85% 80%,
+                rgba(180, 70, 110, 0.20),
+                transparent 30%
+            ),
+            linear-gradient(
+                135deg,
+                #24191f,
+                #3a252b,
+                #24191f
+            );
+        color: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 30px;
+    }
 
-        body {
-            margin: 0;
-            min-height: 100vh;
-            font-family: "Segoe UI", sans-serif;
+    .page {
+        width: 1100px;
+        display: grid;
+        grid-template-columns: 220px 440px 220px;
+        justify-content: center;
+        align-items: center;
+        gap: 40px;
+    }
 
-            background:
-                radial-gradient(
-                    circle at 15% 20%,
-                    rgba(213, 166, 91, 0.25),
-                    transparent 30%
-                ),
-                radial-gradient(
-                    circle at 85% 80%,
-                    rgba(180, 70, 110, 0.20),
-                    transparent 30%
-                ),
-                linear-gradient(
-                    135deg,
-                    #24191f,
-                    #3a252b,
-                    #24191f
-                );
+    .side {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
 
-            color: white;
+    .side-box {
+        padding: 20px;
+        background: rgba(30, 25, 30, 0.75);
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 14px;
+    }
 
-            display: flex;
-            justify-content: center;
-            align-items: center;
+    .side-label {
+        color: #d5a65b;
+        font-size: 9px;
+        letter-spacing: 2px;
+    }
 
-            padding: 30px;
-        }
+    .side-box h3 {
+        margin: 10px 0;
+        font-family: Georgia, serif;
+        font-weight: normal;
+        font-size: 18px;
+    }
 
+    .side-box p {
+        margin: 0;
+        color: #aaa;
+        font-size: 11px;
+        line-height: 1.6;
+    }
 
+    .card {
+        width: 440px;
+        padding: 35px 40px;
+        background: rgba(39, 32, 38, 0.97);
+        border: 1px solid rgba(255,255,255,0.12);
+        border-radius: 18px;
+        box-shadow:
+            0 25px 60px rgba(0,0,0,0.45);
+    }
+
+    .logo {
+        text-align: center;
+        color: #d5a65b;
+        font-family: Georgia, serif;
+        letter-spacing: 5px;
+        font-size: 13px;
+        margin-bottom: 15px;
+    }
+
+    h1 {
+        margin: 0;
+        text-align: center;
+        font-family: Georgia, serif;
+        font-size: 30px;
+        font-weight: normal;
+    }
+
+    .subtitle {
+        text-align: center;
+        color: #aaa;
+        font-size: 12px;
+        margin: 10px 0 25px;
+    }
+
+    .steps {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 25px;
+    }
+
+    .step-number {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: #352f34;
+        border: 1px solid #51484e;
+        color: #888;
+        font-size: 11px;
+    }
+
+    .step-number.active {
+        background: #d5a65b;
+        border-color: #d5a65b;
+        color: #211a15;
+    }
+
+    .step-line {
+        width: 35px;
+        height: 1px;
+        background: #51484e;
+    }
+
+    .form-step {
+        display: none;
+    }
+
+    .form-step.active {
+        display: block;
+    }
+
+    .step-title {
+        margin-bottom: 20px;
+        font-family: Georgia, serif;
+        font-size: 20px;
+    }
+
+    .row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+    }
+
+    .field {
+        margin-bottom: 15px;
+    }
+
+    label {
+        display: block;
+        margin-bottom: 6px;
+        font-size: 11px;
+        color: #ddd;
+    }
+
+    .required {
+        color: #d5a65b;
+    }
+
+    .optional {
+        color: #777;
+        font-size: 9px;
+    }
+
+    input {
+        width: 100%;
+        padding: 12px;
+        border-radius: 8px;
+        border: 1px solid #50464d;
+        background: #302a30;
+        color: white;
+        font-size: 13px;
+        outline: none;
+    }
+
+    input:focus {
+        border-color: #d5a65b;
+        box-shadow:
+            0 0 0 3px rgba(213,166,91,0.08);
+    }
+
+    input::placeholder {
+        color: #777;
+    }
+
+    .field-error {
+        color: #d98282;
+        font-size: 11px;
+        margin-top: 5px;
+        line-height: 1.4;
+    }
+
+    .form-error {
+        display: none;
+        margin-bottom: 15px;
+        padding: 10px 12px;
+        border: 1px solid rgba(217, 130, 130, 0.4);
+        border-radius: 8px;
+        background: rgba(217, 130, 130, 0.08);
+        color: #d98282;
+        font-size: 11px;
+        line-height: 1.5;
+    }
+
+    .form-error.show {
+        display: block;
+    }
+
+    .next-button,
+    .register-button {
+        width: 100%;
+        margin-top: 5px;
+        padding: 13px;
+        border: none;
+        border-radius: 8px;
+        background: #d5a65b;
+        color: #211a15;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+
+    .next-button:hover,
+    .register-button:hover {
+        background: #e5b970;
+        transform: translateY(-1px);
+    }
+
+    .back-button {
+        width: 100%;
+        margin-top: 9px;
+        padding: 10px;
+        border-radius: 8px;
+        border: 1px solid #50464d;
+        background: transparent;
+        color: #999;
+        cursor: pointer;
+        font-size: 11px;
+    }
+
+    .back-button:hover {
+        color: white;
+        border-color: #777;
+    }
+
+    .footer {
+        text-align: center;
+        margin-top: 20px;
+        font-size: 11px;
+        color: #999;
+    }
+
+    .footer a {
+        color: #d5a65b;
+        text-decoration: none;
+    }
+
+    .footer a:hover {
+        text-decoration: underline;
+    }
+
+    @media (max-width: 900px) {
         .page {
-            width: 1100px;
-
-            display: grid;
-            grid-template-columns: 220px 440px 220px;
-
-            justify-content: center;
-            align-items: center;
-
-            gap: 40px;
+            grid-template-columns: 1fr;
+            width: 440px;
         }
-
 
         .side {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
+            display: none;
+        }
+    }
+
+    @media (max-width: 500px) {
+        body {
+            padding: 15px;
         }
 
-
-        .side-box {
-            padding: 20px;
-
-            background: rgba(30, 25, 30, 0.75);
-
-            border: 1px solid rgba(255,255,255,0.1);
-
-            border-radius: 14px;
+        .page {
+            width: 100%;
         }
-
-
-        .side-label {
-            color: #d5a65b;
-
-            font-size: 9px;
-
-            letter-spacing: 2px;
-        }
-
-
-        .side-box h3 {
-            margin: 10px 0;
-
-            font-family: Georgia, serif;
-
-            font-weight: normal;
-
-            font-size: 18px;
-        }
-
-
-        .side-box p {
-            margin: 0;
-
-            color: #aaa;
-
-            font-size: 11px;
-
-            line-height: 1.6;
-        }
-
 
         .card {
-            width: 440px;
-
-            padding: 35px 40px;
-
-            background: rgba(39, 32, 38, 0.97);
-
-            border: 1px solid rgba(255,255,255,0.12);
-
-            border-radius: 18px;
-
-            box-shadow:
-                0 25px 60px rgba(0,0,0,0.45);
+            width: 100%;
+            padding: 30px 22px;
         }
-
-
-        .logo {
-            text-align: center;
-
-            color: #d5a65b;
-
-            font-family: Georgia, serif;
-
-            letter-spacing: 5px;
-
-            font-size: 13px;
-
-            margin-bottom: 15px;
-        }
-
-
-        h1 {
-            margin: 0;
-
-            text-align: center;
-
-            font-family: Georgia, serif;
-
-            font-size: 30px;
-
-            font-weight: normal;
-        }
-
-
-        .subtitle {
-            text-align: center;
-
-            color: #aaa;
-
-            font-size: 12px;
-
-            margin: 10px 0 25px;
-        }
-
-
-        .steps {
-            display: flex;
-
-            align-items: center;
-
-            justify-content: center;
-
-            margin-bottom: 25px;
-        }
-
-
-        .step-number {
-            width: 30px;
-            height: 30px;
-
-            border-radius: 50%;
-
-            display: flex;
-
-            justify-content: center;
-            align-items: center;
-
-            background: #352f34;
-
-            border: 1px solid #51484e;
-
-            color: #888;
-
-            font-size: 11px;
-        }
-
-
-        .step-number.active {
-            background: #d5a65b;
-
-            border-color: #d5a65b;
-
-            color: #211a15;
-        }
-
-
-        .step-line {
-            width: 35px;
-
-            height: 1px;
-
-            background: #51484e;
-        }
-
-
-        .form-step {
-            display: none;
-        }
-
-
-        .form-step.active {
-            display: block;
-        }
-
-
-        .step-title {
-            margin-bottom: 20px;
-
-            font-family: Georgia, serif;
-
-            font-size: 20px;
-        }
-
 
         .row {
-            display: grid;
-
-            grid-template-columns: 1fr 1fr;
-
-            gap: 12px;
+            grid-template-columns: 1fr;
         }
+    }
+</style>
 
-
-        .field {
-            margin-bottom: 15px;
-        }
-
-
-        label {
-            display: block;
-
-            margin-bottom: 6px;
-
-            font-size: 11px;
-
-            color: #ddd;
-        }
-
-
-        .required {
-            color: #d5a65b;
-        }
-
-
-        .optional {
-            color: #777;
-
-            font-size: 9px;
-        }
-
-
-        input {
-            width: 100%;
-
-            padding: 12px;
-
-            border-radius: 8px;
-
-            border: 1px solid #50464d;
-
-            background: #302a30;
-
-            color: white;
-
-            font-size: 13px;
-
-            outline: none;
-        }
-
-
-        input:focus {
-            border-color: #d5a65b;
-
-            box-shadow:
-                0 0 0 3px rgba(213,166,91,0.08);
-        }
-
-
-        input::placeholder {
-            color: #777;
-        }
-
-
-        .field-error {
-            color: #d98282;
-
-            font-size: 11px;
-
-            margin-top: 5px;
-
-            line-height: 1.4;
-        }
-
-
-        .form-error {
-            display: none;
-
-            margin-bottom: 15px;
-
-            padding: 10px 12px;
-
-            border: 1px solid rgba(217, 130, 130, 0.4);
-
-            border-radius: 8px;
-
-            background: rgba(217, 130, 130, 0.08);
-
-            color: #d98282;
-
-            font-size: 11px;
-
-            line-height: 1.5;
-        }
-
-
-        .form-error.show {
-            display: block;
-        }
-
-
-        .next-button,
-        .register-button {
-            width: 100%;
-
-            margin-top: 5px;
-
-            padding: 13px;
-
-            border: none;
-
-            border-radius: 8px;
-
-            background: #d5a65b;
-
-            color: #211a15;
-
-            font-size: 14px;
-
-            font-weight: 600;
-
-            cursor: pointer;
-
-            transition: 0.2s;
-        }
-
-
-        .next-button:hover,
-        .register-button:hover {
-            background: #e5b970;
-
-            transform: translateY(-1px);
-        }
-
-
-        .back-button {
-            width: 100%;
-
-            margin-top: 9px;
-
-            padding: 10px;
-
-            border-radius: 8px;
-
-            border: 1px solid #50464d;
-
-            background: transparent;
-
-            color: #999;
-
-            cursor: pointer;
-
-            font-size: 11px;
-        }
-
-
-        .back-button:hover {
-            color: white;
-
-            border-color: #777;
-        }
-
-
-        .footer {
-            text-align: center;
-
-            margin-top: 20px;
-
-            font-size: 11px;
-
-            color: #999;
-        }
-
-
-        .footer a {
-            color: #d5a65b;
-
-            text-decoration: none;
-        }
-
-
-        .footer a:hover {
-            text-decoration: underline;
-        }
-
-
-        @media (max-width: 900px) {
-
-            .page {
-                grid-template-columns: 1fr;
-
-                width: 440px;
-            }
-
-            .side {
-                display: none;
-            }
-
-        }
-
-
-        @media (max-width: 500px) {
-
-            body {
-                padding: 15px;
-            }
-
-            .page {
-                width: 100%;
-            }
-
-            .card {
-                width: 100%;
-
-                padding: 30px 22px;
-            }
-
-            .row {
-                grid-template-columns: 1fr;
-            }
-
-        }
-
-    </style>
 </head>
-
 
 <body>
 
-
 <div class="page">
 
-
-    <div class="side">
-
-        <div class="side-box">
-
-            <div class="side-label">
-                BAR & LOUNGE
-            </div>
-
-            <h3>
-                Добро пожаловать
-            </h3>
-
-            <p>
-                Создайте аккаунт,
-                чтобы пользоваться
-                всеми возможностями
-                нашего бара.
-            </p>
-
-        </div>
-
-
-        <div class="side-box">
-
-            <div class="side-label">
-                ATMOSPHERE
-            </div>
-
-            <p>
-                Хорошая музыка,
-                авторские коктейли
-                и приятная компания.
-            </p>
-
-        </div>
-
-    </div>
-
-
-    <div class="card">
-
-
-        <div class="logo">
+<div class="side">
+    <div class="side-box">
+        <div class="side-label">
             BAR & LOUNGE
         </div>
 
+        <h3>
+            Добро пожаловать
+        </h3>
 
-        <h1>
-            Регистрация
-        </h1>
+        <p>
+            Создайте аккаунт,
+            чтобы пользоваться
+            всеми возможностями
+            нашего бара.
+        </p>
+    </div>
 
-
-        <div class="subtitle">
-            Создайте аккаунт в несколько шагов
+    <div class="side-box">
+        <div class="side-label">
+            ATMOSPHERE
         </div>
 
+        <p>
+            Хорошая музыка,
+            авторские коктейли
+            и приятная компания.
+        </p>
+    </div>
+</div>
 
-        <div class="steps">
+<div class="card">
 
-            <div
-                class="step-number active"
-                id="indicator1"
-            >
-                1
-            </div>
+    <div class="logo">
+        BAR & LOUNGE
+    </div>
 
-            <div class="step-line"></div>
+    <h1>
+        Регистрация
+    </h1>
 
-            <div
-                class="step-number"
-                id="indicator2"
-            >
-                2
-            </div>
+    <div class="subtitle">
+        Создайте аккаунт в несколько шагов
+    </div>
 
-            <div class="step-line"></div>
-
-            <div
-                class="step-number"
-                id="indicator3"
-            >
-                3
-            </div>
-
+    <div class="steps">
+        <div
+            class="step-number active"
+            id="indicator1"
+        >
+            1
         </div>
 
+        <div class="step-line"></div>
 
-        <div id="formError" class="form-error"></div>
+        <div
+            class="step-number"
+            id="indicator2"
+        >
+            2
+        </div>
 
+        <div class="step-line"></div>
 
-        <form
-            id="registrationForm"
-            method="post"
-            action="/registration"
+        <div
+            class="step-number"
+            id="indicator3"
+        >
+            3
+        </div>
+    </div>
+
+    <div id="formError" class="form-error"></div>
+
+    <form
+        id="registrationForm"
+        method="post"
+        action="/registration"
+    >
+
+        <div
+            id="step1"
+            class="form-step active"
         >
 
-
-            <div
-                id="step1"
-                class="form-step active"
-            >
-
-                <div class="step-title">
-                    Личные данные
-                </div>
-
-
-                <div class="row">
-
-                    <div class="field">
-
-                        <label>
-                            Имя
-                            <span class="required">*</span>
-                        </label>
-
-                        <input
-                            type="text"
-                            name="name"
-                            placeholder="Имя"
-                            required
-                        >
-
-                    </div>
-
-
-                    <div class="field">
-
-                        <label>
-                            Фамилия
-                            <span class="required">*</span>
-                        </label>
-
-                        <input
-                            type="text"
-                            name="surname"
-                            placeholder="Фамилия"
-                            required
-                        >
-
-                    </div>
-
-                </div>
-
-
-                <div class="field">
-
-                    <label>
-                        Номер телефона
-                        <span class="required">*</span>
-                    </label>
-
-                    <input
-                        type="tel"
-                        name="phone"
-                        placeholder="+49 000 000000"
-                        required
-                    >
-
-                </div>
-
-
-                <div class="field">
-
-                    <label>
-                        Дата рождения
-                        <span class="required">*</span>
-                    </label>
-
-                    <input
-                        type="date"
-                        name="birthday"
-                        required
-                    >
-
-                </div>
-
-
-                <button
-                    type="button"
-                    class="next-button"
-                    id="buttonStep2"
-                >
-                    Перейти ко второму шагу →
-                </button>
-
+            <div class="step-title">
+                Личные данные
             </div>
 
-
-            <div
-                id="step2"
-                class="form-step"
-            >
-
-                <div class="step-title">
-                    Адрес
-                </div>
-
+            <div class="row">
 
                 <div class="field">
-
                     <label>
-                        Город
+                        Имя
                         <span class="required">*</span>
                     </label>
 
                     <input
                         type="text"
-                        name="city"
-                        placeholder="Город"
+                        name="name"
+                        placeholder="Имя"
                         required
                     >
-
                 </div>
 
-
                 <div class="field">
-
                     <label>
-                        Почтовый индекс
+                        Фамилия
                         <span class="required">*</span>
                     </label>
 
                     <input
                         type="text"
-                        name="postal_code"
-                        placeholder="Почтовый индекс"
+                        name="surname"
+                        placeholder="Фамилия"
                         required
                     >
-
                 </div>
-
-
-                <div class="field">
-
-                    <label>
-                        Улица
-                        <span class="required">*</span>
-                    </label>
-
-                    <input
-                        type="text"
-                        name="street"
-                        placeholder="Улица"
-                        required
-                    >
-
-                </div>
-
-
-                <div class="row">
-
-                    <div class="field">
-
-                        <label>
-                            Номер дома
-                            <span class="required">*</span>
-                        </label>
-
-                        <input
-                            type="text"
-                            name="house"
-                            placeholder="Дом"
-                            required
-                        >
-
-                    </div>
-
-
-                    <div class="field">
-
-                        <label>
-                            Номер квартиры
-                            <span class="optional">
-                                (необязательно)
-                            </span>
-                        </label>
-
-                        <input
-                            type="text"
-                            name="apartment"
-                            placeholder="Квартира"
-                        >
-
-                    </div>
-
-                </div>
-
-
-                <button
-                    type="button"
-                    class="next-button"
-                    id="buttonStep3"
-                >
-                    Перейти к третьему шагу →
-                </button>
-
-
-                <button
-                    type="button"
-                    class="back-button"
-                    id="buttonBack1"
-                >
-                    ← Назад
-                </button>
 
             </div>
 
+            <div class="field">
+                <label>
+                    Номер телефона
+                    <span class="required">*</span>
+                </label>
 
-            <div
-                id="step3"
-                class="form-step"
+                <input
+                    type="tel"
+                    name="phone"
+                    placeholder="+49 000 000000"
+                    required
+                >
+            </div>
+
+            <div class="field">
+                <label>
+                    Дата рождения
+                    <span class="required">*</span>
+                </label>
+
+                <input
+                    type="date"
+                    name="birthday"
+                    required
+                >
+            </div>
+
+            <button
+                type="button"
+                class="next-button"
+                id="buttonStep2"
             >
+                Перейти ко второму шагу →
+            </button>
 
-                <div class="step-title">
-                    Данные аккаунта
-                </div>
+        </div>
 
+        <div
+            id="step2"
+            class="form-step"
+        >
 
-                <div class="field">
+            <div class="step-title">
+                Адрес
+            </div>
 
-                    <label>
-                        Email
-                        <span class="required">*</span>
-                    </label>
+            <div class="field">
+                <label>
+                    Город
+                    <span class="required">*</span>
+                </label>
 
-                    <input
-                        type="email"
-                        name="email"
-                        placeholder="email@example.com"
-                        required
-                    >
-
-                </div>
-
-
-                <div class="field">
-
-                    <label>
-                        Пароль
-                        <span class="required">*</span>
-                    </label>
-
-                    <input
-                        type="password"
-                        name="password"
-                        placeholder="Минимум 8 символов"
-                        minlength="8"
-                        maxlength="64"
-                        required
-                    >
-
-                </div>
-
-
-                <div class="field">
-
-                    <label>
-                        Подтверждение пароля
-                        <span class="required">*</span>
-                    </label>
-
-                    <input
-                        type="password"
-                        id="passwordConfirm"
-                        placeholder="Повторите пароль"
-                        minlength="8"
-                        maxlength="64"
-                        required
-                    >
-
-                </div>
-
-
-                <button
-                    type="submit"
-                    class="register-button"
-                    id="registerButton"
+                <input
+                    type="text"
+                    name="city"
+                    placeholder="Город"
+                    required
                 >
-                    Зарегистрироваться
-                </button>
+            </div>
 
+            <div class="field">
+                <label>
+                    Почтовый индекс
+                    <span class="required">*</span>
+                </label>
 
-                <button
-                    type="button"
-                    class="back-button"
-                    id="buttonBack2"
+                <input
+                    type="text"
+                    name="postal_code"
+                    placeholder="Почтовый индекс"
+                    required
                 >
-                    ← Назад
-                </button>
+            </div>
+
+            <div class="field">
+                <label>
+                    Улица
+                    <span class="required">*</span>
+                </label>
+
+                <input
+                    type="text"
+                    name="street"
+                    placeholder="Улица"
+                    required
+                >
+            </div>
+
+            <div class="row">
+
+                <div class="field">
+                    <label>
+                        Номер дома
+                        <span class="required">*</span>
+                    </label>
+
+                    <input
+                        type="text"
+                        name="house"
+                        placeholder="Дом"
+                        required
+                    >
+                </div>
+
+                <div class="field">
+                    <label>
+                        Номер квартиры
+                        <span class="optional">
+                            (необязательно)
+                        </span>
+                    </label>
+
+                    <input
+                        type="text"
+                        name="apartment"
+                        placeholder="Квартира"
+                    >
+                </div>
 
             </div>
 
+            <button
+                type="button"
+                class="next-button"
+                id="buttonStep3"
+            >
+                Перейти к третьему шагу →
+            </button>
 
-        </form>
-
-
-        <div class="footer">
-
-            Уже есть аккаунт?
-
-            <a href="/login">
-                Войти
-            </a>
+            <button
+                type="button"
+                class="back-button"
+                id="buttonBack1"
+            >
+                ← Назад
+            </button>
 
         </div>
 
+        <div
+            id="step3"
+            class="form-step"
+        >
 
-    </div>
-
-
-    <div class="side">
-
-        <div class="side-box">
-
-            <div class="side-label">
-                ДЛЯ ГОСТЕЙ
+            <div class="step-title">
+                Данные аккаунта
             </div>
 
-            <h3>
-                Всё в одном месте
-            </h3>
+            <div class="field">
+                <label>
+                    Email
+                    <span class="required">*</span>
+                </label>
 
-            <p>
-                После регистрации
-                вам будут доступны
-                заказы, история заказов
-                и поддержка.
-            </p>
-
-        </div>
-
-
-        <div class="side-box">
-
-            <div class="side-label">
-                BAR SPIRIT
+                <input
+                    type="email"
+                    name="email"
+                    placeholder="email@example.com"
+                    required
+                >
             </div>
 
-            <p>
-                Напитки.
-                Музыка.
-                Люди.
-                Хороший вечер.
-            </p>
+            <div class="field">
+                <label>
+                    Пароль
+                    <span class="required">*</span>
+                </label>
+
+                <input
+                    type="password"
+                    name="password"
+                    placeholder="Минимум 8 символов"
+                    minlength="8"
+                    maxlength="64"
+                    required
+                >
+            </div>
+
+            <div class="field">
+                <label>
+                    Подтверждение пароля
+                    <span class="required">*</span>
+                </label>
+
+                <input
+                    type="password"
+                    id="passwordConfirm"
+                    placeholder="Повторите пароль"
+                    minlength="8"
+                    maxlength="64"
+                    required
+                >
+            </div>
+
+            <button
+                type="submit"
+                class="register-button"
+                id="registerButton"
+            >
+                Зарегистрироваться
+            </button>
+
+            <button
+                type="button"
+                class="back-button"
+                id="buttonBack2"
+            >
+                ← Назад
+            </button>
 
         </div>
 
-    </div>
+    </form>
 
     <div class="footer">
-            Есть специальное приглашение?
+        Уже есть аккаунт?
 
-            <a href="/admin/registration">
-                Зарегистрироваться как администратор
-            </a>
-
-        </div>
-
+        <a href="/login">
+            Войти
+        </a>
+    </div>
 
 </div>
 
+<div class="side">
+
+    <div class="side-box">
+        <div class="side-label">
+            ДЛЯ ГОСТЕЙ
+        </div>
+
+        <h3>
+            Всё в одном месте
+        </h3>
+
+        <p>
+            После регистрации
+            вам будут доступны
+            заказы, история заказов
+            и поддержка.
+        </p>
+    </div>
+
+    <div class="side-box">
+        <div class="side-label">
+            BAR SPIRIT
+        </div>
+
+        <p>
+            Напитки.
+            Музыка.
+            Люди.
+            Хороший вечер.
+        </p>
+    </div>
+
+</div>
+
+<div class="footer">
+    Есть специальное приглашение?
+
+    <a href="/admin/registration">
+        Зарегистрироваться как администратор
+    </a>
+</div>
+
+</div>
+
+<script src="/static/api.js"></script>
 
 <script>
-
     const form = document.getElementById("registrationForm");
 
     const step1 = document.getElementById("step1");
@@ -965,9 +746,7 @@
     const formError =
         document.getElementById("formError");
 
-
     function clearFieldError(input) {
-
         input.style.borderColor = "";
 
         const error =
@@ -978,9 +757,7 @@
         }
     }
 
-
     function showFieldError(input, message) {
-
         clearFieldError(input);
 
         input.style.borderColor = "#d98282";
@@ -989,15 +766,12 @@
             document.createElement("div");
 
         error.className = "field-error";
-
         error.textContent = message;
 
         input.parentElement.appendChild(error);
     }
 
-
     function clearAllErrors() {
-
         form
             .querySelectorAll(".field-error")
             .forEach(error => {
@@ -1013,25 +787,17 @@
         clearGeneralError();
     }
 
-
     function showGeneralError(message) {
-
         formError.textContent = message;
-
         formError.classList.add("show");
     }
 
-
     function clearGeneralError() {
-
         formError.textContent = "";
-
         formError.classList.remove("show");
     }
 
-
     function getValidationMessage(input) {
-
         if (input.validity.valueMissing) {
             return "Заполните это поле.";
         }
@@ -1055,20 +821,14 @@
         return "Некорректное значение.";
     }
 
-
     function validateStep(step) {
-
         const fields =
             step.querySelectorAll("input[required]");
 
-
         for (const field of fields) {
-
             clearFieldError(field);
 
-
             if (!field.checkValidity()) {
-
                 showFieldError(
                     field,
                     getValidationMessage(field)
@@ -1080,13 +840,10 @@
             }
         }
 
-
         return true;
     }
 
-
     function activateStep(stepNumber) {
-
         step1.classList.remove("active");
         step2.classList.remove("active");
         step3.classList.remove("active");
@@ -1095,141 +852,105 @@
         indicator2.classList.remove("active");
         indicator3.classList.remove("active");
 
-
         if (stepNumber === 1) {
-
             step1.classList.add("active");
             indicator1.classList.add("active");
-
         } else if (stepNumber === 2) {
-
             step2.classList.add("active");
             indicator2.classList.add("active");
-
         } else if (stepNumber === 3) {
-
             step3.classList.add("active");
             indicator3.classList.add("active");
         }
     }
 
-
     buttonStep2.addEventListener(
         "click",
         function () {
-
             clearGeneralError();
-
 
             if (!validateStep(step1)) {
                 return;
             }
 
-
             activateStep(2);
         }
     );
 
-
     buttonStep3.addEventListener(
         "click",
         function () {
-
             clearGeneralError();
-
 
             if (!validateStep(step2)) {
                 return;
             }
 
-
             activateStep(3);
         }
     );
 
-
     buttonBack1.addEventListener(
         "click",
         function () {
-
             clearAllErrors();
-
             activateStep(1);
         }
     );
 
-
     buttonBack2.addEventListener(
         "click",
         function () {
-
             clearAllErrors();
-
             activateStep(2);
         }
     );
 
-
     form
         .querySelectorAll("input")
         .forEach(input => {
-
             input.addEventListener(
                 "input",
                 function () {
-
                     clearFieldError(input);
                     clearGeneralError();
                 }
             );
-
         });
 
-
     async function handleFieldErrors(response) {
-
         try {
-
             const data =
                 await response.json();
 
-
             if (!Array.isArray(data.detail)) {
-
                 showGeneralError(
                     data.detail ||
+                    data.message ||
                     "Проверьте введённые данные."
                 );
 
                 return;
             }
 
-
             data.detail.forEach(error => {
-
                 const fieldName =
                     error.loc?.at(-1);
-
 
                 if (!fieldName) {
                     return;
                 }
-
 
                 const input =
                     form.querySelector(
                         `[name="${fieldName}"]`
                     );
 
-
                 if (input) {
-
                     showFieldError(
                         input,
                         translateError(error.msg)
                     );
-
-
 
                     if (step1.contains(input)) {
                         activateStep(1);
@@ -1242,19 +963,13 @@
                     if (step3.contains(input)) {
                         activateStep(3);
                     }
-
                 } else {
-
                     showGeneralError(
                         translateError(error.msg)
                     );
                 }
-
             });
-
-
         } catch (error) {
-
             console.error(error);
 
             showGeneralError(
@@ -1263,40 +978,21 @@
         }
     }
 
-
     async function handleResponse(response) {
-
         if (response.ok) {
             return true;
         }
 
-
-        if (response.status === 422) {
-
+        if (
+            response.status === 422 ||
+            response.status === 409 ||
+            response.status === 401
+        ) {
             await handleFieldErrors(response);
-
             return false;
         }
-
-
-        if (response.status === 409) {
-
-            await handleFieldErrors(response);
-
-            return false;
-        }
-
-
-        if (response.status === 401) {
-
-            await handleFieldErrors(response);
-
-            return false;
-        }
-
 
         if (response.status === 403) {
-
             showGeneralError(
                 "У вас нет доступа к этому действию."
             );
@@ -1304,9 +1000,7 @@
             return false;
         }
 
-
         if (response.status === 404) {
-
             showGeneralError(
                 "Страница не найдена."
             );
@@ -1314,16 +1008,13 @@
             return false;
         }
 
-
         if (response.status >= 500) {
-
             showGeneralError(
                 "Ошибка сервера. Попробуйте позже."
             );
 
             return false;
         }
-
 
         showGeneralError(
             "Не удалось выполнить регистрацию."
@@ -1332,31 +1023,24 @@
         return false;
     }
 
-
     form.addEventListener(
         "submit",
         async function (event) {
-
             event.preventDefault();
 
-
             clearAllErrors();
-
 
             const password =
                 form.querySelector(
                     'input[name="password"]'
                 );
 
-
             const confirm =
                 document.getElementById(
                     "passwordConfirm"
                 );
 
-
             if (!password.value) {
-
                 showFieldError(
                     password,
                     "Введите пароль."
@@ -1367,9 +1051,7 @@
                 return;
             }
 
-
             if (password.value.length < password.minLength) {
-
                 showFieldError(
                     password,
                     `Минимум ${password.minLength} символов.`
@@ -1380,9 +1062,7 @@
                 return;
             }
 
-
             if (password.value !== confirm.value) {
-
                 showFieldError(
                     confirm,
                     "Пароли не совпадают."
@@ -1393,11 +1073,9 @@
                 return;
             }
 
-
             try {
-
                 const response =
-                    await fetch(
+                    await apiFetch(
                         form.action,
                         {
                             method: "POST",
@@ -1405,39 +1083,26 @@
                         }
                     );
 
-
                 if (!await handleResponse(response)) {
                     return;
                 }
 
-
-                /*
-                 * Успешная регистрация.
-                 */
-
                 window.location.href = "/login";
-
             } catch (error) {
-
                 console.error(
                     "Registration error:",
                     error
                 );
 
-
                 showGeneralError(
                     "Не удалось подключиться к серверу. Проверьте соединение."
                 );
             }
-
         }
     );
 
-
     function translateError(message) {
-
         const translations = {
-
             "Field required":
                 "Поле обязательно для заполнения",
 
@@ -1463,12 +1128,9 @@
                 "Значение должно быть больше нуля"
         };
 
-
         return translations[message] || message;
     }
-
 </script>
-
 
 </body>
 

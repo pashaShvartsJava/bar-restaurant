@@ -317,7 +317,7 @@
                     <span class="status-dot" id="statusDot"></span>
                     <span id="statusText">Подключение...</span>
                 </div>
-                <form action="/support/admin/{{ conversation.id }}/free_conversation" method="post">
+                <form id="finishForm" action="/support/admin/{{ conversation.id }}/free_conversation" method="post">
                     <button class="finish-button" id="finishButton" type="submit">Завершить сессию</button>
                 </form>
             </div>
@@ -356,6 +356,7 @@
     const messagesContainer = document.getElementById("messages");
     const messageInput = document.getElementById("messageInput");
     const chatForm = document.getElementById("chatForm");
+    const finishForm = document.getElementById("finishForm");
     const sendButton = document.getElementById("sendButton");
     const statusDot = document.getElementById("statusDot");
     const statusText = document.getElementById("statusText");
@@ -432,6 +433,19 @@
         messageInput.style.height = "auto";
     });
 
+    finishForm.addEventListener("submit", async function(event) {
+        event.preventDefault();
+        socket.close();
+
+        const response = await apiFetch(finishForm.action, {
+            method: "POST"
+        });
+
+        if (response.ok) {
+            window.location.href = "/admin_panel";
+        }
+    });
+
     messageInput.addEventListener("keydown", function(event) {
         if (event.key === "Enter" && !event.shiftKey) {
             event.preventDefault();
@@ -499,13 +513,6 @@
         socket.close();
         window.location.href = "/admin_panel";
     });
-
-    finishButton.addEventListener("click", function() {
-        socket.close();
-    });
-
-    messagesContainer.scrollTop = messagesContainer.scrollHeight;
 </script>
-
 </body>
 </html>

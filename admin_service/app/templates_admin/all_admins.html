@@ -1,12 +1,12 @@
 <!DOCTYPE html>
+
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>Администраторы — BAR</title>
 
-    <style>
+<style>
     * {
         margin: 0;
         padding: 0;
@@ -15,7 +15,6 @@
 
     body {
         min-height: 100vh;
-
         background:
             radial-gradient(
                 ellipse at 50% 0%,
@@ -29,7 +28,6 @@
                 #1d1817 50%,
                 #0d0d0f 100%
             );
-
         color: #eee0d5;
         font-family: Arial, sans-serif;
     }
@@ -51,7 +49,6 @@
         color: #927d73;
         text-decoration: none;
         font-size: 12px;
-
         transition: color 0.2s;
     }
 
@@ -80,9 +77,7 @@
 
     .header h1 {
         margin-top: 7px;
-
         color: #eee0d5;
-
         font-family: Georgia, serif;
         font-size: 36px;
         font-weight: normal;
@@ -90,16 +85,12 @@
 
     .add {
         padding: 10px 16px;
-
         background: #b98d55;
         color: #201917;
-
         border-radius: 7px;
-
         text-decoration: none;
         font-size: 11px;
         font-weight: bold;
-
         transition: background 0.2s;
     }
 
@@ -109,12 +100,9 @@
 
     .admins {
         overflow: hidden;
-
         background: rgba(27, 22, 21, 0.92);
-
         border: 1px solid rgba(150, 105, 65, 0.28);
         border-radius: 12px;
-
         box-shadow: 0 12px 35px rgba(0, 0, 0, 0.25);
     }
 
@@ -123,9 +111,7 @@
         align-items: center;
         justify-content: space-between;
         gap: 20px;
-
         padding: 18px 20px;
-
         border-bottom: 1px solid rgba(150, 105, 65, 0.20);
     }
 
@@ -142,16 +128,12 @@
     .avatar {
         width: 42px;
         height: 42px;
-
         display: flex;
         align-items: center;
         justify-content: center;
-
         background: rgba(65, 47, 36, 0.80);
-
         border: 1px solid rgba(160, 115, 65, 0.25);
         border-radius: 50%;
-
         color: #c3985f;
         font-size: 14px;
     }
@@ -164,9 +146,7 @@
 
     .admin-role {
         margin-top: 4px;
-
         color: #8e7970;
-
         font-size: 10px;
     }
 
@@ -177,17 +157,13 @@
 
     .action {
         padding: 7px 11px;
-
         border: 1px solid rgba(150, 105, 75, 0.32);
         border-radius: 6px;
-
         color: #a9958b;
         background: rgba(38, 29, 27, 0.85);
-
         text-decoration: none;
         font-size: 10px;
         cursor: pointer;
-
         transition:
             border-color 0.2s,
             color 0.2s,
@@ -207,15 +183,12 @@
 
     .field-error {
         padding: 15px 20px;
-
         color: #c98282;
-
         font-size: 11px;
         text-align: center;
     }
 
     @media (max-width: 600px) {
-
         .container {
             padding: 25px 15px;
         }
@@ -245,191 +218,134 @@
         }
     }
 </style>
+
 </head>
 
 <body>
-
     <main class="container">
 
-        <div class="top">
-            <a href="/admin_panel" class="back">← Назад</a>
+    <div class="top">
+        <a href="/admin_panel" class="back">← Назад</a>
+        <span class="brand">BAR. ADMIN</span>
+    </div>
 
-            <span class="brand">BAR. ADMIN</span>
+    <header class="header">
+        <div>
+            <span>MANAGEMENT</span>
+            <h1>Администраторы</h1>
         </div>
 
+        <a
+            href="/admin_panel/all_admins/add_admin"
+            class="add"
+        >
+            + Добавить администратора
+        </a>
+    </header>
 
-        <header class="header">
-
-            <div>
-                <span>MANAGEMENT</span>
-
-                <h1>Администраторы</h1>
-            </div>
-
-            <a
-                href="/admin_panel/all_admins/add_admin"
-                class="add"
-            >
-                + Добавить администратора
-            </a>
-
-        </header>
-
-
-        <section class="admins">
-
-            {% for admin in admins %}
-
-            <div class="admin">
-
-                <div class="admin-info">
-
-                    <div class="avatar">
-                        {{ admin.name[0] }}
-                    </div>
-
-                    <div>
-
-                        <div class="admin-name">
-                            {{ admin.name }} {{ admin.surname }}
-                        </div>
-
-                        <div class="admin-role">
-                            {{ admin.role.value }}
-                        </div>
-
-                    </div>
-
+    <section class="admins">
+        {% for admin in admins %}
+        <div class="admin">
+            <div class="admin-info">
+                <div class="avatar">
+                    {{ admin.name[0] }}
                 </div>
 
+                <div>
+                    <div class="admin-name">
+                        {{ admin.name }} {{ admin.surname }}
+                    </div>
 
-                <div class="actions">
-
-                    <a
-                        href="/admin_panel/edit/{{ admin.id }}"
-                        class="action"
-                    >
-                        Изменить
-                    </a>
-
-
-                    <form
-                        class="deleteAdminForm"
-                        data-admin-id="{{ admin.id }}"
-                    >
-
-                        <button
-                            type="submit"
-                            class="action delete"
-                        >
-                            Удалить
-                        </button>
-
-                    </form>
-
+                    <div class="admin-role">
+                        {{ admin.role.value }}
+                    </div>
                 </div>
-
             </div>
 
-            {% endfor %}
+            <div class="actions">
+                <a
+                    href="/admin_panel/edit/{{ admin.id }}"
+                    class="action"
+                >
+                    Изменить
+                </a>
 
+                <form
+                    class="deleteAdminForm"
+                    data-admin-id="{{ admin.id }}"
+                >
+                    <button
+                        type="submit"
+                        class="action delete"
+                    >
+                        Удалить
+                    </button>
+                </form>
+            </div>
+        </div>
+        {% endfor %}
 
-            <!-- Общее сообщение об ошибке -->
-            <div id="form-error" class="field-error"></div>
+        <div id="form-error" class="field-error"></div>
+    </section>
 
-        </section>
+</main>
 
-    </main>
+<script src="/static/api.js"></script>
 
-    <script src="/static/api.js"></script>
-    <script>
+<script>
+    const formError = document.getElementById("form-error");
 
-        const formError = document.getElementById("form-error");
+    document.querySelectorAll(".deleteAdminForm").forEach(form => {
+        form.addEventListener("submit", async function(event) {
+            event.preventDefault();
 
+            const adminId = form.dataset.adminId;
 
-        document.querySelectorAll(".deleteAdminForm").forEach(form => {
+            const confirmed = confirm(
+                "Вы действительно хотите удалить этого администратора?"
+            );
 
-            form.addEventListener("submit", async function(event) {
+            if (!confirmed) {
+                return;
+            }
 
-                event.preventDefault();
+            formError.textContent = "";
 
-
-                const adminId = form.dataset.adminId;
-
-
-                const confirmed = confirm(
-                    "Вы действительно хотите удалить этого администратора?"
+            try {
+                const response = await apiFetch(
+                    `/admin_panel/delete_admin/${adminId}`,
+                    {
+                        method: "POST"
+                    }
                 );
 
-
-                if (!confirmed) {
+                if (response.ok) {
+                    window.location.reload();
                     return;
                 }
 
-
-                formError.textContent = "";
-
+                let data = null;
 
                 try {
-
-                    const response = await fetch(
-                        `/admin_panel/delete_admin/${adminId}`,
-                        {
-                            method: "POST"
-                        }
-                    );
-
-
-                    if (response.ok) {
-
-                        window.location.reload();
-
-                        return;
-                    }
-
-
-                    let data = null;
-
-
-                    try {
-
-                        data = await response.json();
-
-                    } catch {
-
-                        data = null;
-                    }
-
-
-                    if (
-                        data &&
-                        typeof data.detail === "string"
-                    ) {
-
-                        formError.textContent = data.detail;
-
-                    } else {
-
-                        formError.textContent =
-                            "Не удалось удалить администратора.";
-
-                    }
-
-
-                } catch (error) {
-
-                    console.error(error);
-
-                    formError.textContent =
-                        "Не удалось подключиться к серверу. " +
-                        "Проверьте соединение.";
+                    data = await response.json();
+                } catch {
+                    data = null;
                 }
 
-            });
+                formError.textContent =
+                    data?.detail ||
+                    data?.message ||
+                    "Не удалось удалить администратора.";
+            } catch (error) {
+                console.error(error);
 
+                formError.textContent =
+                    "Не удалось подключиться к серверу. " +
+                    "Проверьте соединение.";
+            }
         });
-
-    </script>
+    });
+</script>
 
 </body>
 </html>

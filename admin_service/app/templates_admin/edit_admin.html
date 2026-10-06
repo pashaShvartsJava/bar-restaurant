@@ -1,12 +1,12 @@
 <!DOCTYPE html>
+
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>Изменение администратора</title>
 
-    <style>
+<style>
     * {
         margin: 0;
         padding: 0;
@@ -15,7 +15,6 @@
 
     body {
         min-height: 100vh;
-
         background:
             radial-gradient(
                 ellipse at 50% 0%,
@@ -29,7 +28,6 @@
                 #211a18 50%,
                 #101012 100%
             );
-
         color: #f0b38a;
         font-family: Arial, sans-serif;
     }
@@ -50,7 +48,6 @@
         color: #b98b82;
         text-decoration: none;
         font-size: 12px;
-
         transition: color 0.2s;
     }
 
@@ -66,11 +63,8 @@
 
     h1 {
         margin-bottom: 20px;
-
         text-align: center;
-
         color: #f0b38a;
-
         font-family: Georgia, serif;
         font-weight: normal;
     }
@@ -79,32 +73,23 @@
         display: flex;
         align-items: center;
         gap: 12px;
-
         margin-bottom: 15px;
         padding: 15px;
-
         background: rgba(30, 22, 20, 0.90);
-
         border: 1px solid rgba(180, 125, 70, 0.35);
         border-radius: 10px;
-
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.20);
     }
 
     .avatar {
         width: 40px;
         height: 40px;
-
         display: flex;
         align-items: center;
         justify-content: center;
-
         border-radius: 50%;
-
         background: rgba(70, 45, 32, 0.85);
-
         color: #e8b76f;
-
         border: 1px solid rgba(200, 140, 75, 0.30);
     }
 
@@ -116,20 +101,15 @@
 
     .current-info {
         margin-top: 4px;
-
         color: #a98678;
-
         font-size: 10px;
     }
 
     form {
         padding: 25px;
-
         background: rgba(30, 22, 20, 0.90);
-
         border: 1px solid rgba(180, 125, 70, 0.35);
         border-radius: 10px;
-
         box-shadow: 0 15px 40px rgba(0, 0, 0, 0.25);
     }
 
@@ -146,9 +126,7 @@
     label {
         display: block;
         margin-bottom: 6px;
-
         color: #c5a69a;
-
         font-size: 10px;
     }
 
@@ -156,16 +134,11 @@
     select {
         width: 100%;
         padding: 10px;
-
         background: rgba(45, 30, 26, 0.90);
-
         border: 1px solid rgba(180, 100, 75, 0.40);
         border-radius: 6px;
-
         color: #f0b38a;
-
         outline: none;
-
         transition:
             background 0.2s,
             border-color 0.2s;
@@ -198,9 +171,7 @@
 
     .field-error {
         margin-top: 5px;
-
         color: #e89a8f;
-
         font-size: 11px;
     }
 
@@ -208,75 +179,58 @@
         display: flex;
         justify-content: flex-end;
         gap: 8px;
-
         margin-top: 10px;
         padding-top: 20px;
-
         border-top: 1px solid rgba(180, 110, 70, 0.25);
     }
 
     .button {
         padding: 10px 16px;
-
         border-radius: 6px;
-
         font-size: 10px;
         text-decoration: none;
         cursor: pointer;
-
         transition:
             background 0.2s,
             border-color 0.2s,
             color 0.2s;
     }
 
-
     .cancel {
         color: #b99c91;
-
         background: rgba(45, 30, 26, 0.85);
-
         border: 1px solid rgba(180, 100, 75, 0.40);
     }
 
     .cancel:hover {
         color: #f0c09d;
-
         background: rgba(60, 35, 32, 0.90);
-
         border-color: rgba(205, 120, 90, 0.60);
     }
 
     .save {
         background: #d5a65b;
-
         color: #211714;
-
         border: none;
-
         font-weight: bold;
     }
 
     .save:hover {
         background: #e4b971;
     }
+
     .password {
-    background: rgba(105, 45, 50, 0.85);
+        background: rgba(105, 45, 50, 0.85);
+        color: #b88f8f;
+        border: 1px solid rgba(180, 75, 85, 0.45);
+        font-weight: bold;
+    }
 
-    color: #b88f8f;
-
-    border: 1px solid rgba(180, 75, 85, 0.45);
-
-    font-weight: bold;
-}
-
-.password:hover {
-    background: rgba(125, 50, 55, 0.9);
-
-    color: #c8a0a0;
-
-    border-color: rgba(205, 90, 100, 0.65);
-}
+    .password:hover {
+        background: rgba(125, 50, 55, 0.9);
+        color: #c8a0a0;
+        border-color: rgba(205, 90, 100, 0.65);
+    }
 
     @media (max-width: 600px) {
         .row {
@@ -285,36 +239,29 @@
         }
     }
 </style>
+
 </head>
 
 <body>
-
-<div class="container">
-
-    <div class="top">
-
-        <a href="/admin_panel/all_admins" class="back">
-            ← Назад
-        </a>
+    <div class="container">
+        <div class="top">
+            <a href="/admin_panel/all_admins" class="back">
+                ← Назад
+            </a>
 
         <span class="brand">
             BAR. ADMIN
         </span>
-
     </div>
-
 
     <h1>Изменение данных</h1>
 
-
     <div class="current">
-
         <div class="avatar">
             {{ admin.name[0] }}
         </div>
 
         <div>
-
             <div class="current-name">
                 {{ admin.name }} {{ admin.surname }}
             </div>
@@ -322,93 +269,68 @@
             <div class="current-info">
                 {{ admin.role.value }}
             </div>
-
         </div>
-
     </div>
 
-
     <form id="editAdminForm">
-
         <div class="row">
-
             <div class="field">
-
                 <label>Имя</label>
 
                 <input
                     type="text"
                     name="name"
                     value="{{ admin.name }}"
-                    >
-
+                >
             </div>
 
-
             <div class="field">
-
                 <label>Фамилия</label>
 
                 <input
                     type="text"
                     name="surname"
                     value="{{ admin.surname }}"
-                    >
-
+                >
             </div>
-
         </div>
 
-
         <div class="row">
-
             <div class="field">
-
                 <label>Дата рождения</label>
 
                 <input
                     type="date"
                     name="birthday"
                     value="{{ admin.birthday }}"
-                    >
-
+                >
             </div>
 
-
             <div class="field">
-
                 <label>Номер телефона</label>
 
                 <input
                     type="tel"
                     name="phone"
                     value="{{ admin.phone }}"
-                    >
-
+                >
             </div>
-
         </div>
 
-
         <div class="field">
-
             <label>Почта</label>
 
             <input
                 type="email"
                 name="email"
                 value="{{ admin.email }}"
-                >
-
+            >
         </div>
 
-
         <div class="field">
-
             <label>Статус</label>
 
-            <select name="role" id="role" >
-
+            <select name="role" id="role">
                 <option value="admin">
                     Администратор
                 </option>
@@ -416,53 +338,45 @@
                 <option value="moderator">
                     Модератор
                 </option>
-
             </select>
-
         </div>
 
-
         <div id="form-error" class="field-error"></div>
-
-
-
 
         <div class="buttons">
             <a
                 href="/admin_panel/edit/password/{{ admin.id }}"
-                class="button password">
+                class="button password"
+            >
                 Изменить пароль
             </a>
 
             <a
                 href="/admin_panel/all_admins"
-                class="button cancel">
+                class="button cancel"
+            >
                 Отмена
             </a>
 
             <button
                 type="submit"
-                class="button save">
+                class="button save"
+            >
                 Изменить
             </button>
-
         </div>
-
     </form>
-
 </div>
 
+<script src="/static/api.js"></script>
 
 <script>
-
     const form = document.getElementById("editAdminForm");
     const formError = document.getElementById("form-error");
 
     document.getElementById("role").value = "{{ admin.role }}";
 
-
     function clearError(input) {
-
         input.style.borderColor = "";
 
         const error = input.parentElement.querySelector(
@@ -474,9 +388,7 @@
         }
     }
 
-
     function showError(input, message) {
-
         clearError(input);
 
         input.style.borderColor = "#d98282";
@@ -489,9 +401,7 @@
         input.parentElement.appendChild(error);
     }
 
-
     function clearAllErrors() {
-
         form.querySelectorAll(
             ".field-error:not(#form-error)"
         ).forEach(error => {
@@ -505,18 +415,17 @@
         formError.textContent = "";
     }
 
-
     async function handleErrors(response) {
+        let data = null;
 
-        const data = await response.json();
+        try {
+            data = await response.json();
+        } catch {
+            data = null;
+        }
 
-        console.log("ERROR RESPONSE:", data);
-
-
-        if (Array.isArray(data.detail)) {
-
+        if (data && Array.isArray(data.detail)) {
             data.detail.forEach(error => {
-
                 const field = error.loc?.at(-1);
 
                 const input = form.querySelector(
@@ -526,31 +435,28 @@
                 if (input) {
                     showError(input, error.msg);
                 }
-
             });
 
             return;
         }
 
-
-        if (typeof data.detail === "string") {
-
+        if (data && typeof data.detail === "string") {
             formError.textContent = data.detail;
-
             return;
         }
 
+        if (data && typeof data.message === "string") {
+            formError.textContent = data.message;
+            return;
+        }
 
         formError.textContent = "Произошла ошибка.";
     }
 
-
     async function handleResponse(response) {
-
         if (response.ok) {
             return true;
         }
-
 
         if (
             response.status === 422 ||
@@ -559,41 +465,29 @@
             response.status === 403 ||
             response.status === 409
         ) {
-
             await handleErrors(response);
-
             return false;
         }
-
 
         if (response.status >= 500) {
-
             formError.textContent =
                 "Ошибка сервера. Попробуйте позже.";
-
             return false;
         }
 
-
-        formError.textContent =
-            "Произошла ошибка.";
-
+        formError.textContent = "Произошла ошибка.";
         return false;
     }
 
-
     form.addEventListener("submit", async function(event) {
-
         event.preventDefault();
 
         clearAllErrors();
 
-
         try {
-
             const formData = new FormData(form);
 
-            const response = await fetch(
+            const response = await apiFetch(
                 "/admin_panel/edit/{{ admin.id }}",
                 {
                     method: "PATCH",
@@ -601,25 +495,19 @@
                 }
             );
 
-
             if (!await handleResponse(response)) {
                 return;
             }
 
-
             window.location.href =
                 "/admin_panel/all_admins";
-
         } catch (error) {
-
             console.error(error);
 
             formError.textContent =
                 "Не удалось подключиться к серверу. Проверьте соединение.";
         }
-
     });
-
 </script>
 
 </body>

@@ -1,14 +1,12 @@
 <!DOCTYPE html>
+
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Подтверждение адреса | Bar & Lounge</title>
     <style>
-        * {
-            box-sizing: border-box;
-        }
-
+        * { box-sizing: border-box; }
         body {
             margin: 0;
             min-height: 100vh;
@@ -20,37 +18,21 @@
             color: #fff;
             padding: 40px 20px;
         }
-
-        .page {
-            width: 650px;
-            max-width: 100%;
-            margin: auto;
-        }
-
+        .page { width: 650px; max-width: 100%; margin: auto; }
         .top {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 25px;
         }
-
-        .back {
-            color: #aaa;
-            text-decoration: none;
-            font-size: 12px;
-        }
-
-        .back:hover {
-            color: #d5a65b;
-        }
-
+        .back { color: #aaa; text-decoration: none; font-size: 12px; }
+        .back:hover { color: #d5a65b; }
         .brand {
             color: #d5a65b;
             font-family: Georgia, serif;
             letter-spacing: 3px;
             font-size: 11px;
         }
-
         .card {
             background: rgba(39,32,38,.96);
             border: 1px solid rgba(255,255,255,.1);
@@ -58,67 +40,50 @@
             padding: 35px;
             box-shadow: 0 25px 60px rgba(0,0,0,.4);
         }
-
-        .header {
-            margin-bottom: 30px;
-        }
-
+        .header { margin-bottom: 30px; }
         .header-label {
             color: #d5a65b;
             font-size: 9px;
             letter-spacing: 3px;
             margin-bottom: 7px;
         }
-
         h1 {
             margin: 0;
             font-family: Georgia, serif;
             font-size: 30px;
             font-weight: normal;
         }
-
         .description {
             color: #999;
             font-size: 12px;
             line-height: 1.6;
             margin-top: 8px;
         }
-
         .section {
             background: rgba(255,255,255,.025);
             border: 1px solid #40383e;
             border-radius: 14px;
             padding: 22px;
         }
-
         .section-title {
             color: #d5a65b;
             font-size: 10px;
             letter-spacing: 2px;
             margin-bottom: 20px;
         }
-
-        .field {
-            margin-bottom: 15px;
-        }
-
-        .field:last-child {
-            margin-bottom: 0;
-        }
-
+        .field { margin-bottom: 15px; }
+        .field:last-child { margin-bottom: 0; }
         .row {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 12px;
         }
-
         label {
             display: block;
             margin-bottom: 6px;
             color: #ccc;
             font-size: 11px;
         }
-
         input {
             width: 100%;
             padding: 11px 12px;
@@ -130,12 +95,22 @@
             outline: none;
             transition: .2s;
         }
-
         input:focus {
             border-color: #d5a65b;
             box-shadow: 0 0 0 3px rgba(213,166,91,.07);
         }
-
+        .form-error {
+            display: none;
+            margin-bottom: 18px;
+            padding: 11px 13px;
+            background: rgba(130,55,65,.14);
+            border: 1px solid #714449;
+            border-radius: 8px;
+            color: #d98282;
+            font-size: 11px;
+            line-height: 1.5;
+        }
+        .form-error.visible { display: block; }
         .bottom {
             display: flex;
             justify-content: space-between;
@@ -144,17 +119,8 @@
             padding-top: 22px;
             border-top: 1px solid #40383e;
         }
-
-        .cancel {
-            color: #999;
-            text-decoration: none;
-            font-size: 12px;
-        }
-
-        .cancel:hover {
-            color: white;
-        }
-
+        .cancel { color: #999; text-decoration: none; font-size: 12px; }
+        .cancel:hover { color: white; }
         .continue {
             padding: 12px 20px;
             border: none;
@@ -166,39 +132,23 @@
             cursor: pointer;
             transition: .2s;
         }
-
-        .continue:hover {
-            background: #e5b970;
-        }
-
+        .continue:hover { background: #e5b970; }
+        .continue:disabled { opacity: .6; cursor: not-allowed; }
         .field-error {
             color: #d98282;
             font-size: 11px;
             margin-top: 5px;
         }
-
         @media (max-width: 700px) {
-            body {
-                padding: 25px 15px;
-            }
-
-            .card {
-                padding: 25px 18px;
-            }
-
-            .row {
-                grid-template-columns: 1fr;
-            }
-
+            body { padding: 25px 15px; }
+            .card { padding: 25px 18px; }
+            .row { grid-template-columns: 1fr; }
             .bottom {
                 flex-direction: column;
                 align-items: stretch;
                 gap: 15px;
             }
-
-            .continue {
-                width: 100%;
-            }
+            .continue { width: 100%; }
         }
     </style>
 </head>
@@ -208,91 +158,127 @@
         <a href="/user/my_profile" class="back">← Вернуться в профиль</a>
         <div class="brand">BAR & LOUNGE</div>
     </div>
-
     <div class="card">
         <div class="header">
             <div class="header-label">DELIVERY ADDRESS</div>
             <h1>Подтверждение адреса</h1>
-            <div class="description">
-                Проверьте адрес доставки и подтвердите его перед переходом к оплате
-            </div>
+            <div class="description">Проверьте адрес доставки и подтвердите его перед переходом к оплате</div>
         </div>
-
         <form id="addressForm" method="POST" action="/users/confirm_address">
+            <div id="formError" class="form-error"></div>
             <div class="section">
                 <div class="section-title">АДРЕС ДОСТАВКИ</div>
-
                 <div class="field">
                     <label for="city">Город</label>
-                    <input
-                        id="city"
-                        type="text"
-                        name="city"
-                        value="{{ user.address.city if user.address else '' }}"
-                        required
-                    >
+                    <input id="city" type="text" name="city" value="{{ user.address.city if user.address else '' }}" required>
                 </div>
-
                 <div class="field">
                     <label for="postal_code">Почтовый индекс</label>
-                    <input
-                        id="postal_code"
-                        type="text"
-                        name="postal_code"
-                        value="{{ user.address.postal_code if user.address else '' }}"
-                        required
-                    >
+                    <input id="postal_code" type="text" name="postal_code" value="{{ user.address.postal_code if user.address else '' }}" required>
                 </div>
-
                 <div class="field">
                     <label for="street">Улица</label>
-                    <input
-                        id="street"
-                        type="text"
-                        name="street"
-                        value="{{ user.address.street if user.address else '' }}"
-                        required
-                    >
+                    <input id="street" type="text" name="street" value="{{ user.address.street if user.address else '' }}" required>
                 </div>
-
                 <div class="row">
                     <div class="field">
                         <label for="house">Дом</label>
-                        <input
-                            id="house"
-                            type="text"
-                            name="house"
-                            value="{{ user.address.house if user.address else '' }}"
-                            required
-                        >
+                        <input id="house" type="text" name="house" value="{{ user.address.house if user.address else '' }}" required>
                     </div>
-
                     <div class="field">
                         <label for="apartment">Квартира</label>
-                        <input
-                            id="apartment"
-                            type="text"
-                            name="apartment"
-                            value="{{ user.address.apartment if user.address else '' }}"
-                        >
+                        <input id="apartment" type="text" name="apartment" value="{{ user.address.apartment if user.address else '' }}">
                     </div>
                 </div>
             </div>
-
             <div class="bottom">
-                <a href="/user/my_profile" class="cancel">
-                    Отмена
-                </a>
-
-                <button
-                    type="submit"
-                    class="continue">
-                    Перейти к оплате
-                </button>
+                <a href="/user/my_profile" class="cancel">Отмена</a>
+                <button type="submit" class="continue" id="continueButton">Перейти к оплате</button>
             </div>
         </form>
     </div>
 </div>
-</body>
 <script src="/static/api.js"></script>
+<script>
+    const addressForm = document.getElementById("addressForm");
+    const formError = document.getElementById("formError");
+    const continueButton = document.getElementById("continueButton");
+
+function showError(message) {
+    formError.textContent = message;
+    formError.classList.add("visible");
+}
+
+function clearError() {
+    formError.textContent = "";
+    formError.classList.remove("visible");
+}
+
+async function handleResponse(response) {
+    if (response.ok) return true;
+
+    if (response.status === 401) {
+        window.location.href = "/login";
+        return false;
+    }
+
+    if (response.status === 403) {
+        showError("У вас нет доступа к этому действию.");
+        return false;
+    }
+
+    if (response.status === 404) {
+        showError("Данные не найдены.");
+        return false;
+    }
+
+    if (response.status >= 500) {
+        showError("Ошибка сервера. Попробуйте позже.");
+        return false;
+    }
+
+    try {
+        const data = await response.json();
+
+        if (Array.isArray(data.detail)) {
+            const messages = data.detail
+                .map(error => error.msg)
+                .filter(Boolean);
+
+            showError(messages.length ? messages.join(", ") : "Произошла ошибка.");
+        } else {
+            showError(data.detail || data.message || "Произошла ошибка.");
+        }
+    } catch {
+        showError("Произошла ошибка.");
+    }
+
+    return false;
+}
+
+addressForm.addEventListener("submit", async function(event) {
+    event.preventDefault();
+    clearError();
+    continueButton.disabled = true;
+    continueButton.textContent = "Проверка...";
+
+    try {
+        const response = await apiFetch("/users/confirm_address", {
+            method: "POST",
+            body: new FormData(addressForm)
+        });
+
+        if (!await handleResponse(response)) return;
+
+        window.location.href = "/...";
+    } catch {
+        showError("Не удалось подключиться к серверу. Проверьте соединение.");
+    } finally {
+        continueButton.disabled = false;
+        continueButton.textContent = "Перейти к оплате";
+    }
+});
+
+</script>
+</body>
 </html>
