@@ -204,7 +204,7 @@ services:
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: authentication_db
     ports:
-      - "5432:5432"
+      - "5452:5432"
     volumes:
       - postgres_auth_data:/var/lib/postgresql/data
   db-user:
