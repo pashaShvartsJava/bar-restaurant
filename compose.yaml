@@ -14,6 +14,14 @@ services:
     image: redis:7-alpine
     restart: unless-stopped
 
+  stripe-cli:
+    image: stripe/stripe-cli:latest
+    command: listen --events checkout.session.completed --forward-to http://payment-service:8008/payment/webhook
+    env_file:
+      - ./payment_service/.env
+    depends_on:
+      - payment-service
+
   rabbitmq:
     image: rabbitmq:4-management
     container_name: rabbitmq
