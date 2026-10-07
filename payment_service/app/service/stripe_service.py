@@ -30,8 +30,8 @@ class StripeService:
                     "payment_id": str(payment.id),
                     "order_id": str(payment.order_id)
                 },
-                "success_url": "http://localhost:8080/payment/success",
-                "cancel_url": "http://localhost:8080/payment/cancel"
+                "success_url": f"https://10.157.173.192:8443/payment/success?order_number={payment.order_number}",
+                "cancel_url": "https://10.157.173.192:8443/payment/cancel"
             }, options={"idempotency_key" : f"payment:{payment.id}"}
         )
         return session

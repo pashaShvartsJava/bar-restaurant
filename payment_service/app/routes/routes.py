@@ -61,7 +61,8 @@ async def stripe_webhook(request: Request, service: PaymentService = Depends(get
 
 @router.get("/payment/success")
 async def success_page(request : Request):
-    return templates.TemplateResponse("success_page.html", {"request" : request})
+    order_number = request.query_params.get("order_number")
+    return templates.TemplateResponse("success_page.html", {"request" : request, "order_number" : order_number})
 
 @router.get("/payment/cancel")
 async def success_page(request : Request):

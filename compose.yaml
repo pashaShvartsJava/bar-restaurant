@@ -3,9 +3,11 @@ services:
     image: nginx:alpine
     ports:
       - "8080:80"
+      - "8443:443"
     volumes:
       - ./gateway/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./gateway/static:/etc/nginx/html/static:ro
+      - ./gateway/certs:/etc/nginx/certs:ro
     depends_on:
       - authentication-service
       - user-service

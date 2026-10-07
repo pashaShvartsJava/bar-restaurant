@@ -18,6 +18,7 @@ from ..dependencies.dependency import get_service_dependency
 from ..security.password.password import verify_password
 from ..security.rate_limit import check_login_rate_limit, reset_login_rate_limit
 from ..security.internal_security import verify_internal_token
+from ..security.jwt.jwt import decode_access_token
 from ..services.authentication_service import AuthenticationService, send_new_user_dto, send_address
 import httpx
 from uuid import UUID
@@ -26,6 +27,17 @@ from ..config.config import settings
 INTERNAL_TOKEN = settings.internal_token
 templates = Jinja2Templates(directory="app/templates_auth")
 router = APIRouter()
+
+@router.get("/")
+async def root(request: Request):
+    token = request.cookies.get("access_token")
+    if not token:
+        return RedirectResponse(url="/bar_name", status_code=303)
+    try:
+        decode_access_token(token)
+    except HTTPException:
+        return RedirectResponse(url="/bar_name", status_code=303)
+    return RedirectResponse(url="/user/my_profile", status_code=303)
 
 @router.get("/bar_name", response_class=HTMLResponse)
 def main_page(request: Request):

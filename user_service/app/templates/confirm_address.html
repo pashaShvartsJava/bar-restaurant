@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
@@ -134,11 +133,6 @@
         }
         .continue:hover { background: #e5b970; }
         .continue:disabled { opacity: .6; cursor: not-allowed; }
-        .field-error {
-            color: #d98282;
-            font-size: 11px;
-            margin-top: 5px;
-        }
         @media (max-width: 700px) {
             body { padding: 25px 15px; }
             .card { padding: 25px 18px; }
@@ -200,9 +194,9 @@
 </div>
 <script src="/static/api.js"></script>
 <script>
-    const addressForm = document.getElementById("addressForm");
-    const formError = document.getElementById("formError");
-    const continueButton = document.getElementById("continueButton");
+const addressForm = document.getElementById("addressForm");
+const formError = document.getElementById("formError");
+const continueButton = document.getElementById("continueButton");
 
 function showError(message) {
     formError.textContent = message;
@@ -241,10 +235,7 @@ async function handleResponse(response) {
         const data = await response.json();
 
         if (Array.isArray(data.detail)) {
-            const messages = data.detail
-                .map(error => error.msg)
-                .filter(Boolean);
-
+            const messages = data.detail.map(error => error.msg).filter(Boolean);
             showError(messages.length ? messages.join(", ") : "Произошла ошибка.");
         } else {
             showError(data.detail || data.message || "Произошла ошибка.");
@@ -270,7 +261,14 @@ addressForm.addEventListener("submit", async function(event) {
 
         if (!await handleResponse(response)) return;
 
-        window.location.href = "/...";
+        const data = await response.json();
+
+        if (!data.checkout_url) {
+            showError("Не удалось получить ссылку на оплату.");
+            return;
+        }
+
+        window.location.href = data.checkout_url;
     } catch {
         showError("Не удалось подключиться к серверу. Проверьте соединение.");
     } finally {
@@ -278,7 +276,6 @@ addressForm.addEventListener("submit", async function(event) {
         continueButton.textContent = "Перейти к оплате";
     }
 });
-
 </script>
 </body>
 </html>
