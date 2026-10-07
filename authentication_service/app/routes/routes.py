@@ -4,7 +4,7 @@ from typing import Annotated
 
 from fastapi import Request, APIRouter, HTTPException, Form
 from fastapi.params import Depends, Header
-from pydantic import EmailStr
+from pydantic import EmailStr, TypeAdapter
 from starlette.responses import HTMLResponse, RedirectResponse
 from starlette.templating import Jinja2Templates
 
@@ -213,6 +213,39 @@ async def get_identity(request : Request,
     await verify_internal_token(internal_token)
     client = await service.find_by_identity(UUID(request.cookies.get("guest_client_id")))
     return client.email
+
+@router.get("/bar_name/forgot_password")
+async def forgot_password(request : Request):
+    return templates.TemplateResponse("forgot_password.html", {"request" : request})
+
+@router.patch("/bar_name/forgot_password")
+async def forgot_password(email : EmailStr = Form(),
+                          service: AuthenticationService = Depends(get_service_dependency)):
+    identity = await service.find_by_email(email)
+    if identity is None:
+        raise HTTPException(status_code=409, detail="Аккаунта с таким логином не существует")
+    await service.create_reset_password_token(identity.id, identity.email)
+
+@router.get("/bar_name/reset_password")
+async def reset_password(request : Request):
+    return templates.TemplateResponse("reset_password.html", {"request" : request})
+
+@router.patch("/bar_name/reset_password")
+async def reset_password(token : str = Form(),
+                         email_str : str = Form(),
+                         new_password : str = Form(..., min_length=8, max_length=64),
+                         confirmed_password : str = Form(..., min_length=8, max_length=64),
+                         service: AuthenticationService = Depends(get_service_dependency)):
+    if new_password != confirmed_password:
+        raise HTTPException(status_code=400, detail="Пароли не совпадают")
+    verified_reset_token = await service.verify_reset_token(token)
+    if not verified_reset_token:
+        raise HTTPException(status_code=410, detail="Ваш срок на восстановления пароля истёк. Сделайте новую попытку")
+    email = TypeAdapter(EmailStr).validate_python(email_str)
+    identity = await service.find_by_email(email)
+    await service.update_password(identity.id, new_password)
+    return RedirectResponse(url="/login", status_code=303)
+
 
 
 

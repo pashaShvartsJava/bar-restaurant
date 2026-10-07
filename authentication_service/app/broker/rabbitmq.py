@@ -12,6 +12,7 @@ class RabbitMQ:
         self.exchange = None
         self.email_verification_queue = None
         self.change_password_verification_queue = None
+        self.reset_password_queue = None
 
     async def connect(self):
         while True:
@@ -40,6 +41,9 @@ class RabbitMQ:
      "change_password_verification", durable=True)
         await self.change_password_verification_queue.bind(
             self.exchange, routing_key="change_password_verification_event")
+
+        self.reset_password_queue = await self.channel.declare_queue("reset_password", durable=True)
+        await self.reset_password_queue.bind(self.exchange, routing_key="reset_password_event")
 
     async def close(self):
         if self.connection:

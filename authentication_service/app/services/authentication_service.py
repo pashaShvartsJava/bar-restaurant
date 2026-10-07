@@ -5,6 +5,7 @@ from pydantic import EmailStr
 from watchfiles import awatch
 
 from ..model.confirmation_token_model import EmailVerificationToken
+from ..model.reset_password_token_model import ResetPasswordToken
 from ..model.update_password_email_token_model import UpdatePasswordEmailToken
 from ..repositories.authentication_repository import AuthenticationRepository
 from ..schemas.admin_schema import IdentityEdit, AddAdminRequest
@@ -121,9 +122,17 @@ class AuthenticationService:
         hashed_token = hashlib.sha256(token.encode("utf-8")).hexdigest()
         return await self.authentication_repository.verify_email(hashed_token)
 
+    async def verify_reset_token(self, token: str):
+        hashed_token = hashlib.sha256(token.encode("utf-8")).hexdigest()
+        return await self.authentication_repository.verify_reset_token(hashed_token)
+
     async def create_verify_change_password_token(self, identity_id : UUID, new_password : str):
         await self.authentication_repository.db.rollback()
         return await self.authentication_repository.create_verify_change_password_token(identity_id, new_password)
+
+    async def create_reset_password_token(self, identity_id: UUID, email: EmailStr) -> ResetPasswordToken:
+        await self.authentication_repository.db.rollback()
+        return await self.authentication_repository.create_reset_password_token(identity_id, email)
 
 
 

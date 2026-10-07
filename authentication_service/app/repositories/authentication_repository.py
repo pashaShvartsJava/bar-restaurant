@@ -14,6 +14,7 @@ from ..model.confirmation_token_model import EmailVerificationToken
 from ..model.identity_model import IdentityRole, Status
 from ..model.key_model import Key
 from ..model.outbox_email_verification_events import OutboxEmailVerificationEvents
+from ..model.reset_password_token_model import ResetPasswordToken
 from ..model.update_password_email_token_model import UpdatePasswordEmailToken
 from ..schemas.admin_schema import IdentityEdit, AddAdminRequest
 from ..security.password.password import hash_password
@@ -148,6 +149,12 @@ class AuthenticationRepository:
                                        .where(EmailVerificationToken.token_hash==hashed_token))
         return result.scalar_one_or_none()
 
+    async def find_reset_token(self, hashed_token : str) -> ResetPasswordToken | None:
+        result = await self.db.execute(select(ResetPasswordToken)
+                                       .options(selectinload(ResetPasswordToken.identity))
+                                       .where(ResetPasswordToken.token_hash==hashed_token))
+        return result.scalar_one_or_none()
+
     async def find_change_password_verification_token(self, hashed_token : str) -> UpdatePasswordEmailToken | None:
         result = await self.db.execute(select(UpdatePasswordEmailToken)
                                        .options(selectinload(UpdatePasswordEmailToken.identity))
@@ -227,6 +234,22 @@ class AuthenticationRepository:
         await self.db.flush()
         return outbox_event
 
+    async def create_outbox_event_reset_password(self, event_id : str, email : EmailStr, token : str) -> OutboxEmailVerificationEvents:
+        found_event = await self.get_event_by_event_id(event_id)
+        if found_event is not None:
+            return found_event
+        outbox_event = OutboxEmailVerificationEvents(
+            event_type="ResetPassword",
+            payload={
+                "email": email,
+                "token": str(token),
+            },
+            event_id=event_id
+        )
+        self.db.add(outbox_event)
+        await self.db.flush()
+        return outbox_event
+
     async def get_event_by_event_id(self, event_id : str) -> OutboxEmailVerificationEvents | None:
         result = await self.db.execute(select(OutboxEmailVerificationEvents).where(OutboxEmailVerificationEvents.event_id==event_id))
         return result.scalar_one_or_none()
@@ -245,3 +268,29 @@ class AuthenticationRepository:
             found_identity : Identity = found_token.identity
             found_identity.verified_email = True
         await self.db.refresh(found_identity)
+
+    async def verify_reset_token(self, hashed_token : str) -> bool:
+        async with self.db.begin():
+            found_token = await self.find_reset_token(hashed_token)
+            now = datetime.now(timezone.utc)
+            if found_token is not None and found_token.expires_at > now:
+                found_token.used_at = now
+                await self.db.refresh(found_token)
+                return True
+        return False
+
+    async def create_reset_password_token(self, identity_id : UUID, email : EmailStr) -> ResetPasswordToken:
+        async with self.db.begin():
+            token = secrets.token_urlsafe(32)
+            hashed_token = hashlib.sha256(token.encode("utf-8")).hexdigest()
+            new_reset_token = ResetPasswordToken(
+                identity_id=identity_id,
+                token_hash=hashed_token,
+                expires_at=datetime.now(timezone.utc) + timedelta(minutes=15)
+            )
+            self.db.add(new_reset_token)
+            await self.db.flush()
+            await self.create_outbox_event_reset_password(str(uuid.uuid4()), email, token)
+        await self.db.refresh(new_reset_token)
+        return new_reset_token
+

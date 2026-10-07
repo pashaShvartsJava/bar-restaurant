@@ -1,4 +1,5 @@
 from email.message import EmailMessage
+from urllib.parse import urlencode
 
 import aiosmtplib
 from starlette.templating import Jinja2Templates
@@ -59,7 +60,7 @@ class EmailService:
         message["From"] = settings.EMAIL_FROM
         message["To"] = email
         message["Subject"] = "Подтверждение email"
-        verification_url = (f"http://localhost:8080/verify_change_password?token={token}")
+        verification_url = (f"https://10.157.173.192:8443/verify_change_password?token={token}")
         html = f"""
                         <html>
                             <body>
@@ -106,6 +107,49 @@ class EmailService:
             sum=sum,
         )
 
+
+        message.add_alternative(html, subtype="html", )
+        smtp = aiosmtplib.SMTP(
+            hostname=settings.EMAIL_HOST,
+            port=settings.EMAIL_PORT,
+            timeout=20,
+        )
+
+        await smtp.connect()
+        await smtp.login(
+            settings.EMAIL_USERNAME,
+            settings.EMAIL_PASSWORD,
+        )
+        await smtp.send_message(message)
+        await smtp.quit()
+
+    async def send_reset_password(self, email : str, token : str):
+        message = EmailMessage()
+
+        message["From"] = settings.EMAIL_FROM
+        message["To"] = email
+        message["Subject"] = "Восстановление пароля"
+
+        params = urlencode({"token": token, "email_str": email})
+        verification_url = (f"https://10.157.173.192:8443/bar_name/reset_password?{params }")
+        html = f"""
+                               <html>
+                                   <body>
+                                       <h1>Подтверждение восстановления пароля</h1>
+                                       <p>
+                                           Для подтверждения восстановления пароля
+                                           нажмите на кнопку ниже:
+                                       </p>
+                                       <a href="{verification_url}">
+                                           Сменить пароль
+                                       </a>
+                                       <p>
+                                           ВНИМАНИЕ! Если вы не нажимали кнопку "Забыли пароль?", то игнорируйте это письмо и не переходите по ссылке!"
+                                       </p>
+                                   </body>
+                               </html>
+                               """
+        message.set_content("Чтобы восстановить пароль - перейдите по ссылке: " + verification_url)
 
         message.add_alternative(html, subtype="html", )
         smtp = aiosmtplib.SMTP(
