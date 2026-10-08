@@ -6,317 +6,437 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Регистрация | Bar & Lounge</title>
+    <title>Регистрация | Bar & Lounge</title>
 
-<style>
-    * {
-        box-sizing: border-box;
-    }
+    <style>
+        * {
+            box-sizing: border-box;
+        }
 
-    body {
-        margin: 0;
-        min-height: 100vh;
-        font-family: "Segoe UI", sans-serif;
-        background:
-            radial-gradient(
-                circle at 15% 20%,
-                rgba(213, 166, 91, 0.25),
-                transparent 30%
-            ),
-            radial-gradient(
-                circle at 85% 80%,
-                rgba(180, 70, 110, 0.20),
-                transparent 30%
-            ),
-            linear-gradient(
-                135deg,
-                #24191f,
-                #3a252b,
-                #24191f
-            );
-        color: white;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        padding: 30px;
-    }
+        html {
+            min-height: 100%;
+        }
 
-    .page {
-        width: 1100px;
-        display: grid;
-        grid-template-columns: 220px 440px 220px;
-        justify-content: center;
-        align-items: center;
-        gap: 40px;
-    }
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: Arial, sans-serif;
+            background:
+                radial-gradient(
+                    ellipse at 50% 0%,
+                    rgba(137, 76, 82, 0.42) 0%,
+                    rgba(78, 49, 59, 0.48) 38%,
+                    rgba(27, 24, 29, 0.94) 72%,
+                    rgba(13, 13, 15, 0.99) 100%
+                ),
+                linear-gradient(
+                    180deg,
+                    #39262b 0%,
+                    #251d22 48%,
+                    #101012 100%
+                );
+            color: #eee5df;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 45px 30px;
+            position: relative;
+            overflow-x: hidden;
+        }
 
-    .side {
-        display: flex;
-        flex-direction: column;
-        gap: 20px;
-    }
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            background:
+                radial-gradient(
+                    circle at 18% 15%,
+                    rgba(191, 105, 82, 0.07),
+                    transparent 32%
+                ),
+                radial-gradient(
+                    circle at 82% 24%,
+                    rgba(207, 165, 91, 0.055),
+                    transparent 30%
+                );
+            z-index: 0;
+        }
 
-    .side-box {
-        padding: 20px;
-        background: rgba(30, 25, 30, 0.75);
-        border: 1px solid rgba(255,255,255,0.1);
-        border-radius: 14px;
-    }
+        a {
+            -webkit-tap-highlight-color: transparent;
+        }
 
-    .side-label {
-        color: #d5a65b;
-        font-size: 9px;
-        letter-spacing: 2px;
-    }
-
-    .side-box h3 {
-        margin: 10px 0;
-        font-family: Georgia, serif;
-        font-weight: normal;
-        font-size: 18px;
-    }
-
-    .side-box p {
-        margin: 0;
-        color: #aaa;
-        font-size: 11px;
-        line-height: 1.6;
-    }
-
-    .card {
-        width: 440px;
-        padding: 35px 40px;
-        background: rgba(39, 32, 38, 0.97);
-        border: 1px solid rgba(255,255,255,0.12);
-        border-radius: 18px;
-        box-shadow:
-            0 25px 60px rgba(0,0,0,0.45);
-    }
-
-    .logo {
-        text-align: center;
-        color: #d5a65b;
-        font-family: Georgia, serif;
-        letter-spacing: 5px;
-        font-size: 13px;
-        margin-bottom: 15px;
-    }
-
-    h1 {
-        margin: 0;
-        text-align: center;
-        font-family: Georgia, serif;
-        font-size: 30px;
-        font-weight: normal;
-    }
-
-    .subtitle {
-        text-align: center;
-        color: #aaa;
-        font-size: 12px;
-        margin: 10px 0 25px;
-    }
-
-    .steps {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-bottom: 25px;
-    }
-
-    .step-number {
-        width: 30px;
-        height: 30px;
-        border-radius: 50%;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        background: #352f34;
-        border: 1px solid #51484e;
-        color: #888;
-        font-size: 11px;
-    }
-
-    .step-number.active {
-        background: #d5a65b;
-        border-color: #d5a65b;
-        color: #211a15;
-    }
-
-    .step-line {
-        width: 35px;
-        height: 1px;
-        background: #51484e;
-    }
-
-    .form-step {
-        display: none;
-    }
-
-    .form-step.active {
-        display: block;
-    }
-
-    .step-title {
-        margin-bottom: 20px;
-        font-family: Georgia, serif;
-        font-size: 20px;
-    }
-
-    .row {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 12px;
-    }
-
-    .field {
-        margin-bottom: 15px;
-    }
-
-    label {
-        display: block;
-        margin-bottom: 6px;
-        font-size: 11px;
-        color: #ddd;
-    }
-
-    .required {
-        color: #d5a65b;
-    }
-
-    .optional {
-        color: #777;
-        font-size: 9px;
-    }
-
-    input {
-        width: 100%;
-        padding: 12px;
-        border-radius: 8px;
-        border: 1px solid #50464d;
-        background: #302a30;
-        color: white;
-        font-size: 13px;
-        outline: none;
-    }
-
-    input:focus {
-        border-color: #d5a65b;
-        box-shadow:
-            0 0 0 3px rgba(213,166,91,0.08);
-    }
-
-    input::placeholder {
-        color: #777;
-    }
-
-    .field-error {
-        color: #d98282;
-        font-size: 11px;
-        margin-top: 5px;
-        line-height: 1.4;
-    }
-
-    .form-error {
-        display: none;
-        margin-bottom: 15px;
-        padding: 10px 12px;
-        border: 1px solid rgba(217, 130, 130, 0.4);
-        border-radius: 8px;
-        background: rgba(217, 130, 130, 0.08);
-        color: #d98282;
-        font-size: 11px;
-        line-height: 1.5;
-    }
-
-    .form-error.show {
-        display: block;
-    }
-
-    .next-button,
-    .register-button {
-        width: 100%;
-        margin-top: 5px;
-        padding: 13px;
-        border: none;
-        border-radius: 8px;
-        background: #d5a65b;
-        color: #211a15;
-        font-size: 14px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: 0.2s;
-    }
-
-    .next-button:hover,
-    .register-button:hover {
-        background: #e5b970;
-        transform: translateY(-1px);
-    }
-
-    .back-button {
-        width: 100%;
-        margin-top: 9px;
-        padding: 10px;
-        border-radius: 8px;
-        border: 1px solid #50464d;
-        background: transparent;
-        color: #999;
-        cursor: pointer;
-        font-size: 11px;
-    }
-
-    .back-button:hover {
-        color: white;
-        border-color: #777;
-    }
-
-    .footer {
-        text-align: center;
-        margin-top: 20px;
-        font-size: 11px;
-        color: #999;
-    }
-
-    .footer a {
-        color: #d5a65b;
-        text-decoration: none;
-    }
-
-    .footer a:hover {
-        text-decoration: underline;
-    }
-
-    @media (max-width: 900px) {
         .page {
-            grid-template-columns: 1fr;
-            width: 440px;
+            position: relative;
+            z-index: 1;
+            width: 1100px;
+            display: grid;
+            grid-template-columns: 220px 440px 220px;
+            justify-content: center;
+            align-items: center;
+            gap: 40px;
         }
 
         .side {
-            display: none;
-        }
-    }
-
-    @media (max-width: 500px) {
-        body {
-            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
         }
 
-        .page {
-            width: 100%;
+        .side-box {
+            padding: 20px;
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(30, 25, 27, 0.9),
+                    rgba(17, 16, 18, 0.94)
+                );
+            border: 1px solid rgba(255, 255, 255, 0.075);
+            border-radius: 13px;
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.18);
+            backdrop-filter: blur(12px);
+        }
+
+        .side-label {
+            color: #777174;
+            font-size: 9px;
+            letter-spacing: 2px;
+        }
+
+        .side-box h3 {
+            margin: 10px 0;
+            color: #d5a65b;
+            font-family: Georgia, serif;
+            font-weight: normal;
+            font-size: 18px;
+        }
+
+        .side-box p {
+            margin: 0;
+            color: #938b8c;
+            font-size: 11px;
+            line-height: 1.6;
         }
 
         .card {
-            width: 100%;
-            padding: 30px 22px;
+            width: 440px;
+            padding: 35px 40px;
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(36, 29, 31, 0.98),
+                    rgba(17, 16, 19, 0.98)
+                );
+            border: 1px solid rgba(255, 255, 255, 0.09);
+            border-radius: 15px;
+            box-shadow:
+                0 25px 80px rgba(0, 0, 0, 0.45),
+                0 0 45px rgba(213, 166, 91, 0.06),
+                inset 0 1px rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(14px);
+            animation: appear 0.5s ease;
+        }
+
+        .logo {
+            text-align: center;
+            color: #d1a15d;
+            font-family: Georgia, serif;
+            letter-spacing: 5px;
+            font-size: 13px;
+            margin-bottom: 15px;
+        }
+
+        h1 {
+            margin: 0;
+            text-align: center;
+            color: #eee4dc;
+            font-family: Georgia, serif;
+            font-size: 30px;
+            font-weight: normal;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #777174;
+            font-size: 11px;
+            margin: 10px 0 25px;
+        }
+
+        .steps {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 25px;
+        }
+
+        .step-number {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.035);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #777174;
+            font-size: 11px;
+        }
+
+        .step-number.active {
+            background:
+                linear-gradient(
+                    135deg,
+                    rgba(213, 166, 91, 1),
+                    rgba(182, 132, 62, 1)
+                );
+            border-color: #d5a65b;
+            color: #211a15;
+        }
+
+        .step-line {
+            width: 35px;
+            height: 1px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .form-step {
+            display: none;
+        }
+
+        .form-step.active {
+            display: block;
+        }
+
+        .step-title {
+            margin-bottom: 20px;
+            color: #eee3dc;
+            font-family: Georgia, serif;
+            font-size: 20px;
         }
 
         .row {
-            grid-template-columns: 1fr;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
         }
-    }
-</style>
+
+        .field {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            color: #a49b9c;
+            font-size: 10px;
+        }
+
+        .required {
+            color: #d5a65b;
+        }
+
+        .optional {
+            color: #777174;
+            font-size: 9px;
+        }
+
+        input {
+            width: 100%;
+            height: 44px;
+            padding: 0 13px;
+            border: 1px solid rgba(255, 255, 255, 0.09);
+            border-radius: 8px;
+            outline: none;
+            background: rgba(10, 10, 12, 0.7);
+            color: #eee7e3;
+            font-size: 12px;
+            transition:
+                border-color 0.25s,
+                background 0.25s,
+                box-shadow 0.25s;
+        }
+
+        input:focus {
+            border-color: rgba(213, 166, 91, 0.55);
+            background: rgba(16, 15, 17, 0.82);
+            box-shadow: 0 0 0 3px rgba(213, 166, 91, 0.07);
+        }
+
+        input::placeholder {
+            color: #777174;
+        }
+
+        .field-error {
+            color: #d98282;
+            font-size: 10px;
+            margin-top: 5px;
+            line-height: 1.4;
+        }
+
+        .form-error {
+            display: none;
+            margin-bottom: 15px;
+            padding: 10px 12px;
+            border: 1px solid rgba(217, 130, 130, 0.35);
+            border-radius: 8px;
+            background: rgba(217, 130, 130, 0.07);
+            color: #d98282;
+            font-size: 10px;
+            line-height: 1.5;
+        }
+
+        .form-error.show {
+            display: block;
+        }
+
+        .next-button,
+        .register-button {
+            width: 100%;
+            height: 45px;
+            margin-top: 5px;
+            border: 1px solid rgba(213, 166, 91, 0.48);
+            border-radius: 8px;
+            background:
+                linear-gradient(
+                    135deg,
+                    rgba(75, 46, 40, 0.96),
+                    rgba(45, 31, 32, 0.98)
+                );
+            color: #e6c58f;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition:
+                transform 0.2s,
+                background 0.2s,
+                border-color 0.2s,
+                box-shadow 0.2s;
+        }
+
+        .next-button:hover,
+        .register-button:hover {
+            transform: translateY(-2px);
+            border-color: #d5a65b;
+            background:
+                linear-gradient(
+                    135deg,
+                    rgba(91, 54, 46, 0.98),
+                    rgba(53, 36, 36, 0.98)
+                );
+            box-shadow: 0 8px 22px rgba(213, 166, 91, 0.12);
+        }
+
+        .back-link {
+            display: block;
+            margin-top: 18px;
+            color: #777174;
+            text-align: center;
+            text-decoration: none;
+            font-size: 10px;
+            transition: 0.2s;
+        }
+
+        .back-link:hover {
+            color: #eee5df;
+        }
+
+        .back-button {
+            width: 100%;
+            height: 40px;
+            margin-top: 9px;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.09);
+            background: rgba(255, 255, 255, 0.025);
+            color: #777174;
+            cursor: pointer;
+            font-size: 10px;
+            transition:
+                color 0.2s,
+                border-color 0.2s,
+                background 0.2s;
+        }
+
+        .back-button:hover {
+            color: #eee5df;
+            border-color: rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 10px;
+            color: #777174;
+        }
+
+        .footer a {
+            color: #d5a65b;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        @keyframes appear {
+            from {
+                opacity: 0;
+                transform: translateY(12px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 900px) {
+            body {
+                padding: 35px 25px;
+            }
+
+            .page {
+                grid-template-columns: 1fr;
+                width: 440px;
+            }
+
+            .side {
+                display: none;
+            }
+        }
+
+        @media (max-width: 500px) {
+            body {
+                padding: 20px 15px;
+            }
+
+            .page {
+                width: 100%;
+            }
+
+            .card {
+                width: 100%;
+                padding: 30px 22px;
+            }
+
+            .row {
+                grid-template-columns: 1fr;
+            }
+
+            .logo {
+                font-size: 12px;
+                letter-spacing: 4px;
+            }
+
+            h1 {
+                font-size: 27px;
+            }
+        }
+    </style>
 
 </head>
 
@@ -325,7 +445,9 @@
 <div class="page">
 
 <div class="side">
+
     <div class="side-box">
+
         <div class="side-label">
             BAR & LOUNGE
         </div>
@@ -340,9 +462,11 @@
             всеми возможностями
             нашего бара.
         </p>
+
     </div>
 
     <div class="side-box">
+
         <div class="side-label">
             ATMOSPHERE
         </div>
@@ -352,7 +476,9 @@
             авторские коктейли
             и приятная компания.
         </p>
+
     </div>
+
 </div>
 
 <div class="card">
@@ -370,6 +496,7 @@
     </div>
 
     <div class="steps">
+
         <div
             class="step-number active"
             id="indicator1"
@@ -394,9 +521,13 @@
         >
             3
         </div>
+
     </div>
 
-    <div id="formError" class="form-error"></div>
+    <div
+        id="formError"
+        class="form-error"
+    ></div>
 
     <form
         id="registrationForm"
@@ -416,6 +547,7 @@
             <div class="row">
 
                 <div class="field">
+
                     <label>
                         Имя
                         <span class="required">*</span>
@@ -427,9 +559,11 @@
                         placeholder="Имя"
                         required
                     >
+
                 </div>
 
                 <div class="field">
+
                     <label>
                         Фамилия
                         <span class="required">*</span>
@@ -441,11 +575,13 @@
                         placeholder="Фамилия"
                         required
                     >
+
                 </div>
 
             </div>
 
             <div class="field">
+
                 <label>
                     Номер телефона
                     <span class="required">*</span>
@@ -457,9 +593,11 @@
                     placeholder="+49 000 000000"
                     required
                 >
+
             </div>
 
             <div class="field">
+
                 <label>
                     Дата рождения
                     <span class="required">*</span>
@@ -470,6 +608,7 @@
                     name="birthday"
                     required
                 >
+
             </div>
 
             <button
@@ -492,6 +631,7 @@
             </div>
 
             <div class="field">
+
                 <label>
                     Город
                     <span class="required">*</span>
@@ -503,9 +643,11 @@
                     placeholder="Город"
                     required
                 >
+
             </div>
 
             <div class="field">
+
                 <label>
                     Почтовый индекс
                     <span class="required">*</span>
@@ -517,9 +659,11 @@
                     placeholder="Почтовый индекс"
                     required
                 >
+
             </div>
 
             <div class="field">
+
                 <label>
                     Улица
                     <span class="required">*</span>
@@ -531,11 +675,13 @@
                     placeholder="Улица"
                     required
                 >
+
             </div>
 
             <div class="row">
 
                 <div class="field">
+
                     <label>
                         Номер дома
                         <span class="required">*</span>
@@ -547,9 +693,11 @@
                         placeholder="Дом"
                         required
                     >
+
                 </div>
 
                 <div class="field">
+
                     <label>
                         Номер квартиры
                         <span class="optional">
@@ -562,6 +710,7 @@
                         name="apartment"
                         placeholder="Квартира"
                     >
+
                 </div>
 
             </div>
@@ -594,6 +743,7 @@
             </div>
 
             <div class="field">
+
                 <label>
                     Email
                     <span class="required">*</span>
@@ -605,9 +755,11 @@
                     placeholder="email@example.com"
                     required
                 >
+
             </div>
 
             <div class="field">
+
                 <label>
                     Пароль
                     <span class="required">*</span>
@@ -621,9 +773,11 @@
                     maxlength="64"
                     required
                 >
+
             </div>
 
             <div class="field">
+
                 <label>
                     Подтверждение пароля
                     <span class="required">*</span>
@@ -637,6 +791,7 @@
                     maxlength="64"
                     required
                 >
+
             </div>
 
             <button
@@ -660,18 +815,27 @@
     </form>
 
     <div class="footer">
+
         Уже есть аккаунт?
 
         <a href="/login">
             Войти
         </a>
+
     </div>
+    <a
+            href="/bar_name"
+            class="back-link"
+        >
+            ← Вернуться на главную
+        </a>
 
 </div>
 
 <div class="side">
 
     <div class="side-box">
+
         <div class="side-label">
             ДЛЯ ГОСТЕЙ
         </div>
@@ -686,9 +850,11 @@
             заказы, история заказов
             и поддержка.
         </p>
+
     </div>
 
     <div class="side-box">
+
         <div class="side-label">
             BAR SPIRIT
         </div>
@@ -699,16 +865,19 @@
             Люди.
             Хороший вечер.
         </p>
+
     </div>
 
-</div>
+    <div class="footer">
 
-<div class="footer">
     Есть специальное приглашение?
 
     <a href="/admin/registration">
         Зарегистрироваться как администратор
     </a>
+
+</div>
+
 </div>
 
 </div>

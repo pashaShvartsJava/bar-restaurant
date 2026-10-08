@@ -4,26 +4,71 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#1b1518">
     <title>Вход | Bar & Lounge</title>
+
     <style>
         * {
             box-sizing: border-box;
         }
+
+        html {
+            min-height: 100%;
+        }
+
         body {
             margin: 0;
             min-height: 100vh;
-            font-family: "Segoe UI", sans-serif;
-            color: #fff;
+            font-family: Arial, sans-serif;
+            color: #eee5df;
             background:
-                radial-gradient(circle at 10% 20%, rgba(213, 166, 91, 0.20), transparent 28%),
-                radial-gradient(circle at 90% 80%, rgba(155, 65, 95, 0.22), transparent 30%),
-                linear-gradient(125deg, #171216, #302126 45%, #21171e 70%, #121014);
+                radial-gradient(
+                    ellipse at 50% 0%,
+                    rgba(137, 76, 82, 0.42) 0%,
+                    rgba(78, 49, 59, 0.48) 38%,
+                    rgba(27, 24, 29, 0.94) 72%,
+                    rgba(13, 13, 15, 0.99) 100%
+                ),
+                linear-gradient(
+                    180deg,
+                    #39262b 0%,
+                    #251d22 48%,
+                    #101012 100%
+                );
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 35px;
+            padding: 45px 30px;
+            position: relative;
+            overflow-x: hidden;
         }
+
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            background:
+                radial-gradient(
+                    circle at 18% 15%,
+                    rgba(191, 105, 82, 0.07),
+                    transparent 32%
+                ),
+                radial-gradient(
+                    circle at 82% 24%,
+                    rgba(207, 165, 91, 0.055),
+                    transparent 30%
+                );
+            z-index: 0;
+        }
+
+        a {
+            -webkit-tap-highlight-color: transparent;
+        }
+
         .page {
+            position: relative;
+            z-index: 1;
             width: 1050px;
             display: grid;
             grid-template-columns: 230px 420px 230px;
@@ -31,25 +76,35 @@
             justify-content: space-between;
             gap: 35px;
         }
+
         .side {
             display: flex;
             flex-direction: column;
             gap: 18px;
         }
+
         .side-card {
             padding: 20px;
-            background: rgba(31, 26, 31, 0.72);
-            border: 1px solid rgba(255, 255, 255, 0.09);
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(30, 25, 27, 0.9),
+                    rgba(17, 16, 18, 0.94)
+                );
+            border: 1px solid rgba(255, 255, 255, 0.075);
             border-radius: 13px;
-            backdrop-filter: blur(8px);
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.18);
+            backdrop-filter: blur(12px);
         }
+
         .side-label {
             display: block;
             margin-bottom: 9px;
-            color: #756d72;
+            color: #777174;
             font-size: 9px;
             letter-spacing: 2px;
         }
+
         .side-card h3 {
             margin: 0 0 10px;
             color: #d5a65b;
@@ -57,125 +112,155 @@
             font-size: 17px;
             font-weight: normal;
         }
+
         .side-card p {
             margin: 0;
-            color: #aaa1a6;
+            color: #938b8c;
             font-size: 11px;
             line-height: 1.6;
         }
+
         .quote {
             color: #ddd !important;
             font-family: Georgia, serif;
             font-size: 14px !important;
         }
+
         .drink {
             display: flex;
             align-items: center;
             gap: 12px;
         }
+
         .drink-icon {
             width: 42px;
             height: 42px;
             display: flex;
             align-items: center;
             justify-content: center;
+            border: 1px solid rgba(213, 166, 91, 0.14);
             border-radius: 10px;
-            background: rgba(213, 166, 91, 0.12);
-            border: 1px solid rgba(213, 166, 91, 0.2);
+            background: rgba(213, 166, 91, 0.07);
             color: #d5a65b;
             font-size: 20px;
         }
+
         .drink-name {
             color: #ddd;
             font-size: 11px;
             font-weight: 600;
         }
+
         .drink-description {
             margin-top: 3px;
-            color: #777;
+            color: #777276;
             font-size: 9px;
         }
+
         .auth-card {
             width: 420px;
             padding: 40px 42px;
-            background: rgba(39, 34, 39, 0.95);
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            border-radius: 18px;
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(36, 29, 31, 0.98),
+                    rgba(17, 16, 19, 0.98)
+                );
+            border: 1px solid rgba(255, 255, 255, 0.09);
+            border-radius: 15px;
             box-shadow:
-                0 25px 70px rgba(0, 0, 0, 0.45),
-                0 0 45px rgba(213, 166, 91, 0.07);
+                0 25px 80px rgba(0, 0, 0, 0.45),
+                0 0 45px rgba(213, 166, 91, 0.06),
+                inset 0 1px rgba(255, 255, 255, 0.04);
             backdrop-filter: blur(14px);
             animation: appear 0.5s ease;
         }
+
         .logo {
             text-align: center;
-            color: #d5a65b;
+            color: #d1a15d;
             font-family: Georgia, serif;
             font-size: 13px;
             letter-spacing: 5px;
             margin-bottom: 18px;
         }
+
         .auth-card h1 {
             margin: 0;
             text-align: center;
+            color: #eee4dc;
             font-family: Georgia, serif;
             font-size: 30px;
             font-weight: normal;
         }
+
         .subtitle {
             margin: 10px 0 28px;
             text-align: center;
-            color: #aaa2a7;
-            font-size: 12px;
+            color: #777174;
+            font-size: 11px;
             line-height: 1.5;
         }
+
         .field {
             margin-bottom: 16px;
         }
+
         .field label {
             display: block;
             margin-bottom: 7px;
-            color: #d8d1d5;
-            font-size: 11px;
+            color: #a49b9c;
+            font-size: 10px;
         }
+
         .required {
             color: #d5a65b;
         }
+
         input {
             width: 100%;
-            padding: 13px 14px;
-            border: 1px solid #4a4148;
+            height: 44px;
+            padding: 0 13px;
+            border: 1px solid rgba(255, 255, 255, 0.09);
             border-radius: 8px;
-            background: #302b30;
-            color: #fff;
-            font-size: 13px;
             outline: none;
-            transition: 0.25s;
+            background: rgba(10, 10, 12, 0.7);
+            color: #eee7e3;
+            font-size: 12px;
+            transition:
+                border-color 0.25s,
+                background 0.25s,
+                box-shadow 0.25s;
         }
+
         input::placeholder {
-            color: #827b80;
+            color: #777174;
         }
+
         input:focus {
-            border-color: #d5a65b;
-            background: #373137;
-            box-shadow: 0 0 0 3px rgba(213, 166, 91, 0.08);
+            border-color: rgba(213, 166, 91, 0.55);
+            background: rgba(16, 15, 17, 0.82);
+            box-shadow: 0 0 0 3px rgba(213, 166, 91, 0.07);
         }
+
         .field-error {
             margin-top: 5px;
             color: #d98282;
-            font-size: 11px;
+            font-size: 10px;
         }
+
         #form-error {
             display: none;
             margin-bottom: 10px;
             padding: 10px 12px;
-            border: 1px solid rgba(217, 130, 130, 0.4);
+            border: 1px solid rgba(217, 130, 130, 0.35);
             border-radius: 8px;
-            background: rgba(217, 130, 130, 0.08);
-            color: #ffb0b0;
-            font-size: 11px;
+            background: rgba(217, 130, 130, 0.07);
+            color: #d98282;
+            font-size: 10px;
             line-height: 1.5;
         }
+
         .forgot-password {
             display: block;
             margin-top: -7px;
@@ -186,330 +271,469 @@
             font-size: 10px;
             transition: 0.2s;
         }
+
         .forgot-password:hover {
             color: #e5b970;
             text-decoration: underline;
         }
+
         .btn {
             width: 100%;
+            height: 45px;
             margin-top: 8px;
-            padding: 14px;
-            border: none;
+            border: 1px solid rgba(213, 166, 91, 0.48);
             border-radius: 8px;
-            background: linear-gradient(135deg, #dfb46c, #bd8842);
-            color: #211a15;
-            font-size: 14px;
+            background:
+                linear-gradient(
+                    135deg,
+                    rgba(75, 46, 40, 0.96),
+                    rgba(45, 31, 32, 0.98)
+                );
+            color: #e6c58f;
+            font-size: 11px;
             font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
             cursor: pointer;
-            transition: 0.3s;
+            transition:
+                transform 0.2s,
+                background 0.2s,
+                border-color 0.2s,
+                box-shadow 0.2s;
         }
+
         .btn:hover {
             transform: translateY(-2px);
-            background: linear-gradient(135deg, #ebc17d, #cf9951);
-            box-shadow: 0 8px 22px rgba(213, 166, 91, 0.22);
+            border-color: #d5a65b;
+            background:
+                linear-gradient(
+                    135deg,
+                    rgba(91, 54, 46, 0.98),
+                    rgba(53, 36, 36, 0.98)
+                );
+            box-shadow: 0 8px 22px rgba(213, 166, 91, 0.12);
         }
+
         .divider {
             height: 1px;
             margin: 25px 0;
-            background: rgba(255, 255, 255, 0.09);
+            background: rgba(255, 255, 255, 0.08);
         }
+
         .register-link {
             text-align: center;
-            color: #aaa2a7;
-            font-size: 11px;
+            color: #777174;
+            font-size: 10px;
             line-height: 1.6;
         }
+
         .register-link a {
             color: #d5a65b;
             text-decoration: none;
         }
+
         .register-link a:hover {
             text-decoration: underline;
         }
+
         .back-link {
             display: block;
             margin-top: 18px;
-            color: #777;
+            color: #777174;
             text-align: center;
             text-decoration: none;
             font-size: 10px;
             transition: 0.2s;
         }
+
         .back-link:hover {
-            color: #fff;
+            color: #eee5df;
         }
+
         @keyframes appear {
             from {
                 opacity: 0;
                 transform: translateY(12px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
             }
         }
+
         @media (max-width: 950px) {
+            body {
+                padding: 35px 25px;
+            }
+
             .page {
                 width: 420px;
                 grid-template-columns: 1fr;
             }
+
             .side {
                 display: none;
             }
         }
+
         @media (max-width: 500px) {
             body {
-                padding: 15px;
+                padding: 20px 15px;
             }
+
             .page {
                 width: 100%;
             }
+
             .auth-card {
                 width: 100%;
                 padding: 32px 23px;
             }
+
+            .logo {
+                font-size: 12px;
+                letter-spacing: 4px;
+            }
+
+            .auth-card h1 {
+                font-size: 27px;
+            }
         }
     </style>
 </head>
+
 <body>
+
 <div class="page">
+
     <aside class="side">
+
         <div class="side-card">
             <span class="side-label">BAR & LOUNGE</span>
+
             <h3>С возвращением</h3>
+
             <p>
                 Войдите в свой аккаунт, чтобы продолжить пользоваться
                 возможностями Bar & Lounge.
             </p>
         </div>
+
         <div class="side-card">
             <span class="side-label">АТМОСФЕРА</span>
-            <p class="quote">«Каждый хороший вечер с чего-то начинается»</p>
+
+            <p class="quote">
+                «Каждый хороший вечер с чего-то начинается»
+            </p>
         </div>
+
     </aside>
+
     <main class="auth-card">
-        <div class="logo">BAR & LOUNGE</div>
-        <h1>Вход</h1>
+
+        <div class="logo">
+            BAR & LOUNGE
+        </div>
+
+        <h1>
+            Вход
+        </h1>
+
         <div class="subtitle">
             Войдите в свой аккаунт, чтобы продолжить
         </div>
+
         <form id="loginForm">
+
             <div class="field">
+
                 <label>
                     Email
                     <span class="required">*</span>
                 </label>
+
                 <input
                     type="email"
                     name="email"
                     placeholder="email@example.com"
                     required
                 >
+
             </div>
+
             <div class="field">
+
                 <label>
                     Пароль
                     <span class="required">*</span>
                 </label>
+
                 <input
                     type="password"
                     name="password"
                     placeholder="Введите пароль"
                     required
                 >
+
             </div>
-            <a href="/bar_name/forgot_password" class="forgot-password">Забыли пароль?</a>
-            <div id="form-error" class="field-error"></div>
-            <button type="submit" class="btn">
+
+            <a
+                href="/bar_name/forgot_password"
+                class="forgot-password"
+            >
+                Забыли пароль?
+            </a>
+
+            <div
+                id="form-error"
+                class="field-error"
+            ></div>
+
+            <button
+                type="submit"
+                class="btn"
+            >
                 Войти
             </button>
+
         </form>
+
         <div class="divider"></div>
+
         <div class="register-link">
             Нет аккаунта?
-            <a href="/registration">Зарегистрироваться</a>
+            <a href="/registration">
+                Зарегистрироваться
+            </a>
         </div>
-        <a href="/bar_name" class="back-link">
+
+        <a
+            href="/bar_name"
+            class="back-link"
+        >
             ← Вернуться на главную
         </a>
+
     </main>
+
     <aside class="side">
+
         <div class="side-card">
-            <span class="side-label">ДЛЯ ГОСТЕЙ</span>
+
+            <span class="side-label">
+                ДЛЯ ГОСТЕЙ
+            </span>
+
             <div class="drink">
-                <div class="drink-icon">◇</div>
+
+                <div class="drink-icon">
+                    ◇
+                </div>
+
                 <div>
-                    <div class="drink-name">Ваши заказы</div>
+
+                    <div class="drink-name">
+                        Ваши заказы
+                    </div>
+
                     <div class="drink-description">
                         Всё необходимое в одном месте
                     </div>
+
                 </div>
+
             </div>
+
         </div>
+
         <div class="side-card">
-            <span class="side-label">BAR SPIRIT</span>
-            <h3>Хороший вечер</h3>
+
+            <span class="side-label">
+                BAR SPIRIT
+            </span>
+
+            <h3>
+                Хороший вечер
+            </h3>
+
             <p>
                 Меню, заказы, история покупок и связь с техподдержкой —
                 всё доступно после входа.
             </p>
+
         </div>
+
         <div class="side-card">
-            <span class="side-label">НАСТРОЕНИЕ</span>
-            <p class="quote">Напитки. Музыка. Люди.</p>
+
+            <span class="side-label">
+                НАСТРОЕНИЕ
+            </span>
+
+            <p class="quote">
+                Напитки. Музыка. Люди.
+            </p>
+
         </div>
+
         <div class="register-link">
             Вы администратор?
-            <a href="/admin/login">Войти как администратор</a>
+            <a href="/admin/login">
+                Войти как администратор
+            </a>
         </div>
+
     </aside>
+
 </div>
+
 <script src="/static/api.js"></script>
+
 <script>
     const form = document.getElementById("loginForm");
     const formError = document.getElementById("form-error");
 
-function clearError(input) {
-    input.style.borderColor = "";
-
-    const error = input.parentElement.querySelector(
-        ".field-error:not(#form-error)"
-    );
-
-    if (error) {
-        error.remove();
-    }
-}
-
-function showError(input, message) {
-    clearError(input);
-    input.style.borderColor = "#d98282";
-
-    const error = document.createElement("div");
-    error.className = "field-error";
-    error.textContent = message;
-
-    input.parentElement.appendChild(error);
-}
-
-function clearAllErrors() {
-    form.querySelectorAll(
-        ".field-error:not(#form-error)"
-    ).forEach(error => {
-        error.remove();
-    });
-
-    form.querySelectorAll("input").forEach(input => {
+    function clearError(input) {
         input.style.borderColor = "";
-    });
 
-    formError.textContent = "";
-    formError.style.display = "none";
-}
+        const error = input.parentElement.querySelector(
+            ".field-error:not(#form-error)"
+        );
 
-function showFormError(message) {
-    formError.textContent = message;
-    formError.style.display = "block";
-}
-
-async function handleFieldErrors(response) {
-    let data;
-
-    try {
-        data = await response.json();
-    } catch {
-        showFormError("Произошла ошибка.");
-        return;
+        if (error) {
+            error.remove();
+        }
     }
 
-    if (Array.isArray(data.detail)) {
-        data.detail.forEach(error => {
-            const field = error.loc?.at(-1);
-            const input = form.querySelector(`[name="${field}"]`);
+    function showError(input, message) {
+        clearError(input);
+        input.style.borderColor = "#d98282";
 
-            if (input) {
-                showError(
-                    input,
-                    error.msg || "Некорректное значение."
-                );
-            }
+        const error = document.createElement("div");
+        error.className = "field-error";
+        error.textContent = message;
+
+        input.parentElement.appendChild(error);
+    }
+
+    function clearAllErrors() {
+        form.querySelectorAll(
+            ".field-error:not(#form-error)"
+        ).forEach(error => {
+            error.remove();
         });
 
-        return;
-    }
-
-    if (typeof data.detail === "string") {
-        showFormError(data.detail);
-        return;
-    }
-
-    if (typeof data.message === "string") {
-        showFormError(data.message);
-        return;
-    }
-
-    showFormError("Произошла ошибка.");
-}
-
-async function handleResponse(response) {
-    if (response.ok) {
-        return true;
-    }
-
-    if (
-        response.status === 422 ||
-        response.status === 401 ||
-        response.status === 403
-    ) {
-        await handleFieldErrors(response);
-        return false;
-    }
-
-    if (response.status === 404) {
-        showFormError("Страница не найдена.");
-        return false;
-    }
-
-    if (response.status === 429) {
-        showFormError(
-            "Слишком много попыток входа. Попробуйте позже."
-        );
-        return false;
-    }
-
-    if (response.status >= 500) {
-        showFormError(
-            "Ошибка сервера. Попробуйте позже."
-        );
-        return false;
-    }
-
-    showFormError("Произошла ошибка.");
-    return false;
-}
-
-form.addEventListener("submit", async function(event) {
-    event.preventDefault();
-    clearAllErrors();
-
-    try {
-        const response = await apiFetch("/login", {
-            method: "POST",
-            body: new FormData(form)
+        form.querySelectorAll("input").forEach(input => {
+            input.style.borderColor = "";
         });
 
-        if (!await handleResponse(response)) {
+        formError.textContent = "";
+        formError.style.display = "none";
+    }
+
+    function showFormError(message) {
+        formError.textContent = message;
+        formError.style.display = "block";
+    }
+
+    async function handleFieldErrors(response) {
+        let data;
+
+        try {
+            data = await response.json();
+        } catch {
+            showFormError("Произошла ошибка.");
             return;
         }
 
-        window.location.href = "/user/my_profile";
-    } catch (error) {
-        showFormError(
-            "Не удалось подключиться к серверу. Проверьте соединение."
-        );
-    }
-});
+        if (Array.isArray(data.detail)) {
+            data.detail.forEach(error => {
+                const field = error.loc?.at(-1);
+                const input = form.querySelector(`[name="${field}"]`);
 
+                if (input) {
+                    showError(
+                        input,
+                        error.msg || "Некорректное значение."
+                    );
+                }
+            });
+
+            return;
+        }
+
+        if (typeof data.detail === "string") {
+            showFormError(data.detail);
+            return;
+        }
+
+        if (typeof data.message === "string") {
+            showFormError(data.message);
+            return;
+        }
+
+        showFormError("Произошла ошибка.");
+    }
+
+    async function handleResponse(response) {
+        if (response.ok) {
+            return true;
+        }
+
+        if (
+            response.status === 422 ||
+            response.status === 401 ||
+            response.status === 403
+        ) {
+            await handleFieldErrors(response);
+            return false;
+        }
+
+        if (response.status === 404) {
+            showFormError("Страница не найдена.");
+            return false;
+        }
+
+        if (response.status === 429) {
+            showFormError(
+                "Слишком много попыток входа. Попробуйте позже."
+            );
+            return false;
+        }
+
+        if (response.status >= 500) {
+            showFormError(
+                "Ошибка сервера. Попробуйте позже."
+            );
+            return false;
+        }
+
+        showFormError("Произошла ошибка.");
+        return false;
+    }
+
+    form.addEventListener("submit", async function(event) {
+        event.preventDefault();
+        clearAllErrors();
+
+        try {
+            const response = await apiFetch("/login", {
+                method: "POST",
+                body: new FormData(form)
+            });
+
+            if (!await handleResponse(response)) {
+                return;
+            }
+
+            window.location.href = "/user/my_profile";
+        } catch (error) {
+            showFormError(
+                "Не удалось подключиться к серверу. Проверьте соединение."
+            );
+        }
+    });
 </script>
+
 </body>
 </html>

@@ -3,13 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#1b1518">
+    <link rel="manifest" href="/static/manifest.json">
+
     <title>MARANI — Georgian Cocktail Bar</title>
+
     <style>
         * {
-            box-sizing: border-box;
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
         }
 
         html {
@@ -17,739 +20,784 @@
         }
 
         body {
-            font-family: "Segoe UI", Arial, sans-serif;
-            color: #fff;
-            background: #120d0d;
-            overflow-x: hidden;
+            min-height: 100vh;
+            background:
+                radial-gradient(
+                    ellipse at 50% 0%,
+                    rgba(137, 76, 82, 0.42) 0%,
+                    rgba(78, 49, 59, 0.48) 38%,
+                    rgba(27, 24, 29, 0.94) 72%,
+                    rgba(13, 13, 15, 0.99) 100%
+                ),
+                linear-gradient(
+                    180deg,
+                    #39262b 0%,
+                    #251d22 48%,
+                    #101012 100%
+                );
+            color: #eee5df;
+            font-family: Arial, sans-serif;
+            position: relative;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            background:
+                radial-gradient(
+                    circle at 18% 15%,
+                    rgba(191, 105, 82, 0.07),
+                    transparent 32%
+                ),
+                radial-gradient(
+                    circle at 82% 24%,
+                    rgba(207, 165, 91, 0.055),
+                    transparent 30%
+                );
+            z-index: 0;
+        }
+
+        a {
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 105px 30px 45px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 48px;
+        }
+
+        .header-top {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .header h1 {
+            font-family: Georgia, serif;
+            font-size: 52px;
+            font-weight: normal;
+            letter-spacing: 7px;
+            color: #f0e4dc;
+            text-shadow: 0 5px 30px rgba(0, 0, 0, 0.45);
+        }
+
+        .header h1 span {
+            color: #d1a15d;
+        }
+
+        .header p {
+            margin-top: 14px;
+            color: #aaa0a0;
+            font-size: 12px;
+            letter-spacing: 2px;
+        }
+
+        .quick-menu {
+            position: fixed;
+            top: 18px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            padding: 7px;
+            border: 1px solid rgba(255, 255, 255, 0.09);
+            border-radius: 14px;
+            background: rgba(24, 21, 24, 0.91);
+            box-shadow:
+                0 12px 35px rgba(0, 0, 0, 0.28),
+                inset 0 1px rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(14px);
+        }
+
+        .quick-button {
+            min-width: 105px;
+            height: 38px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 15px;
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            border-radius: 9px;
+            background: rgba(255, 255, 255, 0.035);
+            color: #ddd4d0;
+            font-size: 11px;
+            font-weight: 600;
+            text-decoration: none;
+            white-space: nowrap;
+            transition:
+                background 0.2s,
+                border-color 0.2s,
+                color 0.2s,
+                transform 0.2s;
+        }
+
+        .quick-button:hover {
+            transform: translateY(-1px);
+            background: rgba(255, 255, 255, 0.065);
+            border-color: rgba(213, 166, 91, 0.45);
+            color: #e6c58f;
+        }
+
+        .quick-button.login {
+            border-color: rgba(213, 166, 91, 0.3);
+            color: #e6c58f;
+        }
+
+        .quick-button.registration {
+            background: rgba(91, 54, 46, 0.35);
+            border-color: rgba(180, 105, 82, 0.32);
+            color: #d6a997;
+        }
+
+        .quick-button.about {
+            min-width: 90px;
+            background:
+                linear-gradient(
+                    135deg,
+                    rgba(55, 38, 43, 0.9),
+                    rgba(31, 25, 29, 0.95)
+                );
+            border-color: rgba(255, 255, 255, 0.12);
+            color: #aaa0a0;
+        }
+
+        .quick-button.about:hover {
+            border-color: rgba(255, 255, 255, 0.25);
+            color: #e2d8d3;
         }
 
         .hero {
-            min-height: 100vh;
-            position: relative;
-            background: linear-gradient(rgba(18, 10, 10, .60), rgba(18, 10, 10, .88)),
-                url("https://images.unsplash.com/photo-1572116469696-31de0f17cc34?auto=format&fit=crop&w=1920&q=85") center center / cover no-repeat;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .hero::before {
-            content: "";
-            position: absolute;
-            inset: 0;
-            pointer-events: none;
-            opacity: .08;
-            background-image: repeating-linear-gradient(45deg, transparent 0, transparent 12px, #d5a85c 12px, #d5a85c 14px);
-        }
-
-        .navbar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            padding: 20px 40px;
-            background: rgba(12, 7, 7, .78);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(210, 165, 88, .18);
-            z-index: 1000;
-            transition: .35s ease;
-        }
-
-        .navbar.scrolled {
-            padding: 13px 40px;
-            background: rgba(12, 7, 7, .94);
-        }
-
-        .nav-container {
-            max-width: 1250px;
-            margin: auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 30px;
-        }
-
-        .logo {
-            text-decoration: none;
-            color: #d7ad61;
-            font-size: 25px;
-            font-weight: 700;
-            letter-spacing: 4px;
-            white-space: nowrap;
-        }
-
-        .logo span {
-            color: #fff;
-            font-size: 11px;
-            letter-spacing: 3px;
-            display: block;
-            margin-top: 2px;
-            opacity: .65;
-        }
-
-        .nav-right {
-            display: flex;
-            align-items: center;
-            justify-content: flex-end;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-
-        .nav-btn {
-            position: relative;
-            color: #fff;
-            text-decoration: none;
-            font-size: 15px;
-            padding: 9px 16px;
-            border-radius: 5px;
-            transition: .3s ease;
-            white-space: nowrap;
-        }
-
-        .nav-btn::after {
-            content: "";
-            position: absolute;
-            left: 50%;
-            bottom: 3px;
-            width: 0;
-            height: 1px;
-            background: #d5a85c;
-            transform: translateX(-50%);
-            transition: .3s ease;
-        }
-
-        .nav-btn:hover {
-            color: #d9b46e;
-        }
-
-        .nav-btn:hover::after {
-            width: 55%;
-        }
-
-        .login-btn {
-            border: 1px solid rgba(213, 168, 92, .5);
-            margin-left: 8px;
-        }
-
-        .login-btn:hover {
-            background: rgba(213, 168, 92, .12);
-        }
-
-        .install-btn {
-            display: none;
-            width: 100%;
-            border: 1px solid rgba(213, 168, 92, .5);
-            background: rgba(213, 168, 92, .08);
-            color: #fff;
-            cursor: pointer;
-            font-family: inherit;
-            font-size: 13px;
-        }
-
-        .install-btn:hover {
-            background: rgba(213, 168, 92, .18);
-            color: #d9b46e;
-        }
-
-        .hero-content {
-            position: relative;
-            z-index: 2;
-            width: min(850px, 90%);
-            margin: auto;
-            padding-top: 100px;
+            margin-bottom: 48px;
             text-align: center;
         }
 
-        .georgian-label {
-            color: #d5a85c;
-            font-size: 14px;
-            letter-spacing: 5px;
-            text-transform: uppercase;
-            margin-bottom: 20px;
+        .hero-title {
+            font-family: Georgia, serif;
+            color: #eee4dd;
+            font-size: 28px;
+            font-weight: normal;
+            line-height: 1.25;
         }
 
-        .hero-content h1 {
-            font-size: clamp(42px, 6vw, 76px);
-            line-height: 1.05;
-            letter-spacing: 2px;
-            margin-bottom: 25px;
-            font-weight: 600;
-        }
-
-        .hero-content h1 span {
-            color: #d5a85c;
-        }
-
-        .hero-content p {
-            max-width: 720px;
-            margin: auto;
-            font-size: 18px;
-            line-height: 1.8;
-            color: rgba(255, 255, 255, .82);
-        }
-
-        .hero-buttons {
-            margin-top: 38px;
-            display: flex;
-            justify-content: center;
-            gap: 14px;
-            flex-wrap: wrap;
-        }
-
-        .btn {
-            display: inline-block;
-            padding: 14px 28px;
-            border-radius: 5px;
-            text-decoration: none;
-            font-size: 16px;
-            transition: transform .25s ease, background .25s ease, box-shadow .25s ease;
-        }
-
-        .btn-primary {
-            background: #b88a42;
-            color: #fff;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, .25);
-        }
-
-        .btn-primary:hover {
-            background: #d0a45b;
-            transform: translateY(-3px);
-            box-shadow: 0 12px 30px rgba(0, 0, 0, .4);
-        }
-
-        .btn-secondary {
-            border: 1px solid rgba(255, 255, 255, .4);
-            color: #fff;
-            background: rgba(255, 255, 255, .04);
-        }
-
-        .btn-secondary:hover {
-            border-color: #d5a85c;
-            background: rgba(213, 168, 92, .1);
-            transform: translateY(-3px);
-        }
-
-        .scroll-down {
-            position: absolute;
-            bottom: 28px;
-            left: 50%;
-            transform: translateX(-50%);
-            color: rgba(255, 255, 255, .6);
+        .hero-text {
+            max-width: 480px;
+            margin: 12px auto 0;
+            color: #91898a;
             font-size: 12px;
-            letter-spacing: 3px;
-            text-transform: uppercase;
-            animation: float 2s infinite;
-        }
-
-        @keyframes float {
-            0%, 100% {
-                transform: translate(-50%, 0);
-            }
-
-            50% {
-                transform: translate(-50%, 7px);
-            }
+            line-height: 1.7;
         }
 
         .section {
-            padding: 110px 30px;
-            background: #120d0d;
+            margin-bottom: 42px;
         }
 
-        .section-dark {
-            background: radial-gradient(circle at top, rgba(131, 57, 42, .16), transparent 55%), #120d0d;
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 16px;
         }
 
-        .section-container {
-            max-width: 1100px;
-            margin: auto;
-        }
-
-        .section-heading {
-            text-align: center;
-            margin-bottom: 60px;
-        }
-
-        .section-heading small {
-            color: #d5a85c;
+        .section-title h2 {
+            color: #a59c9b;
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 2px;
             text-transform: uppercase;
-            letter-spacing: 4px;
+        }
+
+        .section-line {
+            height: 1px;
+            flex: 1;
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .buttons {
+            display: grid;
+            gap: 12px;
+        }
+
+        .buttons-main {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .button {
+            min-height: 125px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 22px;
+            border: 1px solid rgba(213, 166, 91, 0.55);
+            border-radius: 13px;
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(30, 25, 27, 0.92),
+                    rgba(18, 17, 20, 0.92)
+                );
+            color: #eee8e3;
+            text-align: center;
+            text-decoration: none;
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.18);
+            backdrop-filter: blur(12px);
+            transition:
+                transform 0.2s,
+                border-color 0.2s,
+                background 0.2s;
+            cursor: pointer;
+        }
+
+        .button:hover {
+            transform: translateY(-3px);
+            border-color: #d5a65b;
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(39, 30, 31, 0.95),
+                    rgba(21, 19, 21, 0.96)
+                );
+        }
+
+        .booking-card {
+            border-color: rgba(213, 166, 91, 0.55);
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(30, 25, 27, 0.92),
+                    rgba(18, 17, 20, 0.92)
+                );
+            color: #eee8e3;
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.18);
+        }
+
+        .booking-card:hover {
+            border-color: #d5a65b;
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(39, 30, 31, 0.95),
+                    rgba(21, 19, 21, 0.96)
+                );
+        }
+
+        .icon {
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 12px;
+            border: 1px solid rgba(213, 166, 91, 0.3);
+            border-radius: 10px;
+            background: rgba(213, 166, 91, 0.1);
+            color: #e6c58f;
+            font-size: 19px;
+            transition: 0.2s;
+        }
+
+        .button:hover .icon {
+            background: rgba(213, 166, 91, 0.16);
+            border-color: rgba(213, 166, 91, 0.5);
+        }
+
+        .booking-card .icon {
+            border-color: rgba(213, 166, 91, 0.3);
+            background: rgba(213, 166, 91, 0.1);
+            color: #e6c58f;
+        }
+
+        .booking-card:hover .icon {
+            background: rgba(213, 166, 91, 0.16);
+            border-color: rgba(213, 166, 91, 0.5);
+        }
+
+        .button h3 {
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .booking-card h3 {
+            color: #eee8e3;
+            font-size: 13px;
+        }
+
+        .button p {
+            margin-top: 6px;
+            color: #777276;
+            font-size: 10px;
+        }
+
+        .booking-card p {
+            color: #777276;
+        }
+
+        .delivery-button {
+            border-color: rgba(213, 166, 91, 0.55);
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(30, 25, 27, 0.92),
+                    rgba(18, 17, 20, 0.92)
+                );
+            color: #eee8e3;
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.18);
+        }
+
+        .delivery-button:hover {
+            border-color: #d5a65b;
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(39, 30, 31, 0.95),
+                    rgba(21, 19, 21, 0.96)
+                );
+        }
+
+        .delivery-button .icon {
+            border-color: rgba(213, 166, 91, 0.3);
+            background: rgba(213, 166, 91, 0.1);
+            color: #e6c58f;
+        }
+
+        .delivery-button:hover .icon {
+            background: rgba(213, 166, 91, 0.16);
+            border-color: rgba(213, 166, 91, 0.5);
+        }
+
+        .delivery-button h3 {
+            color: #eee8e3;
+            font-size: 13px;
+        }
+
+        .delivery-button p {
+            color: #777276;
+        }
+
+        .button-large {
+            min-height: 125px;
+        }
+
+        .button-large .icon {
+            width: 44px;
+            height: 44px;
+            font-size: 19px;
+        }
+
+        .button-large h3 {
+            font-size: 13px;
+        }
+
+        .about-section {
+            scroll-margin-top: 90px;
+        }
+
+        .about-box {
+            padding: 34px;
+            border: 1px solid rgba(255, 255, 255, 0.075);
+            border-radius: 15px;
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(30, 25, 27, 0.9),
+                    rgba(17, 16, 18, 0.94)
+                );
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(12px);
+        }
+
+        .about-box h2 {
+            font-family: Georgia, serif;
+            font-size: 25px;
+            font-weight: normal;
+            color: #eee3dc;
+            margin-bottom: 12px;
+        }
+
+        .about-box > p {
+            max-width: 680px;
+            color: #938b8c;
             font-size: 12px;
+            line-height: 1.75;
         }
 
-        .section-heading h2 {
-            font-size: 38px;
-            margin-top: 12px;
-            font-weight: 500;
-        }
-
-        .section-heading p {
-            max-width: 650px;
-            margin: 18px auto 0;
-            color: rgba(255, 255, 255, .62);
-            line-height: 1.7;
-        }
-
-        .cards {
+        .advantages {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 22px;
+            gap: 12px;
+            margin-top: 25px;
         }
 
-        .card {
-            position: relative;
-            padding: 35px 28px;
-            background: linear-gradient(145deg, rgba(255, 255, 255, .06), rgba(255, 255, 255, .015));
-            border: 1px solid rgba(213, 168, 92, .16);
-            border-radius: 8px;
-            transition: .35s ease;
-            overflow: hidden;
+        .advantage {
+            padding: 18px;
+            border: 1px solid rgba(255, 255, 255, 0.055);
+            border-radius: 11px;
+            background: rgba(255, 255, 255, 0.025);
         }
 
-        .card::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 2px;
-            background: #b88a42;
-            transform: scaleX(0);
-            transform-origin: left;
-            transition: .35s ease;
-        }
-
-        .card:hover {
-            transform: translateY(-8px);
-            border-color: rgba(213, 168, 92, .4);
-            background: linear-gradient(145deg, rgba(213, 168, 92, .08), rgba(255, 255, 255, .02));
-        }
-
-        .card:hover::before {
-            transform: scaleX(1);
-        }
-
-        .card-icon {
-            font-size: 32px;
-            margin-bottom: 20px;
-        }
-
-        .card h3 {
-            font-size: 21px;
-            margin-bottom: 12px;
-            color: #e0bb72;
-        }
-
-        .card p {
-            color: rgba(255, 255, 255, .62);
-            line-height: 1.7;
-            font-size: 15px;
-        }
-
-        .quote-section {
-            padding: 100px 30px;
-            background: linear-gradient(rgba(36, 14, 14, .9), rgba(36, 14, 14, .9));
-        }
-
-        .quote {
-            max-width: 800px;
-            margin: auto;
-            text-align: center;
-        }
-
-        .quote-symbol {
-            color: #d5a85c;
-            font-size: 45px;
-            margin-bottom: 15px;
-        }
-
-        .quote p {
-            font-size: 27px;
-            line-height: 1.6;
-            font-style: italic;
-            color: rgba(255, 255, 255, .9);
-        }
-
-        .quote small {
-            display: block;
-            margin-top: 20px;
-            color: #d5a85c;
-            letter-spacing: 2px;
-        }
-
-        footer {
-            background: #090606;
-            padding: 70px 30px 30px;
-            border-top: 1px solid rgba(213, 168, 92, .15);
-        }
-
-        .footer-container {
-            max-width: 1100px;
-            margin: auto;
-            display: grid;
-            grid-template-columns: 1.3fr 1fr 1fr;
-            gap: 50px;
-        }
-
-        .footer-brand h2 {
-            color: #d5a85c;
-            letter-spacing: 4px;
-            margin-bottom: 15px;
-        }
-
-        .footer-brand p {
-            color: rgba(255, 255, 255, .55);
-            line-height: 1.7;
-            max-width: 350px;
-        }
-
-        .footer-column h3 {
-            color: #fff;
+        .advantage-icon {
+            color: #d5a65b;
             font-size: 17px;
-            margin-bottom: 20px;
+            margin-bottom: 12px;
         }
 
-        .footer-column p,
-        .footer-column a {
+        .advantage h3 {
+            color: #e5ddda;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .advantage p {
+            margin-top: 7px;
+            color: #777174;
+            font-size: 10px;
+            line-height: 1.55;
+        }
+
+        .contacts {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+
+        .contact {
+            padding: 22px 18px;
+            border: 1px solid rgba(255, 255, 255, 0.065);
+            border-radius: 12px;
+            background: rgba(23, 21, 23, 0.88);
+            color: #e6dfdc;
+        }
+
+        .contact-label {
             display: block;
-            color: rgba(255, 255, 255, .58);
+            color: #777174;
+            font-size: 9px;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        .contact-value {
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        .contact-value a {
+            color: inherit;
             text-decoration: none;
-            margin-bottom: 11px;
-            transition: .25s;
+            transition: color 0.2s;
         }
 
-        .footer-column a:hover {
-            color: #d5a85c;
-            transform: translateX(4px);
+        .contact-value a:hover {
+            color: #d5a65b;
         }
 
-        .footer-bottom {
-            max-width: 1100px;
-            margin: 50px auto 0;
-            padding-top: 20px;
-            border-top: 1px solid rgba(255, 255, 255, .08);
-            color: rgba(255, 255, 255, .35);
-            font-size: 13px;
-            display: flex;
-            justify-content: space-between;
+        .footer {
+            padding-top: 25px;
+            text-align: center;
+            color: #575256;
+            font-size: 9px;
+            letter-spacing: 1px;
         }
 
-        .reveal {
-            opacity: 0;
-            transform: translateY(35px);
-            transition: opacity .8s ease, transform .8s ease;
-        }
-
-        .reveal.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        @media(max-width: 850px) {
-            .navbar {
-                padding: 14px 16px;
+        @media (max-width: 800px) {
+            .quick-menu {
+                top: 12px;
+                width: calc(100% - 24px);
+                justify-content: center;
             }
 
-            .navbar.scrolled {
-                padding: 11px 16px;
+            .quick-button {
+                flex: 1;
+                min-width: 0;
+                padding: 0 9px;
+                font-size: 10px;
             }
 
-            .nav-container {
-                flex-direction: column;
-                gap: 12px;
+            .container {
+                padding: 85px 25px 45px;
             }
 
-            .logo {
-                text-align: center;
-                font-size: 22px;
+            .header {
+                margin-bottom: 45px;
             }
 
-            .logo span {
+            .header h1 {
+                font-size: 40px;
+            }
+
+            .buttons-main,
+            .advantages,
+            .contacts {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 500px) {
+            .quick-menu {
+                gap: 5px;
+                padding: 6px;
+            }
+
+            .quick-button {
+                height: 35px;
+                padding: 0 6px;
                 font-size: 9px;
             }
 
-            .nav-right {
-                width: 100%;
-                display: grid;
-                grid-template-columns: repeat(2, minmax(0, 1fr));
-                gap: 7px;
+            .container {
+                padding: 78px 18px 35px;
             }
 
-            .nav-btn {
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                padding: 11px 7px;
-                font-size: 13px;
-                text-align: center;
-                background: rgba(255, 255, 255, .035);
-                border: 1px solid rgba(213, 168, 92, .14);
+            .header h1 {
+                font-size: 34px;
+                letter-spacing: 5px;
             }
 
-            .nav-btn::after {
-                display: none;
+            .hero-title {
+                font-size: 24px;
             }
 
-            .login-btn,
-            .install-btn {
-                margin-left: 0;
+            .button {
+                min-height: 110px;
             }
 
-            .install-btn {
-                display: none;
-                grid-column: 1 / -1;
+            .button-large {
+                min-height: 125px;
             }
 
-            .cards {
-                grid-template-columns: 1fr;
-            }
-
-            .footer-container {
-                grid-template-columns: 1fr;
-                gap: 35px;
-            }
-
-            .footer-bottom {
-                flex-direction: column;
-                gap: 10px;
-            }
-
-            .hero-content {
-                padding-top: 180px;
-            }
-        }
-
-        @media(max-width: 560px) {
-            .navbar {
-                padding: 12px 12px;
-            }
-
-            .navbar.scrolled {
-                padding: 9px 12px;
-            }
-
-            .nav-container {
-                gap: 9px;
-            }
-
-            .logo {
-                font-size: 20px;
-                letter-spacing: 3px;
-            }
-
-            .logo span {
-                display: none;
-            }
-
-            .nav-right {
-                gap: 6px;
-            }
-
-            .nav-btn {
-                min-height: 42px;
-                padding: 9px 5px;
-                font-size: 12px;
-            }
-
-            .hero-content {
-                padding-top: 190px;
-            }
-
-            .hero-content h1 {
-                font-size: 42px;
-            }
-
-            .hero-content p {
-                font-size: 16px;
-            }
-
-            .section {
-                padding: 80px 20px;
-            }
-
-            .quote p {
-                font-size: 21px;
-            }
-        }
-
-        @media(max-width: 360px) {
-            .nav-btn {
-                font-size: 11px;
-                padding: 8px 3px;
+            .about-box {
+                padding: 25px 20px;
             }
         }
     </style>
 </head>
+
 <body>
-<nav class="navbar" id="navbar">
-    <div class="nav-container">
-        <a href="/" class="logo">MARANI<span>GEORGIAN COCKTAIL BAR</span></a>
-        <div class="nav-right">
-            <a href="/menu" class="nav-btn">Меню</a>
-            <a href="#cocktails" class="nav-btn">Коктейли</a>
-            <a href="/bar_name/delivery" class="nav-btn">Заказать домой</a>
-            <a href="/login" class="nav-btn login-btn">Войти в аккаунт</a>
-            <button type="button" class="nav-btn install-btn" id="installBtn">Установить приложение</button>
-        </div>
-    </div>
-</nav>
 
-<section class="hero">
-    <div class="hero-content">
-        <div class="georgian-label">ქართული • თბილისი • ღვინო</div>
-        <h1>Вкус Грузии<br>в каждом <span>коктейле</span></h1>
-        <p>MARANI — камерный коктейльный бар с грузинским характером. Авторские напитки, грузинские вина, пряные ароматы и атмосфера старого Тбилиси в современном исполнении.</p>
-        <div class="hero-buttons">
-            <a href="/bar_name/delivery" class="btn btn-primary">Заказать напитки домой</a>
-        </div>
-    </div>
-    <div class="scroll-down">↓ &nbsp; Узнать больше</div>
-</section>
+    <div class="quick-menu">
+        <a href="/login" class="quick-button login">
+            Войти
+        </a>
 
-<section class="section section-dark" id="cocktails">
-    <div class="section-container">
-        <div class="section-heading reveal">
-            <small>Наш характер</small>
-            <h2>Грузинская душа. Современный бар.</h2>
-            <p>Мы взяли знакомые грузинские вкусы и превратили их в коктейльную историю.</p>
-        </div>
-        <div class="cards">
-            <div class="card reveal">
-                <div class="card-icon">🍷</div>
-                <h3>Грузинское вино</h3>
-                <p>Классические и редкие сорта грузинских вин от небольших виноделен.</p>
+        <a href="/registration" class="quick-button registration">
+            Регистрация
+        </a>
+
+        <a href="#about" class="quick-button about">
+            О баре
+        </a>
+    </div>
+
+    <div class="container">
+
+        <header class="header">
+            <div class="header-top">
+                <h1>
+                    MARANI
+                </h1>
             </div>
-            <div class="card reveal">
-                <div class="card-icon">🍸</div>
-                <h3>Авторские коктейли</h3>
-                <p>Чача, гранат, виноград, специи и травы — необычные сочетания в современной подаче.</p>
+
+            <p>
+                GEORGIAN COCKTAIL BAR
+            </p>
+        </header>
+
+        <section class="hero">
+            <h2 class="hero-title">
+                Бар с грузинским характером
+            </h2>
+
+            <p class="hero-text">
+                Коктейли, блюда и спокойная атмосфера вечера.
+                Всё необходимое доступно прямо с телефона.
+            </p>
+        </section>
+
+        <section class="section">
+
+            <div class="section-title">
+                <h2>Основное</h2>
+                <div class="section-line"></div>
             </div>
-            <div class="card reveal">
-                <div class="card-icon">🥃</div>
-                <h3>Чача & Spirits</h3>
-                <p>Традиционные грузинские напитки в классических и авторских интерпретациях.</p>
+
+            <div class="buttons buttons-main">
+
+                <a
+                    href="/reservation"
+                    class="button button-large booking-card"
+                >
+                    <div class="icon">◇</div>
+
+                    <h3>
+                        Забронировать столик
+                    </h3>
+
+                    <p>
+                        Выберите удобный столик
+                    </p>
+                </a>
+
+                <a
+                    href="/bar_name/delivery"
+                    class="button button-large delivery-button"
+                >
+                    <div class="icon">⌁</div>
+
+                    <h3>
+                        Заказать домой
+                    </h3>
+
+                    <p>
+                        Доставка из бара
+                    </p>
+                </a>
+
             </div>
-        </div>
+
+        </section>
+
+        <section
+            class="section about-section"
+            id="about"
+        >
+
+            <div class="section-title">
+                <h2>О баре</h2>
+                <div class="section-line"></div>
+            </div>
+
+            <div class="about-box">
+
+                <h2>
+                    Бар, где всё просто
+                </h2>
+
+                <p>
+                    Выбирайте столик, смотрите меню, оформляйте заказ
+                    и оставайтесь в атмосфере вечера. Всё необходимое
+                    доступно прямо с телефона.
+                </p>
+
+                <div class="advantages">
+
+                    <div class="advantage">
+                        <div class="advantage-icon">
+                            ◇
+                        </div>
+
+                        <h3>
+                            Онлайн-бронирование
+                        </h3>
+
+                        <p>
+                            Выберите удобный столик и забронируйте его
+                            без лишних звонков.
+                        </p>
+                    </div>
+
+                    <div class="advantage">
+                        <div class="advantage-icon">
+                            ◌
+                        </div>
+
+                        <h3>
+                            Меню всегда рядом
+                        </h3>
+
+                        <p>
+                            Откройте меню с телефона и быстро найдите
+                            нужные блюда и напитки.
+                        </p>
+                    </div>
+
+                    <div class="advantage">
+                        <div class="advantage-icon">
+                            ◇
+                        </div>
+
+                        <h3>
+                            Удобный заказ
+                        </h3>
+
+                        <p>
+                            Оформляйте заказ прямо со своего устройства,
+                            не отвлекаясь от вечера.
+                        </p>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+        <section class="section">
+
+            <div class="section-title">
+                <h2>Контакты</h2>
+                <div class="section-line"></div>
+            </div>
+
+            <div class="contacts">
+
+                <div class="contact">
+                    <span class="contact-label">
+                        Телефон
+                    </span>
+
+                    <div class="contact-value">
+                        <a href="tel:+79999999999">
+                            +380 97 456 11 58
+                        </a>
+                    </div>
+                </div>
+
+                <div class="contact">
+                    <span class="contact-label">
+                        Почта
+                    </span>
+
+                    <div class="contact-value">
+                        <a href="mailto:hello@marani-bar.ru">
+                           tbilisibar.techsupport@gmail.com
+                        </a>
+                    </div>
+                </div>
+
+                <div class="contact">
+                    <span class="contact-label">
+                        Адрес
+                    </span>
+
+                    <div class="contact-value">
+                        Tbilisi, Gruzinskaya str., 12
+                    </div>
+                </div>
+
+            </div>
+
+        </section>
+
+        <footer class="footer">
+            MARANI
+        </footer>
+
     </div>
-</section>
 
-<section class="quote-section">
-    <div class="quote reveal">
-        <div class="quote-symbol">“</div>
-        <p>კარგი ღვინო კარგ მეგობარს ჰგავს — დროსთან ერთად უკეთესი ხდება.</p>
-        <small>კარგი ღვინო კარგ მეგობარს ჰგავს</small>
-    </div>
-</section>
-
-<footer id="contacts">
-    <div class="footer-container">
-        <div class="footer-brand">
-            <h2>MARANI</h2>
-            <p>Georgian Cocktail Bar — место для хороших разговоров, необычных коктейлей и долгих вечеров.</p>
-        </div>
-        <div class="footer-column">
-            <h3>Контакты</h3>
-            <p>📍 Gruzinskaya Street 12, Tbilisi</p>
-            <a href="tel:+4915112345678">📱 +49 151 12345678</a>
-            <a href="mailto:hello@marani-bar.de">✉ tbilisibar.techsupport@gmail.com</a>
-        </div>
-    </div>
-    <div class="footer-bottom">
-        <span>© 2026 MARANI Georgian Cocktail Bar</span>
-        <span>Made with Georgian soul</span>
-    </div>
-</footer>
-
-<script>
-    const navbar = document.getElementById("navbar");
-    const installBtn = document.getElementById("installBtn");
-    let deferredPrompt = null;
-
-    window.addEventListener("scroll", () => {
-        if (window.scrollY > 50) {
-            navbar.classList.add("scrolled");
-        } else {
-            navbar.classList.remove("scrolled");
-        }
-    });
-
-    const revealElements = document.querySelectorAll(".reveal");
-
-    const observer = new IntersectionObserver(entries => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add("visible");
-                observer.unobserve(entry.target);
-            }
-        });
-    }, { threshold: .15 });
-
-    revealElements.forEach(element => {
-        observer.observe(element);
-    });
-
-    document.querySelectorAll("a[href]").forEach(link => {
-        const href = link.getAttribute("href");
-
-        if (!href || href.startsWith("#") || href.startsWith("tel:") || href.startsWith("mailto:") || href.startsWith("http")) {
-            return;
-        }
-
-        link.addEventListener("click", event => {
-            event.preventDefault();
-            document.body.style.opacity = "0";
-            document.body.style.transition = "opacity .25s ease";
-
-            setTimeout(() => {
-                window.location.href = href;
-            }, 250);
-        });
-    });
-
-    document.querySelectorAll(".btn").forEach(button => {
-        button.addEventListener("click", () => {
-            button.style.transform = "scale(.96)";
-
-            setTimeout(() => {
-                button.style.transform = "";
-            }, 150);
-        });
-    });
-
-    window.addEventListener("beforeinstallprompt", event => {
-        event.preventDefault();
-        deferredPrompt = event;
-
-        if (window.matchMedia("(max-width: 850px)").matches) {
-            installBtn.style.display = "flex";
-        }
-    });
-
-    installBtn.addEventListener("click", async () => {
-        if (!deferredPrompt) {
-            return;
-        }
-
-        deferredPrompt.prompt();
-
-        const { outcome } = await deferredPrompt.userChoice;
-
-        if (outcome === "accepted") {
-            installBtn.style.display = "none";
-        }
-
-        deferredPrompt = null;
-    });
-
-    window.addEventListener("appinstalled", () => {
-        installBtn.style.display = "none";
-        deferredPrompt = null;
-    });
-
-    if ("serviceWorker" in navigator) {
-        window.addEventListener("load", () => {
-            navigator.serviceWorker.register("/service-worker.js").catch(() => {});
-        });
-    }
-</script>
 </body>
 </html>
