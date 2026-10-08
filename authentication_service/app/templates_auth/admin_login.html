@@ -1,29 +1,65 @@
 <!DOCTYPE html>
-
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Вход администратора | Bar & Lounge</title>
+    <meta name="theme-color" content="#1b1518">
+    <title>Вход администратора | MARANI</title>
+
     <style>
         * {
+            margin: 0;
+            padding: 0;
             box-sizing: border-box;
         }
+
         body {
-            margin: 0;
             min-height: 100vh;
-            font-family: "Segoe UI", sans-serif;
-            color: #fff;
             background:
-                radial-gradient(circle at 10% 20%, rgba(213, 166, 91, 0.20), transparent 28%),
-                radial-gradient(circle at 90% 80%, rgba(155, 65, 95, 0.22), transparent 30%),
-                linear-gradient(125deg, #171216, #302126 45%, #21171e 70%, #121014);
+                radial-gradient(
+                    ellipse at 50% 0%,
+                    rgba(137, 76, 82, 0.42) 0%,
+                    rgba(78, 49, 59, 0.48) 38%,
+                    rgba(27, 24, 29, 0.94) 72%,
+                    rgba(13, 13, 15, 0.99) 100%
+                ),
+                linear-gradient(
+                    180deg,
+                    #39262b 0%,
+                    #251d22 48%,
+                    #101012 100%
+                );
+            color: #eee5df;
+            font-family: Arial, sans-serif;
+            position: relative;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 35px;
+            padding: 35px 20px;
         }
+
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            background:
+                radial-gradient(
+                    circle at 18% 15%,
+                    rgba(191, 105, 82, 0.07),
+                    transparent 32%
+                ),
+                radial-gradient(
+                    circle at 82% 24%,
+                    rgba(207, 165, 91, 0.055),
+                    transparent 30%
+                );
+            z-index: 0;
+        }
+
         .page {
+            position: relative;
+            z-index: 1;
             width: 1050px;
             display: grid;
             grid-template-columns: 230px 420px 230px;
@@ -31,212 +67,292 @@
             justify-content: space-between;
             gap: 35px;
         }
+
         .side {
             display: flex;
             flex-direction: column;
-            gap: 18px;
+            gap: 14px;
         }
+
         .side-card {
             padding: 20px;
-            background: rgba(31, 26, 31, 0.72);
-            border: 1px solid rgba(255, 255, 255, 0.09);
+            border: 1px solid rgba(255, 255, 255, 0.065);
             border-radius: 13px;
-            backdrop-filter: blur(8px);
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(30, 25, 27, 0.9),
+                    rgba(17, 16, 18, 0.94)
+                );
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.18);
+            backdrop-filter: blur(12px);
         }
+
         .side-label {
             display: block;
             margin-bottom: 9px;
-            color: #756d72;
+            color: #777174;
             font-size: 9px;
-            letter-spacing: 2px;
+            letter-spacing: 1.8px;
         }
+
         .side-card h3 {
-            margin: 0 0 10px;
+            margin-bottom: 9px;
             color: #d5a65b;
             font-family: Georgia, serif;
             font-size: 17px;
             font-weight: normal;
         }
+
         .side-card p {
-            margin: 0;
-            color: #aaa1a6;
-            font-size: 11px;
-            line-height: 1.6;
+            color: #777276;
+            font-size: 10px;
+            line-height: 1.65;
         }
+
         .quote {
-            color: #ddd !important;
+            color: #aaa0a0 !important;
             font-family: Georgia, serif;
-            font-size: 14px !important;
+            font-size: 13px !important;
+            line-height: 1.6 !important;
         }
+
         .admin-icon {
             width: 42px;
             height: 42px;
             display: flex;
             align-items: center;
             justify-content: center;
+            border: 1px solid rgba(213, 166, 91, 0.3);
             border-radius: 10px;
-            background: rgba(213, 166, 91, 0.12);
-            border: 1px solid rgba(213, 166, 91, 0.2);
-            color: #d5a65b;
-            font-size: 20px;
+            background: rgba(213, 166, 91, 0.1);
+            color: #e6c58f;
+            font-size: 19px;
         }
+
         .admin-info {
             display: flex;
             align-items: center;
             gap: 12px;
         }
+
         .admin-name {
-            color: #ddd;
-            font-size: 11px;
+            color: #ddd4d0;
+            font-size: 10px;
             font-weight: 600;
         }
+
         .admin-description {
-            margin-top: 3px;
-            color: #777;
+            margin-top: 4px;
+            color: #777276;
             font-size: 9px;
         }
+
         .auth-card {
             width: 420px;
             padding: 40px 42px;
-            background: rgba(39, 34, 39, 0.95);
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            border-radius: 18px;
+            border: 1px solid rgba(213, 166, 91, 0.22);
+            border-radius: 17px;
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(30, 25, 27, 0.96),
+                    rgba(17, 16, 18, 0.97)
+                );
             box-shadow:
-                0 25px 70px rgba(0, 0, 0, 0.45),
-                0 0 45px rgba(213, 166, 91, 0.07);
+                0 25px 70px rgba(0, 0, 0, 0.42),
+                0 0 45px rgba(213, 166, 91, 0.05);
             backdrop-filter: blur(14px);
             animation: appear 0.5s ease;
         }
+
         .logo {
-            text-align: center;
-            color: #d5a65b;
+            margin-bottom: 18px;
+            color: #d1a15d;
             font-family: Georgia, serif;
             font-size: 13px;
             letter-spacing: 5px;
-            margin-bottom: 18px;
-        }
-        .auth-card h1 {
-            margin: 0;
             text-align: center;
-            font-family: Georgia, serif;
-            font-size: 30px;
-            font-weight: normal;
         }
+
+        .auth-card h1 {
+            color: #eee4dd;
+            font-family: Georgia, serif;
+            font-size: 28px;
+            font-weight: normal;
+            text-align: center;
+        }
+
         .subtitle {
             margin: 10px 0 28px;
+            color: #91898a;
+            font-size: 11px;
+            line-height: 1.6;
             text-align: center;
-            color: #aaa2a7;
-            font-size: 12px;
-            line-height: 1.5;
         }
+
         .field {
             margin-bottom: 16px;
         }
+
         .field label {
             display: block;
             margin-bottom: 7px;
-            color: #d8d1d5;
-            font-size: 11px;
+            color: #c8c0c0;
+            font-size: 10px;
         }
+
         .required {
             color: #d5a65b;
         }
+
         input {
             width: 100%;
             padding: 13px 14px;
-            border: 1px solid #4a4148;
+            border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 8px;
-            background: #302b30;
-            color: #fff;
-            font-size: 13px;
             outline: none;
-            transition: 0.25s;
+            background: rgba(255, 255, 255, 0.045);
+            color: #eee8e3;
+            font-size: 12px;
+            transition:
+                border-color 0.2s,
+                background 0.2s,
+                box-shadow 0.2s;
         }
+
         input::placeholder {
-            color: #827b80;
+            color: #6f696d;
         }
+
         input:focus {
-            border-color: #d5a65b;
-            background: #373137;
-            box-shadow: 0 0 0 3px rgba(213, 166, 91, 0.08);
+            border-color: rgba(213, 166, 91, 0.7);
+            background: rgba(255, 255, 255, 0.06);
+            box-shadow: 0 0 0 3px rgba(213, 166, 91, 0.07);
         }
+
         .field-error {
             margin-top: 5px;
             color: #d98282;
-            font-size: 11px;
+            font-size: 10px;
+            line-height: 1.5;
         }
+
         #form-error {
             display: none;
             margin-bottom: 10px;
             padding: 10px 12px;
             border: 1px solid rgba(217, 130, 130, 0.35);
             border-radius: 7px;
-            background: rgba(130, 20, 35, 0.28);
+            background: rgba(130, 20, 35, 0.25);
             color: #ffb0b0;
             line-height: 1.5;
         }
+
         .forgot-password {
             display: block;
             margin-top: -7px;
             margin-bottom: 8px;
-            color: #d5a65b;
+            color: #c9a05f;
+            font-size: 9px;
             text-align: right;
             text-decoration: none;
-            font-size: 10px;
-            transition: 0.2s;
+            transition: color 0.2s;
         }
+
         .forgot-password:hover {
             color: #e5b970;
             text-decoration: underline;
         }
+
         .btn {
             width: 100%;
             margin-top: 8px;
-            padding: 14px;
-            border: none;
+            padding: 13px;
+            border: 1px solid rgba(213, 166, 91, 0.55);
             border-radius: 8px;
-            background: linear-gradient(135deg, #dfb46c, #bd8842);
-            color: #211a15;
-            font-size: 14px;
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(55, 40, 31, 0.95),
+                    rgba(35, 27, 27, 0.96)
+                );
+            color: #eee8e3;
+            font-size: 12px;
             font-weight: 600;
             cursor: pointer;
-            transition: 0.3s;
+            transition:
+                transform 0.2s,
+                border-color 0.2s,
+                background 0.2s,
+                box-shadow 0.2s;
         }
+
         .btn:hover {
             transform: translateY(-2px);
-            background: linear-gradient(135deg, #ebc17d, #cf9951);
-            box-shadow: 0 8px 22px rgba(213, 166, 91, 0.22);
+            border-color: #d5a65b;
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(65, 46, 34, 0.98),
+                    rgba(40, 30, 29, 0.98)
+                );
+            box-shadow: 0 8px 22px rgba(213, 166, 91, 0.12);
         }
+
         .divider {
             height: 1px;
             margin: 25px 0;
-            background: rgba(255, 255, 255, 0.09);
+            background: rgba(255, 255, 255, 0.07);
         }
+
         .register-link {
-            text-align: center;
-            color: #aaa2a7;
-            font-size: 11px;
+            color: #777276;
+            font-size: 10px;
             line-height: 1.6;
+            text-align: center;
         }
+
         .register-link a {
-            color: #d5a65b;
+            color: #c9a05f;
             text-decoration: none;
         }
+
         .register-link a:hover {
+            color: #e5b970;
             text-decoration: underline;
         }
+
         .back-link {
             display: block;
             margin-top: 18px;
-            color: #777;
+            color: #625d60;
+            font-size: 9px;
             text-align: center;
             text-decoration: none;
-            font-size: 10px;
-            transition: 0.2s;
+            transition: color 0.2s;
         }
+
         .back-link:hover {
-            color: #fff;
+            color: #ddd4d0;
         }
+
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 10px;
+            color: #777174;
+        }
+
+        .footer a {
+            color: #d5a65b;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
         @keyframes appear {
             from {
                 opacity: 0;
@@ -247,229 +363,361 @@
                 transform: translateY(0);
             }
         }
+
         @media (max-width: 950px) {
             .page {
                 width: 420px;
                 grid-template-columns: 1fr;
             }
+
             .side {
                 display: none;
             }
         }
+
         @media (max-width: 500px) {
             body {
                 padding: 15px;
             }
+
             .page {
                 width: 100%;
             }
+
             .auth-card {
                 width: 100%;
                 padding: 32px 23px;
             }
+
+            .auth-card h1 {
+                font-size: 25px;
+            }
         }
     </style>
 </head>
+
 <body>
+
 <div class="page">
+
     <aside class="side">
+
         <div class="side-card">
-            <span class="side-label">BAR & LOUNGE</span>
-            <h3>Панель администратора</h3>
-            <p>Авторизуйтесь для доступа к административным функциям Bar & Lounge.</p>
+            <span class="side-label">MARANI</span>
+
+            <h3>
+                Панель администратора
+            </h3>
+
+            <p>
+                Авторизуйтесь для доступа к административным функциям
+                MARANI.
+            </p>
         </div>
+
         <div class="side-card">
             <span class="side-label">ДОСТУП</span>
-            <p class="quote">«Особый доступ требует особого ключа»</p>
+
+            <p class="quote">
+                «Особый доступ требует особого ключа»
+            </p>
         </div>
+
     </aside>
+
     <main class="auth-card">
-        <div class="logo">BAR & LOUNGE</div>
-        <h1>Вход администратора</h1>
+
+        <div class="logo">
+            MARANI
+        </div>
+
+        <h1>
+            Вход администратора
+        </h1>
+
         <div class="subtitle">
             Введите данные для доступа к панели администратора
         </div>
+
         <form id="adminLoginForm">
+
             <div class="field">
-                <label>Email <span class="required">*</span></label>
-                <input type="email" name="email" placeholder="admin@example.com" required>
+                <label>
+                    Email <span class="required">*</span>
+                </label>
+
+                <input
+                    type="email"
+                    name="email"
+                    placeholder="admin@example.com"
+                    required
+                >
             </div>
+
             <div class="field">
-                <label>Пароль <span class="required">*</span></label>
-                <input type="password" name="password" placeholder="Введите пароль" required>
+                <label>
+                    Пароль <span class="required">*</span>
+                </label>
+
+                <input
+                    type="password"
+                    name="password"
+                    placeholder="Введите пароль"
+                    required
+                >
             </div>
-            <a href="/bar_name/forgot_password" class="forgot-password">Забыли пароль?</a>
+
+            <a
+                href="/bar_name/forgot_password"
+                class="forgot-password"
+            >
+                Забыли пароль?
+            </a>
+
             <div class="field">
-                <label>Специальный ключ <span class="required">*</span></label>
-                <input type="password" name="authentication_key" placeholder="Введите специальный ключ" required>
+                <label>
+                    Специальный ключ <span class="required">*</span>
+                </label>
+
+                <input
+                    type="password"
+                    name="authentication_key"
+                    placeholder="Введите специальный ключ"
+                    required
+                >
             </div>
+
             <div id="form-error" class="field-error"></div>
-            <button type="submit" class="btn">
+
+            <button
+                type="submit"
+                class="btn"
+            >
                 Войти
             </button>
+
         </form>
+
         <div class="divider"></div>
+
         <div class="register-link">
             Обычный пользователь?
-            <a href="/login">Войти как пользователь</a>
+            <a href="/login">
+                Войти как пользователь
+            </a>
         </div>
-        <a href="/bar_name" class="back-link">
+
+        <a
+            href="/bar_name"
+            class="back-link"
+        >
             ← Вернуться на главную
         </a>
+
     </main>
+
     <aside class="side">
+
         <div class="side-card">
-            <span class="side-label">ADMIN ACCESS</span>
+
+            <span class="side-label">
+                ADMIN ACCESS
+            </span>
+
             <div class="admin-info">
-                <div class="admin-icon">◇</div>
-                <div>
-                    <div class="admin-name">Административный доступ</div>
-                    <div class="admin-description">Управление системой</div>
+
+                <div class="admin-icon">
+                    ◇
                 </div>
+
+                <div>
+                    <div class="admin-name">
+                        Административный доступ
+                    </div>
+
+                    <div class="admin-description">
+                        Управление системой
+                    </div>
+                </div>
+
             </div>
+
         </div>
+
         <div class="side-card">
-            <span class="side-label">ВОЗМОЖНОСТИ</span>
-            <h3>Управление</h3>
+
+            <span class="side-label">
+                ВОЗМОЖНОСТИ
+            </span>
+
+            <h3>
+                Управление
+            </h3>
+
             <p>
-                Управление пользователями, заказами, меню и другими функциями системы.
+                Управление пользователями, заказами, меню и другими
+                функциями системы.
             </p>
+
         </div>
+
         <div class="side-card">
-            <span class="side-label">SECURITY</span>
-            <p class="quote">Защищённая зона</p>
+
+            <span class="side-label">
+                SECURITY
+            </span>
+
+            <p class="quote">
+                Защищённая зона
+            </p>
+
         </div>
+
+        <div class="footer">
+
+    Есть специальное приглашение?
+
+    <a href="/admin/registration">
+        Зарегистрироваться как администратор
+    </a>
+
     </aside>
+
 </div>
+
 <script src="/static/api.js"></script>
+
 <script>
     const form = document.getElementById("adminLoginForm");
     const formError = document.getElementById("form-error");
 
-function clearError(input) {
-    input.style.borderColor = "";
-
-    const error = input.parentElement.querySelector(
-        ".field-error:not(#form-error)"
-    );
-
-    if (error) {
-        error.remove();
-    }
-}
-
-function showError(input, message) {
-    clearError(input);
-    input.style.borderColor = "#d98282";
-
-    const error = document.createElement("div");
-    error.className = "field-error";
-    error.textContent = message;
-
-    input.parentElement.appendChild(error);
-}
-
-function clearAllErrors() {
-    form.querySelectorAll(".field-error:not(#form-error)").forEach(error => {
-        error.remove();
-    });
-
-    form.querySelectorAll("input").forEach(input => {
+    function clearError(input) {
         input.style.borderColor = "";
-    });
 
-    formError.textContent = "";
-    formError.style.display = "none";
-}
+        const error = input.parentElement.querySelector(
+            ".field-error:not(#form-error)"
+        );
 
-function showFormError(message) {
-    formError.textContent = message;
-    formError.style.display = "block";
-}
-
-async function handleFieldErrors(response) {
-    let data;
-
-    try {
-        data = await response.json();
-    } catch {
-        showFormError("Произошла ошибка.");
-        return;
+        if (error) {
+            error.remove();
+        }
     }
 
-    if (Array.isArray(data.detail)) {
-        data.detail.forEach(error => {
-            const field = error.loc?.at(-1);
-            const input = form.querySelector(`[name="${field}"]`);
+    function showError(input, message) {
+        clearError(input);
+        input.style.borderColor = "#d98282";
 
-            if (input) {
-                showError(input, error.msg || "Некорректное значение.");
-            }
+        const error = document.createElement("div");
+        error.className = "field-error";
+        error.textContent = message;
+
+        input.parentElement.appendChild(error);
+    }
+
+    function clearAllErrors() {
+        form.querySelectorAll(".field-error:not(#form-error)").forEach(error => {
+            error.remove();
         });
 
-        return;
-    }
-
-    if (typeof data.detail === "string") {
-        showFormError(data.detail);
-        return;
-    }
-
-    if (typeof data.message === "string") {
-        showFormError(data.message);
-        return;
-    }
-
-    showFormError("Произошла ошибка.");
-}
-
-async function handleResponse(response) {
-    if (response.ok) {
-        return true;
-    }
-
-    if (
-        response.status === 422 ||
-        response.status === 401 ||
-        response.status === 403
-    ) {
-        await handleFieldErrors(response);
-        return false;
-    }
-
-    if (response.status >= 500) {
-        showFormError("Ошибка сервера. Попробуйте позже.");
-        return false;
-    }
-
-    showFormError("Произошла ошибка.");
-    return false;
-}
-
-form.addEventListener("submit", async function(event) {
-    event.preventDefault();
-    clearAllErrors();
-
-    try {
-        const response = await apiFetch("/admin/login", {
-            method: "POST",
-            body: new FormData(form)
+        form.querySelectorAll("input").forEach(input => {
+            input.style.borderColor = "";
         });
 
-        if (!await handleResponse(response)) {
+        formError.textContent = "";
+        formError.style.display = "none";
+    }
+
+    function showFormError(message) {
+        formError.textContent = message;
+        formError.style.display = "block";
+    }
+
+    async function handleFieldErrors(response) {
+        let data;
+
+        try {
+            data = await response.json();
+        } catch {
+            showFormError("Произошла ошибка.");
             return;
         }
 
-        window.location.href = "/admin_panel";
-    } catch (error) {
-        console.error(error);
+        if (Array.isArray(data.detail)) {
+            data.detail.forEach(error => {
+                const field = error.loc?.at(-1);
+                const input = form.querySelector(`[name="${field}"]`);
 
-        showFormError(
-            "Не удалось подключиться к серверу. Проверьте соединение."
-        );
+                if (input) {
+                    showError(
+                        input,
+                        error.msg || "Некорректное значение."
+                    );
+                }
+            });
+
+            return;
+        }
+
+        if (typeof data.detail === "string") {
+            showFormError(data.detail);
+            return;
+        }
+
+        if (typeof data.message === "string") {
+            showFormError(data.message);
+            return;
+        }
+
+        showFormError("Произошла ошибка.");
     }
-});
 
+    async function handleResponse(response) {
+        if (response.ok) {
+            return true;
+        }
+
+        if (
+            response.status === 422 ||
+            response.status === 401 ||
+            response.status === 403
+        ) {
+            await handleFieldErrors(response);
+            return false;
+        }
+
+        if (response.status >= 500) {
+            showFormError("Ошибка сервера. Попробуйте позже.");
+            return false;
+        }
+
+        showFormError("Произошла ошибка.");
+        return false;
+    }
+
+    form.addEventListener("submit", async function(event) {
+        event.preventDefault();
+        clearAllErrors();
+
+        try {
+            const response = await apiFetch("/admin/login", {
+                method: "POST",
+                body: new FormData(form)
+            });
+
+            if (!await handleResponse(response)) {
+                return;
+            }
+
+            window.location.href = "/admin_panel";
+        } catch (error) {
+            console.error(error);
+
+            showFormError(
+                "Не удалось подключиться к серверу. Проверьте соединение."
+            );
+        }
+    });
 </script>
+
 </body>
 </html>

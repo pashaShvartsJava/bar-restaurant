@@ -1,498 +1,746 @@
 <!DOCTYPE html>
-
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Регистрация администратора | Bar & Lounge</title>
+    <meta name="theme-color" content="#1b1518">
+    <title>Регистрация администратора | MARANI</title>
     <style>
         * {
+            margin: 0;
+            padding: 0;
             box-sizing: border-box;
         }
-    body {
-        margin: 0;
-        min-height: 100vh;
-        font-family: "Segoe UI", sans-serif;
-        background:
-            radial-gradient(circle at 15% 20%, rgba(213, 166, 91, 0.25), transparent 30%),
-            radial-gradient(circle at 85% 80%, rgba(180, 70, 110, 0.20), transparent 30%),
-            linear-gradient(135deg, #24191f, #3a252b, #24191f);
-        color: white;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        padding: 30px;
-    }
 
-    .page {
-        width: 1100px;
-        display: grid;
-        grid-template-columns: 220px 440px 220px;
-        justify-content: center;
-        align-items: center;
-        gap: 40px;
-    }
+        body {
+            min-height: 100vh;
+            background:
+                radial-gradient(
+                    ellipse at 50% 0%,
+                    rgba(137, 76, 82, 0.42) 0%,
+                    rgba(78, 49, 59, 0.48) 38%,
+                    rgba(27, 24, 29, 0.94) 72%,
+                    rgba(13, 13, 15, 0.99) 100%
+                ),
+                linear-gradient(
+                    180deg,
+                    #39262b 0%,
+                    #251d22 48%,
+                    #101012 100%
+                );
+            color: #eee5df;
+            font-family: Arial, sans-serif;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 35px 20px;
+        }
 
-    .side {
-        display: flex;
-        flex-direction: column;
-        gap: 20px;
-    }
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            background:
+                radial-gradient(
+                    circle at 18% 15%,
+                    rgba(191, 105, 82, 0.07),
+                    transparent 32%
+                ),
+                radial-gradient(
+                    circle at 82% 24%,
+                    rgba(207, 165, 91, 0.055),
+                    transparent 30%
+                );
+            z-index: 0;
+        }
 
-    .side-box {
-        padding: 20px;
-        background: rgba(30, 25, 30, 0.75);
-        border: 1px solid rgba(255,255,255,0.1);
-        border-radius: 14px;
-    }
-
-    .side-label {
-        color: #d5a65b;
-        font-size: 9px;
-        letter-spacing: 2px;
-    }
-
-    .side-box h3 {
-        margin: 10px 0;
-        font-family: Georgia, serif;
-        font-weight: normal;
-        font-size: 18px;
-    }
-
-    .side-box p {
-        margin: 0;
-        color: #aaa;
-        font-size: 11px;
-        line-height: 1.6;
-    }
-
-    .card {
-        width: 440px;
-        padding: 35px 40px;
-        background: rgba(39, 32, 38, 0.97);
-        border: 1px solid rgba(255,255,255,0.12);
-        border-radius: 18px;
-        box-shadow: 0 25px 60px rgba(0,0,0,0.45);
-    }
-
-    .logo {
-        text-align: center;
-        color: #d5a65b;
-        font-family: Georgia, serif;
-        letter-spacing: 5px;
-        font-size: 13px;
-        margin-bottom: 15px;
-    }
-
-    h1 {
-        margin: 0;
-        text-align: center;
-        font-family: Georgia, serif;
-        font-size: 30px;
-        font-weight: normal;
-    }
-
-    .subtitle {
-        text-align: center;
-        color: #aaa;
-        font-size: 12px;
-        margin: 10px 0 25px;
-    }
-
-    .steps {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-bottom: 25px;
-    }
-
-    .step-number {
-        width: 30px;
-        height: 30px;
-        border-radius: 50%;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        background: #352f34;
-        border: 1px solid #51484e;
-        color: #888;
-        font-size: 11px;
-    }
-
-    .step-number.active {
-        background: #d5a65b;
-        border-color: #d5a65b;
-        color: #211a15;
-    }
-
-    .step-line {
-        width: 35px;
-        height: 1px;
-        background: #51484e;
-    }
-
-    .form-step {
-        display: none;
-    }
-
-    .form-step.active {
-        display: block;
-    }
-
-    .step-title {
-        margin-bottom: 20px;
-        font-family: Georgia, serif;
-        font-size: 20px;
-    }
-
-    .row {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 12px;
-    }
-
-    .field {
-        margin-bottom: 15px;
-    }
-
-    label {
-        display: block;
-        margin-bottom: 6px;
-        font-size: 11px;
-        color: #ddd;
-    }
-
-    .required {
-        color: #d5a65b;
-    }
-
-    input {
-        width: 100%;
-        padding: 12px;
-        border-radius: 8px;
-        border: 1px solid #50464d;
-        background: #302a30;
-        color: white;
-        font-size: 13px;
-        outline: none;
-    }
-
-    input:focus {
-        border-color: #d5a65b;
-        box-shadow: 0 0 0 3px rgba(213,166,91,0.08);
-    }
-
-    input::placeholder {
-        color: #777;
-    }
-
-    .field-error {
-        color: #d98282;
-        font-size: 11px;
-        margin-top: 5px;
-        line-height: 1.4;
-    }
-
-    .form-error {
-        display: none;
-        margin-bottom: 15px;
-        padding: 10px 12px;
-        border: 1px solid rgba(217, 130, 130, 0.4);
-        border-radius: 8px;
-        background: rgba(217, 130, 130, 0.08);
-        color: #d98282;
-        font-size: 11px;
-        line-height: 1.5;
-    }
-
-    .form-error.show {
-        display: block;
-    }
-
-    .next-button,
-    .register-button {
-        width: 100%;
-        margin-top: 5px;
-        padding: 13px;
-        border: none;
-        border-radius: 8px;
-        background: #d5a65b;
-        color: #211a15;
-        font-size: 14px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: 0.2s;
-    }
-
-    .next-button:hover,
-    .register-button:hover {
-        background: #e5b970;
-        transform: translateY(-1px);
-    }
-
-    .back-button {
-        width: 100%;
-        margin-top: 9px;
-        padding: 10px;
-        border-radius: 8px;
-        border: 1px solid #50464d;
-        background: transparent;
-        color: #999;
-        cursor: pointer;
-        font-size: 11px;
-    }
-
-    .back-button:hover {
-        color: white;
-        border-color: #777;
-    }
-
-    .footer {
-        text-align: center;
-        margin-top: 20px;
-        font-size: 11px;
-        color: #999;
-    }
-
-    .footer a {
-        color: #d5a65b;
-        text-decoration: none;
-    }
-
-    .footer a:hover {
-        text-decoration: underline;
-    }
-
-    @media (max-width: 900px) {
         .page {
-            grid-template-columns: 1fr;
-            width: 440px;
+            position: relative;
+            z-index: 1;
+            width: 1050px;
+            display: grid;
+            grid-template-columns: 230px 420px 230px;
+            align-items: center;
+            justify-content: space-between;
+            gap: 35px;
         }
 
         .side {
-            display: none;
-        }
-    }
-
-    @media (max-width: 500px) {
-        body {
-            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
         }
 
-        .page {
-            width: 100%;
+        .side-box {
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.065);
+            border-radius: 13px;
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(30, 25, 27, 0.9),
+                    rgba(17, 16, 18, 0.94)
+                );
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.18);
+            backdrop-filter: blur(12px);
+        }
+
+        .side-label {
+            display: block;
+            margin-bottom: 9px;
+            color: #777174;
+            font-size: 9px;
+            letter-spacing: 1.8px;
+        }
+
+        .side-box h3 {
+            margin-bottom: 9px;
+            color: #d5a65b;
+            font-family: Georgia, serif;
+            font-size: 17px;
+            font-weight: normal;
+        }
+
+        .side-box p {
+            color: #777276;
+            font-size: 10px;
+            line-height: 1.65;
+        }
+
+        .quote {
+            color: #aaa0a0 !important;
+            font-family: Georgia, serif;
+            font-size: 13px !important;
+            line-height: 1.6 !important;
+        }
+
+        .admin-icon {
+            width: 42px;
+            height: 42px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(213, 166, 91, 0.3);
+            border-radius: 10px;
+            background: rgba(213, 166, 91, 0.1);
+            color: #e6c58f;
+            font-size: 19px;
+        }
+
+        .admin-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .admin-name {
+            color: #ddd4d0;
+            font-size: 10px;
+            font-weight: 600;
+        }
+
+        .admin-description {
+            margin-top: 4px;
+            color: #777276;
+            font-size: 9px;
         }
 
         .card {
-            width: 100%;
-            padding: 30px 22px;
+            width: 420px;
+            padding: 40px 42px;
+            border: 1px solid rgba(213, 166, 91, 0.22);
+            border-radius: 17px;
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(30, 25, 27, 0.96),
+                    rgba(17, 16, 18, 0.97)
+                );
+            box-shadow:
+                0 25px 70px rgba(0, 0, 0, 0.42),
+                0 0 45px rgba(213, 166, 91, 0.05);
+            backdrop-filter: blur(14px);
+            animation: appear 0.5s ease;
+        }
+
+        .logo {
+            margin-bottom: 18px;
+            color: #d1a15d;
+            font-family: Georgia, serif;
+            font-size: 13px;
+            letter-spacing: 5px;
+            text-align: center;
+        }
+
+        h1 {
+            color: #eee4dd;
+            font-family: Georgia, serif;
+            font-size: 28px;
+            font-weight: normal;
+            text-align: center;
+        }
+
+        .subtitle {
+            margin: 10px 0 28px;
+            color: #91898a;
+            font-size: 11px;
+            line-height: 1.6;
+            text-align: center;
+        }
+
+        .steps {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 25px;
+        }
+
+        .step-number {
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.045);
+            color: #777276;
+            font-size: 10px;
+            transition: 0.2s;
+        }
+
+        .step-number.active {
+            border-color: #d5a65b;
+            background: #d5a65b;
+            color: #211a15;
+        }
+
+        .step-line {
+            width: 35px;
+            height: 1px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .form-step {
+            display: none;
+        }
+
+        .form-step.active {
+            display: block;
+        }
+
+        .step-title {
+            margin-bottom: 20px;
+            color: #eee4dd;
+            font-family: Georgia, serif;
+            font-size: 20px;
         }
 
         .row {
-            grid-template-columns: 1fr;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
         }
-    }
-</style>
 
+        .field {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 7px;
+            color: #c8c0c0;
+            font-size: 10px;
+        }
+
+        .required {
+            color: #d5a65b;
+        }
+
+        input {
+            width: 100%;
+            padding: 13px 14px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            outline: none;
+            background: rgba(255, 255, 255, 0.045);
+            color: #eee8e3;
+            font-size: 12px;
+            transition:
+                border-color 0.2s,
+                background 0.2s,
+                box-shadow 0.2s;
+        }
+
+        input:focus {
+            border-color: rgba(213, 166, 91, 0.7);
+            background: rgba(255, 255, 255, 0.06);
+            box-shadow: 0 0 0 3px rgba(213, 166, 91, 0.07);
+        }
+
+        input::placeholder {
+            color: #6f696d;
+        }
+
+        input[type="date"] {
+            color-scheme: dark;
+        }
+
+        .field-error {
+            margin-top: 5px;
+            color: #d98282;
+            font-size: 10px;
+            line-height: 1.5;
+        }
+
+        .form-error {
+            display: none;
+            margin-bottom: 15px;
+            padding: 10px 12px;
+            border: 1px solid rgba(217, 130, 130, 0.35);
+            border-radius: 7px;
+            background: rgba(130, 20, 35, 0.25);
+            color: #ffb0b0;
+            font-size: 10px;
+            line-height: 1.5;
+        }
+
+        .form-error.show {
+            display: block;
+        }
+
+        .next-button,
+        .register-button {
+            width: 100%;
+            margin-top: 5px;
+            padding: 13px;
+            border: 1px solid rgba(213, 166, 91, 0.55);
+            border-radius: 8px;
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(55, 40, 31, 0.95),
+                    rgba(35, 27, 27, 0.96)
+                );
+            color: #eee8e3;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition:
+                transform 0.2s,
+                border-color 0.2s,
+                background 0.2s,
+                box-shadow 0.2s;
+        }
+
+        .next-button:hover,
+        .register-button:hover {
+            transform: translateY(-2px);
+            border-color: #d5a65b;
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(65, 46, 34, 0.98),
+                    rgba(40, 30, 29, 0.98)
+                );
+            box-shadow: 0 8px 22px rgba(213, 166, 91, 0.12);
+        }
+
+        .back-button {
+            width: 100%;
+            margin-top: 9px;
+            padding: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            background: transparent;
+            color: #777276;
+            cursor: pointer;
+            font-size: 10px;
+            transition:
+                color 0.2s,
+                border-color 0.2s,
+                background 0.2s;
+        }
+
+        .back-button:hover {
+            border-color: rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.025);
+            color: #ddd4d0;
+        }
+
+        .back-link {
+            display: block;
+            margin-top: 18px;
+            color: #625d60;
+            font-size: 9px;
+            text-align: center;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .back-link:hover {
+            color: #ddd4d0;
+        }
+
+        .footer {
+            margin-top: 22px;
+            color: #777276;
+            font-size: 10px;
+            line-height: 1.6;
+            text-align: center;
+        }
+
+        .footer a {
+            color: #c9a05f;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            color: #e5b970;
+            text-decoration: underline;
+        }
+
+        @keyframes appear {
+            from {
+                opacity: 0;
+                transform: translateY(12px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 950px) {
+            .page {
+                width: 420px;
+                grid-template-columns: 1fr;
+            }
+
+            .side {
+                display: none;
+            }
+        }
+
+        @media (max-width: 500px) {
+            body {
+                padding: 15px;
+            }
+
+            .page {
+                width: 100%;
+            }
+
+            .card {
+                width: 100%;
+                padding: 32px 23px;
+            }
+
+            .row {
+                grid-template-columns: 1fr;
+            }
+
+            h1 {
+                font-size: 25px;
+            }
+        }
+    </style>
 </head>
+
 <body>
+
 <div class="page">
+
     <div class="side">
+
         <div class="side-box">
-            <div class="side-label">BAR & LOUNGE</div>
-            <h3>Административный доступ</h3>
+            <div class="side-label">MARANI</div>
+
+            <h3>
+                Административный доступ
+            </h3>
+
             <p>
-                Создайте учётную запись администратора для управления системой Bar & Lounge.
+                Создайте учётную запись администратора для управления
+                системой MARANI.
             </p>
         </div>
 
-    <div class="side-box">
-        <div class="side-label">SECURITY</div>
-        <p>
-            Регистрация администратора доступна только по специальному ключу.
-        </p>
-    </div>
-</div>
+        <div class="side-box">
+            <div class="side-label">SECURITY</div>
 
-<div class="card">
-    <div class="logo">BAR & LOUNGE</div>
+            <p>
+                Регистрация администратора доступна только по
+                специальному ключу.
+            </p>
+        </div>
 
-    <h1>Регистрация администратора</h1>
-
-    <div class="subtitle">
-        Создайте административную учётную запись
     </div>
 
-    <div class="steps">
-        <div class="step-number active" id="indicator1">1</div>
-        <div class="step-line"></div>
-        <div class="step-number" id="indicator2">2</div>
-    </div>
+    <div class="card">
 
-    <div id="formError" class="form-error"></div>
+        <div class="logo">
+            MARANI
+        </div>
 
-    <form id="adminRegistrationForm" method="post" action="/admin/registration">
-        <div id="step1" class="form-step active">
-            <div class="step-title">Личные данные</div>
+        <h1>
+            Регистрация администратора
+        </h1>
 
-            <div class="row">
+        <div class="subtitle">
+            Создайте административную учётную запись
+        </div>
+
+        <div class="steps">
+            <div
+                class="step-number active"
+                id="indicator1"
+            >
+                1
+            </div>
+
+            <div class="step-line"></div>
+
+            <div
+                class="step-number"
+                id="indicator2"
+            >
+                2
+            </div>
+        </div>
+
+        <div
+            id="formError"
+            class="form-error"
+        ></div>
+
+        <form
+            id="adminRegistrationForm"
+            method="post"
+            action="/admin/registration"
+        >
+
+            <div
+                id="step1"
+                class="form-step active"
+            >
+
+                <div class="step-title">
+                    Личные данные
+                </div>
+
+                <div class="row">
+
+                    <div class="field">
+
+                        <label>
+                            Имя
+                            <span class="required">*</span>
+                        </label>
+
+                        <input
+                            type="text"
+                            name="name"
+                            placeholder="Имя"
+                            minlength="2"
+                            maxlength="50"
+                            required
+                        >
+
+                    </div>
+
+                    <div class="field">
+
+                        <label>
+                            Фамилия
+                            <span class="required">*</span>
+                        </label>
+
+                        <input
+                            type="text"
+                            name="surname"
+                            placeholder="Фамилия"
+                            minlength="2"
+                            maxlength="50"
+                            required
+                        >
+
+                    </div>
+
+                </div>
+
                 <div class="field">
+
                     <label>
-                        Имя
+                        Номер телефона
                         <span class="required">*</span>
                     </label>
 
                     <input
-                        type="text"
-                        name="name"
-                        placeholder="Имя"
-                        minlength="2"
-                        maxlength="50"
+                        type="tel"
+                        name="phone"
+                        placeholder="+49 000 000000"
                         required
                     >
+
                 </div>
 
                 <div class="field">
+
                     <label>
-                        Фамилия
+                        Дата рождения
                         <span class="required">*</span>
                     </label>
 
                     <input
-                        type="text"
-                        name="surname"
-                        placeholder="Фамилия"
-                        minlength="2"
-                        maxlength="50"
+                        type="date"
+                        name="birthday"
                         required
                     >
+
                 </div>
-            </div>
 
-            <div class="field">
-                <label>
-                    Номер телефона
-                    <span class="required">*</span>
-                </label>
-
-                <input
-                    type="tel"
-                    name="phone"
-                    placeholder="+49 000 000000"
-                    required
+                <button
+                    type="button"
+                    class="next-button"
+                    id="buttonStep2"
                 >
+                    Перейти ко второму шагу →
+                </button>
+
             </div>
 
-            <div class="field">
-                <label>
-                    Дата рождения
-                    <span class="required">*</span>
-                </label>
-
-                <input
-                    type="date"
-                    name="birthday"
-                    required
-                >
-            </div>
-
-            <button
-                type="button"
-                class="next-button"
-                id="buttonStep2"
+            <div
+                id="step2"
+                class="form-step"
             >
-                Перейти ко второму шагу →
-            </button>
+
+                <div class="step-title">
+                    Данные администратора
+                </div>
+
+                <div class="field">
+
+                    <label>
+                        Email
+                        <span class="required">*</span>
+                    </label>
+
+                    <input
+                        type="email"
+                        name="email"
+                        placeholder="admin@example.com"
+                        required
+                    >
+
+                </div>
+
+                <div class="field">
+
+                    <label>
+                        Пароль
+                        <span class="required">*</span>
+                    </label>
+
+                    <input
+                        type="password"
+                        name="password"
+                        placeholder="Минимум 8 символов"
+                        minlength="8"
+                        maxlength="64"
+                        required
+                    >
+
+                </div>
+
+                <div class="field">
+
+                    <label>
+                        Специальный ключ
+                        <span class="required">*</span>
+                    </label>
+
+                    <input
+                        type="password"
+                        name="registration_key"
+                        placeholder="Введите специальный ключ"
+                        required
+                    >
+
+                </div>
+
+                <button
+                    type="submit"
+                    class="register-button"
+                >
+                    Зарегистрировать администратора
+                </button>
+
+                <button
+                    type="button"
+                    class="back-button"
+                    id="buttonBack1"
+                >
+                    ← Назад
+                </button>
+
+            </div>
+
+        </form>
+
+        <div class="footer">
+            Уже есть административный аккаунт?
+            <a href="/admin/login">
+                Войти
+            </a>
         </div>
 
-        <div id="step2" class="form-step">
-            <div class="step-title">Данные администратора</div>
+        <a
+            href="/bar_name"
+            class="back-link"
+        >
+            ← Вернуться на главную
+        </a>
 
-            <div class="field">
-                <label>
-                    Email
-                    <span class="required">*</span>
-                </label>
 
-                <input
-                    type="email"
-                    name="email"
-                    placeholder="admin@example.com"
-                    required
-                >
-            </div>
+    </div>
 
-            <div class="field">
-                <label>
-                    Пароль
-                    <span class="required">*</span>
-                </label>
+    <div class="side">
 
-                <input
-                    type="password"
-                    name="password"
-                    placeholder="Минимум 8 символов"
-                    minlength="8"
-                    maxlength="64"
-                    required
-                >
-            </div>
+        <div class="side-box">
 
-            <div class="field">
-                <label>
-                    Специальный ключ
-                    <span class="required">*</span>
-                </label>
+            <span class="side-label">
+                ADMIN ACCESS
+            </span>
 
-                <input
-                    type="password"
-                    name="registration_key"
-                    placeholder="Введите специальный ключ"
-                    required
-                >
-            </div>
+            <h3>
+                Управление системой
+            </h3>
 
-            <button
-                type="submit"
-                class="register-button"
-            >
-                Зарегистрировать администратора
-            </button>
+            <p>
+                Администратору доступны функции управления пользователями,
+                заказами и содержимым системы.
+            </p>
 
-            <button
-                type="button"
-                class="back-button"
-                id="buttonBack1"
-            >
-                ← Назад
-            </button>
         </div>
-    </form>
 
-    <div class="footer">
-        Уже есть административный аккаунт?
-        <a href="/admin/login">Войти</a>
-    </div>
-</div>
+        <div class="side-box">
 
-<div class="side">
-    <div class="side-box">
-        <div class="side-label">ADMIN ACCESS</div>
-        <h3>Управление системой</h3>
-        <p>
-            Администратору доступны функции управления пользователями,
-            заказами и содержимым системы.
-        </p>
+            <span class="side-label">
+                SPECIAL KEY
+            </span>
+
+            <p>
+                Специальный ключ подтверждает право на создание
+                административной учётной записи.
+            </p>
+
+        </div>
+
     </div>
 
-    <div class="side-box">
-        <div class="side-label">SPECIAL KEY</div>
-        <p>
-            Специальный ключ подтверждает право на создание
-            административной учётной записи.
-        </p>
-    </div>
-</div>
 </div>
 
 <script src="/static/api.js"></script>
