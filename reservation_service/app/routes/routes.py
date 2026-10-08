@@ -2,7 +2,7 @@ from datetime import datetime, timezone, date
 from uuid import UUID
 
 from fastapi import APIRouter, Request, Form, HTTPException
-from starlette.responses import RedirectResponse
+from starlette.responses import RedirectResponse, JSONResponse
 from starlette.templating import Jinja2Templates
 from fastapi.params import Depends
 
@@ -139,3 +139,21 @@ async def filter_reservations(request : Request,
     reservations = await reservation_service.filter_reservations(date, status, table_number)
     return templates.TemplateResponse("all_reservations.html", {"request": request, "reservations": reservations,
                                                                 "now": datetime.now(timezone.utc)})
+
+@router.get("/tables/get_free_table")
+async def find_free_table(request : Request):
+    return templates.TemplateResponse("get_free_table.html", {"request" : request})
+
+@router.post("/tables/get_free_table")
+async def find_free_table(people_amount : int = Form(..., lt=7),
+                          requested_datetime : datetime = Form(),
+                          service : TableService = Depends(get_table_service_dependency)):
+    free_table = await service.get_free_table(people_amount, requested_datetime)
+    if not free_table:
+        raise HTTPException(status_code=409, detail="К сожалению, все столики уже заняты. Попробуйте выбрать другое время")
+    table, minutes = next(iter(free_table.items()))
+    if minutes is None:
+        message = "После выбранного вами времени следующая бронь отсутствует"
+    else:
+        message = f"Учитывая выбранное вами время, столик будет свободен ещё {minutes} минут"
+    return {"success": True, "message": message}

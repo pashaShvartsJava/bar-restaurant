@@ -1,3 +1,4 @@
+from datetime import datetime
 from uuid import UUID
 
 from ..repository.table_repository import TableRepository
@@ -16,3 +17,6 @@ class TableService:
 
     async def get_table_by_id(self, table_id : int):
         return await self.table_repository.get_table_by_id(table_id)
+
+    async def get_free_table(self, people_amount: int, requested_datetime: datetime):
+        return await self.table_repository.get_free_table(people_amount, requested_datetime)

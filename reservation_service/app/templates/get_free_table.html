@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#1b1518">
+    <title>Бронирование столика | MARANI</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            background:
+                radial-gradient(
+                    ellipse at 50% 0%,
+                    rgba(137, 76, 82, 0.42) 0%,
+                    rgba(78, 49, 59, 0.48) 38%,
+                    rgba(27, 24, 29, 0.94) 72%,
+                    rgba(13, 13, 15, 0.99) 100%
+                ),
+                linear-gradient(
+                    180deg,
+                    #39262b 0%,
+                    #251d22 48%,
+                    #101012 100%
+                );
+            color: #eee5df;
+            font-family: Arial, sans-serif;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 35px 20px;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            background:
+                radial-gradient(
+                    circle at 18% 15%,
+                    rgba(191, 105, 82, 0.07),
+                    transparent 32%
+                ),
+                radial-gradient(
+                    circle at 82% 24%,
+                    rgba(207, 165, 91, 0.055),
+                    transparent 30%
+                );
+            z-index: 0;
+        }
+
+        .page {
+            position: relative;
+            z-index: 1;
+            width: 1050px;
+            display: grid;
+            grid-template-columns: 230px 420px 230px;
+            align-items: center;
+            justify-content: space-between;
+            gap: 35px;
+        }
+
+        .side {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .side-card {
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.065);
+            border-radius: 13px;
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(30, 25, 27, 0.9),
+                    rgba(17, 16, 18, 0.94)
+                );
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.18);
+            backdrop-filter: blur(12px);
+        }
+
+        .side-label {
+            display: block;
+            margin-bottom: 9px;
+            color: #777174;
+            font-size: 9px;
+            letter-spacing: 1.8px;
+        }
+
+        .side-card h3 {
+            margin-bottom: 9px;
+            color: #d5a65b;
+            font-family: Georgia, serif;
+            font-size: 17px;
+            font-weight: normal;
+        }
+
+        .side-card p {
+            color: #777276;
+            font-size: 10px;
+            line-height: 1.65;
+        }
+
+        .quote {
+            color: #aaa0a0 !important;
+            font-family: Georgia, serif;
+            font-size: 13px !important;
+            line-height: 1.6 !important;
+        }
+
+        .reservation-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .reservation-icon {
+            width: 42px;
+            height: 42px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(213, 166, 91, 0.3);
+            border-radius: 10px;
+            background: rgba(213, 166, 91, 0.1);
+            color: #e6c58f;
+            font-size: 19px;
+        }
+
+        .reservation-name {
+            color: #ddd4d0;
+            font-size: 10px;
+            font-weight: 600;
+        }
+
+        .reservation-description {
+            margin-top: 4px;
+            color: #777276;
+            font-size: 9px;
+        }
+
+        .auth-card {
+            width: 420px;
+            padding: 40px 42px;
+            border: 1px solid rgba(213, 166, 91, 0.22);
+            border-radius: 17px;
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(30, 25, 27, 0.96),
+                    rgba(17, 16, 18, 0.97)
+                );
+            box-shadow:
+                0 25px 70px rgba(0, 0, 0, 0.42),
+                0 0 45px rgba(213, 166, 91, 0.05);
+            backdrop-filter: blur(14px);
+            animation: appear 0.5s ease;
+        }
+
+        .logo {
+            margin-bottom: 18px;
+            color: #d1a15d;
+            font-family: Georgia, serif;
+            font-size: 13px;
+            letter-spacing: 5px;
+            text-align: center;
+        }
+
+        .auth-card h1 {
+            color: #eee4dd;
+            font-family: Georgia, serif;
+            font-size: 28px;
+            font-weight: normal;
+            text-align: center;
+        }
+
+        .subtitle {
+            margin: 10px 0 28px;
+            color: #91898a;
+            font-size: 11px;
+            line-height: 1.6;
+            text-align: center;
+        }
+
+        .field-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .field {
+            margin-bottom: 16px;
+        }
+
+        .field label {
+            display: block;
+            margin-bottom: 7px;
+            color: #c8c0c0;
+            font-size: 10px;
+        }
+
+        .required {
+            color: #d5a65b;
+        }
+
+        input {
+            width: 100%;
+            padding: 13px 14px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            outline: none;
+            background: rgba(255, 255, 255, 0.045);
+            color: #eee8e3;
+            font-size: 12px;
+            color-scheme: dark;
+            transition:
+                border-color 0.2s,
+                background 0.2s,
+                box-shadow 0.2s;
+        }
+
+        input::placeholder {
+            color: #6f696d;
+        }
+
+        input:focus {
+            border-color: rgba(213, 166, 91, 0.7);
+            background: rgba(255, 255, 255, 0.06);
+            box-shadow: 0 0 0 3px rgba(213, 166, 91, 0.07);
+        }
+
+        .message {
+            display: none;
+            margin-bottom: 18px;
+            padding: 13px 14px;
+            border-radius: 8px;
+            font-size: 10px;
+            line-height: 1.6;
+        }
+
+        .message.success {
+            border: 1px solid rgba(118, 181, 126, 0.3);
+            background: rgba(118, 181, 126, 0.07);
+            color: #b9e0bd;
+        }
+
+        .message.error {
+            border: 1px solid rgba(217, 130, 130, 0.35);
+            background: rgba(130, 20, 35, 0.25);
+            color: #ffb0b0;
+        }
+
+        .message.server-error {
+            border: 1px solid rgba(217, 130, 130, 0.55);
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(125, 25, 40, 0.38),
+                    rgba(75, 18, 28, 0.32)
+                );
+            color: #ffb0b0;
+            box-shadow:
+                0 10px 30px rgba(70, 10, 20, 0.2),
+                inset 0 0 25px rgba(255, 100, 100, 0.025);
+            animation: errorAppear 0.35s ease;
+        }
+
+        .server-error-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 6px;
+            color: #ff9d9d;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .server-error-icon {
+            width: 19px;
+            height: 19px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(255, 157, 157, 0.45);
+            border-radius: 50%;
+            color: #ffb0b0;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        #contactFields {
+            display: none;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.07);
+            animation: expand 0.35s ease;
+        }
+
+        .btn {
+            width: 100%;
+            margin-top: 8px;
+            padding: 13px;
+            border: 1px solid rgba(213, 166, 91, 0.55);
+            border-radius: 8px;
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(55, 40, 31, 0.95),
+                    rgba(35, 27, 27, 0.96)
+                );
+            color: #eee8e3;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition:
+                transform 0.2s,
+                border-color 0.2s,
+                background 0.2s,
+                box-shadow 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            border-color: #d5a65b;
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(65, 46, 34, 0.98),
+                    rgba(40, 30, 29, 0.98)
+                );
+            box-shadow: 0 8px 22px rgba(213, 166, 91, 0.12);
+        }
+
+        .btn:disabled {
+            opacity: 0.55;
+            cursor: wait;
+            transform: none;
+        }
+
+        .divider {
+            height: 1px;
+            margin: 25px 0;
+            background: rgba(255, 255, 255, 0.07);
+        }
+
+        .info {
+            color: #777276;
+            font-size: 10px;
+            line-height: 1.7;
+            text-align: center;
+        }
+
+        .back-link {
+            display: block;
+            margin-top: 18px;
+            color: #625d60;
+            font-size: 9px;
+            text-align: center;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .back-link:hover {
+            color: #ddd4d0;
+        }
+
+        @keyframes appear {
+            from {
+                opacity: 0;
+                transform: translateY(12px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes expand {
+            from {
+                opacity: 0;
+                transform: translateY(-8px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes errorAppear {
+            from {
+                opacity: 0;
+                transform: translateY(-6px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 950px) {
+            .page {
+                width: 420px;
+                grid-template-columns: 1fr;
+            }
+
+            .side {
+                display: none;
+            }
+        }
+
+        @media (max-width: 500px) {
+            body {
+                padding: 15px;
+            }
+
+            .page {
+                width: 100%;
+            }
+
+            .auth-card {
+                width: 100%;
+                padding: 32px 23px;
+            }
+
+            .auth-card h1 {
+                font-size: 25px;
+            }
+
+            .field-row {
+                grid-template-columns: 1fr;
+                gap: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="page">
+
+    <aside class="side">
+
+        <div class="side-card">
+            <span class="side-label">MARANI</span>
+
+            <h3>Бронирование</h3>
+
+            <p>
+                Выберите количество гостей и удобное
+                время. Мы проверим доступность столиков
+                непосредственно перед бронированием.
+            </p>
+        </div>
+
+        <div class="side-card">
+            <span class="side-label">БРОНЬ</span>
+
+            <p class="quote">
+                «Хороший вечер начинается
+                с правильного стола»
+            </p>
+        </div>
+
+    </aside>
+
+    <main class="auth-card">
+
+        <div class="logo">MARANI</div>
+
+        <h1>Забронировать столик</h1>
+
+        <div class="subtitle">
+            Укажите количество гостей и желаемое время
+        </div>
+
+        <div id="message" class="message"></div>
+
+        <form
+            id="availabilityForm"
+            method="post"
+            action="/tables/get_free_table"
+        >
+
+            <div class="field-row">
+
+                <div class="field">
+
+                    <label>
+                        Количество гостей
+                        <span class="required">*</span>
+                    </label>
+
+                    <input
+                        type="number"
+                        name="people_amount"
+                        min="1"
+                        max="20"
+                        placeholder="2"
+                        required
+                    >
+
+                </div>
+
+                <div class="field">
+
+                    <label>
+                        Дата и время
+                        <span class="required">*</span>
+                    </label>
+
+                    <input
+                        type="datetime-local"
+                        name="requested_datetime"
+                        required
+                    >
+
+                </div>
+
+            </div>
+
+            <button
+                id="availabilityButton"
+                type="submit"
+                class="btn"
+            >
+                Найти свободные столики
+            </button>
+
+        </form>
+
+        <div id="contactFields">
+
+            <div class="field-row">
+
+                <div class="field">
+
+                    <label>
+                        Имя
+                        <span class="required">*</span>
+                    </label>
+
+                    <input
+                        type="text"
+                        name="first_name"
+                        placeholder="Имя"
+                        autocomplete="given-name"
+                    >
+
+                </div>
+
+                <div class="field">
+
+                    <label>
+                        Фамилия
+                        <span class="required">*</span>
+                    </label>
+
+                    <input
+                        type="text"
+                        name="last_name"
+                        placeholder="Фамилия"
+                        autocomplete="family-name"
+                    >
+
+                </div>
+
+            </div>
+
+            <div class="field">
+
+                <label>
+                    Номер телефона
+                    <span class="required">*</span>
+                </label>
+
+                <input
+                    type="tel"
+                    name="phone"
+                    placeholder="+49 170 1234567"
+                    autocomplete="tel"
+                >
+
+            </div>
+
+            <div class="field">
+
+                <label>
+                    Email
+                    <span class="required">*</span>
+                </label>
+
+                <input
+                    type="email"
+                    name="email"
+                    placeholder="email@example.com"
+                    autocomplete="email"
+                >
+
+            </div>
+
+            <button
+                id="confirmButton"
+                type="button"
+                class="btn"
+            >
+                Подтвердить бронирование
+            </button>
+
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="info">
+            После проверки доступности можно будет
+            перейти к подтверждению бронирования.
+        </div>
+
+        <a
+            href="/bar_name"
+            class="back-link"
+        >
+            ← Вернуться в MARANI
+        </a>
+
+    </main>
+
+    <aside class="side">
+
+        <div class="side-card">
+
+            <span class="side-label">
+                ВАША БРОНЬ
+            </span>
+
+            <div class="reservation-info">
+
+                <div class="reservation-icon">
+                    ◇
+                </div>
+
+                <div>
+
+                    <div class="reservation-name">
+                        Столик в MARANI
+                    </div>
+
+                    <div class="reservation-description">
+                        Проверка доступности онлайн
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="side-card">
+
+            <span class="side-label">
+                BAR SPIRIT
+            </span>
+
+            <h3>
+                Ваш вечер начинается здесь
+            </h3>
+
+            <p>
+                Сначала проверяем свободные столики,
+                затем оформляем бронирование.
+            </p>
+
+        </div>
+
+    </aside>
+
+</div>
+
+<script>
+    const form = document.getElementById("availabilityForm");
+    const message = document.getElementById("message");
+    const contactFields = document.getElementById("contactFields");
+    const availabilityButton = document.getElementById("availabilityButton");
+
+    function showMessage(type, content) {
+        message.className = `message ${type}`;
+        message.innerHTML = content;
+        message.style.display = "block";
+    }
+
+    function showServerError(title, detail) {
+        showMessage(
+            "server-error",
+            `
+                <div class="server-error-title">
+                    <span class="server-error-icon">!</span>
+                    ${title}
+                </div>
+                <div>
+                    ${detail}
+                </div>
+            `
+        );
+    }
+
+    form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        message.style.display = "none";
+        contactFields.style.display = "none";
+        availabilityButton.disabled = true;
+
+        const formData = new FormData(form);
+
+        try {
+            console.log("Отправка POST:", form.action);
+            console.log(
+                "Данные:",
+                Object.fromEntries(formData.entries())
+            );
+
+            const response = await fetch(form.action, {
+                method: "POST",
+                body: formData,
+                credentials: "same-origin"
+            });
+
+            console.log("HTTP status:", response.status);
+
+            const responseText = await response.text();
+
+            console.log("Ответ сервера:", responseText);
+
+            let data = {};
+
+            if (responseText) {
+                try {
+                    data = JSON.parse(responseText);
+                } catch (error) {
+                    console.error(
+                        "Ответ сервера не является JSON:",
+                        error
+                    );
+
+                    showServerError(
+                        "Ошибка ответа сервера",
+                        "Сервер вернул некорректный ответ."
+                    );
+
+                    return;
+                }
+            }
+
+            if (response.status === 409) {
+                showMessage(
+                    "error",
+                    data.detail ||
+                    "К сожалению, все столики уже заняты. Попробуйте выбрать другое время"
+                );
+
+                return;
+            }
+
+            if (response.status === 422) {
+    showMessage(
+        "error",
+        "Количество гостей должно быть меньше 7"
+    );
+
+    return;
+}
+
+            if (response.status >= 500) {
+                console.error(
+                    "Ошибка сервера:",
+                    response.status,
+                    data
+                );
+
+                showServerError(
+                    "Ошибка сервера",
+                    data.detail ||
+                    "Ошибка сервера. Попробуйте повторить операцию позже"
+                );
+
+                return;
+            }
+
+            if (!response.ok) {
+                console.error(
+                    "HTTP ошибка:",
+                    response.status,
+                    data
+                );
+
+                showServerError(
+                    "Ошибка",
+                    data.detail ||
+                    "Произошла ошибка. Попробуйте повторить операцию позже"
+                );
+
+                return;
+            }
+
+            console.log("Свободный столик найден:", data);
+
+            showMessage(
+                "success",
+                data.message ||
+                "На данное время есть свободные столики"
+            );
+
+            contactFields.style.display = "block";
+
+        } catch (error) {
+            console.error("Ошибка запроса:", error);
+            console.error("Ошибка:", error.message);
+            console.error("Stack:", error.stack);
+
+            showServerError(
+                "Ошибка соединения",
+                "Не удалось связаться с сервером. Попробуйте повторить операцию позже"
+            );
+
+        } finally {
+            availabilityButton.disabled = false;
+        }
+    });
+</script>
+
+</body>
+</html>
