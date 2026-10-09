@@ -1,6 +1,6 @@
 import asyncio
 
-from reservation_service.app.repository.reservation_repository import ReservationRepository
+from ..repository.reservation_repository import ReservationRepository
 from ..database.database import SessionLocal
 from ..broker.producer import publish_reservation_guest
 

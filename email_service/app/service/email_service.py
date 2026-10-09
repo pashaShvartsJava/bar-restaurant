@@ -165,3 +165,28 @@ class EmailService:
         )
         await smtp.send_message(message)
         await smtp.quit()
+
+    async def send_create_reservation(self, name : str, surname : str, reservation_start : str, email : str):
+        message = EmailMessage()
+        message["From"] = settings.EMAIL_FROM
+        message["To"] = email
+        message["Subject"] = "Бронирование столика завершено"
+
+        reservation_start_text = reservation_start.strftime("%d.%m.%Y в %H:%M")
+        html = templates.get_template("reservation.html").render(name=name,
+                                                                 surname=surname,
+                                                                 reservation_start=reservation_start_text)
+        message.add_alternative(html, subtype="html", )
+        smtp = aiosmtplib.SMTP(
+            hostname=settings.EMAIL_HOST,
+            port=settings.EMAIL_PORT,
+            timeout=20,
+        )
+
+        await smtp.connect()
+        await smtp.login(
+            settings.EMAIL_USERNAME,
+            settings.EMAIL_PASSWORD,
+        )
+        await smtp.send_message(message)
+        await smtp.quit()

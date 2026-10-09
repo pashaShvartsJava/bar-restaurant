@@ -18,7 +18,9 @@ class RabbitMQ:
         self.consume_email_verification = None
         self.consume_change_password_verification = None
         self.change_status_queue = None
+        self.consume_change_status_queue = None
         self.reset_password_queue = None
+        self.consume_reset_password_queue = None
         self.create_reservation_queue = None
         self.consume_create_reservation = None
 
@@ -59,11 +61,11 @@ class RabbitMQ:
 
         self.change_status_queue = await self.channel.declare_queue("change_status", durable=True)
         await self.change_status_queue.bind(self.exchange, routing_key="change_status_event")
-        self.change_status_queue = ChangeStatusConsumer(self.change_status_queue)
+        self.consume_change_status_queue = ChangeStatusConsumer(self.change_status_queue)
 
         self.reset_password_queue = await self.channel.declare_queue("reset_password", durable=True)
         await self.reset_password_queue.bind(self.exchange, routing_key="reset_password_event")
-        self.reset_password_queue = ResetPasswordConsumer(self.reset_password_queue)
+        self.consume_reset_password_queue = ResetPasswordConsumer(self.reset_password_queue)
 
     async def close(self):
         if self.connection:

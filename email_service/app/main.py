@@ -12,9 +12,9 @@ async def lifespan(app: FastAPI):
     await rabbitmq.connect()
     consumer_email_task = asyncio.create_task(rabbitmq.consume_email_verification.consume())
     consumer_password_task = asyncio.create_task(rabbitmq.consume_change_password_verification.consume())
-    consumer_change_status_task = asyncio.create_task(rabbitmq.change_status_queue.consume())
-    consumer_reset_password_task = asyncio.create_task(rabbitmq.reset_password_queue.consume())
-    consumer_create_reservation_task = asyncio.create_task(rabbitmq.create_reservation_queue.comsume())
+    consumer_change_status_task = asyncio.create_task(rabbitmq.consume_change_status_queue.consume())
+    consumer_reset_password_task = asyncio.create_task(rabbitmq.consume_reset_password_queue.consume())
+    consumer_create_reservation_task = asyncio.create_task(rabbitmq.consume_create_reservation.consume())
     try:
         yield
     finally:
