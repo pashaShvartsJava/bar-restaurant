@@ -29,7 +29,6 @@ INTERNAL_TOKEN=settings.internal_token
 async def verify_csrf(request: Request):
     cookie_token = request.cookies.get("csrf_token")
     header_token = request.headers.get("X-CSRF-Token")
-
     if not cookie_token or cookie_token != header_token:
         raise HTTPException(status_code=403)
 
@@ -70,11 +69,9 @@ async def make_order(request : Request, data : ListOrderDTO,
     await service.create_order(data, client_id)
     return RedirectResponse(url="/users/confirm_address", status_code=303)
 
-
-
 @router.post("/orders/create/guest")
 async def make_order_for_guest(data : ListOrderGuestDTO, service : OrderService = Depends(get_order_service_dependency)):
-    await service.create_order_for_guest(data)
+    await service.create_order_for_guest(data, "", None)
     return RedirectResponse(url="/orders/confirm_address/guest", status_code=303)
 
 @router.get("/orders/confirm_address/guest")
@@ -169,9 +166,9 @@ async def search_and_sorting(request : Request,
                              sum_to: Decimal | None = None,
                              sort: str = "created_desc",
                              service : OrderService = Depends(get_order_service_dependency)):
+    await verify_csrf(request)
     payload = get_payload(request)
     required_roles(IdentityRole.ADMIN, IdentityRole.MODERATOR, payload=payload)
-    await verify_csrf(request)
     orders = await service.search_or_sort_orders(search, status, date_from, date_to, sum_from, sum_to, sort)
     return templates.TemplateResponse("all_orders.html", {"request" : request, "orders" : orders})
 
@@ -223,6 +220,30 @@ async def get_order_info(request : Request, order_id : int, service : OrderServi
     required_roles(IdentityRole.ADMIN, IdentityRole.MODERATOR, payload=payload)
     order = await service.get_order_by_id(order_id)
     return templates.TemplateResponse("order_info.html", {"request" : request, "order" : order})
+
+
+@router.post("/orders/create/internal")
+async def make_internal_order(status : str,
+                              table_number : int,
+                              data : ListOrderGuestDTO, service : OrderService = Depends(get_order_service_dependency)):
+    if status == OrderStatus.INTERNAL_ORDER.value:
+        await service.create_order_for_guest(data, status, table_number)
+        return {"message": "Заказ успешно оформлен"}
+    else:
+        order = await service.create_order_for_guest(data, OrderStatus.INTERNAL_ORDER.value, table_number)
+        payment_data = PaymentDTO(
+            client_id=data.client_id,
+            order_id=order.id,
+            order_number=order.order_number,
+            sum=order.sum
+        )
+        async with httpx.AsyncClient() as client:
+            response = await client.post(url="http://payment-service:8008/payment/create",
+                                         json=payment_data.model_dump(mode="json"),
+                                         headers={"internal_token": INTERNAL_TOKEN},
+                                         cookies={"guest_client_id" : str(data.client_id)})
+            response.raise_for_status()
+        return response.json()
 
 
 

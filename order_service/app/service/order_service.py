@@ -51,12 +51,12 @@ class OrderService:
         await self.order_repository.db.rollback()
         return await self.order_repository.create_order(data , client_id, total_sum)
 
-    async def create_order_for_guest(self, data : ListOrderGuestDTO):
+    async def create_order_for_guest(self, data : ListOrderGuestDTO, status : str, table_number : int | None):
         total_sum = 0
         for order_item in data.order_items:
             total_sum += order_item.price * order_item.quantity
         await self.order_repository.db.rollback()
-        return await self.order_repository.create_order_for_guest(data , total_sum)
+        return await self.order_repository.create_order_for_guest(data , total_sum, status, table_number)
 
     async def mark_order_as_paid(self, order_id: int, status: OrderStatus) -> Order:
         return await self.order_repository.mark_order_as_paid(order_id, status)

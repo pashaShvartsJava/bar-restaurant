@@ -1,0 +1,1356 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#171315">
+    <title>MARANI — Меню ресторана</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --gold: #d5a65b;
+            --gold-light: #ead0a0;
+            --wine: #743b48;
+            --cream: #eee5df;
+            --muted: #a49a9c;
+            --background: #121012;
+            --panel: rgba(32, 26, 29, .96);
+            --border: rgba(213, 166, 91, .17);
+        }
+
+        body {
+            min-height: 100vh;
+            color: var(--cream);
+            font-family: Arial, sans-serif;
+            background:
+                radial-gradient(ellipse at 50% 0%, rgba(126, 65, 76, .38), transparent 55%),
+                linear-gradient(180deg, #21191d 0%, #141214 45%, #0c0c0e 100%);
+            overflow-x: hidden;
+        }
+
+        button {
+            font: inherit;
+        }
+
+        a {
+            color: inherit;
+        }
+
+        .page {
+            width: min(1180px, 100%);
+            margin: 0 auto;
+            padding: 0 24px 45px;
+        }
+
+        .navbar {
+            position: relative;
+            z-index: 2;
+            border-bottom: 1px solid var(--border);
+            background: rgba(18, 15, 17, .85);
+        }
+
+        .navbar-inner {
+            width: min(1180px, 100%);
+            min-height: 82px;
+            margin: 0 auto;
+            padding: 15px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .brand {
+            color: var(--gold);
+            font-family: Georgia, serif;
+            font-size: 26px;
+            letter-spacing: 5px;
+            text-decoration: none;
+        }
+
+        .brand span {
+            display: block;
+            margin-top: 4px;
+            color: rgba(238, 229, 223, .48);
+            font-family: Arial, sans-serif;
+            font-size: 8px;
+            letter-spacing: 3px;
+        }
+
+        .table-badge {
+            padding: 9px 13px;
+            border: 1px solid var(--border);
+            border-radius: 7px;
+            color: var(--gold-light);
+            background: rgba(213, 166, 91, .05);
+            font-size: 11px;
+        }
+
+        .hero {
+            position: relative;
+            padding: 53px 0 40px;
+            text-align: center;
+        }
+
+        .hero-label {
+            margin-bottom: 13px;
+            color: var(--gold);
+            font-size: 9px;
+            letter-spacing: 5px;
+            text-transform: uppercase;
+        }
+
+        .hero h1 {
+            font-family: Georgia, serif;
+            font-size: clamp(37px, 6vw, 57px);
+            font-weight: normal;
+            letter-spacing: 1px;
+        }
+
+        .hero-description {
+            max-width: 520px;
+            margin: 14px auto 0;
+            color: var(--muted);
+            font-size: 12px;
+            line-height: 1.8;
+        }
+
+        .hero-divider {
+            width: 55px;
+            height: 1px;
+            margin: 24px auto 0;
+            background: var(--gold);
+            opacity: .65;
+        }
+
+        .menu-layout {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 340px;
+            align-items: start;
+            gap: 24px;
+        }
+
+        .menu-panel,
+        .cart-panel {
+            border: 1px solid var(--border);
+            border-radius: 13px;
+            background: var(--panel);
+            box-shadow: 0 20px 55px rgba(0, 0, 0, .2);
+            overflow: hidden;
+        }
+
+        .panel-header {
+            padding: 22px;
+            border-bottom: 1px solid rgba(255, 255, 255, .06);
+        }
+
+        .panel-eyebrow {
+            margin-bottom: 7px;
+            color: var(--gold);
+            font-size: 8px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+        }
+
+        .panel-title {
+            color: var(--cream);
+            font-family: Georgia, serif;
+            font-size: 23px;
+            font-weight: normal;
+        }
+
+        .panel-description {
+            margin-top: 7px;
+            color: var(--muted);
+            font-size: 10px;
+            line-height: 1.6;
+        }
+
+        .category {
+            border-bottom: 1px solid rgba(255, 255, 255, .065);
+        }
+
+        .category:last-child {
+            border-bottom: none;
+        }
+
+        .category-header {
+            padding: 17px 22px;
+            background: rgba(213, 166, 91, .025);
+        }
+
+        .category-name {
+            color: var(--gold-light);
+            font-family: Georgia, serif;
+            font-size: 18px;
+            font-weight: normal;
+        }
+
+        .dish {
+            display: grid;
+            grid-template-columns: 74px minmax(0, 1fr) auto;
+            align-items: center;
+            gap: 15px;
+            padding: 16px 20px;
+            border-top: 1px solid rgba(255, 255, 255, .045);
+            transition: background .2s ease;
+        }
+
+        .dish:hover {
+            background: rgba(213, 166, 91, .035);
+        }
+
+        .dish-image,
+        .dish-no-image {
+            display: block;
+            width: 74px;
+            height: 74px;
+            border-radius: 9px;
+        }
+
+        .dish-image {
+            object-fit: cover;
+            border: 1px solid rgba(213, 166, 91, .2);
+        }
+
+        .dish-no-image {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 1px dashed rgba(255, 255, 255, .12);
+            color: var(--muted);
+            font-size: 9px;
+            text-align: center;
+        }
+
+        .dish-name {
+            margin-bottom: 6px;
+            color: var(--cream);
+            font-size: 12px;
+            font-weight: 600;
+            line-height: 1.5;
+        }
+
+        .dish-description {
+            color: var(--muted);
+            font-size: 10px;
+            line-height: 1.6;
+            overflow-wrap: anywhere;
+        }
+
+        .dish-price {
+            margin-top: 9px;
+            color: var(--gold);
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .dish-actions {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+        }
+
+        .quantity-control {
+            display: flex;
+            align-items: center;
+            height: 32px;
+            border: 1px solid rgba(213, 166, 91, .24);
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .quantity-button {
+            width: 28px;
+            height: 31px;
+            border: none;
+            background: transparent;
+            color: var(--gold);
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .quantity-button:hover {
+            background: rgba(213, 166, 91, .1);
+        }
+
+        .quantity-value {
+            min-width: 23px;
+            text-align: center;
+            color: var(--cream);
+            font-size: 10px;
+        }
+
+        .add-button {
+            min-height: 32px;
+            padding: 0 10px;
+            border: 1px solid rgba(213, 166, 91, .4);
+            border-radius: 6px;
+            color: var(--gold);
+            background: rgba(213, 166, 91, .07);
+            font-size: 9px;
+            cursor: pointer;
+            transition: background .2s ease;
+        }
+
+        .add-button:hover {
+            background: rgba(213, 166, 91, .16);
+        }
+
+        .unavailable {
+            opacity: .42;
+        }
+
+        .unavailable-label {
+            color: var(--muted);
+            font-size: 9px;
+        }
+
+        .cart-panel {
+            position: sticky;
+            top: 20px;
+        }
+
+        .cart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            padding: 22px;
+            background: rgba(213, 166, 91, .035);
+            border-bottom: 1px solid rgba(255, 255, 255, .07);
+        }
+
+        .cart-title {
+            color: var(--cream);
+            font-family: Georgia, serif;
+            font-size: 23px;
+            font-weight: normal;
+        }
+
+        .cart-count {
+            color: var(--gold);
+            font-size: 10px;
+            white-space: nowrap;
+        }
+
+        .cart-content {
+            max-height: 400px;
+            overflow-y: auto;
+            padding: 13px;
+        }
+
+        .cart-item {
+            display: grid;
+            grid-template-columns: 48px minmax(0, 1fr) auto;
+            align-items: center;
+            gap: 9px;
+            padding: 10px;
+            margin-bottom: 8px;
+            border: 1px solid rgba(255, 255, 255, .06);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, .025);
+        }
+
+        .cart-item-image,
+        .cart-item-no-image {
+            width: 48px;
+            height: 48px;
+            border-radius: 6px;
+        }
+
+        .cart-item-image {
+            object-fit: cover;
+        }
+
+        .cart-item-no-image {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--muted);
+            font-size: 8px;
+        }
+
+        .cart-item-name {
+            margin-bottom: 5px;
+            color: var(--cream);
+            font-size: 10px;
+            line-height: 1.5;
+            overflow-wrap: anywhere;
+        }
+
+        .cart-item-price {
+            color: var(--muted);
+            font-size: 9px;
+            line-height: 1.6;
+        }
+
+        .cart-item-price strong {
+            color: var(--gold);
+        }
+
+        .cart-controls {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 5px;
+        }
+
+        .cart-quantity {
+            display: flex;
+            align-items: center;
+            height: 25px;
+            border: 1px solid rgba(213, 166, 91, .2);
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .cart-quantity button {
+            width: 22px;
+            height: 24px;
+            border: none;
+            background: transparent;
+            color: var(--gold);
+            cursor: pointer;
+        }
+
+        .cart-quantity span {
+            min-width: 20px;
+            color: var(--cream);
+            font-size: 9px;
+            text-align: center;
+        }
+
+        .remove-button {
+            border: none;
+            background: transparent;
+            color: #b77e7e;
+            font-size: 9px;
+            cursor: pointer;
+        }
+
+        .empty-cart {
+            padding: 38px 18px;
+            text-align: center;
+        }
+
+        .empty-cart-icon {
+            margin-bottom: 12px;
+            font-size: 30px;
+        }
+
+        .empty-cart-title {
+            color: var(--cream);
+            font-family: Georgia, serif;
+            font-size: 18px;
+        }
+
+        .empty-cart-text {
+            margin-top: 8px;
+            color: var(--muted);
+            font-size: 10px;
+            line-height: 1.7;
+        }
+
+        .cart-footer {
+            padding: 20px;
+            border-top: 1px solid rgba(255, 255, 255, .07);
+            background: rgba(9, 9, 11, .24);
+        }
+
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 17px;
+        }
+
+        .total-label {
+            color: var(--muted);
+            font-size: 10px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .total-price {
+            color: var(--gold);
+            font-size: 23px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .payment-heading {
+            margin: 0 0 10px;
+            color: var(--muted);
+            font-size: 9px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .payment-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 9px;
+            width: 100%;
+            min-height: 47px;
+            margin-top: 9px;
+            padding: 11px 12px;
+            border-radius: 7px;
+            font-size: 11px;
+            font-weight: 600;
+            line-height: 1.4;
+            cursor: pointer;
+            transition: transform .2s ease, background .2s ease, border-color .2s ease;
+        }
+
+        .payment-button:hover:not(:disabled) {
+            transform: translateY(-1px);
+        }
+
+        .payment-button:disabled {
+            opacity: .38;
+            cursor: not-allowed;
+        }
+
+        .payment-later {
+            border: 1px solid rgba(213, 166, 91, .45);
+            color: var(--gold-light);
+            background: rgba(213, 166, 91, .07);
+        }
+
+        .payment-later:hover:not(:disabled) {
+            background: rgba(213, 166, 91, .13);
+        }
+
+        .payment-online {
+            border: 1px solid rgba(213, 166, 91, .65);
+            color: #241a13;
+            background: linear-gradient(135deg, #a7773d, #e0b96f);
+        }
+
+        .payment-online:hover:not(:disabled) {
+            background: linear-gradient(135deg, #bd8b4b, #f0ce8d);
+        }
+
+        .payment-icon {
+            font-size: 15px;
+        }
+
+        .payment-note {
+            margin-top: 13px;
+            color: rgba(238, 229, 223, .42);
+            font-size: 9px;
+            line-height: 1.7;
+            text-align: center;
+        }
+
+        .checkout-error {
+            display: none;
+            margin-bottom: 12px;
+            padding: 10px;
+            border: 1px solid rgba(217, 130, 130, .3);
+            border-radius: 6px;
+            background: rgba(217, 130, 130, .06);
+            color: #d98282;
+            font-size: 10px;
+            line-height: 1.6;
+        }
+
+        .checkout-success {
+            border-color: rgba(108, 178, 128, .35);
+            background: rgba(108, 178, 128, .07);
+            color: #91d0a2;
+        }
+
+        .clear-button {
+            width: 100%;
+            min-height: 34px;
+            margin-top: 9px;
+            border: 1px solid rgba(255, 255, 255, .08);
+            border-radius: 6px;
+            background: transparent;
+            color: var(--muted);
+            font-size: 9px;
+            cursor: pointer;
+        }
+
+        .clear-button:hover {
+            color: #d98282;
+            border-color: rgba(217, 130, 130, .3);
+        }
+
+        .footer {
+            margin-top: 45px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(213, 166, 91, .12);
+            color: rgba(238, 229, 223, .35);
+            font-size: 9px;
+            line-height: 1.8;
+            text-align: center;
+        }
+
+        .footer-brand {
+            display: block;
+            margin-bottom: 5px;
+            color: var(--gold);
+            font-family: Georgia, serif;
+            font-size: 13px;
+            letter-spacing: 3px;
+        }
+
+        @media (max-width: 950px) {
+            .menu-layout {
+                grid-template-columns: minmax(0, 1fr);
+            }
+
+            .cart-panel {
+                position: static;
+            }
+
+            .cart-content {
+                max-height: none;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .navbar-inner {
+                min-height: 72px;
+                padding: 13px 16px;
+            }
+
+            .brand {
+                font-size: 22px;
+                letter-spacing: 4px;
+            }
+
+            .brand span {
+                font-size: 7px;
+                letter-spacing: 2px;
+            }
+
+            .table-badge {
+                padding: 8px 9px;
+                font-size: 9px;
+            }
+
+            .page {
+                padding: 0 12px 30px;
+            }
+
+            .hero {
+                padding: 39px 8px 30px;
+            }
+
+            .hero-label {
+                letter-spacing: 3px;
+            }
+
+            .hero-description {
+                font-size: 11px;
+            }
+
+            .dish {
+                grid-template-columns: 62px minmax(0, 1fr);
+                gap: 11px;
+                padding: 14px 12px;
+            }
+
+            .dish-image,
+            .dish-no-image {
+                width: 62px;
+                height: 62px;
+            }
+
+            .dish-actions {
+                grid-column: 1 / -1;
+                justify-content: flex-end;
+            }
+
+            .dish-price {
+                grid-column: 2;
+                margin-top: -5px;
+            }
+
+            .dish-info {
+                grid-column: 2;
+            }
+
+            .dish-image,
+            .dish-no-image {
+                grid-row: 1 / span 2;
+            }
+
+            .category-header {
+                padding: 15px;
+            }
+
+            .panel-header,
+            .cart-header {
+                padding: 19px 17px;
+            }
+
+            .cart-footer {
+                padding: 17px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar">
+        <div class="navbar-inner">
+            <a href="/bar_name" class="brand">
+                MARANI
+                <span>GEORGIAN RESTAURANT</span>
+            </a>
+
+            <div class="table-badge" id="tableBadge">
+                Столик № {{ table_number }}
+            </div>
+        </div>
+    </nav>
+
+    <div class="page">
+        <header class="hero">
+            <div class="hero-label">ქართული • MARANI</div>
+            <h1>Вкус Грузии</h1>
+            <p class="hero-description">
+                Выберите любимые блюда и напитки.
+                Добавьте их в корзину, а затем решите,
+                как вам удобнее оплатить заказ.
+            </p>
+            <div class="hero-divider"></div>
+        </header>
+
+        <main class="menu-layout">
+            <section class="menu-panel">
+                <header class="panel-header">
+                    <div class="panel-eyebrow">Наше меню</div>
+                    <h2 class="panel-title">Блюда и напитки</h2>
+                    <p class="panel-description">
+                        Выбирайте позиции и количество.
+                        Стоимость заказа рассчитывается автоматически.
+                    </p>
+                </header>
+
+                {% if categories %}
+                    {% for category in categories %}
+                        {% if category.dishes %}
+                            <section class="category">
+                                <header class="category-header">
+                                    <h2 class="category-name">
+                                        {{ category.category_name }}
+                                    </h2>
+                                </header>
+
+                                {% for dish in category.dishes %}
+                                    <article
+                                        class="dish{% if dish.dish_status.value != 'available' %} unavailable{% endif %}"
+                                        data-dish-id="{{ dish.id }}"
+                                        data-dish-name="{{ dish.dish_name }}"
+                                        data-dish-price="{{ dish.price }}"
+                                        data-dish-image="{{ dish.image_url or '' }}"
+                                    >
+                                        <div>
+                                            {% if dish.image_url %}
+                                                <img
+                                                    src="{{ dish.image_url }}"
+                                                    alt="{{ dish.dish_name }}"
+                                                    class="dish-image"
+                                                    loading="lazy"
+                                                >
+                                            {% else %}
+                                                <div class="dish-no-image">
+                                                    Нет<br>фото
+                                                </div>
+                                            {% endif %}
+                                        </div>
+
+                                        <div class="dish-info">
+                                            <h3 class="dish-name">
+                                                {{ dish.dish_name }}
+                                            </h3>
+
+                                            <p class="dish-description">
+                                                {% if dish.description %}
+                                                    {{ dish.description }}
+                                                {% else %}
+                                                    Приготовлено с заботой в MARANI
+                                                {% endif %}
+                                            </p>
+
+                                            <div class="dish-price">
+                                                {{ "%.2f"|format(dish.price) }} €
+                                            </div>
+                                        </div>
+
+                                        <div class="dish-actions">
+                                            {% if dish.dish_status.value == "available" %}
+                                                <div class="quantity-control">
+                                                    <button
+                                                        type="button"
+                                                        class="quantity-button quantity-minus"
+                                                        data-dish-id="{{ dish.id }}"
+                                                        aria-label="Уменьшить количество"
+                                                    >−</button>
+
+                                                    <span
+                                                        class="quantity-value"
+                                                        data-quantity-id="{{ dish.id }}"
+                                                    >0</span>
+
+                                                    <button
+                                                        type="button"
+                                                        class="quantity-button quantity-plus"
+                                                        data-dish-id="{{ dish.id }}"
+                                                        aria-label="Увеличить количество"
+                                                    >+</button>
+                                                </div>
+
+                                                <button
+                                                    type="button"
+                                                    class="add-button"
+                                                    data-dish-id="{{ dish.id }}"
+                                                >
+                                                    Добавить
+                                                </button>
+                                            {% else %}
+                                                <span class="unavailable-label">
+                                                    Сейчас недоступно
+                                                </span>
+                                            {% endif %}
+                                        </div>
+                                    </article>
+                                {% endfor %}
+                            </section>
+                        {% endif %}
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-cart">
+                        <div class="empty-cart-icon">🍷</div>
+                        <div class="empty-cart-title">Меню пока пусто</div>
+                        <div class="empty-cart-text">
+                            В данный момент нет доступных блюд.
+                        </div>
+                    </div>
+                {% endif %}
+            </section>
+
+            <aside class="cart-panel">
+                <header class="cart-header">
+                    <h2 class="cart-title">Ваш заказ</h2>
+                    <span class="cart-count" id="cartCount">0 предметов</span>
+                </header>
+
+                <div class="cart-content" id="cartContent"></div>
+
+                <footer class="cart-footer">
+                    <div class="total-row">
+                        <span class="total-label">К оплате</span>
+                        <span class="total-price" id="cartTotal">0.00 €</span>
+                    </div>
+
+                    <div class="checkout-error" id="checkoutError"></div>
+
+                    <p class="payment-heading">Выберите способ оплаты</p>
+
+                    <button
+                        type="button"
+                        class="payment-button payment-later"
+                        id="payLaterButton"
+                        disabled
+                    >
+                        <span class="payment-icon">◷</span>
+                        Оплатить позже
+                    </button>
+
+                    <button
+                        type="button"
+                        class="payment-button payment-online"
+                        id="payOnlineButton"
+                        disabled
+                    >
+                        <span class="payment-icon">◇</span>
+                        Оплатить сейчас онлайн
+                    </button>
+
+                    <button
+                        type="button"
+                        class="clear-button"
+                        id="clearButton"
+                    >
+                        Очистить корзину
+                    </button>
+
+                    <p class="payment-note">
+                        Позже — наличными или картой у сотрудника ресторана.
+                        Онлайн-оплата будет выполнена на защищённой странице оплаты.
+                    </p>
+                </footer>
+            </aside>
+        </main>
+
+        <footer class="footer">
+            <span class="footer-brand">MARANI</span>
+            Georgian Restaurant · С любовью к грузинской кухне
+        </footer>
+    </div>
+
+    <script>
+        const CART_STORAGE_KEY = "marani_qr_cart";
+        const TABLE_NUMBER = {{ table_number | tojson }};
+        const ORDER_CREATE_URL = "/orders/create/internal";
+        const INTERNAL_ORDER_STATUS = "internal_order";
+        const ONLINE_ORDER_STATUS = "online";
+
+        const cartContent = document.getElementById("cartContent");
+        const cartCount = document.getElementById("cartCount");
+        const cartTotal = document.getElementById("cartTotal");
+        const payLaterButton = document.getElementById("payLaterButton");
+        const payOnlineButton = document.getElementById("payOnlineButton");
+        const clearButton = document.getElementById("clearButton");
+        const checkoutError = document.getElementById("checkoutError");
+
+        function getCart() {
+            try {
+                const saved = localStorage.getItem(CART_STORAGE_KEY);
+                if (!saved) return [];
+
+                const cart = JSON.parse(saved);
+                return Array.isArray(cart) ? cart : [];
+            } catch (error) {
+                console.error("CART LOAD ERROR:", error);
+                return [];
+            }
+        }
+
+        function saveCart(cart) {
+            localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cart));
+        }
+
+        function getCookie(name) {
+            const prefix = `${name}=`;
+            const cookie = document.cookie
+                .split("; ")
+                .find(item => item.startsWith(prefix));
+
+            return cookie
+                ? decodeURIComponent(cookie.substring(prefix.length))
+                : null;
+        }
+
+        function getGuestClientId() {
+            let clientId = getCookie("guest_client_id");
+
+            if (!clientId) {
+                clientId = crypto.randomUUID();
+
+                document.cookie =
+                    `guest_client_id=${encodeURIComponent(clientId)}; Path=/; SameSite=Lax`;
+            }
+
+            return clientId;
+        }
+
+        function getRussianItemText(number) {
+            const value = Math.abs(number) % 100;
+            const lastDigit = value % 10;
+
+            if (value >= 11 && value <= 19) {
+                return `${number} предметов`;
+            }
+
+            if (lastDigit === 1) return `${number} предмет`;
+            if (lastDigit >= 2 && lastDigit <= 4) {
+                return `${number} предмета`;
+            }
+
+            return `${number} предметов`;
+        }
+
+        function escapeHTML(value) {
+            return String(value)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        function getTotalQuantity(cart) {
+            return cart.reduce(
+                (total, item) => total + Number(item.quantity),
+                0
+            );
+        }
+
+        function getTotalPrice(cart) {
+            return cart.reduce(
+                (total, item) =>
+                    total + Number(item.price) * Number(item.quantity),
+                0
+            );
+        }
+
+        function getQuantity(dishId) {
+            const item = getCart().find(
+                item => Number(item.dish_id) === Number(dishId)
+            );
+
+            return item ? Number(item.quantity) : 0;
+        }
+
+        function setQuantity(dishId, quantity) {
+            const cart = getCart();
+
+            const index = cart.findIndex(
+                item => Number(item.dish_id) === Number(dishId)
+            );
+
+            if (quantity <= 0) {
+                if (index !== -1) cart.splice(index, 1);
+            } else if (index !== -1) {
+                cart[index].quantity = quantity;
+            } else {
+                const dish = document.querySelector(
+                    `.dish[data-dish-id="${dishId}"]`
+                );
+
+                if (!dish) return;
+
+                cart.push({
+                    dish_id: Number(dish.dataset.dishId),
+                    quantity: quantity,
+                    dish_name: dish.dataset.dishName,
+                    price: Number(dish.dataset.dishPrice),
+                    image: dish.dataset.dishImage
+                });
+            }
+
+            saveCart(cart);
+            updateInterface();
+        }
+
+        function addDish(dishId) {
+            setQuantity(dishId, getQuantity(dishId) + 1);
+        }
+
+        function removeDish(dishId) {
+            setQuantity(dishId, 0);
+        }
+
+        function updateDishQuantities() {
+            document.querySelectorAll(".quantity-value").forEach(element => {
+                element.textContent = getQuantity(element.dataset.quantityId);
+            });
+        }
+
+        function renderCart() {
+            const cart = getCart();
+            const quantity = getTotalQuantity(cart);
+            const total = getTotalPrice(cart);
+
+            cartCount.textContent = getRussianItemText(quantity);
+            cartTotal.textContent = `${total.toFixed(2)} €`;
+
+            const hasItems = cart.length > 0;
+            payLaterButton.disabled = !hasItems;
+            payOnlineButton.disabled = !hasItems;
+
+            if (!hasItems) {
+                cartContent.innerHTML = `
+                    <div class="empty-cart">
+                        <div class="empty-cart-icon">🍷</div>
+                        <div class="empty-cart-title">Пока ничего нет</div>
+                        <div class="empty-cart-text">
+                            Добавьте блюда из меню,
+                            и они появятся здесь.
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+
+            cartContent.innerHTML = "";
+
+            cart.forEach(item => {
+                const itemQuantity = Number(item.quantity);
+                const price = Number(item.price);
+                const itemTotal = price * itemQuantity;
+
+                const element = document.createElement("article");
+                element.className = "cart-item";
+
+                const imageHTML = item.image
+                    ? `
+                        <img
+                            src="${escapeHTML(item.image)}"
+                            alt="${escapeHTML(item.dish_name)}"
+                            class="cart-item-image"
+                        >
+                    `
+                    : `<div class="cart-item-no-image">Нет<br>фото</div>`;
+
+                element.innerHTML = `
+                    ${imageHTML}
+
+                    <div>
+                        <div class="cart-item-name">
+                            ${escapeHTML(item.dish_name)}
+                        </div>
+
+                        <div class="cart-item-price">
+                            ${itemQuantity} × ${price.toFixed(2)} €
+                            <br>
+                            <strong>${itemTotal.toFixed(2)} €</strong>
+                        </div>
+                    </div>
+
+                    <div class="cart-controls">
+                        <div class="cart-quantity">
+                            <button
+                                type="button"
+                                data-minus="${item.dish_id}"
+                                aria-label="Уменьшить количество"
+                            >−</button>
+
+                            <span>${itemQuantity}</span>
+
+                            <button
+                                type="button"
+                                data-plus="${item.dish_id}"
+                                aria-label="Увеличить количество"
+                            >+</button>
+                        </div>
+
+                        <button
+                            type="button"
+                            class="remove-button"
+                            data-remove="${item.dish_id}"
+                        >Убрать</button>
+                    </div>
+                `;
+
+                cartContent.appendChild(element);
+            });
+
+            cartContent.querySelectorAll("[data-minus]").forEach(button => {
+                button.addEventListener("click", () => {
+                    const dishId = button.dataset.minus;
+                    setQuantity(dishId, getQuantity(dishId) - 1);
+                });
+            });
+
+            cartContent.querySelectorAll("[data-plus]").forEach(button => {
+                button.addEventListener("click", () => {
+                    const dishId = button.dataset.plus;
+                    setQuantity(dishId, getQuantity(dishId) + 1);
+                });
+            });
+
+            cartContent.querySelectorAll("[data-remove]").forEach(button => {
+                button.addEventListener("click", () => {
+                    removeDish(button.dataset.remove);
+                });
+            });
+        }
+
+        function updateInterface() {
+            updateDishQuantities();
+            renderCart();
+        }
+
+        document.querySelectorAll(".add-button, .quantity-plus").forEach(button => {
+            button.addEventListener("click", () => {
+                addDish(button.dataset.dishId);
+            });
+        });
+
+        document.querySelectorAll(".quantity-minus").forEach(button => {
+            button.addEventListener("click", () => {
+                const dishId = button.dataset.dishId;
+                setQuantity(dishId, getQuantity(dishId) - 1);
+            });
+        });
+
+        clearButton.addEventListener("click", () => {
+            const cart = getCart();
+
+            if (cart.length === 0) return;
+
+            if (confirm("Очистить корзину?")) {
+                localStorage.removeItem(CART_STORAGE_KEY);
+                updateInterface();
+            }
+        });
+
+        function showCheckoutError(message, success = false) {
+            checkoutError.textContent = message;
+            checkoutError.style.display = "block";
+            checkoutError.classList.toggle("checkout-success", success);
+        }
+
+        let isSubmitting = false;
+
+        async function createInternalOrder(paymentType = "later") {
+            if (isSubmitting) return;
+
+            checkoutError.style.display = "none";
+            checkoutError.classList.remove("checkout-success");
+
+            const cart = getCart();
+
+            if (cart.length === 0) {
+                showCheckoutError("Сначала добавьте блюда в корзину.");
+                return;
+            }
+
+            if (!Number.isInteger(Number(TABLE_NUMBER)) || Number(TABLE_NUMBER) <= 0) {
+                showCheckoutError(
+                    paymentType === "online"
+                        ? "Онлайн-оплата пока недоступна."
+                        : "Не удалось определить номер столика."
+                );
+                return;
+            }
+
+            let clientId;
+
+            try {
+                clientId = getGuestClientId();
+            } catch (error) {
+                console.error("CLIENT ID ERROR:", error);
+
+                showCheckoutError(
+                    paymentType === "online"
+                        ? "Онлайн-оплата пока недоступна."
+                        : "Не удалось оформить заказ. Попробуйте ещё раз."
+                );
+                return;
+            }
+
+            const orderData = {
+                client_id: clientId,
+                order_items: cart.map(item => ({
+                    dish_id: Number(item.dish_id),
+                    dish_name: String(item.dish_name),
+                    price: Number(item.price),
+                    quantity: Number(item.quantity)
+                }))
+            };
+
+            const query = new URLSearchParams({
+                status: paymentType === "online"
+                    ? ONLINE_ORDER_STATUS
+                    : INTERNAL_ORDER_STATUS,
+                table_number: String(TABLE_NUMBER)
+            });
+
+            isSubmitting = true;
+            payLaterButton.disabled = true;
+            payOnlineButton.disabled = true;
+
+            const previousLaterText = payLaterButton.innerHTML;
+            const previousOnlineText = payOnlineButton.innerHTML;
+
+            if (paymentType === "online") {
+                payOnlineButton.textContent = "Подготовка оплаты...";
+            } else {
+                payLaterButton.textContent = "Создание заказа...";
+            }
+
+            try {
+                const response = await fetch(
+                    `${ORDER_CREATE_URL}?${query.toString()}`,
+                    {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify(orderData)
+                    }
+                );
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+
+                    console.error(
+                        "ORDER SERVICE RESPONSE:",
+                        response.status,
+                        errorText
+                    );
+
+                    throw new Error(`HTTP ${response.status}`);
+                }
+
+                if (paymentType === "online") {
+                    const result = await response.json();
+
+                    console.log("PAYMENT SERVICE RESPONSE:", result);
+
+                    const paymentUrl = result.checkout_url;
+
+                    if (
+                        typeof paymentUrl !== "string" ||
+                        !/^https?:\/\//i.test(paymentUrl)
+                    ) {
+                        showCheckoutError(
+                            "Заказ создан, но ссылка на оплату не получена. Позовите, пожалуйста, сотрудника для проверки заказа."
+                        );
+                        return;
+                    }
+
+                    window.location.assign(paymentUrl);
+                    return;
+                }
+
+                localStorage.removeItem(CART_STORAGE_KEY);
+                updateInterface();
+
+                showCheckoutError(
+                    "Заказ успешно оформлен. Оплатите его у сотрудника ресторана.",
+                    true
+                );
+
+            } catch (error) {
+                console.error(
+                    paymentType === "online"
+                        ? "ONLINE PAYMENT ERROR:"
+                        : "INTERNAL ORDER ERROR:",
+                    error
+                );
+
+                showCheckoutError(
+                    paymentType === "online"
+                        ? "Онлайн-оплата пока недоступна."
+                        : "Не удалось оформить заказ. Попробуйте ещё раз."
+                );
+
+            } finally {
+                isSubmitting = false;
+                payLaterButton.innerHTML = previousLaterText;
+                payOnlineButton.innerHTML = previousOnlineText;
+                updateInterface();
+            }
+        }
+
+        payLaterButton.addEventListener("click", () => {
+            createInternalOrder("later");
+        });
+
+        payOnlineButton.addEventListener("click", () => {
+            createInternalOrder("online");
+        });
+
+        updateInterface();
+    </script>
+</body>
+</html>

@@ -1,6 +1,7 @@
 from uuid import UUID
 
-from fastapi import APIRouter, Request, Depends, Form, UploadFile, File, HTTPException
+from dns.tsig import BadSignature
+from fastapi import APIRouter, Request, Depends, Form, UploadFile, File, HTTPException, Response
 from starlette.responses import HTMLResponse, RedirectResponse
 from starlette.templating import Jinja2Templates
 
@@ -120,3 +121,10 @@ async def create_order_for_guest(request: Request, category_service : CategorySe
     categories = await category_service.get_all_categories_for_users()
     return templates.TemplateResponse("order_for_guest.html", {"request": request, "categories" : categories})
 
+@router.get("/menu_page/qr_code_menu")
+async def qr_code_menu(request : Request,
+                       table_number : int,
+                       category_service : CategoryService = Depends(get_category_service_dependency)):
+    categories = await category_service.get_all_categories_for_users()
+    return templates.TemplateResponse("qr_code_menu.html",
+                                      {"request" : request, "categories" : categories, "table_number" : table_number})

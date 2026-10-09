@@ -92,11 +92,21 @@ class OrderRepository:
         await self.db.refresh(new_order)
         return new_order
 
-    async def create_order_for_guest(self, data : ListOrderGuestDTO, total_sum : Decimal):
+    async def create_order_for_guest(self, data : ListOrderGuestDTO, total_sum : Decimal, status : str, table_number : int | None):
+        if status == "":
+            order_status = OrderStatus.PENDING
+        else:
+            order_status = OrderStatus.INTERNAL_ORDER
+        if table_number is None:
+            number = None
+        else:
+            number = table_number
         async with self.db.begin():
             new_order = Order(
                 client_id=data.client_id,
-                sum=total_sum
+                sum=total_sum,
+                status=order_status,
+                table_number=number
             )
             self.db.add(new_order)
             await self.db.flush()

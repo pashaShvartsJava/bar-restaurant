@@ -20,6 +20,7 @@ class OrderStatus(str, Enum):
     CANCELLED_BEFORE = "cancelled_before"
     CANCELLED_AFTER = "cancelled_after"
     EXPIRED = "expired"
+    INTERNAL_ORDER = "internal_order"
 
 class Order(Base):
     __tablename__ = "orders"
@@ -31,6 +32,7 @@ class Order(Base):
     created_at = Column(DateTime(timezone=True), nullable=False, default=lambda: datetime.now(timezone.utc))
     updated_status = Column(DateTime(timezone=True), nullable=False, default=lambda: datetime.now(timezone.utc))
     sum = Column(DECIMAL(10, 2), nullable=False, index=True)
+    table_number = Column(Integer, nullable=True)
 
     order_items = relationship("OrderItem", back_populates="order")
     address = relationship("DeliveryAddress", back_populates="order", uselist=False)

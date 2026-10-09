@@ -20,7 +20,7 @@
         }
         .container {
             width: 100%;
-            max-width: 1400px;
+            max-width: 1500px;
             margin: 0 auto;
             padding: 60px 35px;
         }
@@ -133,7 +133,7 @@
         .table-header,
         .order {
             display: grid;
-            grid-template-columns: 1.5fr 1.15fr 135px 155px 155px 110px 170px;
+            grid-template-columns: 1.5fr 1.15fr 130px 135px 145px 145px 100px 165px;
             align-items: center;
         }
         .table-header {
@@ -169,6 +169,12 @@
             font-size: 10px;
             word-break: break-all;
         }
+        .order-table-number {
+            color: #d5a65b;
+            font-size: 10px;
+            line-height: 1.5;
+            word-break: break-word;
+        }
         .order-date {
             color: #aaa9ae;
             font-size: 10px;
@@ -201,13 +207,18 @@
             border: 1px solid rgba(210, 166, 91, .28);
             color: #d5a65b;
         }
+        .status.internal_order {
+            background: rgba(139, 92, 246, .15);
+            border: 1px solid rgba(167, 139, 250, .38);
+            color: #b59aff;
+        }
         .status.confirmed_address,
         .status.paid {
             background: rgba(70, 100, 130, .14);
             border: 1px solid rgba(90, 135, 175, .30);
             color: #8db4d3;
         }
-        .status.prepared {
+        .status.preparing {
             background: rgba(110, 80, 135, .15);
             border: 1px solid rgba(145, 110, 175, .30);
             color: #b59bc9;
@@ -258,6 +269,10 @@
             color: #aaa9ae;
             font-size: 9px;
             cursor: pointer;
+        }
+        .change-status-button:hover {
+            border-color: #d5a65b;
+            color: #d5a65b;
         }
         .status-menu {
             position: absolute;
@@ -395,7 +410,7 @@
             border: 1px solid rgba(255, 255, 255, .08);
             color: #aaa9ae;
         }
-        @media (max-width: 1200px) {
+        @media (max-width: 1350px) {
             .table-header {
                 display: none;
             }
@@ -450,11 +465,13 @@
         <a href="/admin_panel" class="back">← НАЗАД</a>
         <div class="brand">RESTAURANT ADMIN</div>
     </div>
+
     <div class="header">
         <div class="header-label">ORDER MANAGEMENT</div>
         <h1>Заказы</h1>
         <p class="description">Все зарегистрированные заказы ресторана</p>
     </div>
+
     <div class="controls">
         <form class="search-form" method="GET" action="/orders/get_orders/search_or_sorting">
             <input class="search-input" name="search" type="text" placeholder="Введите номер заказа" value="{{ search or '' }}">
@@ -463,26 +480,41 @@
         </form>
         <button class="sort-button" type="button" onclick="openSort()">Сортировать</button>
     </div>
+
     {% if orders %}
     <div class="orders">
         <div class="table-header">
             <div>Номер заказа</div>
             <div>Клиент</div>
+            <div>Столик</div>
             <div>Статус</div>
             <div>Создан</div>
             <div>Статус изменён</div>
             <div>Сумма</div>
             <div>Действия</div>
         </div>
+
         {% for order in orders %}
         {% set current_status = order.status.value if order.status.value is defined else order.status %}
         <div class="order">
             <div class="order-number">{{ order.order_number }}</div>
+
             <div class="order-client">{{ order.client_id }}</div>
+
+            <div class="order-table-number">
+                {% if order.table_number %}
+                    Столик № {{ order.table_number }}
+                {% else %}
+                    Заказ на доставку
+                {% endif %}
+            </div>
+
             <div>
                 <span class="status {{ current_status }}">
                     {% if current_status == "pending" %}
                         Ожидает
+                    {% elif current_status == "internal_order" %}
+                        Заказано
                     {% elif current_status == "confirmed_address" %}
                         Адрес подтверждён
                     {% elif current_status == "paid" %}
@@ -504,48 +536,122 @@
                     {% endif %}
                 </span>
             </div>
-            <div class="order-date">{{ order.created_at.strftime("%d.%m.%Y %H:%M") if order.created_at else "—" }}</div>
-            <div class="order-date">{{ order.updated_status.strftime("%d.%m.%Y %H:%M") if order.updated_status else "—" }}</div>
+
+            <div class="order-date">
+                {{ order.created_at.strftime("%d.%m.%Y %H:%M") if order.created_at else "—" }}
+            </div>
+
+            <div class="order-date">
+                {{ order.updated_status.strftime("%d.%m.%Y %H:%M") if order.updated_status else "—" }}
+            </div>
+
             <div class="order-sum">{{ order.sum }} €</div>
+
             <div class="status-action">
                 <a class="action" href="/orders/{{ order.id }}">Информация</a>
-                {% if current_status not in ["pending", "confirmed_address", "expired", "cancelled_before", "cancelled_after", "completed"] %}
-                <button class="change-status-button" type="button" onclick="toggleStatusMenu('{{ order.order_number }}')">Статус</button>
-                <div class="status-menu" id="status-menu-{{ order.order_number }}">
-                    {% if current_status == "paid" %}
-                    <button class="status-option" type="button" onclick="changeOrderStatus('{{ order.order_number }}', 'preparing')">Готовится</button>
-                    {% endif %}
-                    {% if current_status in ["paid", "preparing"] %}
-                    <button class="status-option" type="button" onclick="changeOrderStatus('{{ order.order_number }}', 'delivering')">Доставляется</button>
-                    {% endif %}
-                    {% if current_status in ["paid", "preparing", "delivering"] %}
-                    <button class="status-option" type="button" onclick="changeOrderStatus('{{ order.order_number }}', 'completed')">Завершён</button>
-                    <button class="status-option" type="button" onclick="changeOrderStatus('{{ order.order_number }}', 'cancelled_after')">Отменён после оплаты</button>
-                    {% endif %}
-                </div>
+
+                {% if current_status == "internal_order" and order.table_number %}
+                    <button class="change-status-button" type="button"
+                            onclick="toggleStatusMenu('{{ order.order_number }}')">
+                        Статус
+                    </button>
+
+                    <div class="status-menu" id="status-menu-{{ order.order_number }}">
+                        <button class="status-option" type="button"
+                                onclick="changeOrderStatus('{{ order.order_number }}', 'paid')">
+                            Оплачен
+                        </button>
+                    </div>
+
+                {% elif current_status == "paid" and not order.table_number %}
+                    <button class="change-status-button" type="button"
+                            onclick="toggleStatusMenu('{{ order.order_number }}')">
+                        Статус
+                    </button>
+
+                    <div class="status-menu" id="status-menu-{{ order.order_number }}">
+                        <button class="status-option" type="button"
+                                onclick="changeOrderStatus('{{ order.order_number }}', 'preparing')">
+                            Готовится
+                        </button>
+                        <button class="status-option" type="button"
+                                onclick="changeOrderStatus('{{ order.order_number }}', 'delivering')">
+                            Доставляется
+                        </button>
+                        <button class="status-option" type="button"
+                                onclick="changeOrderStatus('{{ order.order_number }}', 'completed')">
+                            Завершён
+                        </button>
+                        <button class="status-option" type="button"
+                                onclick="changeOrderStatus('{{ order.order_number }}', 'cancelled_after')">
+                            Отменён после оплаты
+                        </button>
+                    </div>
+
+                {% elif current_status == "preparing" and not order.table_number %}
+                    <button class="change-status-button" type="button"
+                            onclick="toggleStatusMenu('{{ order.order_number }}')">
+                        Статус
+                    </button>
+
+                    <div class="status-menu" id="status-menu-{{ order.order_number }}">
+                        <button class="status-option" type="button"
+                                onclick="changeOrderStatus('{{ order.order_number }}', 'delivering')">
+                            Доставляется
+                        </button>
+                        <button class="status-option" type="button"
+                                onclick="changeOrderStatus('{{ order.order_number }}', 'completed')">
+                            Завершён
+                        </button>
+                        <button class="status-option" type="button"
+                                onclick="changeOrderStatus('{{ order.order_number }}', 'cancelled_after')">
+                            Отменён после оплаты
+                        </button>
+                    </div>
+
+                {% elif current_status == "delivering" and not order.table_number %}
+                    <button class="change-status-button" type="button"
+                            onclick="toggleStatusMenu('{{ order.order_number }}')">
+                        Статус
+                    </button>
+
+                    <div class="status-menu" id="status-menu-{{ order.order_number }}">
+                        <button class="status-option" type="button"
+                                onclick="changeOrderStatus('{{ order.order_number }}', 'completed')">
+                            Завершён
+                        </button>
+                        <button class="status-option" type="button"
+                                onclick="changeOrderStatus('{{ order.order_number }}', 'cancelled_after')">
+                            Отменён после оплаты
+                        </button>
+                    </div>
                 {% endif %}
             </div>
         </div>
         {% endfor %}
     </div>
+
     {% else %}
     <div class="empty">
         <div class="empty-title">Заказы не найдены</div>
         <div class="empty-description">По заданным параметрам заказы отсутствуют.</div>
     </div>
     {% endif %}
+
     <div class="footer">RESTAURANT ADMINISTRATION</div>
 </div>
 
 <div class="sort-overlay" id="sortOverlay" onclick="closeSortByOverlay(event)">
     <div class="sort-panel" onclick="event.stopPropagation()">
         <div class="sort-title">Сортировка и фильтры</div>
+
         <form method="GET" action="/orders/get_orders/search_or_sorting">
             <div class="sort-field">
                 <label>Статус</label>
                 <select name="status">
                     <option value="">Все статусы</option>
                     <option value="pending" {% if status == "pending" %}selected{% endif %}>Ожидает</option>
+                    <option value="internal_order" {% if status == "internal_order" %}selected{% endif %}>Заказано</option>
                     <option value="confirmed_address" {% if status == "confirmed_address" %}selected{% endif %}>Адрес подтверждён</option>
                     <option value="paid" {% if status == "paid" %}selected{% endif %}>Оплачен</option>
                     <option value="preparing" {% if status == "preparing" %}selected{% endif %}>Готовится</option>
@@ -556,6 +662,7 @@
                     <option value="expired" {% if status == "expired" %}selected{% endif %}>Истёк</option>
                 </select>
             </div>
+
             <div class="sort-field">
                 <label>Дата создания</label>
                 <div class="sort-row">
@@ -563,6 +670,7 @@
                     <input type="date" name="date_to" value="{{ date_to or '' }}">
                 </div>
             </div>
+
             <div class="sort-field">
                 <label>Сумма</label>
                 <div class="sort-row">
@@ -570,6 +678,7 @@
                     <input type="number" name="sum_to" min="0" step="0.01" placeholder="До" value="{{ sum_to or '' }}">
                 </div>
             </div>
+
             <div class="sort-field">
                 <label>Сортировка</label>
                 <select name="sort">
@@ -579,12 +688,17 @@
                     <option value="sum_asc" {% if sort == "sum_asc" %}selected{% endif %}>Сумма: по возрастанию</option>
                 </select>
             </div>
+
             {% if search %}
             <input type="hidden" name="search" value="{{ search }}">
             {% endif %}
+
             <div class="sort-actions">
                 <button class="sort-apply" type="submit">Применить</button>
-                <a class="sort-reset" href="/orders/get_orders" style="display:flex;align-items:center;justify-content:center;text-decoration:none;">Сбросить</a>
+                <a class="sort-reset" href="/orders/get_orders"
+                   style="display:flex;align-items:center;justify-content:center;text-decoration:none;">
+                    Сбросить
+                </a>
                 <button class="sort-close" type="button" onclick="closeSort()">Закрыть</button>
             </div>
         </form>
@@ -596,25 +710,30 @@
     function openSort() {
         document.getElementById("sortOverlay").classList.add("active");
     }
+
     function closeSort() {
         document.getElementById("sortOverlay").classList.remove("active");
     }
+
     function closeSortByOverlay(event) {
         if (event.target.id === "sortOverlay") {
             closeSort();
         }
     }
+
     function toggleStatusMenu(orderNumber) {
         document.querySelectorAll(".status-menu").forEach(menu => {
             if (menu.id !== `status-menu-${orderNumber}`) {
                 menu.classList.remove("active");
             }
         });
+
         const menu = document.getElementById(`status-menu-${orderNumber}`);
         if (menu) {
             menu.classList.toggle("active");
         }
     }
+
     async function changeOrderStatus(orderNumber, status) {
         const response = await apiFetch(`/orders/${orderNumber}/status`, {
             method: "PATCH",
@@ -625,12 +744,15 @@
                 status: status
             })
         });
+
         if (!response.ok) {
             alert("Не удалось изменить статус заказа");
             return;
         }
+
         location.reload();
     }
+
     document.addEventListener("click", event => {
         if (!event.target.closest(".status-action")) {
             document.querySelectorAll(".status-menu").forEach(menu => {
@@ -638,13 +760,41 @@
             });
         }
     });
+
     document.querySelectorAll('form[method="GET"]').forEach(form => {
-        form.addEventListener("submit", () => {
-            form.querySelectorAll("input, select").forEach(field => {
-                if (field.value === "") {
-                    field.removeAttribute("name");
+        form.addEventListener("submit", async event => {
+            event.preventDefault();
+
+            const csrf = document.cookie
+                .split("; ")
+                .find(row => row.startsWith("csrf_token="))
+                ?.split("=")[1];
+
+            const params = new URLSearchParams(new FormData(form));
+
+            for (const [key, value] of [...params.entries()]) {
+                if (value === "") {
+                    params.delete(key);
+                }
+            }
+
+            const url = `${form.action}?${params.toString()}`;
+
+            const response = await fetch(url, {
+                method: "GET",
+                headers: {
+                    "X-CSRF-Token": csrf
                 }
             });
+
+            if (!response.ok) {
+                alert("Не удалось выполнить поиск или сортировку");
+                return;
+            }
+
+            document.open();
+            document.write(await response.text());
+            document.close();
         });
     });
 </script>
