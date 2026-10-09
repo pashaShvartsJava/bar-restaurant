@@ -16,15 +16,18 @@ class ReservationService:
         return await self.reservation_repository.get_all_reservations()
 
     async def create_reservation(self, table_id : int, name : str, surname : str, phone : str,
-                                 reservation_start : datetime, reservation_end : datetime, email : EmailStr):
-        table = await self.table_repository.get_table_by_id(table_id)
-        if not table.reservations:
-            return await self.reservation_repository.create_reservation(table_id, name, surname, phone, reservation_start, reservation_end, email)
-        else:
-            for reservation in table.reservations:
-                if reservation_start < reservation.reservation_end and reservation_end > reservation.reservation_start:
-                    raise ValueError("Бронирование на это время уже занято")
-        return await self.reservation_repository.create_reservation(table_id, name, surname, phone, reservation_start, reservation_end, email)
+                                 reservation_start : datetime, reservation_end : datetime, email : EmailStr | None):
+        async with self.table_repository.db.begin():
+            table = await self.table_repository.get_table_by_id(table_id)
+            if not table.reservations:
+                return await self.reservation_repository.create_reservation(table_id, name, surname, phone,
+                                                                            reservation_start, reservation_end, email)
+            else:
+                for reservation in table.reservations:
+                    if reservation_start < reservation.reservation_end and reservation_end > reservation.reservation_start:
+                        raise ValueError("Бронирование на это время уже занято")
+            return await self.reservation_repository.create_reservation(table_id, name, surname, phone,
+                                                                        reservation_start, reservation_end, email)
 
     async def cancel_reservation(self, reservation_id : int):
         return await self.reservation_repository.cancel_reservation(reservation_id)

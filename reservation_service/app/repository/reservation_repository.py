@@ -21,7 +21,7 @@ class ReservationRepository:
         return result.scalars().all()
 
     async def create_reservation(self, table_id : int, name : str, surname : str, phone : str,
-                                 reservation_start : datetime, reservation_end : datetime, email : EmailStr) -> Reservation:
+                                 reservation_start : datetime, reservation_end : datetime, email : EmailStr | None) -> Reservation:
         if email is None:
             new_reservation = Reservation(
                 table_id=table_id,
@@ -32,22 +32,20 @@ class ReservationRepository:
                 reservation_end=reservation_end
             )
             self.db.add(new_reservation)
-            await self.db.commit()
-            await self.db.refresh(new_reservation)
-            return new_reservation
-        async with self.db.begin():
-            new_reservation = Reservation(
-                table_id=table_id,
-                name=name,
-                surname=surname,
-                phone=phone,
-                reservation_start=reservation_start,
-                reservation_end=reservation_end
-            )
-            self.db.add(new_reservation)
             await self.db.flush()
-            await self.create_outbox_reservation_event(name, surname, reservation_start, email)
-        await self.db.refresh(new_reservation)
+            return new_reservation
+
+        new_reservation = Reservation(
+            table_id=table_id,
+            name=name,
+            surname=surname,
+            phone=phone,
+            reservation_start=reservation_start,
+            reservation_end=reservation_end
+        )
+        self.db.add(new_reservation)
+        await self.db.flush()
+        await self.create_outbox_reservation_event(name, surname, reservation_start, email)
         return new_reservation
 
     async def get_reservation_by_id(self, reservation_id : int):
@@ -98,10 +96,11 @@ class ReservationRepository:
             payload={
                 "name" : name,
                 "surname" : surname,
-                "reservation_start" : reservation_start,
+                "reservation_start" : reservation_start.isoformat(),
                 "email" : email
             },
             event_id=str(uuid.uuid4())
         )
+        self.db.add(new_outbox)
         await self.db.flush()
         return new_outbox

@@ -1,3 +1,4 @@
+from datetime import datetime
 from email.message import EmailMessage
 from urllib.parse import urlencode
 
@@ -170,8 +171,9 @@ class EmailService:
         message = EmailMessage()
         message["From"] = settings.EMAIL_FROM
         message["To"] = email
-        message["Subject"] = "Бронирование столика завершено"
+        message["Subject"] = "Ваша бронь подтверждена"
 
+        reservation_start = datetime.fromisoformat(reservation_start)
         reservation_start_text = reservation_start.strftime("%d.%m.%Y в %H:%M")
         html = templates.get_template("reservation.html").render(name=name,
                                                                  surname=surname,

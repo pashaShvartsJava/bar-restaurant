@@ -1,10 +1,111 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Бронирование подтверждено</title>
 </head>
-<body>
+<body style="margin:0; padding:0; background-color:#f4f1eb; font-family:Arial, Helvetica, sans-serif; color:#29251f;">
+
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0"
+           style="background-color:#f4f1eb; padding:30px 12px;">
+        <tr>
+            <td align="center">
+
+                <table role="presentation" width="600" cellspacing="0" cellpadding="0" border="0"
+                       style="width:100%; max-width:600px; background-color:#ffffff; border-radius:16px; overflow:hidden;">
+
+                    <!-- Шапка -->
+                    <tr>
+                        <td align="center"
+                            style="background-color:#263b2d; padding:36px 24px;">
+                            <div style="font-size:13px; letter-spacing:4px; color:#d7c49a; text-transform:uppercase;">
+                                MARANI
+                            </div>
+                            <h1 style="margin:20px 0 8px; color:#ffffff; font-size:29px; font-weight:normal;">
+                                Ваш столик забронирован
+                            </h1>
+                            <p style="margin:0; color:#e4e8e1; font-size:15px; line-height:1.6;">
+                                Спасибо, что выбрали наш ресторан
+                            </p>
+                        </td>
+                    </tr>
+
+                    <!-- Основной текст -->
+                    <tr>
+                        <td style="padding:36px 30px 20px;">
+                            <p style="margin:0 0 16px; font-size:17px; line-height:1.7;">
+                                Здравствуйте, {{ name }} {{ surname }}!
+                            </p>
+
+                            <p style="margin:0; color:#625e56; font-size:15px; line-height:1.8;">
+                                Ваше бронирование успешно подтверждено.
+                                Мы будем рады видеть вас в MARANI и сделать ваш вечер особенным.
+                            </p>
+                        </td>
+                    </tr>
+
+                    <!-- Данные бронирования -->
+                    <tr>
+                        <td style="padding:12px 30px 28px;">
+                            <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0"
+                                   style="background-color:#f8f6f1; border:1px solid #e8e1d5; border-radius:12px;">
+                                <tr>
+                                    <td style="padding:24px;">
+                                        <p style="margin:0 0 18px; color:#7b6a45; font-size:12px; letter-spacing:2px; text-transform:uppercase;">
+                                            Детали бронирования
+                                        </p>
+
+                                        <p style="margin:0 0 8px; color:#777166; font-size:13px;">
+                                            Дата и время
+                                        </p>
+
+                                        <p style="margin:0; color:#263b2d; font-size:24px; font-weight:bold; line-height:1.5;">
+                                            {{ reservation_start }}
+                                        </p>
+
+                                        <div style="height:1px; background-color:#e3dccf; margin:20px 0;"></div>
+
+                                        <p style="margin:0; color:#625e56; font-size:14px; line-height:1.8;">
+                                            Пожалуйста, сохраните это письмо, чтобы детали бронирования были под рукой.
+                                        </p>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+
+                    <!-- Завершение -->
+                    <tr>
+                        <td align="center" style="padding:0 30px 32px;">
+                            <p style="margin:0 0 8px; color:#29251f; font-size:17px;">
+                                До скорой встречи!
+                            </p>
+                            <p style="margin:0; color:#777166; font-size:14px; line-height:1.7;">
+                                С теплом,<br>
+                                команда ресторана MARANI
+                            </p>
+                        </td>
+                    </tr>
+
+                    <!-- Подвал -->
+                    <tr>
+                        <td align="center"
+                            style="background-color:#263b2d; padding:20px 24px;">
+                            <p style="margin:0; color:#d7c49a; font-size:12px; letter-spacing:1px;">
+                                MARANI · ВКУС ТРАДИЦИЙ
+                            </p>
+                            <p style="margin:8px 0 0; color:#d7dcd5; font-size:11px; line-height:1.6;">
+                                Это автоматическое письмо о подтверждении бронирования.
+                            </p>
+                        </td>
+                    </tr>
+
+                </table>
+
+            </td>
+        </tr>
+    </table>
 
 </body>
 </html>

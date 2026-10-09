@@ -451,12 +451,9 @@
 <div class="page">
 
     <aside class="side">
-
         <div class="side-card">
             <span class="side-label">MARANI</span>
-
             <h3>Бронирование</h3>
-
             <p>
                 Выберите количество гостей и удобное
                 время. Мы проверим доступность столиков
@@ -466,13 +463,11 @@
 
         <div class="side-card">
             <span class="side-label">БРОНЬ</span>
-
             <p class="quote">
                 «Хороший вечер начинается
                 с правильного стола»
             </p>
         </div>
-
     </aside>
 
     <main class="auth-card">
@@ -485,18 +480,16 @@
             Укажите количество гостей и желаемое время
         </div>
 
-        <div id="message" class="message"></div>
+        <div id="message" class="message" role="status" aria-live="polite"></div>
 
         <form
             id="availabilityForm"
             method="post"
             action="/tables/get_free_table"
         >
-
             <div class="field-row">
 
                 <div class="field">
-
                     <label for="peopleAmount">
                         Количество гостей
                         <span class="required">*</span>
@@ -511,11 +504,9 @@
                         placeholder="2"
                         required
                     >
-
                 </div>
 
                 <div class="field">
-
                     <label for="requestedDatetime">
                         Дата и время
                         <span class="required">*</span>
@@ -527,7 +518,6 @@
                         name="requested_datetime"
                         required
                     >
-
                 </div>
 
             </div>
@@ -539,7 +529,6 @@
             >
                 Найти свободные столики
             </button>
-
         </form>
 
         <div id="contactFields">
@@ -547,7 +536,6 @@
             <div class="field-row">
 
                 <div class="field">
-
                     <label for="firstName">
                         Имя
                         <span class="required">*</span>
@@ -556,16 +544,15 @@
                     <input
                         id="firstName"
                         type="text"
-                        name="first_name"
+                        name="name"
+                        minlength="2"
                         placeholder="Имя"
                         autocomplete="given-name"
                         required
                     >
-
                 </div>
 
                 <div class="field">
-
                     <label for="lastName">
                         Фамилия
                         <span class="required">*</span>
@@ -574,18 +561,17 @@
                     <input
                         id="lastName"
                         type="text"
-                        name="last_name"
+                        name="surname"
+                        minlength="2"
                         placeholder="Фамилия"
                         autocomplete="family-name"
                         required
                     >
-
                 </div>
 
             </div>
 
             <div class="field">
-
                 <label for="phone">
                     Номер телефона
                     <span class="required">*</span>
@@ -594,16 +580,16 @@
                 <input
                     id="phone"
                     type="tel"
-                    name="phone"
-                    placeholder="+49 170 1234567"
+                    name="phone_number"
+                    pattern="^\+?[1-9][0-9]{7,14}$"
+                    title="Введите номер в международном формате, например +491701234567"
+                    placeholder="+491701234567"
                     autocomplete="tel"
                     required
                 >
-
             </div>
 
             <div class="field">
-
                 <label for="email">
                     Email
                     <span class="required">*</span>
@@ -617,7 +603,6 @@
                     autocomplete="email"
                     required
                 >
-
             </div>
 
             <button
@@ -637,10 +622,7 @@
             перейти к подтверждению бронирования.
         </div>
 
-        <a
-            href="/bar_name"
-            class="back-link"
-        >
+        <a href="/bar_name" class="back-link">
             ← Вернуться в MARANI
         </a>
 
@@ -649,19 +631,12 @@
     <aside class="side">
 
         <div class="side-card">
-
-            <span class="side-label">
-                ВАША БРОНЬ
-            </span>
+            <span class="side-label">ВАША БРОНЬ</span>
 
             <div class="reservation-info">
-
-                <div class="reservation-icon">
-                    ◇
-                </div>
+                <div class="reservation-icon">◇</div>
 
                 <div>
-
                     <div class="reservation-name">
                         Столик в MARANI
                     </div>
@@ -669,28 +644,19 @@
                     <div class="reservation-description">
                         Проверка доступности онлайн
                     </div>
-
                 </div>
-
             </div>
-
         </div>
 
         <div class="side-card">
+            <span class="side-label">BAR SPIRIT</span>
 
-            <span class="side-label">
-                BAR SPIRIT
-            </span>
-
-            <h3>
-                Ваш вечер начинается здесь
-            </h3>
+            <h3>Ваш вечер начинается здесь</h3>
 
             <p>
                 Сначала проверяем свободные столики,
                 затем оформляем бронирование.
             </p>
-
         </div>
 
     </aside>
@@ -708,6 +674,7 @@
 
     let confirmedSearchValues = null;
     let searchInProgress = false;
+    let confirmationInProgress = false;
 
     function showMessage(type, content) {
         message.className = `message ${type}`;
@@ -766,10 +733,17 @@
     function handleSearchInputChange() {
         if (searchValuesChanged()) {
             hideContactFields();
-
             message.style.display = "none";
             message.textContent = "";
         }
+    }
+
+    function getErrorDetail(data, fallback) {
+        if (typeof data.detail === "string") {
+            return data.detail;
+        }
+
+        return fallback;
     }
 
     peopleAmount.addEventListener("input", handleSearchInputChange);
@@ -799,20 +773,13 @@
         const formData = new FormData(form);
 
         try {
-            console.log("Отправка POST:", form.action);
-            console.log("Данные:", Object.fromEntries(formData.entries()));
-
             const response = await fetch(form.action, {
                 method: "POST",
                 body: formData,
                 credentials: "same-origin"
             });
 
-            console.log("HTTP status:", response.status);
-
             const responseText = await response.text();
-            console.log("Ответ сервера:", responseText);
-
             let data = {};
 
             if (responseText) {
@@ -827,11 +794,31 @@
                 }
             }
 
+            if (response.status === 405) {
+    showMessage(
+        "error",
+        data.detail || "Некорректные данные поиска. Повторите поиск столика."
+    );
+    hideContactFields();
+    return;
+}
+
+if (response.status === 406) {
+    showMessage(
+        "error",
+        data.detail || "Срок действия бронирования истёк. Повторите поиск столика."
+    );
+    hideContactFields();
+    return;
+}
+
             if (response.status === 409) {
                 showMessage(
                     "error",
-                    data.detail ||
-                    "К сожалению, все столики уже заняты. Попробуйте выбрать другое время"
+                    getErrorDetail(
+                        data,
+                        "К сожалению, все столики уже заняты. Попробуйте выбрать другое время."
+                    )
                 );
                 return;
             }
@@ -839,29 +826,32 @@
             if (response.status === 422) {
                 showMessage(
                     "error",
-                    "Количество гостей должно быть меньше 7"
+                    getErrorDetail(
+                        data,
+                        "Проверьте количество гостей и выбранную дату."
+                    )
                 );
                 return;
             }
 
             if (response.status >= 500) {
-                console.error("Ошибка сервера:", response.status, data);
-
                 showServerError(
                     "Ошибка сервера",
-                    data.detail ||
-                    "Ошибка сервера. Попробуйте повторить операцию позже"
+                    getErrorDetail(
+                        data,
+                        "Попробуйте повторить операцию позже."
+                    )
                 );
                 return;
             }
 
             if (!response.ok) {
-                console.error("HTTP ошибка:", response.status, data);
-
                 showServerError(
                     "Ошибка",
-                    data.detail ||
-                    "Произошла ошибка. Попробуйте повторить операцию позже"
+                    getErrorDetail(
+                        data,
+                        "Не удалось проверить доступность столика."
+                    )
                 );
                 return;
             }
@@ -881,8 +871,7 @@
 
             showMessage(
                 "success",
-                data.message ||
-                "На данное время есть свободные столики"
+                data.message || "На данное время есть свободные столики."
             );
 
             contactFields.style.display = "block";
@@ -892,7 +881,7 @@
 
             showServerError(
                 "Ошибка соединения",
-                "Не удалось связаться с сервером. Попробуйте повторить операцию позже"
+                "Не удалось связаться с сервером. Попробуйте повторить операцию позже."
             );
 
         } finally {
@@ -901,7 +890,11 @@
         }
     });
 
-    confirmButton.addEventListener("click", () => {
+    confirmButton.addEventListener("click", async () => {
+        if (confirmationInProgress) {
+            return;
+        }
+
         if (!confirmedSearchValues || searchValuesChanged()) {
             hideContactFields();
 
@@ -912,18 +905,78 @@
             return;
         }
 
-        if (!contactFields.querySelector("input:invalid") &&
-            !contactFields.querySelector("input[required]:placeholder-shown")) {
-            return;
-        }
-
         const requiredInputs = contactFields.querySelectorAll("input[required]");
 
         for (const input of requiredInputs) {
-            if (!input.value.trim()) {
-                input.reportValidity();
+            if (!input.reportValidity()) {
                 return;
             }
+        }
+
+        confirmationInProgress = true;
+        confirmButton.disabled = true;
+
+        try {
+            const formData = new FormData(contactFields.querySelector("input[name='name']").form || form);
+
+            formData.delete("people_amount");
+            formData.delete("requested_datetime");
+
+            formData.set("name", document.getElementById("firstName").value.trim());
+            formData.set("surname", document.getElementById("lastName").value.trim());
+            formData.set("phone_number", document.getElementById("phone").value.trim());
+            formData.set("email", document.getElementById("email").value.trim());
+
+            const response = await fetch("/tables/confirm_reservation", {
+                method: "POST",
+                body: formData,
+                credentials: "same-origin"
+            });
+
+            const responseText = await response.text();
+            let data = {};
+
+            if (responseText) {
+                try {
+                    data = JSON.parse(responseText);
+                } catch {
+                    showServerError(
+                        "Ошибка ответа сервера",
+                        "Сервер вернул некорректный ответ."
+                    );
+                    return;
+                }
+            }
+
+            if (!response.ok) {
+                showServerError(
+                    "Не удалось подтвердить бронирование",
+                    getErrorDetail(
+                        data,
+                        "Попробуйте повторить операцию."
+                    )
+                );
+                return;
+            }
+
+            showMessage(
+                "success",
+                data.message || "Бронирование успешно подтверждено."
+            );
+
+            hideContactFields();
+
+        } catch (error) {
+            console.error("Ошибка подтверждения:", error);
+
+            showServerError(
+                "Ошибка соединения",
+                "Не удалось связаться с сервером. Попробуйте повторить операцию позже."
+            );
+
+        } finally {
+            confirmationInProgress = false;
+            confirmButton.disabled = false;
         }
     });
 </script>

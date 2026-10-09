@@ -4,7 +4,7 @@ from typing import Annotated
 from uuid import UUID
 
 from fastapi import APIRouter, Request, Form, HTTPException, Response
-from itsdangerous import URLSafeTimedSerializer
+from itsdangerous import URLSafeTimedSerializer, BadSignature, SignatureExpired
 from pydantic import EmailStr
 from starlette.responses import RedirectResponse, JSONResponse
 from starlette.templating import Jinja2Templates
@@ -185,15 +185,29 @@ async def confirm_reservation(request : Request,
                               surname : str = Form(..., min_length=2),
                               email : EmailStr = Form(),
                               service : ReservationService = Depends(get_reservation_service_dependency)):
-    token = request.get("reservation_draft")
-    data = serializer.loads(token, max_age=600)
+    token = request.cookies.get("reservation_draft")
+    if not token:
+        raise HTTPException(status_code=400, detail="Срок действия бронирования истёк. Повторите поиск столика.")
+    try:
+        data = serializer.loads(token, max_age=600)
+    except BadSignature:
+        raise HTTPException(status_code=405, detail="Некорректные данные поиска")
+    except SignatureExpired:
+        raise HTTPException(status_code=406, detail="Ошибка. Попробуйте перезайти на страницу заново и повторить операцию")
     requested_datetime = datetime.fromisoformat(data["requested_datetime"])
+    if requested_datetime.tzinfo is None:
+        requested_datetime = requested_datetime.replace(tzinfo=timezone.utc)
+    else:
+        requested_datetime = requested_datetime.astimezone(timezone.utc)
     table_id = data["table_id"]
     minutes = data["minutes"]
     reservation_end = None
-    if minutes < 60:
-        reservation_end = requested_datetime + timedelta(minutes=minutes)
+    if minutes is None:
+        reservation_end = requested_datetime + timedelta(hours=2)
+    elif int(minutes) < 60:
+        reservation_end = requested_datetime + timedelta(minutes=int(minutes))
     else:
         reservation_end = requested_datetime + timedelta(minutes=60)
     await service.create_reservation(table_id, name, surname, phone_number, requested_datetime, reservation_end, email)
+    return {"success": True, "message": "Бронирование успешно подтверждено."}
 
