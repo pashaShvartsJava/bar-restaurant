@@ -27,7 +27,7 @@ class RabbitMQ:
                 await asyncio.sleep(5)
         self.channel = await self.connection.channel(publisher_confirms=True)
 
-        self.exchange = await self.channel.declare_exchange("reservation_events_events",
+        self.exchange = await self.channel.declare_exchange("reservation_events",
                                                        aio_pika.ExchangeType.DIRECT,
                                                        durable=True)
         self.create_reservation_queue = await self.channel.declare_queue("create_reservation", durable=True)

@@ -2,7 +2,8 @@ import asyncio
 import aio_pika
 from aio_pika import connect_robust
 
-from .consumer import EmailVerificationConsumer, ChangePasswordVerificationConsumer, ChangeStatusConsumer, ResetPasswordConsumer
+from .consumer import EmailVerificationConsumer, ChangePasswordVerificationConsumer, ChangeStatusConsumer, \
+    ResetPasswordConsumer, CreateReservationConsumer
 from ..config.config import settings
 
 
@@ -11,12 +12,15 @@ class RabbitMQ:
         self.connection = None
         self.channel = None
         self.exchange = None
+        self.reservation_exchange = None
         self.email_verification_queue = None
         self.change_password_verification_queue = None
         self.consume_email_verification = None
         self.consume_change_password_verification = None
         self.change_status_queue = None
         self.reset_password_queue = None
+        self.create_reservation_queue = None
+        self.consume_create_reservation = None
 
     async def connect(self):
         while True:
@@ -36,16 +40,21 @@ class RabbitMQ:
         self.exchange = await self.channel.declare_exchange("email_verification_event",
                                                             aio_pika.ExchangeType.DIRECT,
                                                             durable=True)
-        self.email_verification_queue = await self.channel.declare_queue(
-            "email_verification", durable=True)
-        await self.email_verification_queue.bind(
-            self.exchange, routing_key="email_verification_event")
+
+        self.reservation_exchange = await self.channel.declare_exchange("reservation_events",
+                                                                        aio_pika.ExchangeType.DIRECT,
+                                                                        durable=True)
+
+        self.create_reservation_queue = await self.channel.declare_queue("create_reservation", durable=True)
+        await self.create_reservation_queue.bind(self.reservation_exchange, routing_key="create_reservation")
+        self.consume_create_reservation = CreateReservationConsumer(self.create_reservation_queue)
+
+        self.email_verification_queue = await self.channel.declare_queue("email_verification", durable=True)
+        await self.email_verification_queue.bind(self.exchange, routing_key="email_verification_event")
         self.consume_email_verification = EmailVerificationConsumer(self.email_verification_queue)
 
-        self.change_password_verification_queue = await self.channel.declare_queue(
-            "change_password_verification", durable=True)
-        await self.change_password_verification_queue.bind(
-            self.exchange, routing_key="change_password_verification_event")
+        self.change_password_verification_queue = await self.channel.declare_queue("change_password_verification", durable=True)
+        await self.change_password_verification_queue.bind(self.exchange, routing_key="change_password_verification_event")
         self.consume_change_password_verification = ChangePasswordVerificationConsumer(self.change_password_verification_queue)
 
         self.change_status_queue = await self.channel.declare_queue("change_status", durable=True)
