@@ -497,16 +497,17 @@
 
                 <div class="field">
 
-                    <label>
+                    <label for="peopleAmount">
                         Количество гостей
                         <span class="required">*</span>
                     </label>
 
                     <input
+                        id="peopleAmount"
                         type="number"
                         name="people_amount"
                         min="1"
-                        max="20"
+                        max="6"
                         placeholder="2"
                         required
                     >
@@ -515,12 +516,13 @@
 
                 <div class="field">
 
-                    <label>
+                    <label for="requestedDatetime">
                         Дата и время
                         <span class="required">*</span>
                     </label>
 
                     <input
+                        id="requestedDatetime"
                         type="datetime-local"
                         name="requested_datetime"
                         required
@@ -546,32 +548,36 @@
 
                 <div class="field">
 
-                    <label>
+                    <label for="firstName">
                         Имя
                         <span class="required">*</span>
                     </label>
 
                     <input
+                        id="firstName"
                         type="text"
                         name="first_name"
                         placeholder="Имя"
                         autocomplete="given-name"
+                        required
                     >
 
                 </div>
 
                 <div class="field">
 
-                    <label>
+                    <label for="lastName">
                         Фамилия
                         <span class="required">*</span>
                     </label>
 
                     <input
+                        id="lastName"
                         type="text"
                         name="last_name"
                         placeholder="Фамилия"
                         autocomplete="family-name"
+                        required
                     >
 
                 </div>
@@ -580,32 +586,36 @@
 
             <div class="field">
 
-                <label>
+                <label for="phone">
                     Номер телефона
                     <span class="required">*</span>
                 </label>
 
                 <input
+                    id="phone"
                     type="tel"
                     name="phone"
                     placeholder="+49 170 1234567"
                     autocomplete="tel"
+                    required
                 >
 
             </div>
 
             <div class="field">
 
-                <label>
+                <label for="email">
                     Email
                     <span class="required">*</span>
                 </label>
 
                 <input
+                    id="email"
                     type="email"
                     name="email"
                     placeholder="email@example.com"
                     autocomplete="email"
+                    required
                 >
 
             </div>
@@ -692,43 +702,105 @@
     const message = document.getElementById("message");
     const contactFields = document.getElementById("contactFields");
     const availabilityButton = document.getElementById("availabilityButton");
+    const peopleAmount = document.getElementById("peopleAmount");
+    const requestedDatetime = document.getElementById("requestedDatetime");
+    const confirmButton = document.getElementById("confirmButton");
+
+    let confirmedSearchValues = null;
+    let searchInProgress = false;
 
     function showMessage(type, content) {
         message.className = `message ${type}`;
-        message.innerHTML = content;
+        message.textContent = content;
         message.style.display = "block";
     }
 
     function showServerError(title, detail) {
-        showMessage(
-            "server-error",
-            `
-                <div class="server-error-title">
-                    <span class="server-error-icon">!</span>
-                    ${title}
-                </div>
-                <div>
-                    ${detail}
-                </div>
-            `
+        message.className = "message server-error";
+        message.replaceChildren();
+
+        const titleElement = document.createElement("div");
+        titleElement.className = "server-error-title";
+
+        const icon = document.createElement("span");
+        icon.className = "server-error-icon";
+        icon.textContent = "!";
+
+        const titleText = document.createElement("span");
+        titleText.textContent = title;
+
+        titleElement.append(icon, titleText);
+
+        const detailElement = document.createElement("div");
+        detailElement.textContent = detail;
+
+        message.append(titleElement, detailElement);
+        message.style.display = "block";
+    }
+
+    function hideContactFields() {
+        contactFields.style.display = "none";
+        confirmedSearchValues = null;
+    }
+
+    function getSearchValues() {
+        return {
+            people_amount: peopleAmount.value,
+            requested_datetime: requestedDatetime.value
+        };
+    }
+
+    function searchValuesChanged() {
+        if (!confirmedSearchValues) {
+            return false;
+        }
+
+        const currentValues = getSearchValues();
+
+        return (
+            currentValues.people_amount !== confirmedSearchValues.people_amount ||
+            currentValues.requested_datetime !== confirmedSearchValues.requested_datetime
         );
     }
+
+    function handleSearchInputChange() {
+        if (searchValuesChanged()) {
+            hideContactFields();
+
+            message.style.display = "none";
+            message.textContent = "";
+        }
+    }
+
+    peopleAmount.addEventListener("input", handleSearchInputChange);
+    requestedDatetime.addEventListener("input", handleSearchInputChange);
+    peopleAmount.addEventListener("change", handleSearchInputChange);
+    requestedDatetime.addEventListener("change", handleSearchInputChange);
 
     form.addEventListener("submit", async (event) => {
         event.preventDefault();
 
+        if (searchInProgress) {
+            return;
+        }
+
         message.style.display = "none";
-        contactFields.style.display = "none";
+        message.textContent = "";
+        hideContactFields();
+
+        if (!form.reportValidity()) {
+            return;
+        }
+
+        searchInProgress = true;
         availabilityButton.disabled = true;
 
+        const submittedValues = getSearchValues();
         const formData = new FormData(form);
 
         try {
             console.log("Отправка POST:", form.action);
-            console.log(
-                "Данные:",
-                Object.fromEntries(formData.entries())
-            );
+            console.log("Данные:", Object.fromEntries(formData.entries()));
 
             const response = await fetch(form.action, {
                 method: "POST",
@@ -739,7 +811,6 @@
             console.log("HTTP status:", response.status);
 
             const responseText = await response.text();
-
             console.log("Ответ сервера:", responseText);
 
             let data = {};
@@ -747,17 +818,11 @@
             if (responseText) {
                 try {
                     data = JSON.parse(responseText);
-                } catch (error) {
-                    console.error(
-                        "Ответ сервера не является JSON:",
-                        error
-                    );
-
+                } catch {
                     showServerError(
                         "Ошибка ответа сервера",
                         "Сервер вернул некорректный ответ."
                     );
-
                     return;
                 }
             }
@@ -768,52 +833,51 @@
                     data.detail ||
                     "К сожалению, все столики уже заняты. Попробуйте выбрать другое время"
                 );
-
                 return;
             }
 
             if (response.status === 422) {
-    showMessage(
-        "error",
-        "Количество гостей должно быть меньше 7"
-    );
-
-    return;
-}
+                showMessage(
+                    "error",
+                    "Количество гостей должно быть меньше 7"
+                );
+                return;
+            }
 
             if (response.status >= 500) {
-                console.error(
-                    "Ошибка сервера:",
-                    response.status,
-                    data
-                );
+                console.error("Ошибка сервера:", response.status, data);
 
                 showServerError(
                     "Ошибка сервера",
                     data.detail ||
                     "Ошибка сервера. Попробуйте повторить операцию позже"
                 );
-
                 return;
             }
 
             if (!response.ok) {
-                console.error(
-                    "HTTP ошибка:",
-                    response.status,
-                    data
-                );
+                console.error("HTTP ошибка:", response.status, data);
 
                 showServerError(
                     "Ошибка",
                     data.detail ||
                     "Произошла ошибка. Попробуйте повторить операцию позже"
                 );
-
                 return;
             }
 
-            console.log("Свободный столик найден:", data);
+            if (
+                peopleAmount.value !== submittedValues.people_amount ||
+                requestedDatetime.value !== submittedValues.requested_datetime
+            ) {
+                showMessage(
+                    "error",
+                    "Параметры поиска изменились. Повторите поиск свободных столиков."
+                );
+                return;
+            }
+
+            confirmedSearchValues = submittedValues;
 
             showMessage(
                 "success",
@@ -825,8 +889,6 @@
 
         } catch (error) {
             console.error("Ошибка запроса:", error);
-            console.error("Ошибка:", error.message);
-            console.error("Stack:", error.stack);
 
             showServerError(
                 "Ошибка соединения",
@@ -834,7 +896,34 @@
             );
 
         } finally {
+            searchInProgress = false;
             availabilityButton.disabled = false;
+        }
+    });
+
+    confirmButton.addEventListener("click", () => {
+        if (!confirmedSearchValues || searchValuesChanged()) {
+            hideContactFields();
+
+            showMessage(
+                "error",
+                "Параметры поиска изменились. Сначала повторите поиск свободных столиков."
+            );
+            return;
+        }
+
+        if (!contactFields.querySelector("input:invalid") &&
+            !contactFields.querySelector("input[required]:placeholder-shown")) {
+            return;
+        }
+
+        const requiredInputs = contactFields.querySelectorAll("input[required]");
+
+        for (const input of requiredInputs) {
+            if (!input.value.trim()) {
+                input.reportValidity();
+                return;
+            }
         }
     });
 </script>

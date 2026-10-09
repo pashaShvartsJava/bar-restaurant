@@ -1,4 +1,7 @@
 from datetime import datetime, date
+
+from pydantic import EmailStr
+
 from ..repository.reservation_repository import ReservationRepository
 from ..repository.table_repository import TableRepository
 from uuid import UUID
@@ -13,15 +16,15 @@ class ReservationService:
         return await self.reservation_repository.get_all_reservations()
 
     async def create_reservation(self, table_id : int, name : str, surname : str, phone : str,
-                                 reservation_start : datetime, reservation_end : datetime):
+                                 reservation_start : datetime, reservation_end : datetime, email : EmailStr):
         table = await self.table_repository.get_table_by_id(table_id)
         if not table.reservations:
-            return await self.reservation_repository.create_reservation(table_id, name, surname, phone, reservation_start, reservation_end)
+            return await self.reservation_repository.create_reservation(table_id, name, surname, phone, reservation_start, reservation_end, email)
         else:
             for reservation in table.reservations:
                 if reservation_start < reservation.reservation_end and reservation_end > reservation.reservation_start:
                     raise ValueError("Бронирование на это время уже занято")
-        return await self.reservation_repository.create_reservation(table_id, name, surname, phone, reservation_start, reservation_end)
+        return await self.reservation_repository.create_reservation(table_id, name, surname, phone, reservation_start, reservation_end, email)
 
     async def cancel_reservation(self, reservation_id : int):
         return await self.reservation_repository.cancel_reservation(reservation_id)

@@ -1,12 +1,15 @@
-from datetime import datetime, timezone, date
+import secrets
+from datetime import datetime, timezone, date, timedelta
+from typing import Annotated
 from uuid import UUID
 
-from fastapi import APIRouter, Request, Form, HTTPException
+from fastapi import APIRouter, Request, Form, HTTPException, Response
+from itsdangerous import URLSafeTimedSerializer
+from pydantic import EmailStr
 from starlette.responses import RedirectResponse, JSONResponse
 from starlette.templating import Jinja2Templates
 from fastapi.params import Depends
 
-from ..models.table import TableStatus
 from ..security.jwt.jwt import get_payload
 from ..security.authorization.authorization import required_roles
 from ..security.role.role import IdentityRole
@@ -14,9 +17,12 @@ from ..dependencies.dependencies import get_table_service_dependency, get_table_
 from ..service.table_service import TableService
 from ..service.table_session_service import TableSessionService
 from ..service.reservation_service import ReservationService
+from ..config.config import settings
 
 router = APIRouter()
 templates = Jinja2Templates(directory="app/templates")
+COOKIE_SECRET_KEY = settings.cookie_secret_key
+serializer = URLSafeTimedSerializer(COOKIE_SECRET_KEY)
 
 async def verify_csrf(request: Request):
     cookie_token = request.cookies.get("csrf_token")
@@ -145,7 +151,8 @@ async def find_free_table(request : Request):
     return templates.TemplateResponse("get_free_table.html", {"request" : request})
 
 @router.post("/tables/get_free_table")
-async def find_free_table(people_amount : int = Form(..., lt=7),
+async def find_free_table(response : Response,
+                          people_amount : int = Form(..., lt=7),
                           requested_datetime : datetime = Form(),
                           service : TableService = Depends(get_table_service_dependency)):
     free_table = await service.get_free_table(people_amount, requested_datetime)
@@ -156,4 +163,37 @@ async def find_free_table(people_amount : int = Form(..., lt=7),
         message = "После выбранного вами времени следующая бронь отсутствует"
     else:
         message = f"Учитывая выбранное вами время, столик будет свободен ещё {minutes} минут"
+    token = serializer.dumps({
+        "requested_datetime": requested_datetime.isoformat(),
+        "table_id" : table.id,
+        "minutes" : minutes
+    })
+    response.set_cookie(
+        key="reservation_draft",
+        httponly=True,
+        secure=True,
+        samesite="lax",
+        max_age=600,
+        value=token
+    )
     return {"success": True, "message": message}
+
+@router.post("/tables/confirm_reservation")
+async def confirm_reservation(request : Request,
+                              phone_number: Annotated[str, Form(pattern=r"^\+?[1-9]\d{7,14}$")],
+                              name : str = Form(..., min_length=2),
+                              surname : str = Form(..., min_length=2),
+                              email : EmailStr = Form(),
+                              service : ReservationService = Depends(get_reservation_service_dependency)):
+    token = request.get("reservation_draft")
+    data = serializer.loads(token, max_age=600)
+    requested_datetime = datetime.fromisoformat(data["requested_datetime"])
+    table_id = data["table_id"]
+    minutes = data["minutes"]
+    reservation_end = None
+    if minutes < 60:
+        reservation_end = requested_datetime + timedelta(minutes=minutes)
+    else:
+        reservation_end = requested_datetime + timedelta(minutes=60)
+    await service.create_reservation(table_id, name, surname, phone_number, requested_datetime, reservation_end, email)
+
