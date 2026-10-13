@@ -412,7 +412,6 @@
             color: #aaa9ae;
         }
 
-        /* Действия над списком заказов */
         .orders-toolbar {
             display: flex;
             justify-content: flex-end;
@@ -563,6 +562,30 @@
             font-size: 11px;
             text-align: center;
         }
+        .merge-table-field {
+            margin-top: 20px;
+        }
+        .merge-table-field label {
+            display: block;
+            margin-bottom: 8px;
+            color: #aaa9ae;
+            font-size: 10px;
+        }
+        .merge-table-field input {
+            width: 100%;
+            max-width: 320px;
+            min-height: 38px;
+            padding: 10px 12px;
+            background: #252326;
+            border: 1px solid rgba(167, 139, 250, .3);
+            border-radius: 7px;
+            outline: none;
+            color: #fff;
+            font-size: 11px;
+        }
+        .merge-table-field input:focus {
+            border-color: #a78bfa;
+        }
         .merge-actions {
             display: flex;
             align-items: center;
@@ -679,6 +702,9 @@
             .merge-cancel-button {
                 width: 100%;
             }
+            .merge-table-field input {
+                max-width: none;
+            }
         }
     </style>
 </head>
@@ -724,10 +750,21 @@
 
         <p class="merge-panel-description">
             Выберите два или более неоплаченных заказа со столиками.
-            Выбранные карточки будут отмечены галочкой.
+            Укажите номер столика для итогового заказа.
         </p>
 
         <div class="merge-selection-list" id="mergeSelectionList"></div>
+
+        <div class="merge-table-field">
+            <label for="mergeTableNumber">Номер столика для итогового заказа</label>
+            <input
+                id="mergeTableNumber"
+                type="number"
+                min="1"
+                step="1"
+                placeholder="Введите номер столика"
+            >
+        </div>
 
         <div class="merge-actions">
             <span class="merge-selected-count" id="mergeSelectedCount">
@@ -846,6 +883,14 @@
                             onclick="changeOrderStatus('{{ order.order_number }}', 'paid')"
                         >
                             Оплачен
+                        </button>
+
+                        <button
+                            class="status-option"
+                            type="button"
+                            onclick="changeOrderStatus('{{ order.order_number }}', 'cancelled_before')"
+                        >
+                            Отменён до оплаты
                         </button>
                     </div>
 
@@ -1021,22 +1066,29 @@
     }
 
     async function changeOrderStatus(orderNumber, status) {
-        const response = await apiFetch(`/orders/${orderNumber}/status`, {
-            method: "PATCH",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                status: status
-            })
-        });
+        try {
+            const response = await apiFetch(`/orders/${encodeURIComponent(orderNumber)}/status`, {
+                method: "PATCH",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    status: status
+                })
+            });
 
-        if (!response.ok) {
+            if (!response.ok) {
+                const errorText = await response.text();
+                console.error("Ошибка изменения статуса:", errorText);
+                alert("Не удалось изменить статус заказа");
+                return;
+            }
+
+            location.reload();
+        } catch (error) {
+            console.error("Ошибка изменения статуса:", error);
             alert("Не удалось изменить статус заказа");
-            return;
         }
-
-        location.reload();
     }
 
     document.addEventListener("click", event => {
@@ -1051,11 +1103,6 @@
         form.addEventListener("submit", async event => {
             event.preventDefault();
 
-            const csrf = document.cookie
-                .split("; ")
-                .find(row => row.startsWith("csrf_token="))
-                ?.split("=")[1];
-
             const params = new URLSearchParams(new FormData(form));
 
             for (const [key, value] of [...params.entries()]) {
@@ -1066,21 +1113,24 @@
 
             const url = `${form.action}?${params.toString()}`;
 
-            const response = await fetch(url, {
-                method: "GET",
-                headers: {
-                    "X-CSRF-Token": csrf
+            try {
+                const response = await fetch(url, {
+                    method: "GET",
+                    credentials: "same-origin"
+                });
+
+                if (!response.ok) {
+                    alert("Не удалось выполнить поиск или сортировку");
+                    return;
                 }
-            });
 
-            if (!response.ok) {
+                document.open();
+                document.write(await response.text());
+                document.close();
+            } catch (error) {
+                console.error("Ошибка поиска или сортировки:", error);
                 alert("Не удалось выполнить поиск или сортировку");
-                return;
             }
-
-            document.open();
-            document.write(await response.text());
-            document.close();
         });
     });
 
@@ -1089,6 +1139,9 @@
     const mergeSelectedCount = document.getElementById("mergeSelectedCount");
     const mergeConfirmButton = document.getElementById("mergeConfirmButton");
     const openMergeButton = document.getElementById("openMergeButton");
+    const mergeTableNumberInput = document.getElementById("mergeTableNumber");
+
+    const MERGE_ENDPOINT = "/orders/merge";
 
     const mergeOrders = [
         {% for order in orders %}
@@ -1111,6 +1164,7 @@
         mergePanel.classList.add("active");
         openMergeButton.disabled = true;
         renderMergeOrders();
+
         mergePanel.scrollIntoView({
             behavior: "smooth",
             block: "start"
@@ -1121,6 +1175,7 @@
         mergePanel.classList.remove("active");
         openMergeButton.disabled = false;
         selectedMergeOrders.clear();
+        mergeTableNumberInput.value = "";
         updateMergeSelection();
     }
 
@@ -1204,21 +1259,61 @@
         mergeConfirmButton.disabled = count < 2;
     }
 
-    function confirmMergeSelection() {
+    async function confirmMergeSelection() {
         const selectedOrders = mergeOrders.filter(order =>
             selectedMergeOrders.has(String(order.id))
         );
 
         if (selectedOrders.length < 2) {
+            alert("Выберите как минимум два заказа.");
             return;
         }
 
-        console.log("Выбраны заказы для объединения:", selectedOrders);
+        const rawTableNumber = mergeTableNumberInput.value.trim();
+        const tableNumber = Number(rawTableNumber);
 
-        alert(
-            `Выбрано заказов: ${selectedOrders.length}. ` +
-            "Интерфейс выбора готов. Объединение ещё не подключено к backend."
-        );
+        if (
+            !rawTableNumber ||
+            !Number.isInteger(tableNumber) ||
+            tableNumber < 1
+        ) {
+            alert("Введите корректный номер столика.");
+            mergeTableNumberInput.focus();
+            return;
+        }
+
+        const mergeData = {
+            order_ids: selectedOrders.map(order => order.id),
+            table_number: tableNumber
+        };
+
+        mergeConfirmButton.disabled = true;
+
+        try {
+            const response = await apiFetch(MERGE_ENDPOINT, {
+                method: "POST",
+                credentials: "same-origin",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(mergeData)
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                console.error("Ошибка объединения заказов:", errorText);
+                alert("Не удалось объединить заказы.");
+                return;
+            }
+
+            alert("Заказы успешно объединены.");
+            location.reload();
+        } catch (error) {
+            console.error("Ошибка объединения заказов:", error);
+            alert("Не удалось объединить заказы.");
+        } finally {
+            mergeConfirmButton.disabled = selectedMergeOrders.size < 2;
+        }
     }
 </script>
 </body>

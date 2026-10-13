@@ -94,7 +94,7 @@ class OrderService:
     async def get_user_last_completed_order(self, client_id: UUID):
         return await self.order_repository.get_user_last_completed_order(client_id)
 
-    async def change_order_status(self, status: OrderStatus, email : str, order_number : UUID):
+    async def change_order_status(self, status: OrderStatus, email : str | None, order_number : UUID):
         await self.order_repository.db.rollback()
         return await self.order_repository.change_order_status(status, email, order_number)
 
@@ -107,12 +107,7 @@ class OrderService:
         async with httpx.AsyncClient() as client:
             response = await client.get(
                 url="http://authentication-service:8000/get_client",
-                cookies={
-                    "guest_client_id": str(client_id)
-                },
-                headers={
-                    "internal_token": INTERNAL_TOKEN
-                },
-            )
+                cookies={"guest_client_id": str(client_id)},
+                headers={"internal_token": INTERNAL_TOKEN})
             response.raise_for_status()
         return response.json()

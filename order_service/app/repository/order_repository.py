@@ -214,11 +214,12 @@ class OrderRepository:
                                  .order_by(Order.created_at.desc()).limit(1))
         return result.scalar_one_or_none()
 
-    async def change_order_status(self, status : OrderStatus, email : str, order_number : UUID):
+    async def change_order_status(self, status : OrderStatus, email : str | None, order_number : UUID):
         async with self.db.begin():
             order = await self.get_order_by_order_number(order_number)
             order.status = status
-            await self.create_outbox_change_status_event(email, order)
+            if email is not None:
+                await self.create_outbox_change_status_event(email, order)
         await self.db.refresh(order)
 
     async def create_outbox_change_status_event(self, email : str, order : Order) -> OutboxChangeStatusEvents:

@@ -55,8 +55,11 @@ async def change_order_status(request : Request,
     required_roles(IdentityRole.ADMIN, IdentityRole.MODERATOR, payload=payload)
     await verify_csrf(request)
     order = await service.get_order_by_order_number(UUID(order_number))
-    client_id = order.client_id
-    email = await service.get_customer_email(client_id)
+    if order.table_number is None:
+        client_id = order.client_id
+        email = await service.get_customer_email(client_id)
+    else:
+        email = None
     await service.change_order_status(data.status, email, UUID(order_number))
 
 @router.post("/orders/create")
