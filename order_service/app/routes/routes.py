@@ -10,7 +10,7 @@ from starlette.templating import Jinja2Templates
 from ..dependencies.dependencies import get_order_service_dependency
 from ..models.orders import OrderStatus
 from ..schema.delivery_address_schema import DeliveryAddressDTO, GuestDTO, GuestCustomerDTO
-from ..schema.order_item_schema import ListOrderDTO, ListOrderGuestDTO
+from ..schema.order_item_schema import ListOrderDTO, ListOrderGuestDTO, OrderItemDTO
 from ..schema.orders_schema import StatusDTO
 from ..schema.payment_schema import PaymentDTO
 from ..security.internal_security import verify_internal_token
@@ -214,14 +214,6 @@ async def get_last_user_order(request : Request,
     return last_order
 
 
-@router.get("/orders/{order_id}")
-async def get_order_info(request : Request, order_id : int, service : OrderService = Depends(get_order_service_dependency)):
-    payload = get_payload(request)
-    required_roles(IdentityRole.ADMIN, IdentityRole.MODERATOR, payload=payload)
-    order = await service.get_order_by_id(order_id)
-    return templates.TemplateResponse("order_info.html", {"request" : request, "order" : order})
-
-
 @router.post("/orders/create/internal")
 async def make_internal_order(status : str,
                               table_number : int,
@@ -244,6 +236,42 @@ async def make_internal_order(status : str,
                                          cookies={"guest_client_id" : str(data.client_id)})
             response.raise_for_status()
         return response.json()
+
+@router.get("/orders/create_order_manually")
+async def create_order_manually(request : Request):
+    async with httpx.AsyncClient() as client:
+        response = await client.get(url="http://reservation-service:8003/tables/available_tables",
+                                    headers={"internal_token": INTERNAL_TOKEN},
+                                    cookies={"access_token" : request.cookies.get("access_token")})
+        response.raise_for_status()
+    available_tables = response.json()
+    async with httpx.AsyncClient() as client:
+        response = await client.get(url="http://menu-service:8001/menu_page/available_dishes",
+                                    headers={"internal_token": INTERNAL_TOKEN},
+                                    cookies={"access_token" : request.cookies.get("access_token")})
+        response.raise_for_status()
+    dishes = response.json()
+    return templates.TemplateResponse("create_order_manually.html", {"request" : request,
+                                                                     "availableTables" : available_tables,
+                                                                     "availableDishes" : dishes})
+
+@router.post("/orders/create_order_manually")
+async def create_order_manually(request : Request,
+                                data: ListOrderGuestDTO,
+                                table_number : int,
+                                service : OrderService = Depends(get_order_service_dependency)):
+    payload = get_payload(request)
+    required_roles(IdentityRole.ADMIN, IdentityRole.MODERATOR, payload=payload)
+    await verify_csrf(request)
+    await service.create_order_for_guest(data,OrderStatus.INTERNAL_ORDER, table_number)
+
+
+@router.get("/orders/{order_id}")
+async def get_order_info(request : Request, order_id : int, service : OrderService = Depends(get_order_service_dependency)):
+    payload = get_payload(request)
+    required_roles(IdentityRole.ADMIN, IdentityRole.MODERATOR, payload=payload)
+    order = await service.get_order_by_id(order_id)
+    return templates.TemplateResponse("order_info.html", {"request" : request, "order" : order})
 
 
 

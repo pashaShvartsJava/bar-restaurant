@@ -248,6 +248,7 @@
             position: relative;
             display: flex;
             align-items: center;
+            flex-wrap: wrap;
             gap: 6px;
         }
         .action {
@@ -410,6 +411,204 @@
             border: 1px solid rgba(255, 255, 255, .08);
             color: #aaa9ae;
         }
+
+        /* Действия над списком заказов */
+        .orders-toolbar {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 18px;
+        }
+        .toolbar-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 38px;
+            padding: 10px 16px;
+            border-radius: 7px;
+            font-size: 10px;
+            text-decoration: none;
+            cursor: pointer;
+            transition: .2s ease;
+        }
+        .create-order-button {
+            background: rgba(213, 166, 91, .13);
+            border: 1px solid rgba(213, 166, 91, .4);
+            color: #d5a65b;
+        }
+        .create-order-button:hover {
+            background: rgba(213, 166, 91, .22);
+        }
+        .merge-orders-button {
+            background: rgba(139, 92, 246, .12);
+            border: 1px solid rgba(167, 139, 250, .35);
+            color: #b59aff;
+        }
+        .merge-orders-button:hover {
+            background: rgba(139, 92, 246, .22);
+        }
+        .merge-orders-button:disabled,
+        .merge-confirm-button:disabled {
+            opacity: .4;
+            cursor: not-allowed;
+        }
+        .merge-panel {
+            display: none;
+            margin-bottom: 22px;
+            padding: 22px;
+            background: rgba(27, 25, 27, .96);
+            border: 1px solid rgba(167, 139, 250, .3);
+            border-radius: 12px;
+        }
+        .merge-panel.active {
+            display: block;
+        }
+        .merge-panel-title {
+            margin-bottom: 8px;
+            color: #b59aff;
+            font-family: Georgia, serif;
+            font-size: 20px;
+        }
+        .merge-panel-description {
+            margin-bottom: 18px;
+            color: #77777d;
+            font-size: 11px;
+            line-height: 1.6;
+        }
+        .merge-selection-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+            gap: 12px;
+        }
+        .merge-order-option {
+            position: relative;
+            display: block;
+            cursor: pointer;
+        }
+        .merge-order-option input {
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+        }
+        .merge-order-card {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            min-height: 105px;
+            padding: 16px;
+            background: rgba(42, 40, 42, .8);
+            border: 1px solid rgba(255, 255, 255, .09);
+            border-radius: 9px;
+            transition: .2s ease;
+        }
+        .merge-order-option:hover .merge-order-card {
+            border-color: rgba(167, 139, 250, .5);
+        }
+        .merge-order-option input:checked + .merge-order-card {
+            background: rgba(139, 92, 246, .13);
+            border-color: #a78bfa;
+            box-shadow: 0 0 0 1px rgba(167, 139, 250, .2);
+        }
+        .merge-checkbox {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            width: 21px;
+            height: 21px;
+            margin-top: 2px;
+            border: 1px solid #77777d;
+            border-radius: 5px;
+            color: transparent;
+            font-size: 13px;
+            transition: .2s ease;
+        }
+        .merge-order-option input:checked + .merge-order-card .merge-checkbox {
+            background: #a78bfa;
+            border-color: #a78bfa;
+            color: #17131f;
+        }
+        .merge-order-info {
+            min-width: 0;
+        }
+        .merge-order-number {
+            display: block;
+            margin-bottom: 8px;
+            color: #fff;
+            font-size: 11px;
+            font-weight: 600;
+            overflow-wrap: anywhere;
+        }
+        .merge-order-meta {
+            display: block;
+            margin-top: 5px;
+            color: #aaa9ae;
+            font-size: 10px;
+            line-height: 1.5;
+        }
+        .merge-order-price {
+            display: block;
+            margin-top: 9px;
+            color: #d5a65b;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .merge-empty {
+            padding: 22px;
+            color: #77777d;
+            background: rgba(42, 40, 42, .5);
+            border-radius: 8px;
+            font-size: 11px;
+            text-align: center;
+        }
+        .merge-actions {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .merge-selected-count {
+            margin-right: auto;
+            color: #aaa9ae;
+            font-size: 10px;
+        }
+        .merge-confirm-button,
+        .merge-cancel-button {
+            min-height: 36px;
+            padding: 9px 15px;
+            border-radius: 6px;
+            font-size: 10px;
+            cursor: pointer;
+        }
+        .merge-confirm-button {
+            background: rgba(139, 92, 246, .16);
+            border: 1px solid rgba(167, 139, 250, .4);
+            color: #c4b5fd;
+        }
+        .merge-cancel-button {
+            background: #2a282a;
+            border: 1px solid rgba(255, 255, 255, .08);
+            color: #aaa9ae;
+        }
+        .merge-confirm-button:hover:not(:disabled) {
+            background: rgba(139, 92, 246, .28);
+        }
+        .merge-cancel-button:hover {
+            border-color: #77777d;
+        }
+        .split-order-button {
+            background: rgba(139, 92, 246, .12);
+            border-color: rgba(167, 139, 250, .35);
+            color: #b59aff;
+        }
+        .split-order-button:hover {
+            border-color: #b59aff;
+            color: #d4c6ff;
+        }
+
         @media (max-width: 1350px) {
             .table-header {
                 display: none;
@@ -456,6 +655,30 @@
                 width: 100%;
                 margin-top: 5px;
             }
+            .orders-toolbar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .toolbar-button {
+                width: 100%;
+            }
+            .merge-panel {
+                padding: 16px;
+            }
+            .merge-selection-list {
+                grid-template-columns: 1fr;
+            }
+            .merge-actions {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .merge-selected-count {
+                margin-right: 0;
+            }
+            .merge-confirm-button,
+            .merge-cancel-button {
+                width: 100%;
+            }
         }
     </style>
 </head>
@@ -479,6 +702,56 @@
             <a class="reset-button" href="/orders/get_orders">Сбросить</a>
         </form>
         <button class="sort-button" type="button" onclick="openSort()">Сортировать</button>
+    </div>
+
+    <div class="orders-toolbar">
+        <a href="/orders/create_order_manually" class="toolbar-button create-order-button">
+            + Создать заказ вручную
+        </a>
+
+        <button
+            type="button"
+            class="toolbar-button merge-orders-button"
+            id="openMergeButton"
+            onclick="openMergeMode()"
+        >
+            Объединить заказы
+        </button>
+    </div>
+
+    <div class="merge-panel" id="mergePanel">
+        <div class="merge-panel-title">Объединение заказов</div>
+
+        <p class="merge-panel-description">
+            Выберите два или более неоплаченных заказа со столиками.
+            Выбранные карточки будут отмечены галочкой.
+        </p>
+
+        <div class="merge-selection-list" id="mergeSelectionList"></div>
+
+        <div class="merge-actions">
+            <span class="merge-selected-count" id="mergeSelectedCount">
+                Выбрано заказов: 0
+            </span>
+
+            <button
+                type="button"
+                class="merge-confirm-button"
+                id="mergeConfirmButton"
+                disabled
+                onclick="confirmMergeSelection()"
+            >
+                Подтвердить объединение
+            </button>
+
+            <button
+                type="button"
+                class="merge-cancel-button"
+                onclick="closeMergeMode()"
+            >
+                Отмена
+            </button>
+        </div>
     </div>
 
     {% if orders %}
@@ -551,14 +824,27 @@
                 <a class="action" href="/orders/{{ order.id }}">Информация</a>
 
                 {% if current_status == "internal_order" and order.table_number %}
-                    <button class="change-status-button" type="button"
-                            onclick="toggleStatusMenu('{{ order.order_number }}')">
+                    <a
+                        class="action split-order-button"
+                        href="/orders/{{ order.id }}/split"
+                    >
+                        Разделить заказ
+                    </a>
+
+                    <button
+                        class="change-status-button"
+                        type="button"
+                        onclick="toggleStatusMenu('{{ order.order_number }}')"
+                    >
                         Статус
                     </button>
 
                     <div class="status-menu" id="status-menu-{{ order.order_number }}">
-                        <button class="status-option" type="button"
-                                onclick="changeOrderStatus('{{ order.order_number }}', 'paid')">
+                        <button
+                            class="status-option"
+                            type="button"
+                            onclick="changeOrderStatus('{{ order.order_number }}', 'paid')"
+                        >
                             Оплачен
                         </button>
                     </div>
@@ -797,6 +1083,143 @@
             document.close();
         });
     });
+
+    const mergePanel = document.getElementById("mergePanel");
+    const mergeSelectionList = document.getElementById("mergeSelectionList");
+    const mergeSelectedCount = document.getElementById("mergeSelectedCount");
+    const mergeConfirmButton = document.getElementById("mergeConfirmButton");
+    const openMergeButton = document.getElementById("openMergeButton");
+
+    const mergeOrders = [
+        {% for order in orders %}
+            {% set current_status = order.status.value if order.status.value is defined else order.status %}
+            {% if current_status == "internal_order" and order.table_number %}
+            {
+                id: {{ order.id | string | tojson }},
+                orderNumber: {{ order.order_number | string | tojson }},
+                tableNumber: {{ order.table_number | tojson }},
+                sum: {{ order.sum | float | tojson }},
+                createdAt: {{ order.created_at.strftime("%d.%m.%Y %H:%M") | tojson if order.created_at else '"—"' }}
+            },
+            {% endif %}
+        {% endfor %}
+    ];
+
+    const selectedMergeOrders = new Set();
+
+    function openMergeMode() {
+        mergePanel.classList.add("active");
+        openMergeButton.disabled = true;
+        renderMergeOrders();
+        mergePanel.scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+        });
+    }
+
+    function closeMergeMode() {
+        mergePanel.classList.remove("active");
+        openMergeButton.disabled = false;
+        selectedMergeOrders.clear();
+        updateMergeSelection();
+    }
+
+    function escapeMergeHTML(value) {
+        return String(value)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+
+    function renderMergeOrders() {
+        if (mergeOrders.length === 0) {
+            mergeSelectionList.innerHTML = `
+                <div class="merge-empty">
+                    Нет неоплаченных заказов со столиками для выбора.
+                </div>
+            `;
+            updateMergeSelection();
+            return;
+        }
+
+        mergeSelectionList.innerHTML = mergeOrders.map(order => {
+            const id = String(order.id);
+            const checked = selectedMergeOrders.has(id);
+
+            return `
+                <label class="merge-order-option">
+                    <input
+                        type="checkbox"
+                        value="${escapeMergeHTML(id)}"
+                        ${checked ? "checked" : ""}
+                        onchange="toggleMergeOrder(this)"
+                    >
+
+                    <span class="merge-order-card">
+                        <span class="merge-checkbox">✓</span>
+
+                        <span class="merge-order-info">
+                            <span class="merge-order-number">
+                                Заказ № ${escapeMergeHTML(order.orderNumber)}
+                            </span>
+
+                            <span class="merge-order-meta">
+                                Столик № ${escapeMergeHTML(order.tableNumber)}
+                            </span>
+
+                            <span class="merge-order-meta">
+                                Создан: ${escapeMergeHTML(order.createdAt)}
+                            </span>
+
+                            <span class="merge-order-price">
+                                ${Number(order.sum).toFixed(2)} €
+                            </span>
+                        </span>
+                    </span>
+                </label>
+            `;
+        }).join("");
+
+        updateMergeSelection();
+    }
+
+    function toggleMergeOrder(checkbox) {
+        const id = String(checkbox.value);
+
+        if (checkbox.checked) {
+            selectedMergeOrders.add(id);
+        } else {
+            selectedMergeOrders.delete(id);
+        }
+
+        updateMergeSelection();
+    }
+
+    function updateMergeSelection() {
+        const count = selectedMergeOrders.size;
+
+        mergeSelectedCount.textContent = `Выбрано заказов: ${count}`;
+        mergeConfirmButton.disabled = count < 2;
+    }
+
+    function confirmMergeSelection() {
+        const selectedOrders = mergeOrders.filter(order =>
+            selectedMergeOrders.has(String(order.id))
+        );
+
+        if (selectedOrders.length < 2) {
+            return;
+        }
+
+        console.log("Выбраны заказы для объединения:", selectedOrders);
+
+        alert(
+            `Выбрано заказов: ${selectedOrders.length}. ` +
+            "Интерфейс выбора готов. Объединение ещё не подключено к backend."
+        );
+    }
 </script>
 </body>
 </html>

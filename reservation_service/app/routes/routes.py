@@ -1,15 +1,17 @@
 import secrets
 from datetime import datetime, timezone, date, timedelta
+from email.header import Header
 from typing import Annotated
 from uuid import UUID
 
-from fastapi import APIRouter, Request, Form, HTTPException, Response
+from fastapi import APIRouter, Request, Form, HTTPException, Response, Header
 from itsdangerous import URLSafeTimedSerializer, BadSignature, SignatureExpired
 from pydantic import EmailStr
 from starlette.responses import RedirectResponse, JSONResponse
 from starlette.templating import Jinja2Templates
 from fastapi.params import Depends
 
+from ..security.internal_security import verify_internal_token
 from ..security.jwt.jwt import get_payload
 from ..security.authorization.authorization import required_roles
 from ..security.role.role import IdentityRole
@@ -102,7 +104,7 @@ async def create_reservation(request : Request,
                                              "table": table,
                                              "error": "Даты указаны некорректно. Бронирование должно быть в будущем и начинаться раньше окончания." },
                                              status_code=400 )
-    await reservation_service.create_reservation(table_id, name, surname, phone, reservation_start, reservation_end)
+    await reservation_service.create_reservation(table_id, name, surname, phone, reservation_start, reservation_end, None)
     return RedirectResponse(url="/tables", status_code=303)
 
 @router.get("/tables/reservations/history")
@@ -210,4 +212,14 @@ async def confirm_reservation(request : Request,
         reservation_end = requested_datetime + timedelta(minutes=60)
     await service.create_reservation(table_id, name, surname, phone_number, requested_datetime, reservation_end, email)
     return {"success": True, "message": "Бронирование успешно подтверждено."}
+
+@router.get("/tables/available_tables")
+async def get_available_tables(request : Request,
+                               service : TableService = Depends(get_table_service_dependency),
+                               internal_token : str = Header(..., alias="internal_token")):
+    await verify_internal_token(internal_token)
+    payload = get_payload(request)
+    required_roles(IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
+    available_tables = await service.find_all_available_tables()
+    return available_tables
 

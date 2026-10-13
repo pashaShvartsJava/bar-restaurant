@@ -1,0 +1,1107 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Создание заказа вручную</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            background:
+                radial-gradient(ellipse at 50% 0%, rgba(145, 85, 75, .20) 0%, rgba(55, 35, 40, .22) 38%, rgba(9, 9, 11, 1) 78%),
+                linear-gradient(180deg, #211a1c 0%, #121214 50%, #09090b 100%);
+            color: #fff;
+            font-family: Arial, sans-serif;
+        }
+
+        button,
+        input,
+        select,
+        textarea {
+            font: inherit;
+        }
+
+        button,
+        a {
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 45px 28px;
+        }
+
+        .top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 45px;
+        }
+
+        .back {
+            color: #77777d;
+            font-size: 11px;
+            text-decoration: none;
+        }
+
+        .back:hover {
+            color: #d5a65b;
+        }
+
+        .brand {
+            color: #d5a65b;
+            font-family: Georgia, serif;
+            font-size: 11px;
+            letter-spacing: 3px;
+        }
+
+        .header {
+            margin-bottom: 35px;
+            text-align: center;
+        }
+
+        .header-label {
+            margin-bottom: 10px;
+            color: #d5a65b;
+            font-size: 9px;
+            letter-spacing: 3px;
+        }
+
+        h1 {
+            font-family: Georgia, serif;
+            font-size: 38px;
+            font-weight: normal;
+            letter-spacing: 2px;
+        }
+
+        .description {
+            margin-top: 12px;
+            color: #85858b;
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+        .panel {
+            margin-bottom: 22px;
+            padding: 25px;
+            background: rgba(27, 25, 27, .96);
+            border: 1px solid rgba(213, 166, 91, .16);
+            border-radius: 12px;
+        }
+
+        .panel-title {
+            margin-bottom: 8px;
+            color: #d5a65b;
+            font-family: Georgia, serif;
+            font-size: 21px;
+        }
+
+        .panel-description {
+            margin-bottom: 20px;
+            color: #85858b;
+            font-size: 11px;
+            line-height: 1.6;
+        }
+
+        .field {
+            margin-bottom: 20px;
+        }
+
+        .field:last-child {
+            margin-bottom: 0;
+        }
+
+        .field label {
+            display: block;
+            margin-bottom: 9px;
+            color: #aaa9ae;
+            font-size: 10px;
+            letter-spacing: .7px;
+        }
+
+        .field input,
+        .field select,
+        .field textarea {
+            width: 100%;
+            padding: 12px 13px;
+            background: #252326;
+            border: 1px solid rgba(255, 255, 255, .09);
+            border-radius: 7px;
+            outline: none;
+            color: #fff;
+            font-size: 12px;
+        }
+
+        .field input:focus,
+        .field select:focus,
+        .field textarea:focus {
+            border-color: rgba(213, 166, 91, .6);
+        }
+
+        .field select option {
+            background: #252326;
+            color: #fff;
+        }
+
+        .field textarea {
+            min-height: 85px;
+            resize: vertical;
+        }
+
+        .selection-row {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .selected-value {
+            flex: 1;
+            min-width: 180px;
+            padding: 14px;
+            background: rgba(42, 40, 42, .8);
+            border: 1px solid rgba(255, 255, 255, .08);
+            border-radius: 7px;
+            color: #85858b;
+            font-size: 11px;
+            line-height: 1.6;
+            overflow-wrap: anywhere;
+        }
+
+        .selected-value.active {
+            border-color: rgba(213, 166, 91, .35);
+            color: #d5a65b;
+        }
+
+        .primary-button,
+        .secondary-button,
+        .danger-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 40px;
+            padding: 10px 16px;
+            border-radius: 7px;
+            font-size: 11px;
+            text-decoration: none;
+            cursor: pointer;
+            transition: .2s ease;
+        }
+
+        .primary-button {
+            background: rgba(213, 166, 91, .13);
+            border: 1px solid rgba(213, 166, 91, .4);
+            color: #d5a65b;
+        }
+
+        .primary-button:hover {
+            background: rgba(213, 166, 91, .22);
+        }
+
+        .secondary-button {
+            background: rgba(139, 92, 246, .12);
+            border: 1px solid rgba(167, 139, 250, .35);
+            color: #b59aff;
+        }
+
+        .secondary-button:hover {
+            background: rgba(139, 92, 246, .22);
+        }
+
+        .danger-button {
+            background: rgba(180, 65, 75, .12);
+            border: 1px solid rgba(210, 85, 90, .3);
+            color: #d98282;
+        }
+
+        .danger-button:hover {
+            background: rgba(180, 65, 75, .22);
+        }
+
+        .button-disabled,
+        button:disabled {
+            opacity: .4;
+            cursor: not-allowed;
+        }
+
+        .selection-form {
+            display: none;
+            margin-top: 20px;
+            padding: 20px;
+            background: rgba(15, 14, 16, .7);
+            border: 1px solid rgba(255, 255, 255, .08);
+            border-radius: 9px;
+        }
+
+        .selection-form.active {
+            display: block;
+        }
+
+        .selection-form-title {
+            margin-bottom: 17px;
+            color: #fff;
+            font-size: 13px;
+        }
+
+        .selection-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 9px;
+            margin-top: 18px;
+        }
+
+        .menu-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 12px;
+            margin-top: 15px;
+        }
+
+        .menu-item {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            padding: 15px;
+            background: rgba(42, 40, 42, .8);
+            border: 1px solid rgba(255, 255, 255, .08);
+            border-radius: 8px;
+            transition: .2s ease;
+        }
+
+        .menu-item.selected {
+            background: rgba(139, 92, 246, .12);
+            border-color: rgba(167, 139, 250, .55);
+        }
+
+        .menu-item-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .menu-item-name {
+            color: #fff;
+            font-size: 12px;
+            font-weight: 600;
+            line-height: 1.5;
+            overflow-wrap: anywhere;
+        }
+
+        .menu-item-description {
+            color: #85858b;
+            font-size: 10px;
+            line-height: 1.5;
+        }
+
+        .menu-item-price {
+            flex-shrink: 0;
+            color: #d5a65b;
+            font-size: 11px;
+            white-space: nowrap;
+        }
+
+        .menu-item-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .quantity-control {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+        }
+
+        .quantity-control button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 29px;
+            height: 29px;
+            background: #302d31;
+            border: 1px solid rgba(255, 255, 255, .1);
+            border-radius: 6px;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        .quantity-control button:hover {
+            border-color: #a78bfa;
+        }
+
+        .quantity-value {
+            min-width: 18px;
+            color: #fff;
+            font-size: 12px;
+            text-align: center;
+        }
+
+        .remove-item {
+            padding: 6px 9px;
+            background: transparent;
+            border: 1px solid rgba(210, 85, 90, .25);
+            border-radius: 5px;
+            color: #d98282;
+            font-size: 10px;
+            cursor: pointer;
+        }
+
+        .remove-item:hover {
+            background: rgba(180, 65, 75, .12);
+        }
+
+        .order-items {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .order-item {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto auto;
+            align-items: center;
+            gap: 15px;
+            padding: 14px;
+            background: rgba(42, 40, 42, .65);
+            border: 1px solid rgba(255, 255, 255, .06);
+            border-radius: 7px;
+        }
+
+        .order-item-name {
+            color: #fff;
+            font-size: 11px;
+            line-height: 1.5;
+            overflow-wrap: anywhere;
+        }
+
+        .order-item-details {
+            margin-top: 5px;
+            color: #85858b;
+            font-size: 10px;
+        }
+
+        .order-item-sum {
+            color: #d5a65b;
+            font-size: 11px;
+            white-space: nowrap;
+        }
+
+        .empty-state {
+            padding: 22px 15px;
+            background: rgba(42, 40, 42, .45);
+            border: 1px dashed rgba(255, 255, 255, .1);
+            border-radius: 8px;
+            color: #85858b;
+            font-size: 11px;
+            line-height: 1.6;
+            text-align: center;
+        }
+
+        .summary {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            margin-top: 22px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, .08);
+        }
+
+        .summary-label {
+            color: #aaa9ae;
+            font-size: 12px;
+        }
+
+        .summary-total {
+            color: #d5a65b;
+            font-family: Georgia, serif;
+            font-size: 25px;
+        }
+
+        .form-footer {
+            display: flex;
+            justify-content: flex-end;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 28px;
+        }
+
+        .message {
+            display: none;
+            margin-bottom: 20px;
+            padding: 13px 15px;
+            border-radius: 7px;
+            font-size: 11px;
+            line-height: 1.6;
+        }
+
+        .message.active {
+            display: block;
+        }
+
+        .message.info {
+            background: rgba(70, 100, 130, .14);
+            border: 1px solid rgba(90, 135, 175, .3);
+            color: #8db4d3;
+        }
+
+        .message.error {
+            background: rgba(150, 55, 65, .16);
+            border: 1px solid rgba(210, 85, 90, .32);
+            color: #d98282;
+        }
+
+        .footer {
+            padding-top: 35px;
+            color: #4f4f54;
+            font-size: 9px;
+            letter-spacing: 1px;
+            text-align: center;
+        }
+
+        @media (max-width: 650px) {
+            .container {
+                padding: 30px 16px;
+            }
+
+            .top {
+                margin-bottom: 35px;
+            }
+
+            h1 {
+                font-size: 29px;
+            }
+
+            .panel {
+                padding: 18px;
+            }
+
+            .selection-row {
+                align-items: stretch;
+                flex-direction: column;
+            }
+
+            .selection-row .primary-button,
+            .selection-row .secondary-button {
+                width: 100%;
+            }
+
+            .order-item {
+                grid-template-columns: minmax(0, 1fr) auto;
+                gap: 10px;
+            }
+
+            .order-item .quantity-control {
+                grid-column: 1 / -1;
+            }
+
+            .form-footer {
+                flex-direction: column;
+            }
+
+            .form-footer a,
+            .form-footer button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<div class="container">
+    <div class="top">
+        <a href="/orders/get_orders" class="back">← К СПИСКУ ЗАКАЗОВ</a>
+        <div class="brand">RESTAURANT ADMIN</div>
+    </div>
+
+    <header class="header">
+        <div class="header-label">ORDER MANAGEMENT</div>
+        <h1>Создание заказа</h1>
+        <p class="description">
+            Создайте заказ для столика и добавьте блюда из меню.
+        </p>
+    </header>
+
+    <div class="message" id="pageMessage" role="status"></div>
+
+    <form id="createOrderForm">
+        <section class="panel">
+            <h2 class="panel-title">Столик</h2>
+            <p class="panel-description">
+                Выберите столик из списка, полученного из сервиса управления столиками.
+            </p>
+
+            <div class="selection-row">
+                <div class="selected-value" id="selectedTableDisplay">
+                    Столик не выбран
+                </div>
+
+                <button
+                    class="primary-button"
+                    type="button"
+                    onclick="openTableSelection()"
+                >
+                    Назначить столик
+                </button>
+            </div>
+
+            <div class="selection-form" id="tableSelectionForm">
+                <h3 class="selection-form-title">Выбор столика</h3>
+
+                <div class="field">
+                    <label for="tableSelect">Доступные столики</label>
+                    <select id="tableSelect">
+                        <option value="">Список столиков пока не загружен</option>
+                    </select>
+                </div>
+
+                <div class="selection-actions">
+                    <button
+                        class="primary-button"
+                        type="button"
+                        onclick="confirmTableSelection()"
+                    >
+                        Подтвердить выбор
+                    </button>
+
+                    <button
+                        class="secondary-button"
+                        type="button"
+                        onclick="closeTableSelection()"
+                    >
+                        Отмена
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <section class="panel">
+            <h2 class="panel-title">Блюда</h2>
+            <p class="panel-description">
+                Выберите блюда из меню и укажите количество каждого блюда.
+            </p>
+
+            <div class="selection-row">
+                <div class="selected-value" id="selectedDishesDisplay">
+                    Блюда не добавлены
+                </div>
+
+                <button
+                    class="primary-button"
+                    type="button"
+                    onclick="openMenuSelection()"
+                >
+                    Добавить блюда
+                </button>
+            </div>
+
+            <div class="selection-form" id="menuSelectionForm">
+                <h3 class="selection-form-title">Выбор блюд из меню</h3>
+
+                <div class="field">
+                    <label for="menuSearch">Поиск по меню</label>
+                    <input
+                        id="menuSearch"
+                        type="search"
+                        placeholder="Название блюда"
+                        autocomplete="off"
+                    >
+                </div>
+
+                <div class="menu-list" id="menuList">
+                    <div class="empty-state">
+                        Меню пока не загружено. Здесь будут отображаться блюда,
+                        полученные из сервиса меню.
+                    </div>
+                </div>
+
+                <div class="selection-actions">
+                    <button
+                        class="primary-button"
+                        type="button"
+                        onclick="confirmMenuSelection()"
+                    >
+                        Добавить выбранные блюда
+                    </button>
+
+                    <button
+                        class="secondary-button"
+                        type="button"
+                        onclick="closeMenuSelection()"
+                    >
+                        Отмена
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <section class="panel">
+            <h2 class="panel-title">Состав заказа</h2>
+            <p class="panel-description">
+                Проверьте выбранные блюда и их количество перед созданием заказа.
+            </p>
+
+            <div class="order-items" id="orderItems">
+                <div class="empty-state">
+                    В заказе пока нет блюд.
+                </div>
+            </div>
+
+            <div class="summary">
+                <div class="summary-label">Общая сумма</div>
+                <div class="summary-total" id="orderTotal">0.00 €</div>
+            </div>
+        </section>
+
+        <section class="panel">
+            <h2 class="panel-title">Дополнительная информация</h2>
+
+            <div class="field">
+                <label for="orderComment">Комментарий к заказу</label>
+                <textarea
+                    id="orderComment"
+                    placeholder="Дополнительные пожелания (необязательно)"
+                ></textarea>
+            </div>
+        </section>
+
+        <div class="form-footer">
+            <a href="/orders/get_orders" class="secondary-button">
+                Отмена
+            </a>
+
+            <button
+                id="createOrderButton"
+                type="button"
+                class="primary-button"
+                onclick="assignOrder()"
+            >
+                Назначить заказ
+            </button>
+        </div>
+    </form>
+
+    <div class="footer">RESTAURANT ADMINISTRATION</div>
+</div>
+
+<script src="/static/api.js"></script>
+
+<script>
+    let availableTables = {{ availableTables | tojson }};
+    let availableDishes = {{ availableDishes | tojson }};
+
+    let selectedTable = null;
+    let selectedDishes = new Map();
+    let temporarySelectedDishes = new Map();
+
+    const tableSelectionForm = document.getElementById("tableSelectionForm");
+    const menuSelectionForm = document.getElementById("menuSelectionForm");
+    const tableSelect = document.getElementById("tableSelect");
+    const menuList = document.getElementById("menuList");
+    const menuSearch = document.getElementById("menuSearch");
+    const orderItems = document.getElementById("orderItems");
+    const orderTotal = document.getElementById("orderTotal");
+    const pageMessage = document.getElementById("pageMessage");
+    const createOrderButton = document.getElementById("createOrderButton");
+
+    function showMessage(text, type = "info") {
+        pageMessage.textContent = text;
+        pageMessage.className = `message active ${type}`;
+        pageMessage.scrollIntoView({
+            behavior: "smooth",
+            block: "center"
+        });
+    }
+
+    function hideMessage() {
+        pageMessage.textContent = "";
+        pageMessage.className = "message";
+    }
+
+    function openTableSelection() {
+        hideMessage();
+        renderTables();
+        tableSelectionForm.classList.add("active");
+    }
+
+    function closeTableSelection() {
+        tableSelectionForm.classList.remove("active");
+    }
+
+    function renderTables() {
+        tableSelect.replaceChildren();
+
+        const placeholder = document.createElement("option");
+        placeholder.value = "";
+        placeholder.textContent = availableTables.length
+            ? "Выберите столик"
+            : "Доступные столики не загружены";
+
+        tableSelect.appendChild(placeholder);
+
+        availableTables
+            .filter(table => table.available !== false)
+            .forEach(table => {
+                const option = document.createElement("option");
+                option.value = String(table.id);
+                option.textContent = `Столик № ${table.table_number}`;
+                tableSelect.appendChild(option);
+            });
+
+        if (selectedTable) {
+            tableSelect.value = String(selectedTable.id);
+        }
+    }
+
+    function confirmTableSelection() {
+        const tableId = tableSelect.value;
+
+        if (!tableId) {
+            showMessage("Сначала выберите столик из списка.", "error");
+            return;
+        }
+
+        const table = availableTables.find(
+            item => String(item.id) === String(tableId)
+        );
+
+        if (!table) {
+            showMessage("Выбранный столик отсутствует в списке.", "error");
+            return;
+        }
+
+        if (table.available === false) {
+            showMessage("Этот столик недоступен для выбора.", "error");
+            return;
+        }
+
+        selectedTable = table;
+
+        const display = document.getElementById("selectedTableDisplay");
+        display.textContent = `Столик № ${table.table_number}`;
+        display.classList.add("active");
+
+        closeTableSelection();
+        hideMessage();
+    }
+
+    function openMenuSelection() {
+        hideMessage();
+
+        temporarySelectedDishes = new Map(
+            [...selectedDishes.entries()].map(([id, item]) => [
+                id,
+                { ...item }
+            ])
+        );
+
+        menuSearch.value = "";
+        renderMenu();
+        menuSelectionForm.classList.add("active");
+    }
+
+    function closeMenuSelection() {
+        menuSelectionForm.classList.remove("active");
+    }
+
+    function renderMenu() {
+        const query = menuSearch.value.trim().toLowerCase();
+
+        const filteredDishes = availableDishes.filter(dish =>
+            String(dish.dish_name).toLowerCase().includes(query)
+        );
+
+        menuList.replaceChildren();
+
+        if (!filteredDishes.length) {
+            const empty = document.createElement("div");
+            empty.className = "empty-state";
+            empty.textContent = availableDishes.length
+                ? "Блюда по заданному запросу не найдены."
+                : "Меню пока не загружено. Подключите получение блюд из сервиса меню.";
+
+            menuList.appendChild(empty);
+            return;
+        }
+
+        filteredDishes.forEach(dish => {
+            const id = String(dish.id);
+            const selected = temporarySelectedDishes.get(id);
+            const quantity = selected ? selected.quantity : 0;
+
+            const card = document.createElement("div");
+            card.className = `menu-item${quantity > 0 ? " selected" : ""}`;
+
+            const top = document.createElement("div");
+            top.className = "menu-item-top";
+
+            const textContainer = document.createElement("div");
+
+            const name = document.createElement("div");
+            name.className = "menu-item-name";
+            name.textContent = dish.dish_name;
+
+            textContainer.appendChild(name);
+
+            if (dish.description) {
+                const description = document.createElement("div");
+                description.className = "menu-item-description";
+                description.textContent = dish.description;
+                textContainer.appendChild(description);
+            }
+
+            const price = document.createElement("div");
+            price.className = "menu-item-price";
+            price.textContent = `${Number(dish.price).toFixed(2)} €`;
+
+            top.append(textContainer, price);
+
+            const bottom = document.createElement("div");
+            bottom.className = "menu-item-bottom";
+
+            const quantityControl = document.createElement("div");
+            quantityControl.className = "quantity-control";
+
+            const minus = document.createElement("button");
+            minus.type = "button";
+            minus.textContent = "−";
+            minus.setAttribute("aria-label", "Уменьшить количество");
+            minus.disabled = quantity === 0;
+
+            const quantityValue = document.createElement("span");
+            quantityValue.className = "quantity-value";
+            quantityValue.textContent = quantity;
+
+            const plus = document.createElement("button");
+            plus.type = "button";
+            plus.textContent = "+";
+            plus.setAttribute("aria-label", "Увеличить количество");
+
+            minus.addEventListener("click", () => {
+                setTemporaryDishQuantity(dish, quantity - 1);
+            });
+
+            plus.addEventListener("click", () => {
+                setTemporaryDishQuantity(dish, quantity + 1);
+            });
+
+            quantityControl.append(minus, quantityValue, plus);
+
+            bottom.appendChild(quantityControl);
+            card.append(top, bottom);
+            menuList.appendChild(card);
+        });
+    }
+
+    function setTemporaryDishQuantity(dish, quantity) {
+        const id = String(dish.id);
+
+        if (quantity <= 0) {
+            temporarySelectedDishes.delete(id);
+        } else {
+            temporarySelectedDishes.set(id, {
+                id: dish.id,
+                name: dish.dish_name,
+                description: dish.description || "",
+                price: Number(dish.price),
+                quantity: quantity
+            });
+        }
+
+        renderMenu();
+    }
+
+    function confirmMenuSelection() {
+        selectedDishes = new Map(
+            [...temporarySelectedDishes.entries()].map(([id, item]) => [
+                id,
+                { ...item }
+            ])
+        );
+
+        renderOrderItems();
+        closeMenuSelection();
+        hideMessage();
+    }
+
+    function renderOrderItems() {
+        orderItems.replaceChildren();
+
+        if (selectedDishes.size === 0) {
+            const empty = document.createElement("div");
+            empty.className = "empty-state";
+            empty.textContent = "В заказе пока нет блюд.";
+            orderItems.appendChild(empty);
+
+            orderTotal.textContent = "0.00 €";
+            updateSelectedDishesDisplay();
+            return;
+        }
+
+        let total = 0;
+
+        selectedDishes.forEach((dish, id) => {
+            const itemSum = Number(dish.price) * dish.quantity;
+            total += itemSum;
+
+            const row = document.createElement("div");
+            row.className = "order-item";
+
+            const info = document.createElement("div");
+
+            const name = document.createElement("div");
+            name.className = "order-item-name";
+            name.textContent = dish.name;
+
+            const details = document.createElement("div");
+            details.className = "order-item-details";
+            details.textContent =
+                `${dish.quantity} × ${Number(dish.price).toFixed(2)} €`;
+
+            info.append(name, details);
+
+            const sum = document.createElement("div");
+            sum.className = "order-item-sum";
+            sum.textContent = `${itemSum.toFixed(2)} €`;
+
+            const remove = document.createElement("button");
+            remove.type = "button";
+            remove.className = "remove-item";
+            remove.textContent = "Удалить";
+
+            remove.addEventListener("click", () => {
+                selectedDishes.delete(id);
+                renderOrderItems();
+            });
+
+            row.append(info, sum, remove);
+            orderItems.appendChild(row);
+        });
+
+        orderTotal.textContent = `${total.toFixed(2)} €`;
+        updateSelectedDishesDisplay();
+    }
+
+    function updateSelectedDishesDisplay() {
+        const display = document.getElementById("selectedDishesDisplay");
+
+        if (!selectedDishes.size) {
+            display.textContent = "Блюда не добавлены";
+            display.classList.remove("active");
+            return;
+        }
+
+        let totalQuantity = 0;
+
+        selectedDishes.forEach(item => {
+            totalQuantity += item.quantity;
+        });
+
+        display.textContent =
+            `Выбрано блюд: ${selectedDishes.size}; порций: ${totalQuantity}`;
+
+        display.classList.add("active");
+    }
+
+    async function assignOrder() {
+        hideMessage();
+
+        if (!selectedTable) {
+            showMessage("Назначьте столик перед созданием заказа.", "error");
+            return;
+        }
+
+        if (!selectedDishes.size) {
+            showMessage("Добавьте хотя бы одно блюдо в заказ.", "error");
+            return;
+        }
+
+        const tableNumber = Number(selectedTable.table_number);
+
+        if (!Number.isInteger(tableNumber)) {
+            showMessage("Не удалось определить номер столика.", "error");
+            return;
+        }
+
+        const orderData = {
+            client_id: crypto.randomUUID(),
+            order_items: [...selectedDishes.values()].map(item => ({
+                dish_id: Number(item.id),
+                dish_name: item.name,
+                price: Number(item.price),
+                quantity: Number(item.quantity)
+            }))
+        };
+
+        createOrderButton.disabled = true;
+        createOrderButton.textContent = "Создание заказа…";
+
+        try {
+            const url =
+                `/orders/create_order_manually?table_number=${encodeURIComponent(tableNumber)}`;
+
+            const response = await apiFetch(url, {
+                method: "POST",
+                credentials: "same-origin",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(orderData)
+            });
+
+            const result = await response.json().catch(() => ({}));
+
+            if (!response.ok) {
+                const detail = result.detail;
+                const errorText = typeof detail === "string"
+                    ? detail
+                    : `Ошибка создания заказа (${response.status})`;
+
+                throw new Error(errorText);
+            }
+
+            showMessage("Заказ успешно создан.", "info");
+
+            selectedDishes.clear();
+            temporarySelectedDishes.clear();
+            selectedTable = null;
+
+            document.getElementById("selectedTableDisplay").textContent =
+                "Столик не выбран";
+            document.getElementById("selectedTableDisplay")
+                .classList.remove("active");
+
+            document.getElementById("orderComment").value = "";
+
+            renderTables();
+            renderOrderItems();
+        } catch (error) {
+            console.error("Ошибка создания заказа:", error);
+            showMessage(
+                error.message || "Не удалось создать заказ.",
+                "error"
+            );
+        } finally {
+            createOrderButton.disabled = false;
+            createOrderButton.textContent = "Назначить заказ";
+        }
+    }
+
+    menuSearch.addEventListener("input", renderMenu);
+
+    renderTables();
+    renderOrderItems();
+</script>
+</body>
+</html>

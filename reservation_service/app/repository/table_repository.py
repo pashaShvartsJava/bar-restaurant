@@ -8,7 +8,8 @@ from sqlalchemy import or_
 from sqlalchemy.orm import selectinload, with_loader_criteria
 
 from ..models import Reservation
-from ..models.table import Table
+from ..models.table import Table, TableStatus
+
 
 class TableRepository:
 
@@ -54,3 +55,7 @@ class TableRepository:
             else:
                 data[table] = int((next_reservation - requested_datetime).total_seconds() / 60)
         return dict(sorted(data.items(), key=lambda item: item[1] if item[1] is not None else float("inf"), reverse=True)[:1])
+
+    async def find_all_available_tables(self):
+        result = await self.db.execute(select(Table).order_by(Table.table_number.asc()).where(Table.status==TableStatus.UNTAKEN))
+        return result.scalars().all()

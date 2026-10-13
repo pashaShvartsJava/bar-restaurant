@@ -15,6 +15,10 @@ class MenuRepository:
         result = await self.db.execute(select(Menu))
         return result.scalars().all()
 
+    async def get_all_available_dishes(self):
+        result = await self.db.execute(select(Menu).where(Menu.dish_status==DishStatus.AVAILABLE))
+        return result.scalars().all()
+
     async def get_dish_by_id(self, id : int) -> Menu:
         result = await self.db.execute(select(Menu).where(Menu.id==id))
         return result.scalar_one_or_none()

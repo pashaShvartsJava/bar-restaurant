@@ -1,10 +1,11 @@
 from uuid import UUID
 
 from dns.tsig import BadSignature
-from fastapi import APIRouter, Request, Depends, Form, UploadFile, File, HTTPException, Response
+from fastapi import APIRouter, Request, Depends, Form, UploadFile, File, HTTPException, Response, Header
 from starlette.responses import HTMLResponse, RedirectResponse
 from starlette.templating import Jinja2Templates
 
+from ..security.internal_security import verify_internal_token
 from ..security.role.role import IdentityRole
 from ..service.dish_service import MenuService
 from ..service.category_service import CategoryService
@@ -128,3 +129,15 @@ async def qr_code_menu(request : Request,
     categories = await category_service.get_all_categories_for_users()
     return templates.TemplateResponse("qr_code_menu.html",
                                       {"request" : request, "categories" : categories, "table_number" : table_number})
+
+
+@router.get("/menu_page/available_dishes")
+async def get_all_available_dishes(request : Request,
+                                   service : MenuService = Depends(get_menu_service_dependency),
+                                   internal_token : str = Header(..., alias="internal_token")):
+    payload = get_payload(request)
+    required_roles(IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
+    await verify_internal_token(internal_token)
+    all_available_dishes = await service.get_all_available_dishes()
+    return all_available_dishes
+

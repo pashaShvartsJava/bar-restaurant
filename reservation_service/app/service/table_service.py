@@ -20,3 +20,6 @@ class TableService:
 
     async def get_free_table(self, people_amount: int, requested_datetime: datetime):
         return await self.table_repository.get_free_table(people_amount, requested_datetime)
+
+    async def find_all_available_tables(self):
+        return await self.table_repository.find_all_available_tables()

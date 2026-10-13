@@ -14,6 +14,9 @@ class MenuService:
     async def get_all_dishes(self) -> List[Menu]:
         return await self.menu_repository.get_all_dishes()
 
+    async def get_all_available_dishes(self):
+        return await self.menu_repository.get_all_available_dishes()
+
     async def get_dish_by_id(self, id : int) -> Menu:
         return await self.menu_repository.get_dish_by_id(id)
 
