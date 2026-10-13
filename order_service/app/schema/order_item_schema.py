@@ -1,7 +1,6 @@
 from decimal import Decimal
 
-from pydantic import BaseModel, Field, EmailStr, field_validator, ConfigDict
-from datetime import date
+from pydantic import BaseModel, Field
 from uuid import UUID
 
 class OrderItemDTO(BaseModel):
@@ -17,3 +16,8 @@ class ListOrderDTO(BaseModel):
 class ListOrderGuestDTO(BaseModel):
     client_id : UUID= Field(...)
     order_items: list[OrderItemDTO]
+
+class SplitOrderDTO(BaseModel):
+    table_number: int
+    old_order_id: int
+    list_order_guest_dto: list[ListOrderGuestDTO]

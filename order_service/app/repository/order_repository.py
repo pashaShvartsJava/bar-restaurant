@@ -13,7 +13,7 @@ from ..models.order_items import OrderItem
 from ..models.orders import Order, OrderStatus
 from ..models.outbox_change_status_events_model import OutboxChangeStatusEvents
 from ..schema.delivery_address_schema import DeliveryAddressDTO
-from ..schema.order_item_schema import ListOrderDTO, ListOrderGuestDTO
+from ..schema.order_item_schema import ListOrderDTO, ListOrderGuestDTO, SplitOrderDTO
 from ..schema.orders_schema import MergeOrdersDTO
 
 
@@ -289,6 +289,35 @@ class OrderRepository:
             await self.db.flush()
         await self.db.refresh(merged_order)
         return merged_order
+
+    async def split_order(self, data : SplitOrderDTO):
+        async with self.db.begin():
+            for order_guest_dto in data.list_order_guest_dto:
+                total_sum = 0
+                for order_item in order_guest_dto.order_items:
+                    total_sum += order_item.price * order_item.quantity
+                new_order = Order(
+                    client_id=order_guest_dto.client_id,
+                    sum=total_sum,
+                    status=OrderStatus.INTERNAL_ORDER,
+                    table_number=data.table_number
+                )
+                self.db.add(new_order)
+                await self.db.flush()
+
+                for order_item in order_guest_dto.order_items:
+                    new_order_item = OrderItem(
+                        order_id=new_order.id,
+                        dish_id=order_item.dish_id,
+                        dish_name=order_item.dish_name,
+                        quantity=order_item.quantity,
+                        price=order_item.price
+                    )
+                    self.db.add(new_order_item)
+            old_order = await self.get_order_by_id(data.old_order_id)
+            if old_order is None:
+                raise ValueError("Исходный заказ не найден")
+            await self.db.delete(old_order)
 
 
 

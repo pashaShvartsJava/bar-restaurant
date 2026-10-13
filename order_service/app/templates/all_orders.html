@@ -4,78 +4,104 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Заказы</title>
+
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
+
         body {
             min-height: 100vh;
             background:
-                radial-gradient(ellipse at 50% 0%, rgba(145, 85, 75, 0.20) 0%, rgba(55, 35, 40, 0.22) 38%, rgba(9, 9, 11, 1) 78%),
+                radial-gradient(ellipse at 50% 0%, rgba(145, 85, 75, .20) 0%, rgba(55, 35, 40, .22) 38%, rgba(9, 9, 11, 1) 78%),
                 linear-gradient(180deg, #211a1c 0%, #121214 50%, #09090b 100%);
             color: #fff;
             font-family: Arial, sans-serif;
         }
+
+        button, input, select {
+            font: inherit;
+        }
+
+        button:focus-visible,
+        a:focus-visible,
+        input:focus-visible,
+        select:focus-visible {
+            outline: 2px solid #a78bfa;
+            outline-offset: 3px;
+        }
+
         .container {
             width: 100%;
             max-width: 1500px;
             margin: 0 auto;
             padding: 60px 35px;
         }
+
         .top {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 45px;
         }
+
         .back {
             color: #77777d;
             font-size: 11px;
             text-decoration: none;
         }
+
         .back:hover {
             color: #d5a65b;
         }
+
         .brand {
             color: #d5a65b;
             font-family: Georgia, serif;
             font-size: 11px;
             letter-spacing: 3px;
         }
+
         .header {
             text-align: center;
             margin-bottom: 35px;
         }
+
         .header-label {
             margin-bottom: 10px;
             color: #d5a65b;
             font-size: 9px;
             letter-spacing: 3px;
         }
+
         .header h1 {
             font-family: Georgia, serif;
             font-size: 42px;
             font-weight: normal;
             letter-spacing: 3px;
         }
+
         .description {
             margin-top: 12px;
             color: #77777d;
             font-size: 13px;
         }
+
         .controls {
             display: flex;
             align-items: center;
             gap: 8px;
             margin-bottom: 25px;
         }
+
         .search-form {
             display: flex;
             flex: 1;
             gap: 8px;
         }
+
         .search-input {
             flex: 1;
             min-height: 34px;
@@ -87,12 +113,15 @@
             color: #fff;
             font-size: 9px;
         }
+
         .search-input::placeholder {
             color: #77777d;
         }
+
         .search-input:focus {
             border-color: rgba(139, 92, 246, .55);
         }
+
         .search-button,
         .reset-button,
         .sort-button,
@@ -107,22 +136,26 @@
             text-decoration: none;
             cursor: pointer;
         }
+
         .search-button {
             background: rgba(42, 40, 42, .95);
             border: 1px solid rgba(139, 92, 246, .35);
             color: #a78bfa;
         }
+
         .reset-button {
             background: rgba(42, 40, 42, .95);
             border: 1px solid rgba(255, 255, 255, .08);
             color: #aaa9ae;
         }
+
         .sort-button {
             min-width: 105px;
             background: rgba(42, 40, 42, .95);
             border: 1px solid rgba(213, 166, 91, .30);
             color: #d5a65b;
         }
+
         .orders {
             width: 100%;
             background: rgba(27, 25, 27, .96);
@@ -130,12 +163,14 @@
             border-radius: 14px;
             overflow: hidden;
         }
+
         .table-header,
         .order {
             display: grid;
             grid-template-columns: 1.5fr 1.15fr 130px 135px 145px 145px 100px 165px;
             align-items: center;
         }
+
         .table-header {
             min-height: 48px;
             padding: 0 22px;
@@ -146,45 +181,54 @@
             letter-spacing: 1.5px;
             text-transform: uppercase;
         }
+
         .order {
             min-height: 105px;
             padding: 16px 22px;
             background: rgba(30, 29, 31, .97);
             border-bottom: 1px solid rgba(255, 255, 255, .055);
         }
+
         .order:hover {
             background: rgba(38, 36, 38, .98);
         }
+
         .order:last-child {
             border-bottom: none;
         }
+
         .order-number {
             color: #fff;
             font-size: 12px;
             font-weight: 600;
-            word-break: break-all;
+            overflow-wrap: anywhere;
         }
+
         .order-client {
             color: #77777d;
             font-size: 10px;
-            word-break: break-all;
+            overflow-wrap: anywhere;
         }
+
         .order-table-number {
             color: #d5a65b;
             font-size: 10px;
             line-height: 1.5;
-            word-break: break-word;
+            overflow-wrap: anywhere;
         }
+
         .order-date {
             color: #aaa9ae;
             font-size: 10px;
             line-height: 1.5;
         }
+
         .order-sum {
             color: #d5a65b;
             font-size: 12px;
             font-weight: 600;
         }
+
         .status {
             display: inline-flex;
             align-items: center;
@@ -195,6 +239,7 @@
             font-size: 9px;
             white-space: nowrap;
         }
+
         .status::before {
             content: "";
             width: 5px;
@@ -202,48 +247,57 @@
             border-radius: 50%;
             background: currentColor;
         }
+
         .status.pending {
             background: rgba(170, 130, 70, .13);
             border: 1px solid rgba(210, 166, 91, .28);
             color: #d5a65b;
         }
+
         .status.internal_order {
             background: rgba(139, 92, 246, .15);
             border: 1px solid rgba(167, 139, 250, .38);
             color: #b59aff;
         }
+
         .status.confirmed_address,
         .status.paid {
             background: rgba(70, 100, 130, .14);
             border: 1px solid rgba(90, 135, 175, .30);
             color: #8db4d3;
         }
+
         .status.preparing {
             background: rgba(110, 80, 135, .15);
             border: 1px solid rgba(145, 110, 175, .30);
             color: #b59bc9;
         }
+
         .status.delivering {
             background: rgba(70, 110, 100, .15);
             border: 1px solid rgba(90, 145, 125, .30);
             color: #8db9a9;
         }
+
         .status.completed {
             background: rgba(100, 130, 80, .12);
             border: 1px solid rgba(120, 150, 95, .25);
             color: #9aaa8b;
         }
+
         .status.cancelled_before,
         .status.cancelled_after {
             background: rgba(150, 55, 65, .16);
             border: 1px solid rgba(210, 85, 90, .32);
             color: #d98282;
         }
+
         .status.expired {
             background: rgba(90, 90, 95, .14);
             border: 1px solid rgba(120, 120, 125, .25);
             color: #85858b;
         }
+
         .status-action {
             position: relative;
             display: flex;
@@ -251,16 +305,19 @@
             flex-wrap: wrap;
             gap: 6px;
         }
+
         .action {
             background: rgba(42, 40, 42, .95);
             border: 1px solid rgba(255, 255, 255, .08);
             color: #aaa9ae;
             white-space: nowrap;
         }
+
         .action:hover {
             border-color: #d5a65b;
             color: #d5a65b;
         }
+
         .change-status-button {
             min-height: 34px;
             padding: 8px 12px;
@@ -271,10 +328,12 @@
             font-size: 9px;
             cursor: pointer;
         }
+
         .change-status-button:hover {
             border-color: #d5a65b;
             color: #d5a65b;
         }
+
         .status-menu {
             position: absolute;
             top: calc(100% + 7px);
@@ -288,9 +347,11 @@
             box-shadow: -10px 15px 40px rgba(0, 0, 0, .45);
             display: none;
         }
+
         .status-menu.active {
             display: block;
         }
+
         .status-option {
             width: 100%;
             padding: 9px 10px;
@@ -302,10 +363,12 @@
             text-align: left;
             cursor: pointer;
         }
+
         .status-option:hover {
             background: rgba(213, 166, 91, .10);
             color: #d5a65b;
         }
+
         .empty {
             padding: 55px 30px;
             background: rgba(27, 25, 27, .96);
@@ -313,16 +376,19 @@
             border-radius: 14px;
             text-align: center;
         }
+
         .empty-title {
             color: #fff;
             font-family: Georgia, serif;
             font-size: 18px;
         }
+
         .empty-description {
             margin-top: 9px;
             color: #77777d;
             font-size: 10px;
         }
+
         .footer {
             padding-top: 35px;
             text-align: center;
@@ -330,6 +396,9 @@
             font-size: 9px;
             letter-spacing: 1px;
         }
+
+        /* Сортировка */
+
         .sort-overlay {
             position: fixed;
             inset: 0;
@@ -340,9 +409,11 @@
             padding: 20px;
             background: rgba(0, 0, 0, .72);
         }
+
         .sort-overlay.active {
             display: flex;
         }
+
         .sort-panel {
             width: 100%;
             max-width: 430px;
@@ -352,15 +423,18 @@
             border-radius: 12px;
             box-shadow: 0 25px 70px rgba(0, 0, 0, .55);
         }
+
         .sort-title {
             margin-bottom: 25px;
             color: #d5a65b;
             font-family: Georgia, serif;
             font-size: 20px;
         }
+
         .sort-field {
             margin-bottom: 15px;
         }
+
         .sort-field label {
             display: block;
             margin-bottom: 7px;
@@ -369,6 +443,7 @@
             letter-spacing: 1px;
             text-transform: uppercase;
         }
+
         .sort-field input,
         .sort-field select {
             width: 100%;
@@ -381,16 +456,19 @@
             color: #fff;
             font-size: 10px;
         }
+
         .sort-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 10px;
         }
+
         .sort-actions {
             display: flex;
             gap: 8px;
             margin-top: 22px;
         }
+
         .sort-apply,
         .sort-reset,
         .sort-close {
@@ -400,17 +478,21 @@
             font-size: 9px;
             cursor: pointer;
         }
+
         .sort-apply {
             background: rgba(213, 166, 91, .12);
             border: 1px solid rgba(213, 166, 91, .35);
             color: #d5a65b;
         }
+
         .sort-reset,
         .sort-close {
             background: #2a282a;
             border: 1px solid rgba(255, 255, 255, .08);
             color: #aaa9ae;
         }
+
+        /* Панель действий */
 
         .orders-toolbar {
             display: flex;
@@ -420,6 +502,7 @@
             gap: 10px;
             margin-bottom: 18px;
         }
+
         .toolbar-button {
             display: inline-flex;
             align-items: center;
@@ -432,27 +515,35 @@
             cursor: pointer;
             transition: .2s ease;
         }
+
         .create-order-button {
             background: rgba(213, 166, 91, .13);
             border: 1px solid rgba(213, 166, 91, .4);
             color: #d5a65b;
         }
+
         .create-order-button:hover {
             background: rgba(213, 166, 91, .22);
         }
+
         .merge-orders-button {
             background: rgba(139, 92, 246, .12);
             border: 1px solid rgba(167, 139, 250, .35);
             color: #b59aff;
         }
+
         .merge-orders-button:hover {
             background: rgba(139, 92, 246, .22);
         }
+
         .merge-orders-button:disabled,
         .merge-confirm-button:disabled {
             opacity: .4;
             cursor: not-allowed;
         }
+
+        /* Объединение заказов */
+
         .merge-panel {
             display: none;
             margin-bottom: 22px;
@@ -461,36 +552,43 @@
             border: 1px solid rgba(167, 139, 250, .3);
             border-radius: 12px;
         }
+
         .merge-panel.active {
             display: block;
         }
+
         .merge-panel-title {
             margin-bottom: 8px;
             color: #b59aff;
             font-family: Georgia, serif;
             font-size: 20px;
         }
+
         .merge-panel-description {
             margin-bottom: 18px;
             color: #77777d;
             font-size: 11px;
             line-height: 1.6;
         }
+
         .merge-selection-list {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
             gap: 12px;
         }
+
         .merge-order-option {
             position: relative;
             display: block;
             cursor: pointer;
         }
+
         .merge-order-option input {
             position: absolute;
             opacity: 0;
             pointer-events: none;
         }
+
         .merge-order-card {
             display: flex;
             align-items: flex-start;
@@ -502,14 +600,17 @@
             border-radius: 9px;
             transition: .2s ease;
         }
+
         .merge-order-option:hover .merge-order-card {
             border-color: rgba(167, 139, 250, .5);
         }
+
         .merge-order-option input:checked + .merge-order-card {
             background: rgba(139, 92, 246, .13);
             border-color: #a78bfa;
             box-shadow: 0 0 0 1px rgba(167, 139, 250, .2);
         }
+
         .merge-checkbox {
             display: flex;
             align-items: center;
@@ -524,14 +625,17 @@
             font-size: 13px;
             transition: .2s ease;
         }
+
         .merge-order-option input:checked + .merge-order-card .merge-checkbox {
             background: #a78bfa;
             border-color: #a78bfa;
             color: #17131f;
         }
+
         .merge-order-info {
             min-width: 0;
         }
+
         .merge-order-number {
             display: block;
             margin-bottom: 8px;
@@ -540,6 +644,7 @@
             font-weight: 600;
             overflow-wrap: anywhere;
         }
+
         .merge-order-meta {
             display: block;
             margin-top: 5px;
@@ -547,6 +652,7 @@
             font-size: 10px;
             line-height: 1.5;
         }
+
         .merge-order-price {
             display: block;
             margin-top: 9px;
@@ -554,6 +660,7 @@
             font-size: 12px;
             font-weight: 600;
         }
+
         .merge-empty {
             padding: 22px;
             color: #77777d;
@@ -562,15 +669,18 @@
             font-size: 11px;
             text-align: center;
         }
+
         .merge-table-field {
             margin-top: 20px;
         }
+
         .merge-table-field label {
             display: block;
             margin-bottom: 8px;
             color: #aaa9ae;
             font-size: 10px;
         }
+
         .merge-table-field input {
             width: 100%;
             max-width: 320px;
@@ -583,9 +693,11 @@
             color: #fff;
             font-size: 11px;
         }
+
         .merge-table-field input:focus {
             border-color: #a78bfa;
         }
+
         .merge-actions {
             display: flex;
             align-items: center;
@@ -593,11 +705,13 @@
             gap: 10px;
             margin-top: 20px;
         }
+
         .merge-selected-count {
             margin-right: auto;
             color: #aaa9ae;
             font-size: 10px;
         }
+
         .merge-confirm-button,
         .merge-cancel-button {
             min-height: 36px;
@@ -606,50 +720,58 @@
             font-size: 10px;
             cursor: pointer;
         }
+
         .merge-confirm-button {
             background: rgba(139, 92, 246, .16);
             border: 1px solid rgba(167, 139, 250, .4);
             color: #c4b5fd;
         }
+
         .merge-cancel-button {
             background: #2a282a;
             border: 1px solid rgba(255, 255, 255, .08);
             color: #aaa9ae;
         }
+
         .merge-confirm-button:hover:not(:disabled) {
             background: rgba(139, 92, 246, .28);
         }
+
         .merge-cancel-button:hover {
             border-color: #77777d;
         }
+
         .split-order-button {
             background: rgba(139, 92, 246, .12);
             border-color: rgba(167, 139, 250, .35);
             color: #b59aff;
         }
+
         .split-order-button:hover {
             border-color: #b59aff;
             color: #d4c6ff;
         }
 
-        /* Красные уведомления об ошибках */
+        /* Уведомления */
+
         .error-toast {
             position: fixed;
             top: 24px;
             right: 24px;
-            z-index: 2000;
+            z-index: 3000;
             display: flex;
             align-items: flex-start;
             gap: 14px;
             width: min(420px, calc(100vw - 36px));
             padding: 17px 18px;
             background: linear-gradient(145deg, #271719, #191416);
-            border: 1px solid rgba(239, 68, 68, 0.65);
+            border: 1px solid rgba(239, 68, 68, .65);
             border-left: 4px solid #ef4444;
             border-radius: 10px;
-            box-shadow: 0 14px 40px rgba(0, 0, 0, 0.45);
-            animation: errorToastIn 0.25s ease-out;
+            box-shadow: 0 14px 40px rgba(0, 0, 0, .45);
+            animation: errorToastIn .25s ease-out;
         }
+
         .error-toast-icon {
             display: flex;
             align-items: center;
@@ -658,29 +780,33 @@
             width: 27px;
             height: 27px;
             color: #ff7777;
-            background: rgba(239, 68, 68, 0.13);
-            border: 1px solid rgba(239, 68, 68, 0.35);
+            background: rgba(239, 68, 68, .13);
+            border: 1px solid rgba(239, 68, 68, .35);
             border-radius: 50%;
             font-size: 16px;
             font-weight: bold;
         }
+
         .error-toast-content {
             flex: 1;
             min-width: 0;
         }
+
         .error-toast-title {
             margin-bottom: 5px;
             color: #ff7777;
             font-size: 12px;
             font-weight: 700;
-            letter-spacing: 0.4px;
+            letter-spacing: .4px;
         }
+
         .error-toast-message {
             color: #f1b6b6;
             font-size: 11px;
             line-height: 1.6;
             overflow-wrap: anywhere;
         }
+
         .error-toast-close {
             flex-shrink: 0;
             padding: 0;
@@ -690,116 +816,440 @@
             font-size: 20px;
             line-height: 1;
             cursor: pointer;
-            transition: color 0.2s ease;
         }
+
         .error-toast-close:hover {
             color: #ff7777;
         }
+
         .error-toast.hiding {
-            animation: errorToastOut 0.2s ease-in forwards;
+            animation: errorToastOut .2s ease-in forwards;
         }
+
         @keyframes errorToastIn {
-            from {
-                opacity: 0;
-                transform: translateX(18px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
+            from { opacity: 0; transform: translateX(18px); }
+            to { opacity: 1; transform: translateX(0); }
         }
+
         @keyframes errorToastOut {
-            from {
-                opacity: 1;
-                transform: translateX(0);
-            }
-            to {
-                opacity: 0;
-                transform: translateX(18px);
-            }
+            from { opacity: 1; transform: translateX(0); }
+            to { opacity: 0; transform: translateX(18px); }
+        }
+
+        /* Разделение заказа — оформление в стиле объединения */
+
+        .split-modal-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 2000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background: rgba(0, 0, 0, .78);
+            backdrop-filter: blur(5px);
+        }
+
+        .split-modal-overlay.active {
+            display: flex;
+        }
+
+        .split-modal {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            max-width: 1100px;
+            max-height: 92vh;
+            overflow: hidden;
+            background: #1b191b;
+            border: 1px solid rgba(167, 139, 250, .3);
+            border-radius: 14px;
+            box-shadow: 0 25px 80px rgba(0, 0, 0, .65);
+        }
+
+        .split-modal-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 18px;
+            padding: 24px 28px;
+            background: rgba(40, 34, 32, .75);
+            border-bottom: 1px solid rgba(255, 255, 255, .07);
+        }
+
+        .split-modal-heading {
+            color: #b59aff;
+            font-family: Georgia, serif;
+            font-size: 25px;
+            font-weight: normal;
+        }
+
+        .split-modal-subtitle {
+            margin-top: 9px;
+            color: #929096;
+            font-size: 11px;
+            line-height: 1.6;
+        }
+
+        .split-modal-close {
+            flex-shrink: 0;
+            width: 34px;
+            height: 34px;
+            background: rgba(255, 255, 255, .04);
+            border: 1px solid rgba(255, 255, 255, .1);
+            border-radius: 6px;
+            color: #aaa9ae;
+            font-size: 22px;
+            cursor: pointer;
+        }
+
+        .split-modal-close:hover {
+            color: #b59aff;
+            border-color: rgba(167, 139, 250, .5);
+        }
+
+        .split-modal-body {
+            padding: 24px 28px;
+            overflow-y: auto;
+        }
+
+        .split-settings {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 18px;
+            padding: 16px;
+            background: rgba(42, 40, 42, .65);
+            border: 1px solid rgba(167, 139, 250, .2);
+            border-radius: 8px;
+        }
+
+        .split-settings label {
+            color: #c7c4ca;
+            font-size: 11px;
+        }
+
+        .split-count-input {
+            width: 90px;
+            min-height: 36px;
+            padding: 8px 10px;
+            background: #211f21;
+            border: 1px solid rgba(167, 139, 250, .3);
+            border-radius: 6px;
+            outline: none;
+            color: #fff;
+            font-size: 12px;
+        }
+
+        .split-count-input:focus,
+        .split-quantity-input:focus {
+            border-color: #a78bfa;
+        }
+
+        .split-build-button {
+            min-height: 36px;
+            padding: 9px 14px;
+            background: rgba(139, 92, 246, .12);
+            border: 1px solid rgba(167, 139, 250, .35);
+            border-radius: 6px;
+            color: #c4b5fd;
+            font-size: 10px;
+            cursor: pointer;
+        }
+
+        .split-build-button:hover {
+            background: rgba(139, 92, 246, .22);
+        }
+
+        .split-instructions {
+            margin-bottom: 18px;
+            color: #85838a;
+            font-size: 11px;
+            line-height: 1.7;
+        }
+
+        .split-orders-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 12px;
+        }
+
+        .split-order-card {
+            min-width: 0;
+            padding: 17px;
+            background: rgba(42, 40, 42, .65);
+            border: 1px solid rgba(255, 255, 255, .09);
+            border-radius: 9px;
+            transition: border-color .2s ease, background .2s ease;
+        }
+
+        .split-order-card.has-items {
+            border-color: rgba(167, 139, 250, .35);
+            background: rgba(139, 92, 246, .055);
+        }
+
+        .split-order-card h3 {
+            margin-bottom: 7px;
+            color: #fff;
+            font-family: Georgia, serif;
+            font-size: 18px;
+            font-weight: normal;
+        }
+
+        .split-table-label {
+            margin-bottom: 14px;
+            color: #8f8c93;
+            font-size: 10px;
+        }
+
+        .split-item {
+            padding: 12px 0;
+            border-top: 1px solid rgba(255, 255, 255, .07);
+        }
+
+        .split-item-name {
+            display: block;
+            margin-bottom: 5px;
+            color: #f1eff2;
+            font-size: 11px;
+            line-height: 1.5;
+            overflow-wrap: anywhere;
+        }
+
+        .split-item-available {
+            display: block;
+            margin-bottom: 9px;
+            color: #85838a;
+            font-size: 10px;
+        }
+
+        .split-quantity-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .split-quantity-row label {
+            color: #aaa9ae;
+            font-size: 10px;
+        }
+
+        .split-quantity-input {
+            width: 78px;
+            min-height: 33px;
+            padding: 7px 9px;
+            background: #211f21;
+            border: 1px solid rgba(255, 255, 255, .12);
+            border-radius: 5px;
+            outline: none;
+            color: #fff;
+            font-size: 11px;
+        }
+
+        .split-item-allocation {
+            display: block;
+            margin-top: 7px;
+            color: #77777d;
+            font-size: 9px;
+        }
+
+        .split-order-total {
+            margin-top: 13px;
+            padding-top: 13px;
+            border-top: 1px solid rgba(167, 139, 250, .2);
+            color: #c4b5fd;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .split-validation {
+            display: none;
+            margin-top: 18px;
+            padding: 13px 15px;
+            background: rgba(150, 55, 65, .15);
+            border: 1px solid rgba(210, 85, 90, .32);
+            border-radius: 7px;
+            color: #e49a9a;
+            font-size: 11px;
+            line-height: 1.6;
+        }
+
+        .split-validation.active {
+            display: block;
+        }
+
+        .split-modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            flex-wrap: wrap;
+            gap: 10px;
+            padding: 17px 28px;
+            background: rgba(40, 34, 32, .5);
+            border-top: 1px solid rgba(255, 255, 255, .07);
+        }
+
+        .split-cancel-button,
+        .split-confirm-button {
+            min-height: 38px;
+            padding: 10px 16px;
+            border-radius: 6px;
+            font-size: 10px;
+            cursor: pointer;
+        }
+
+        .split-cancel-button {
+            background: #2a282a;
+            border: 1px solid rgba(255, 255, 255, .08);
+            color: #aaa9ae;
+        }
+
+        .split-confirm-button {
+            background: rgba(139, 92, 246, .16);
+            border: 1px solid rgba(167, 139, 250, .4);
+            color: #c4b5fd;
+        }
+
+        .split-confirm-button:hover:not(:disabled) {
+            background: rgba(139, 92, 246, .28);
+        }
+
+        .split-confirm-button:disabled {
+            opacity: .5;
+            cursor: not-allowed;
         }
 
         @media (max-width: 1350px) {
             .table-header {
                 display: none;
             }
+
             .order {
                 grid-template-columns: 1fr 1fr;
                 gap: 18px;
                 padding: 20px;
             }
+
             .order-number {
                 grid-column: 1 / -1;
             }
         }
+
         @media (max-width: 700px) {
             .container {
                 padding: 35px 18px;
             }
+
             .controls,
             .search-form {
                 flex-direction: column;
                 align-items: stretch;
             }
+
             .search-input,
             .search-button,
             .reset-button,
             .sort-button {
                 width: 100%;
             }
+
             .order {
                 display: flex;
                 flex-direction: column;
                 align-items: stretch;
             }
+
             .status-action {
                 flex-direction: column;
                 align-items: stretch;
             }
+
             .action,
             .change-status-button {
                 width: 100%;
             }
+
             .status-menu {
                 position: static;
                 width: 100%;
                 margin-top: 5px;
             }
+
             .orders-toolbar {
                 flex-direction: column;
                 align-items: stretch;
             }
+
             .toolbar-button {
                 width: 100%;
             }
+
             .merge-panel {
                 padding: 16px;
             }
+
             .merge-selection-list {
                 grid-template-columns: 1fr;
             }
+
             .merge-actions {
                 flex-direction: column;
                 align-items: stretch;
             }
+
             .merge-selected-count {
                 margin-right: 0;
             }
+
             .merge-confirm-button,
             .merge-cancel-button {
                 width: 100%;
             }
+
             .merge-table-field input {
                 max-width: none;
             }
+
             .error-toast {
                 top: 12px;
                 right: 12px;
                 width: calc(100vw - 24px);
             }
+
+            .split-modal-overlay {
+                padding: 8px;
+            }
+
+            .split-modal {
+                max-height: 96vh;
+            }
+
+            .split-modal-header,
+            .split-modal-body {
+                padding: 17px;
+            }
+
+            .split-modal-heading {
+                font-size: 21px;
+            }
+
+            .split-orders-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .split-modal-footer {
+                padding: 13px 17px;
+            }
+
+            .split-cancel-button,
+            .split-confirm-button {
+                flex: 1;
+            }
         }
     </style>
 </head>
+
 <body>
 <div class="container">
     <div class="top">
@@ -815,7 +1265,8 @@
 
     <div class="controls">
         <form class="search-form" method="GET" action="/orders/get_orders/search_or_sorting">
-            <input class="search-input" name="search" type="text" placeholder="Введите номер заказа" value="{{ search or '' }}">
+            <input class="search-input" name="search" type="text"
+                   placeholder="Введите номер заказа" value="{{ search or '' }}">
             <button class="search-button" type="submit">Найти</button>
             <a class="reset-button" href="/orders/get_orders">Сбросить</a>
         </form>
@@ -827,12 +1278,8 @@
             + Создать заказ вручную
         </a>
 
-        <button
-            type="button"
-            class="toolbar-button merge-orders-button"
-            id="openMergeButton"
-            onclick="openMergeMode()"
-        >
+        <button type="button" class="toolbar-button merge-orders-button"
+                id="openMergeButton" onclick="openMergeMode()">
             Объединить заказы
         </button>
     </div>
@@ -849,13 +1296,8 @@
 
         <div class="merge-table-field">
             <label for="mergeTableNumber">Номер столика для итогового заказа</label>
-            <input
-                id="mergeTableNumber"
-                type="number"
-                min="1"
-                step="1"
-                placeholder="Введите номер столика"
-            >
+            <input id="mergeTableNumber" type="number" min="1" step="1"
+                   placeholder="Введите номер столика">
         </div>
 
         <div class="merge-actions">
@@ -863,21 +1305,14 @@
                 Выбрано заказов: 0
             </span>
 
-            <button
-                type="button"
-                class="merge-confirm-button"
-                id="mergeConfirmButton"
-                disabled
-                onclick="confirmMergeSelection()"
-            >
+            <button type="button" class="merge-confirm-button"
+                    id="mergeConfirmButton" disabled
+                    onclick="confirmMergeSelection()">
                 Подтвердить объединение
             </button>
 
-            <button
-                type="button"
-                class="merge-cancel-button"
-                onclick="closeMergeMode()"
-            >
+            <button type="button" class="merge-cancel-button"
+                    onclick="closeMergeMode()">
                 Отмена
             </button>
         </div>
@@ -900,7 +1335,6 @@
         {% set current_status = order.status.value if order.status.value is defined else order.status %}
         <div class="order">
             <div class="order-number">{{ order.order_number }}</div>
-
             <div class="order-client">{{ order.client_id }}</div>
 
             <div class="order-table-number">
@@ -953,35 +1387,24 @@
                 <a class="action" href="/orders/{{ order.id }}">Информация</a>
 
                 {% if current_status == "internal_order" and order.table_number %}
-                    <a
-                        class="action split-order-button"
-                        href="/orders/{{ order.id }}/split"
-                    >
+                    <button class="action split-order-button" type="button"
+                            data-order-id="{{ order.id }}"
+                            onclick="openSplitModal(this.dataset.orderId)">
                         Разделить заказ
-                    </a>
+                    </button>
 
-                    <button
-                        class="change-status-button"
-                        type="button"
-                        onclick="toggleStatusMenu('{{ order.order_number }}')"
-                    >
+                    <button class="change-status-button" type="button"
+                            onclick="toggleStatusMenu('{{ order.order_number }}')">
                         Статус
                     </button>
 
                     <div class="status-menu" id="status-menu-{{ order.order_number }}">
-                        <button
-                            class="status-option"
-                            type="button"
-                            onclick="changeOrderStatus('{{ order.order_number }}', 'paid')"
-                        >
+                        <button class="status-option" type="button"
+                                onclick="changeOrderStatus('{{ order.order_number }}', 'paid')">
                             Оплачен
                         </button>
-
-                        <button
-                            class="status-option"
-                            type="button"
-                            onclick="changeOrderStatus('{{ order.order_number }}', 'cancelled_before')"
-                        >
+                        <button class="status-option" type="button"
+                                onclick="changeOrderStatus('{{ order.order_number }}', 'cancelled_before')">
                             Отменён до оплаты
                         </button>
                     </div>
@@ -1064,14 +1487,64 @@
     <div class="footer">RESTAURANT ADMINISTRATION</div>
 </div>
 
+<div class="split-modal-overlay" id="splitModal"
+     role="dialog" aria-modal="true" aria-labelledby="splitModalTitle">
+    <div class="split-modal">
+        <div class="split-modal-header">
+            <div>
+                <h2 class="split-modal-heading" id="splitModalTitle">
+                    Разделение заказа
+                </h2>
+                <p class="split-modal-subtitle" id="splitModalSubtitle"></p>
+            </div>
+
+            <button class="split-modal-close" type="button"
+                    aria-label="Закрыть" onclick="closeSplitModal()">
+                &times;
+            </button>
+        </div>
+
+        <div class="split-modal-body">
+            <div class="split-settings">
+                <label for="splitCount">Количество новых заказов</label>
+
+                <input class="split-count-input" type="number"
+                       id="splitCount" min="2" max="20" step="1" value="2">
+
+                <button class="split-build-button" type="button"
+                        onclick="renderSplitOrders()">
+                    Сформировать заказы
+                </button>
+            </div>
+
+            <div class="split-orders-grid" id="splitOrdersContainer"></div>
+
+            <div class="split-validation" id="splitValidation"
+                 role="alert" aria-live="polite"></div>
+        </div>
+
+        <div class="split-modal-footer">
+            <button class="split-cancel-button" type="button"
+                    onclick="closeSplitModal()">
+                Отмена
+            </button>
+
+            <button class="split-confirm-button" type="button"
+                    id="confirmSplitButton" onclick="confirmSplit()">
+                Подтвердить разделение
+            </button>
+        </div>
+    </div>
+</div>
+
 <div class="sort-overlay" id="sortOverlay" onclick="closeSortByOverlay(event)">
     <div class="sort-panel" onclick="event.stopPropagation()">
         <div class="sort-title">Сортировка и фильтры</div>
 
         <form method="GET" action="/orders/get_orders/search_or_sorting">
             <div class="sort-field">
-                <label>Статус</label>
-                <select name="status">
+                <label for="filterStatus">Статус</label>
+                <select id="filterStatus" name="status">
                     <option value="">Все статусы</option>
                     <option value="pending" {% if status == "pending" %}selected{% endif %}>Ожидает</option>
                     <option value="internal_order" {% if status == "internal_order" %}selected{% endif %}>Заказано</option>
@@ -1097,14 +1570,16 @@
             <div class="sort-field">
                 <label>Сумма</label>
                 <div class="sort-row">
-                    <input type="number" name="sum_from" min="0" step="0.01" placeholder="От" value="{{ sum_from or '' }}">
-                    <input type="number" name="sum_to" min="0" step="0.01" placeholder="До" value="{{ sum_to or '' }}">
+                    <input type="number" name="sum_from" min="0" step="0.01"
+                           placeholder="От" value="{{ sum_from or '' }}">
+                    <input type="number" name="sum_to" min="0" step="0.01"
+                           placeholder="До" value="{{ sum_to or '' }}">
                 </div>
             </div>
 
             <div class="sort-field">
-                <label>Сортировка</label>
-                <select name="sort">
+                <label for="sortOrder">Сортировка</label>
+                <select id="sortOrder" name="sort">
                     <option value="created_desc" {% if sort == "created_desc" or not sort %}selected{% endif %}>Сначала новые</option>
                     <option value="created_asc" {% if sort == "created_asc" %}selected{% endif %}>Сначала старые</option>
                     <option value="sum_desc" {% if sort == "sum_desc" %}selected{% endif %}>Сумма: по убыванию</option>
@@ -1149,7 +1624,7 @@
 
         const text = document.createElement("div");
         text.className = "error-toast-message";
-        text.textContent = message;
+        text.textContent = String(message);
 
         const close = document.createElement("button");
         close.className = "error-toast-close";
@@ -1166,10 +1641,9 @@
         function removeToast() {
             clearTimeout(removeTimer);
             toast.classList.add("hiding");
-
-            toast.addEventListener("animationend", () => {
-                toast.remove();
-            }, { once: true });
+            toast.addEventListener("animationend", () => toast.remove(), {
+                once: true
+            });
         }
 
         close.addEventListener("click", removeToast);
@@ -1177,11 +1651,11 @@
     }
 
     function openSort() {
-        document.getElementById("sortOverlay").classList.add("active");
+        document.getElementById("sortOverlay")?.classList.add("active");
     }
 
     function closeSort() {
-        document.getElementById("sortOverlay").classList.remove("active");
+        document.getElementById("sortOverlay")?.classList.remove("active");
     }
 
     function closeSortByOverlay(event) {
@@ -1189,6 +1663,8 @@
             closeSort();
         }
     }
+
+    /* Изменение статусов */
 
     function toggleStatusMenu(orderNumber) {
         document.querySelectorAll(".status-menu").forEach(menu => {
@@ -1198,6 +1674,7 @@
         });
 
         const menu = document.getElementById(`status-menu-${orderNumber}`);
+
         if (menu) {
             menu.classList.toggle("active");
         }
@@ -1205,27 +1682,28 @@
 
     async function changeOrderStatus(orderNumber, status) {
         try {
-            const response = await apiFetch(`/orders/${encodeURIComponent(orderNumber)}/status`, {
-                method: "PATCH",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    status: status
-                })
-            });
+            const response = await apiFetch(
+                `/orders/${encodeURIComponent(orderNumber)}/status`,
+                {
+                    method: "PATCH",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ status })
+                }
+            );
 
             if (!response.ok) {
                 const errorText = await response.text();
                 console.error("Ошибка изменения статуса:", errorText);
-                showError("Не удалось изменить статус заказа");
+                showError("Не удалось изменить статус заказа.");
                 return;
             }
 
             location.reload();
         } catch (error) {
             console.error("Ошибка изменения статуса:", error);
-            showError("Не удалось изменить статус заказа");
+            showError("Не удалось изменить статус заказа.");
         }
     }
 
@@ -1249,7 +1727,10 @@
                 }
             }
 
-            const url = `${form.action}?${params.toString()}`;
+            const query = params.toString();
+            const url = query
+                ? `${form.action}?${query}`
+                : form.action;
 
             try {
                 const response = await fetch(url, {
@@ -1258,7 +1739,7 @@
                 });
 
                 if (!response.ok) {
-                    showError("Не удалось выполнить поиск или сортировку");
+                    showError("Не удалось выполнить поиск или сортировку.");
                     return;
                 }
 
@@ -1267,10 +1748,12 @@
                 document.close();
             } catch (error) {
                 console.error("Ошибка поиска или сортировки:", error);
-                showError("Не удалось выполнить поиск или сортировку");
+                showError("Не удалось выполнить поиск или сортировку.");
             }
         });
     });
+
+    /* Объединение заказов */
 
     const mergePanel = document.getElementById("mergePanel");
     const mergeSelectionList = document.getElementById("mergeSelectionList");
@@ -1282,16 +1765,19 @@
     const MERGE_ENDPOINT = "/orders/merge";
 
     const mergeOrders = [
+        {% set ns = namespace(first=true) %}
         {% for order in orders %}
             {% set current_status = order.status.value if order.status.value is defined else order.status %}
             {% if current_status == "internal_order" and order.table_number %}
-            {
-                id: {{ order.id | string | tojson }},
-                orderNumber: {{ order.order_number | string | tojson }},
-                tableNumber: {{ order.table_number | tojson }},
-                sum: {{ order.sum | float | tojson }},
-                createdAt: {{ order.created_at.strftime("%d.%m.%Y %H:%M") | tojson if order.created_at else '"—"' }}
-            },
+                {% if not ns.first %},{% endif %}
+                {% set ns.first = false %}
+                {
+                    id: {{ order.id | string | tojson }},
+                    orderNumber: {{ order.order_number | string | tojson }},
+                    tableNumber: {{ order.table_number | tojson }},
+                    sum: {{ order.sum | float | tojson }},
+                    createdAt: {{ order.created_at.strftime("%d.%m.%Y %H:%M") | tojson if order.created_at else '"—"' }}
+                }
             {% endif %}
         {% endfor %}
     ];
@@ -1302,11 +1788,7 @@
         mergePanel.classList.add("active");
         openMergeButton.disabled = true;
         renderMergeOrders();
-
-        mergePanel.scrollIntoView({
-            behavior: "smooth",
-            block: "start"
-        });
+        mergePanel.scrollIntoView({ behavior: "smooth", block: "start" });
     }
 
     function closeMergeMode() {
@@ -1343,29 +1825,21 @@
 
             return `
                 <label class="merge-order-option">
-                    <input
-                        type="checkbox"
-                        value="${escapeMergeHTML(id)}"
-                        ${checked ? "checked" : ""}
-                        onchange="toggleMergeOrder(this)"
-                    >
-
+                    <input type="checkbox" value="${escapeMergeHTML(id)}"
+                           ${checked ? "checked" : ""}
+                           onchange="toggleMergeOrder(this)">
                     <span class="merge-order-card">
                         <span class="merge-checkbox">✓</span>
-
                         <span class="merge-order-info">
                             <span class="merge-order-number">
                                 Заказ № ${escapeMergeHTML(order.orderNumber)}
                             </span>
-
                             <span class="merge-order-meta">
                                 Столик № ${escapeMergeHTML(order.tableNumber)}
                             </span>
-
                             <span class="merge-order-meta">
                                 Создан: ${escapeMergeHTML(order.createdAt)}
                             </span>
-
                             <span class="merge-order-price">
                                 ${Number(order.sum).toFixed(2)} €
                             </span>
@@ -1391,10 +1865,10 @@
     }
 
     function updateMergeSelection() {
-        const count = selectedMergeOrders.size;
+        mergeSelectedCount.textContent =
+            `Выбрано заказов: ${selectedMergeOrders.size}`;
 
-        mergeSelectedCount.textContent = `Выбрано заказов: ${count}`;
-        mergeConfirmButton.disabled = count < 2;
+        mergeConfirmButton.disabled = selectedMergeOrders.size < 2;
     }
 
     async function confirmMergeSelection() {
@@ -1410,18 +1884,14 @@
         const rawTableNumber = mergeTableNumberInput.value.trim();
         const tableNumber = Number(rawTableNumber);
 
-        if (
-            !rawTableNumber ||
-            !Number.isInteger(tableNumber) ||
-            tableNumber < 1
-        ) {
+        if (!rawTableNumber || !Number.isInteger(tableNumber) || tableNumber < 1) {
             showError("Введите корректный номер столика.");
             mergeTableNumberInput.focus();
             return;
         }
 
         const mergeData = {
-            order_ids: selectedOrders.map(order => order.id),
+            order_ids: selectedOrders.map(order => Number(order.id)),
             table_number: tableNumber
         };
 
@@ -1452,6 +1922,574 @@
             mergeConfirmButton.disabled = selectedMergeOrders.size < 2;
         }
     }
+
+    /* Разделение заказов */
+
+    const SPLIT_ENDPOINT = "/orders/split";
+    const splitModal = document.getElementById("splitModal");
+    const splitCountInput = document.getElementById("splitCount");
+    const splitOrdersContainer = document.getElementById("splitOrdersContainer");
+    const splitValidation = document.getElementById("splitValidation");
+    const confirmSplitButton = document.getElementById("confirmSplitButton");
+
+    const splitOrders = [
+        {% set ns = namespace(first=true) %}
+        {% for order in orders %}
+            {% set current_status = order.status.value if order.status.value is defined else order.status %}
+            {% if current_status == "internal_order" and order.table_number %}
+                {% if not ns.first %},{% endif %}
+                {% set ns.first = false %}
+                {
+                    id: {{ order.id | string | tojson }},
+                    orderNumber: {{ order.order_number | string | tojson }},
+                    tableNumber: {{ order.table_number | tojson }},
+                    items: [
+                        {% for item in order.order_items %}
+                        {
+                            id: {{ item.id | string | tojson }},
+                            dishId: {{ item.dish_id | string | tojson }},
+                            name: {{ item.dish_name | string | tojson }},
+                            quantity: {{ item.quantity | int | tojson }},
+                            price: {{ (item.price | default(0, true) | float) | tojson }}
+                        }{% if not loop.last %},{% endif %}
+                        {% endfor %}
+                    ]
+                }
+            {% endif %}
+        {% endfor %}
+    ];
+
+    let currentSplitOrder = null;
+
+    function createClientUUID() {
+        if (
+            typeof crypto !== "undefined" &&
+            typeof crypto.randomUUID === "function"
+        ) {
+            return crypto.randomUUID();
+        }
+
+        return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, char => {
+            const random = Math.random() * 16 | 0;
+            const value = char === "x"
+                ? random
+                : (random & 0x3 | 0x8);
+
+            return value.toString(16);
+        });
+    }
+
+    function openSplitModal(orderId) {
+        currentSplitOrder = splitOrders.find(
+            order => String(order.id) === String(orderId)
+        );
+
+        if (!currentSplitOrder) {
+            showError("Не удалось найти данные исходного заказа.");
+            return;
+        }
+
+        if (!currentSplitOrder.tableNumber) {
+            showError("Разделить можно только заказ со столиком.");
+            return;
+        }
+
+        if (!currentSplitOrder.items.length) {
+            showError("В этом заказе нет блюд для разделения.");
+            return;
+        }
+
+        document.getElementById("splitModalTitle").textContent =
+            "Разделение заказа";
+
+        document.getElementById("splitModalSubtitle").textContent =
+            "Заказ № " + currentSplitOrder.orderNumber;
+
+        splitCountInput.value = "2";
+        confirmSplitButton.disabled = false;
+        confirmSplitButton.textContent = "Подтвердить разделение";
+
+        splitModal.classList.add("active");
+        document.body.style.overflow = "hidden";
+
+        renderSplitOrders();
+    }
+
+    function closeSplitModal() {
+        splitModal.classList.remove("active");
+        document.body.style.overflow = "";
+        currentSplitOrder = null;
+        splitOrdersContainer.replaceChildren();
+        hideSplitValidation();
+    }
+
+    function showSplitValidation(message) {
+        splitValidation.textContent = message;
+        splitValidation.classList.add("active");
+    }
+
+    function hideSplitValidation() {
+        splitValidation.textContent = "";
+        splitValidation.classList.remove("active");
+    }
+
+    function renderSplitOrders() {
+        hideSplitValidation();
+
+        if (!currentSplitOrder) return;
+
+        const count = Number(splitCountInput.value);
+
+        if (!Number.isInteger(count) || count < 2 || count > 20) {
+            showSplitValidation(
+                "Количество новых заказов должно быть целым числом от 2 до 20."
+            );
+            return;
+        }
+
+        const totalPortions = currentSplitOrder.items.reduce(
+            (sum, item) => sum + item.quantity,
+            0
+        );
+
+        if (count > totalPortions) {
+            showSplitValidation(
+                "Нельзя создать " + count + " непустых заказов: " +
+                "в исходном заказе всего " + totalPortions +
+                " порций. Уменьшите количество новых заказов."
+            );
+            return;
+        }
+
+        splitOrdersContainer.replaceChildren();
+
+        for (let orderIndex = 0; orderIndex < count; orderIndex++) {
+            const card = document.createElement("section");
+            card.className = "split-order-card";
+            card.dataset.orderIndex = String(orderIndex);
+
+            const heading = document.createElement("h3");
+            heading.textContent = "Новый заказ №" + (orderIndex + 1);
+            card.appendChild(heading);
+
+            const tableLabel = document.createElement("p");
+            tableLabel.className = "split-table-label";
+            tableLabel.textContent =
+                "Столик №" + currentSplitOrder.tableNumber;
+            card.appendChild(tableLabel);
+
+            currentSplitOrder.items.forEach(item => {
+                const itemBlock = document.createElement("div");
+                itemBlock.className = "split-item";
+
+                const name = document.createElement("span");
+                name.className = "split-item-name";
+                name.textContent = item.name;
+                itemBlock.appendChild(name);
+
+                const available = document.createElement("span");
+                available.className = "split-item-available";
+                available.textContent =
+                    "В исходном заказе: " + item.quantity + " шт.";
+                itemBlock.appendChild(available);
+
+                const quantityRow = document.createElement("div");
+                quantityRow.className = "split-quantity-row";
+
+                const label = document.createElement("label");
+                label.textContent = "Количество:";
+
+                const input = document.createElement("input");
+                input.type = "number";
+                input.className = "split-quantity-input";
+                input.min = "0";
+                input.max = String(item.quantity);
+                input.step = "1";
+                input.value = "0";
+                input.dataset.orderIndex = String(orderIndex);
+                input.dataset.itemId = String(item.id);
+
+                input.setAttribute(
+                    "aria-label",
+                    item.name + ", новый заказ " + (orderIndex + 1)
+                );
+
+                input.addEventListener("input", () => {
+                    hideSplitValidation();
+                    updateSplitOrderTotal(card);
+                    updateSplitAllocationStatus(item);
+                });
+
+                label.appendChild(input);
+                quantityRow.appendChild(label);
+                itemBlock.appendChild(quantityRow);
+
+                const allocation = document.createElement("span");
+                allocation.className = "split-item-allocation";
+                allocation.dataset.itemId = String(item.id);
+                allocation.textContent =
+                    "Распределено: 0 из " + item.quantity;
+                itemBlock.appendChild(allocation);
+
+                card.appendChild(itemBlock);
+            });
+
+            const total = document.createElement("div");
+            total.className = "split-order-total";
+            total.textContent = "Всего порций: 0";
+            card.appendChild(total);
+
+            splitOrdersContainer.appendChild(card);
+        }
+
+        updateAllSplitTotals();
+    }
+
+    function getAllocatedQuantity(itemId) {
+        let allocated = 0;
+
+        splitOrdersContainer.querySelectorAll(".split-quantity-input").forEach(input => {
+            if (String(input.dataset.itemId) !== String(itemId)) return;
+
+            const quantity = Number(input.value);
+
+            if (Number.isInteger(quantity) && quantity >= 0) {
+                allocated += quantity;
+            }
+        });
+
+        return allocated;
+    }
+
+    function updateSplitAllocationStatus(item) {
+        const allocated = getAllocatedQuantity(item.id);
+
+        splitOrdersContainer.querySelectorAll(".split-item-allocation").forEach(element => {
+            if (String(element.dataset.itemId) !== String(item.id)) return;
+
+            element.textContent =
+                "Распределено: " + allocated + " из " + item.quantity;
+
+            element.style.color = allocated === item.quantity
+                ? "#a78bfa"
+                : allocated > item.quantity
+                    ? "#e49a9a"
+                    : "#77777d";
+        });
+    }
+
+    function updateSplitOrderTotal(card) {
+        let total = 0;
+
+        card.querySelectorAll(".split-quantity-input").forEach(input => {
+            const quantity = Number(input.value);
+
+            if (Number.isInteger(quantity) && quantity > 0) {
+                total += quantity;
+            }
+        });
+
+        card.querySelector(".split-order-total").textContent =
+            "Всего порций: " + total;
+
+        card.classList.toggle("has-items", total > 0);
+    }
+
+    function updateAllSplitTotals() {
+        splitOrdersContainer.querySelectorAll(".split-order-card").forEach(card => {
+            updateSplitOrderTotal(card);
+        });
+
+        if (currentSplitOrder) {
+            currentSplitOrder.items.forEach(item => {
+                updateSplitAllocationStatus(item);
+            });
+        }
+    }
+
+    function collectSplitPayload() {
+        if (!currentSplitOrder) {
+            throw new Error("Исходный заказ не выбран.");
+        }
+
+        const count = Number(splitCountInput.value);
+
+        if (!Number.isInteger(count) || count < 2 || count > 20) {
+            throw new Error(
+                "Количество новых заказов должно быть целым числом от 2 до 20."
+            );
+        }
+
+        const cards = splitOrdersContainer.querySelectorAll(".split-order-card");
+
+        if (cards.length !== count) {
+            throw new Error("Сформируйте новые заказы перед подтверждением.");
+        }
+
+        /*
+         * ВАЖНО:
+         * Используем list_order_guest_dto, поскольку именно это поле
+         * ожидает DTO на бэкенде согласно ошибке FastAPI.
+         */
+        const payload = {
+            table_number: Number(currentSplitOrder.tableNumber),
+            old_order_id: Number(currentSplitOrder.id),
+            list_order_guest_dto: Array.from({ length: count }, () => ({
+                client_id: createClientUUID(),
+                order_items: []
+            }))
+        };
+
+        const assignedByItem = new Map();
+
+        currentSplitOrder.items.forEach(item => {
+            assignedByItem.set(String(item.id), 0);
+        });
+
+        const inputs = splitOrdersContainer.querySelectorAll(
+            ".split-quantity-input"
+        );
+
+        for (const input of inputs) {
+            const rawValue = input.value.trim();
+            const quantity = Number(rawValue);
+
+            if (
+                rawValue === "" ||
+                !Number.isInteger(quantity) ||
+                quantity < 0
+            ) {
+                throw new Error(
+                    "Количество порций должно быть целым неотрицательным числом."
+                );
+            }
+
+            const itemId = String(input.dataset.itemId);
+            const orderIndex = Number(input.dataset.orderIndex);
+
+            const sourceItem = currentSplitOrder.items.find(
+                item => String(item.id) === itemId
+            );
+
+            if (!sourceItem) {
+                throw new Error("Не удалось найти блюдо исходного заказа.");
+            }
+
+            if (
+                !Number.isInteger(orderIndex) ||
+                orderIndex < 0 ||
+                orderIndex >= count
+            ) {
+                throw new Error("Некорректный номер нового заказа.");
+            }
+
+            if (quantity > sourceItem.quantity) {
+                throw new Error(
+                    "Количество блюда «" + sourceItem.name +
+                    "» превышает количество в исходном заказе."
+                );
+            }
+
+            const assigned = (assignedByItem.get(itemId) || 0) + quantity;
+
+            if (assigned > sourceItem.quantity) {
+                throw new Error(
+                    "Для блюда «" + sourceItem.name +
+                    "» распределено больше порций, чем есть в исходном заказе."
+                );
+            }
+
+            assignedByItem.set(itemId, assigned);
+
+            if (quantity > 0) {
+                const dishId = Number(sourceItem.dishId);
+                const price = Number(sourceItem.price);
+
+                if (!Number.isInteger(dishId) || dishId <= 0) {
+                    throw new Error(
+                        "Некорректный ID блюда «" + sourceItem.name + "»."
+                    );
+                }
+
+                if (!Number.isFinite(price) || price < 1 || price > 20000) {
+                    throw new Error(
+                        "Некорректная цена блюда «" + sourceItem.name + "»."
+                    );
+                }
+
+                payload.list_order_guest_dto[orderIndex].order_items.push({
+                    dish_id: dishId,
+                    dish_name: sourceItem.name,
+                    price: price,
+                    quantity: quantity
+                });
+            }
+        }
+
+        for (const item of currentSplitOrder.items) {
+            const assigned = assignedByItem.get(String(item.id)) || 0;
+
+            if (assigned !== item.quantity) {
+                throw new Error(
+                    "Блюдо «" + item.name + "»: в исходном заказе " +
+                    item.quantity + " шт., распределено " + assigned +
+                    " шт. Распределите всё количество без остатка."
+                );
+            }
+        }
+
+        payload.list_order_guest_dto.forEach((order, index) => {
+            if (order.order_items.length === 0) {
+                throw new Error(
+                    "Новый заказ №" + (index + 1) +
+                    " пуст. Добавьте в него хотя бы одно блюдо."
+                );
+            }
+        });
+
+        if (
+            !Number.isInteger(payload.table_number) ||
+            payload.table_number < 1
+        ) {
+            throw new Error("Некорректный номер столика.");
+        }
+
+        if (
+            !Number.isInteger(payload.old_order_id) ||
+            payload.old_order_id <= 0
+        ) {
+            throw new Error("Некорректный ID исходного заказа.");
+        }
+
+        return payload;
+    }
+
+    async function confirmSplit() {
+        hideSplitValidation();
+
+        if (!currentSplitOrder) {
+            showSplitValidation("Исходный заказ не выбран.");
+            return;
+        }
+
+        let payload;
+
+        try {
+            payload = collectSplitPayload();
+        } catch (error) {
+            showSplitValidation(
+                error.message || "Проверьте данные новых заказов."
+            );
+            return;
+        }
+
+        const confirmed = window.confirm(
+            "Разделить заказ №" + currentSplitOrder.orderNumber +
+            " на " + payload.list_order_guest_dto.length + " новых заказа?\n\n" +
+            "Все порции должны быть распределены без остатка. " +
+            "Исходный заказ будет удалён после успешного разделения."
+        );
+
+        if (!confirmed) return;
+
+        confirmSplitButton.disabled = true;
+        confirmSplitButton.textContent = "Обработка...";
+
+        try {
+            const response = await apiFetch(SPLIT_ENDPOINT, {
+                method: "POST",
+                credentials: "same-origin",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Accept": "application/json"
+                },
+                body: JSON.stringify(payload)
+            });
+
+            let result = {};
+
+            try {
+                result = await response.json();
+            } catch (_) {
+                result = {};
+            }
+
+            if (!response.ok) {
+                console.error("Ошибка разделения заказа:", {
+                    status: response.status,
+                    response: result
+                });
+
+                const detail = result.detail ?? result.error ?? result.message;
+
+                let message;
+
+                if (Array.isArray(detail)) {
+                    message = detail.map(error => {
+                        const location = Array.isArray(error.loc)
+                            ? error.loc.join(" → ")
+                            : "";
+
+                        const errorMessage =
+                            error.msg || error.message || "Ошибка валидации.";
+
+                        return location
+                            ? location + ": " + errorMessage
+                            : errorMessage;
+                    }).join("\n");
+                } else if (typeof detail === "string") {
+                    message = detail;
+                } else {
+                    message = "Сервер вернул ошибку HTTP " + response.status + ".";
+                }
+
+                throw new Error(message);
+            }
+
+            if (result && result.success === false) {
+                throw new Error(
+                    result.detail ||
+                    result.error ||
+                    result.message ||
+                    "Сервер не смог разделить заказ."
+                );
+            }
+
+            closeSplitModal();
+            window.location.reload();
+
+        } catch (error) {
+            console.error("Ошибка разделения заказа:", error);
+
+            showSplitValidation(
+                error.message ||
+                "Не удалось разделить заказ. Попробуйте ещё раз."
+            );
+
+        } finally {
+            confirmSplitButton.disabled = false;
+            confirmSplitButton.textContent = "Подтвердить разделение";
+        }
+    }
+
+    splitModal.addEventListener("click", event => {
+        if (event.target === splitModal) {
+            closeSplitModal();
+        }
+    });
+
+    document.addEventListener("keydown", event => {
+        if (
+            event.key === "Escape" &&
+            splitModal.classList.contains("active")
+        ) {
+            closeSplitModal();
+        }
+
+        if (event.key === "Escape") {
+            closeSort();
+        }
+    });
 </script>
 </body>
 </html>

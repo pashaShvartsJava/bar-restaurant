@@ -6,7 +6,7 @@ from ..models.orders import Order, OrderStatus
 from ..repository.guest_repository import GuestRepository
 from ..repository.order_repository import OrderRepository
 from ..schema.delivery_address_schema import DeliveryAddressDTO, GuestCustomerDTO
-from ..schema.order_item_schema import ListOrderDTO, ListOrderGuestDTO
+from ..schema.order_item_schema import ListOrderDTO, ListOrderGuestDTO, SplitOrderDTO
 from uuid import UUID
 import httpx
 from ..config.config import settings
@@ -115,3 +115,6 @@ class OrderService:
 
     async def merge_orders(self, data: MergeOrdersDTO):
         return await self.order_repository.merge_orders(data)
+
+    async def split_order(self, data : SplitOrderDTO):
+        return await self.order_repository.split_order(data)

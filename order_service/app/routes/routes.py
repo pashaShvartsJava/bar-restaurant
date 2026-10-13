@@ -10,7 +10,7 @@ from starlette.templating import Jinja2Templates
 from ..dependencies.dependencies import get_order_service_dependency
 from ..models.orders import OrderStatus
 from ..schema.delivery_address_schema import DeliveryAddressDTO, GuestDTO, GuestCustomerDTO
-from ..schema.order_item_schema import ListOrderDTO, ListOrderGuestDTO, OrderItemDTO
+from ..schema.order_item_schema import ListOrderDTO, ListOrderGuestDTO, OrderItemDTO, SplitOrderDTO
 from ..schema.orders_schema import StatusDTO, MergeOrdersDTO
 from ..schema.payment_schema import PaymentDTO
 from ..security.internal_security import verify_internal_token
@@ -277,6 +277,14 @@ async def merge_orders(request : Request,
     required_roles(IdentityRole.ADMIN, IdentityRole.MODERATOR, payload=payload)
     await service.merge_orders(data)
 
+@router.post("/orders/split")
+async def split_order(request : Request,
+                      data : SplitOrderDTO,
+                      service : OrderService = Depends(get_order_service_dependency)):
+    await verify_csrf(request)
+    payload = get_payload(request)
+    required_roles(IdentityRole.ADMIN, IdentityRole.MODERATOR, payload=payload)
+    await service.split_order(data)
 
 @router.get("/orders/{order_id}")
 async def get_order_info(request : Request, order_id : int, service : OrderService = Depends(get_order_service_dependency)):
