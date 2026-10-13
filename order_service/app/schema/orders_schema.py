@@ -10,5 +10,5 @@ class StatusDTO(BaseModel):
     status : OrderStatus
 
 class MergeOrdersDTO(BaseModel):
-    order_ids: list[UUID]
+    order_ids: list[int]
     table_number: int = Field(..., ge=1)

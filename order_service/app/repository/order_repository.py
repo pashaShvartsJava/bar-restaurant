@@ -9,12 +9,12 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from ..models.delivery_address import DeliveryAddress
-from ..models.guest_customers import GuestCustomer
 from ..models.order_items import OrderItem
 from ..models.orders import Order, OrderStatus
 from ..models.outbox_change_status_events_model import OutboxChangeStatusEvents
 from ..schema.delivery_address_schema import DeliveryAddressDTO
 from ..schema.order_item_schema import ListOrderDTO, ListOrderGuestDTO
+from ..schema.orders_schema import MergeOrdersDTO
 
 
 class OrderRepository:
@@ -255,6 +255,41 @@ class OrderRepository:
     async def mark_event_as_published(self, event: OutboxChangeStatusEvents):
         event.published_at = datetime.now(timezone.utc)
         await self.db.flush()
+
+    async def merge_orders(self, data: MergeOrdersDTO):
+        async with self.db.begin():
+            orders = []
+            for order_id in data.order_ids:
+                order = await self.get_order_by_id(order_id)
+                if order is None:
+                    raise ValueError(f"Заказ {order_id} не найден")
+                orders.append(order)
+            merged_order = Order(
+                client_id=uuid.uuid4(),
+                status=OrderStatus.INTERNAL_ORDER,
+                table_number=data.table_number,
+                sum=0,
+            )
+            self.db.add(merged_order)
+            await self.db.flush()
+            for order in orders:
+                merged_order.sum += order.sum
+                for item in order.order_items:
+                    new_item = OrderItem(
+                        order_id=merged_order.id,
+                        dish_id=item.dish_id,
+                        dish_name=item.dish_name,
+                        quantity=item.quantity,
+                        price=item.price,
+                    )
+                    self.db.add(new_item)
+            await self.db.flush()
+            for order in orders:
+                await self.db.delete(order)
+            await self.db.flush()
+        await self.db.refresh(merged_order)
+        return merged_order
+
 
 
 

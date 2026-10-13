@@ -632,6 +632,93 @@
             color: #d4c6ff;
         }
 
+        /* Красные уведомления об ошибках */
+        .error-toast {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            z-index: 2000;
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            width: min(420px, calc(100vw - 36px));
+            padding: 17px 18px;
+            background: linear-gradient(145deg, #271719, #191416);
+            border: 1px solid rgba(239, 68, 68, 0.65);
+            border-left: 4px solid #ef4444;
+            border-radius: 10px;
+            box-shadow: 0 14px 40px rgba(0, 0, 0, 0.45);
+            animation: errorToastIn 0.25s ease-out;
+        }
+        .error-toast-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            width: 27px;
+            height: 27px;
+            color: #ff7777;
+            background: rgba(239, 68, 68, 0.13);
+            border: 1px solid rgba(239, 68, 68, 0.35);
+            border-radius: 50%;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        .error-toast-content {
+            flex: 1;
+            min-width: 0;
+        }
+        .error-toast-title {
+            margin-bottom: 5px;
+            color: #ff7777;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.4px;
+        }
+        .error-toast-message {
+            color: #f1b6b6;
+            font-size: 11px;
+            line-height: 1.6;
+            overflow-wrap: anywhere;
+        }
+        .error-toast-close {
+            flex-shrink: 0;
+            padding: 0;
+            background: transparent;
+            border: none;
+            color: #bd7777;
+            font-size: 20px;
+            line-height: 1;
+            cursor: pointer;
+            transition: color 0.2s ease;
+        }
+        .error-toast-close:hover {
+            color: #ff7777;
+        }
+        .error-toast.hiding {
+            animation: errorToastOut 0.2s ease-in forwards;
+        }
+        @keyframes errorToastIn {
+            from {
+                opacity: 0;
+                transform: translateX(18px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        @keyframes errorToastOut {
+            from {
+                opacity: 1;
+                transform: translateX(0);
+            }
+            to {
+                opacity: 0;
+                transform: translateX(18px);
+            }
+        }
+
         @media (max-width: 1350px) {
             .table-header {
                 display: none;
@@ -704,6 +791,11 @@
             }
             .merge-table-field input {
                 max-width: none;
+            }
+            .error-toast {
+                top: 12px;
+                right: 12px;
+                width: calc(100vw - 24px);
             }
         }
     </style>
@@ -1038,6 +1130,52 @@
 
 <script src="/static/api.js"></script>
 <script>
+    function showError(message, title = "Ошибка") {
+        const toast = document.createElement("div");
+        toast.className = "error-toast";
+        toast.setAttribute("role", "alert");
+        toast.setAttribute("aria-live", "assertive");
+
+        const icon = document.createElement("div");
+        icon.className = "error-toast-icon";
+        icon.textContent = "!";
+
+        const content = document.createElement("div");
+        content.className = "error-toast-content";
+
+        const heading = document.createElement("div");
+        heading.className = "error-toast-title";
+        heading.textContent = title;
+
+        const text = document.createElement("div");
+        text.className = "error-toast-message";
+        text.textContent = message;
+
+        const close = document.createElement("button");
+        close.className = "error-toast-close";
+        close.type = "button";
+        close.textContent = "×";
+        close.setAttribute("aria-label", "Закрыть уведомление");
+
+        content.append(heading, text);
+        toast.append(icon, content, close);
+        document.body.appendChild(toast);
+
+        let removeTimer;
+
+        function removeToast() {
+            clearTimeout(removeTimer);
+            toast.classList.add("hiding");
+
+            toast.addEventListener("animationend", () => {
+                toast.remove();
+            }, { once: true });
+        }
+
+        close.addEventListener("click", removeToast);
+        removeTimer = setTimeout(removeToast, 5000);
+    }
+
     function openSort() {
         document.getElementById("sortOverlay").classList.add("active");
     }
@@ -1080,14 +1218,14 @@
             if (!response.ok) {
                 const errorText = await response.text();
                 console.error("Ошибка изменения статуса:", errorText);
-                alert("Не удалось изменить статус заказа");
+                showError("Не удалось изменить статус заказа");
                 return;
             }
 
             location.reload();
         } catch (error) {
             console.error("Ошибка изменения статуса:", error);
-            alert("Не удалось изменить статус заказа");
+            showError("Не удалось изменить статус заказа");
         }
     }
 
@@ -1120,7 +1258,7 @@
                 });
 
                 if (!response.ok) {
-                    alert("Не удалось выполнить поиск или сортировку");
+                    showError("Не удалось выполнить поиск или сортировку");
                     return;
                 }
 
@@ -1129,7 +1267,7 @@
                 document.close();
             } catch (error) {
                 console.error("Ошибка поиска или сортировки:", error);
-                alert("Не удалось выполнить поиск или сортировку");
+                showError("Не удалось выполнить поиск или сортировку");
             }
         });
     });
@@ -1265,7 +1403,7 @@
         );
 
         if (selectedOrders.length < 2) {
-            alert("Выберите как минимум два заказа.");
+            showError("Выберите как минимум два заказа.");
             return;
         }
 
@@ -1277,7 +1415,7 @@
             !Number.isInteger(tableNumber) ||
             tableNumber < 1
         ) {
-            alert("Введите корректный номер столика.");
+            showError("Введите корректный номер столика.");
             mergeTableNumberInput.focus();
             return;
         }
@@ -1302,15 +1440,14 @@
             if (!response.ok) {
                 const errorText = await response.text();
                 console.error("Ошибка объединения заказов:", errorText);
-                alert("Не удалось объединить заказы.");
+                showError("Не удалось объединить заказы.");
                 return;
             }
 
-            alert("Заказы успешно объединены.");
             location.reload();
         } catch (error) {
             console.error("Ошибка объединения заказов:", error);
-            alert("Не удалось объединить заказы.");
+            showError("Не удалось объединить заказы.");
         } finally {
             mergeConfirmButton.disabled = selectedMergeOrders.size < 2;
         }

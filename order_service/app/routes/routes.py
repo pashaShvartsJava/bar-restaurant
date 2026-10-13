@@ -11,7 +11,7 @@ from ..dependencies.dependencies import get_order_service_dependency
 from ..models.orders import OrderStatus
 from ..schema.delivery_address_schema import DeliveryAddressDTO, GuestDTO, GuestCustomerDTO
 from ..schema.order_item_schema import ListOrderDTO, ListOrderGuestDTO, OrderItemDTO
-from ..schema.orders_schema import StatusDTO
+from ..schema.orders_schema import StatusDTO, MergeOrdersDTO
 from ..schema.payment_schema import PaymentDTO
 from ..security.internal_security import verify_internal_token
 from ..security.jwt.jwt import get_payload
@@ -267,6 +267,15 @@ async def create_order_manually(request : Request,
     required_roles(IdentityRole.ADMIN, IdentityRole.MODERATOR, payload=payload)
     await verify_csrf(request)
     await service.create_order_for_guest(data,OrderStatus.INTERNAL_ORDER, table_number)
+
+@router.post("/orders/merge")
+async def merge_orders(request : Request,
+                       data : MergeOrdersDTO,
+                       service : OrderService = Depends(get_order_service_dependency)):
+    await verify_csrf(request)
+    payload = get_payload(request)
+    required_roles(IdentityRole.ADMIN, IdentityRole.MODERATOR, payload=payload)
+    await service.merge_orders(data)
 
 
 @router.get("/orders/{order_id}")

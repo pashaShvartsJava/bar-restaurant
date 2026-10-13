@@ -10,6 +10,7 @@ from ..schema.order_item_schema import ListOrderDTO, ListOrderGuestDTO
 from uuid import UUID
 import httpx
 from ..config.config import settings
+from ..schema.orders_schema import MergeOrdersDTO
 
 INTERNAL_TOKEN = settings.internal_token
 
@@ -111,3 +112,6 @@ class OrderService:
                 headers={"internal_token": INTERNAL_TOKEN})
             response.raise_for_status()
         return response.json()
+
+    async def merge_orders(self, data: MergeOrdersDTO):
+        return await self.order_repository.merge_orders(data)
