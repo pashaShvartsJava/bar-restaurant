@@ -169,7 +169,6 @@ async def search_and_sorting(request : Request,
                              sum_to: Decimal | None = None,
                              sort: str = "created_desc",
                              service : OrderService = Depends(get_order_service_dependency)):
-    await verify_csrf(request)
     payload = get_payload(request)
     required_roles(IdentityRole.ADMIN, IdentityRole.MODERATOR, payload=payload)
     orders = await service.search_or_sort_orders(search, status, date_from, date_to, sum_from, sum_to, sort)

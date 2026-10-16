@@ -1,10 +1,10 @@
 import uuid
-from datetime import datetime, timezone, timedelta, date
+from datetime import datetime, timezone, timedelta, date, time
 from decimal import Decimal
 from typing import List
 from uuid import UUID
 
-from sqlalchemy import select, or_, and_
+from sqlalchemy import select, or_, and_, func
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
@@ -328,34 +328,38 @@ class OrderRepository:
                 next_month = today.replace(year=today.year + 1, month=1, day=1)
             else:
                 next_month = today.replace(month=today.month + 1, day=1)
-            stmt = (select(Order)
-                    .where(Order.created_at>=start_date, Order.created_at < next_month, Order.status==OrderStatus.COMPLETED)
-                    .where(Order.created_at>=start_date, Order.created_at < next_month, Order.table_number.is_not(None), Order.status==OrderStatus.PAID))
+            stmt = (select(Order).where(Order.created_at >= start_date, Order.created_at < next_month,
+                                        or_(
+                                            and_(Order.status == OrderStatus.COMPLETED, Order.table_number.is_(None)),
+                                            and_(Order.table_number.is_not(None), Order.status == OrderStatus.PAID))))
             result = await self.db.execute(stmt)
-            orders = result.scalars().all()
+            orders : list[Order] = result.scalars().all()
             for order in orders:
                 revenue += order.sum
+            return revenue
         if date_from is not None and date_to is None:
-            stmt = (select(Order)
-                    .where(Order.created_at >= date_from, Order.status == OrderStatus.COMPLETED)
-                    .where(Order.created_at >= date_from, Order.table_number.is_not(None),
-                           Order.status == OrderStatus.PAID))
+            stmt = (select(Order).where(Order.created_at >= date_from,
+                                        or_(
+                                            and_(Order.status == OrderStatus.COMPLETED, Order.table_number.is_(None)),
+                                            and_(Order.table_number.is_not(None), Order.status == OrderStatus.PAID))))
             result = await self.db.execute(stmt)
-            orders = result.scalars().all()
+            orders : list[Order] = result.scalars().all()
             for order in orders:
                 revenue += order.sum
+            return revenue
         if date_from is None and date_to is not None:
             raise ValueError("Enter starting date")
         if date_from is not None and date_to is not None:
-            stmt = (select(Order)
-                    .where(Order.created_at >= date_from, Order.created_at <= date_to, Order.status == OrderStatus.COMPLETED)
-                    .where(Order.created_at >= date_from, Order.created_at <= date_to, Order.table_number.is_not(None),
-                           Order.status == OrderStatus.PAID))
+            stmt = (select(Order).where(Order.created_at >= date_from, Order.created_at <= date_to,
+                                        or_(
+                                            and_(Order.status == OrderStatus.COMPLETED, Order.table_number.is_(None)),
+                                            and_(Order.table_number.is_not(None), Order.status == OrderStatus.PAID))))
             result = await self.db.execute(stmt)
-            orders = result.scalars().all()
+            orders : list[Order] = result.scalars().all()
             for order in orders:
                 revenue += order.sum
-        return revenue
+            return revenue
+        return None
 
     async def get_order_count(self, date_from: date | None, date_to: date | None):
         if date_from is None and date_to is None:
@@ -437,6 +441,89 @@ class OrderRepository:
                 revenue += order.sum
             return revenue
         return None
+
+    async def get_top_dishes(self, date_from: date | None, date_to: date | None) -> list[dict]:
+        today = date.today()
+        if date_from is None:
+            date_from = today.replace(day=1)
+        if date_to is None:
+            if today.month == 12:
+                date_to = date(today.year + 1, 1, 1)
+            else:
+                date_to = date(today.year, today.month + 1, 1)
+        else:
+            date_to += timedelta(days=1)
+        start_datetime = datetime.combine(date_from, time.min)
+        end_datetime = datetime.combine(date_to, time.min)
+        stmt = (select(Order).options(selectinload(Order.order_items)).where(
+                Order.created_at >= start_datetime,
+                Order.created_at < end_datetime,
+                or_(
+                    and_(
+                        Order.status == OrderStatus.COMPLETED,
+                        Order.table_number.is_(None),
+                    ),
+                    and_(
+                        Order.table_number.is_not(None),
+                        Order.status == OrderStatus.PAID))))
+        result = await self.db.execute(stmt)
+        orders = result.scalars().all()
+        dishes = {}
+        for order in orders:
+            for item in order.order_items:
+                name = item.dish_name
+                if name not in dishes:
+                    dishes[name] = {
+                        "name": name,
+                        "quantity": 0,
+                        "revenue": 0
+                    }
+                dishes[name]["quantity"] += item.quantity
+                dishes[name]["revenue"] += item.price * item.quantity
+        return [{**dish,
+                "quantity": int(dish["quantity"]),
+                "revenue": float(dish["revenue"] or 0)}
+            for dish in sorted(dishes.values(), key=lambda dish: dish["quantity"], reverse=True)]
+
+    async def get_monthly_sales(self, date_from: date | None = None, date_to: date | None = None,) -> list[dict]:
+        today = date.today()
+        if date_from is None:
+            date_from = today.replace(day=1)
+        if date_to is None:
+            next_month = (date_to.replace(day=1) + timedelta(days=32) if date_to is not None else None)
+            if today.month == 12:
+                date_to = date(today.year + 1, 1, 1)
+            else:
+                date_to = date(today.year, today.month + 1, 1)
+        start_datetime = datetime.combine(date_from, time.min)
+        end_datetime = datetime.combine(date_to, time.min)
+        stmt = (select(
+                func.date(Order.created_at).label("label"),
+                func.coalesce(func.sum(Order.sum), 0).label("revenue"),
+                func.count(Order.id).label("order_count"),
+            )
+            .where(
+                Order.created_at >= start_datetime,
+                Order.created_at < end_datetime,
+                or_(
+                    and_(
+                        Order.table_number.is_not(None),
+                        Order.status == OrderStatus.PAID,
+                    ),
+                    and_(
+                        Order.table_number.is_(None),
+                        Order.status == OrderStatus.COMPLETED)))
+            .group_by(func.date(Order.created_at))
+            .order_by(func.date(Order.created_at)))
+        result = await self.db.execute(stmt)
+        rows = result.all()
+        return [{
+                    "label": row.label.strftime("%d.%m"),
+                    "revenue": float(row.revenue),
+                    "order_count": row.order_count
+                }for row in rows]
+
+
 
 
 

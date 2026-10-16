@@ -1,12 +1,9 @@
-```html
 <!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>Финансы и аналитика</title>
-
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <style>
@@ -19,18 +16,11 @@
         body {
             min-height: 100vh;
             background:
-                radial-gradient(
-                    ellipse at 50% 0%,
+                radial-gradient(ellipse at 50% 0%,
                     rgba(145, 85, 75, .20) 0%,
                     rgba(55, 35, 40, .22) 38%,
-                    rgba(9, 9, 11, 1) 78%
-                ),
-                linear-gradient(
-                    180deg,
-                    #211a1c 0%,
-                    #121214 50%,
-                    #09090b 100%
-                );
+                    rgba(9, 9, 11, 1) 78%),
+                linear-gradient(180deg, #211a1c 0%, #121214 50%, #09090b 100%);
             color: #fff;
             font-family: Arial, sans-serif;
         }
@@ -147,6 +137,22 @@
             background: rgba(213, 166, 91, .22);
         }
 
+        .money-value {
+            color: #e4c58b;
+            font-family: "Inter", "Roboto", Arial, sans-serif;
+            font-weight: 600;
+            font-variant-numeric: tabular-nums;
+            letter-spacing: 0;
+        }
+
+        .currency-symbol {
+            color: #c6b99f;
+            font-family: "Inter", "Roboto", Arial, sans-serif;
+            font-size: .82em;
+            font-weight: 500;
+            margin-left: 5px;
+        }
+
         .section {
             margin-bottom: 30px;
         }
@@ -198,6 +204,10 @@
             font-family: Georgia, serif;
             font-size: 27px;
             overflow-wrap: anywhere;
+        }
+
+        .stat-value .money-value {
+            font-size: .96em;
         }
 
         .stat-comparison {
@@ -320,6 +330,10 @@
             font-weight: 600;
         }
 
+        .data-table .money-value {
+            color: #e4c58b;
+        }
+
         .footer {
             padding-top: 30px;
             color: #4f4f54;
@@ -387,533 +401,450 @@
 </head>
 
 <body>
-    <main class="container">
+<main class="container">
 
-        <div class="top">
-            <a href="/admin_panel" class="back">← Назад в панель</a>
-            <div class="brand">RESTAURANT MANAGEMENT</div>
+    <div class="top">
+        <a href="/admin_panel" class="back">← Назад в панель</a>
+        <div class="brand">RESTAURANT MANAGEMENT</div>
+    </div>
+
+    <header class="header">
+        <div class="header-label">ФИНАНСОВЫЙ ОБЗОР</div>
+        <h1>Финансы и аналитика</h1>
+        <p class="description">
+            Выручка, динамика продаж, популярные блюда и статистика заказов
+        </p>
+    </header>
+
+    <form class="filters" method="get" action="/analytics">
+        <div class="filter-field">
+            <label for="date_from">Дата начала</label>
+            <input
+                type="date"
+                id="date_from"
+                name="date_from"
+                value="{{ date_from or '' }}"
+            >
         </div>
 
-        <header class="header">
-            <div class="header-label">ФИНАНСОВЫЙ ОБЗОР</div>
-            <h1>Финансы и аналитика</h1>
-            <p class="description">
-                Выручка, динамика продаж, популярные блюда и статистика заказов
-            </p>
-        </header>
+        <div class="filter-field">
+            <label for="date_to">Дата окончания</label>
+            <input
+                type="date"
+                id="date_to"
+                name="date_to"
+                value="{{ date_to or '' }}"
+            >
+        </div>
 
-        <form class="filters" method="get" action="/analytics">
-            <div class="filter-field">
-                <label for="date_from">Дата начала</label>
-                <input
-                    type="date"
-                    id="date_from"
-                    name="date_from"
-                    value="{{ date_from or '' }}"
-                >
-            </div>
+        <div class="filter-field">
+            <label for="period">Период графика</label>
+            <select id="period" name="period">
+                <option value="month"
+                    {% if period == 'month' or not period %}selected{% endif %}>
+                    По месяцам
+                </option>
+                <option value="day"
+                    {% if period == 'day' %}selected{% endif %}>
+                    По дням
+                </option>
+            </select>
+        </div>
 
-            <div class="filter-field">
-                <label for="date_to">Дата окончания</label>
-                <input
-                    type="date"
-                    id="date_to"
-                    name="date_to"
-                    value="{{ date_to or '' }}"
-                >
-            </div>
+        <button type="submit" class="filter-button">Применить фильтры</button>
+    </form>
 
-            <div class="filter-field">
-                <label for="period">Период графика</label>
-                <select id="period" name="period">
-                    <option value="month"
-                        {% if period == 'month' %}selected{% endif %}>
-                        По месяцам
-                    </option>
-                    <option value="day"
-                        {% if period == 'day' %}selected{% endif %}>
-                        По дням
-                    </option>
-                </select>
-            </div>
+    <section class="section">
+        <div class="section-title">
+            <h2>Основные показатели</h2>
+            <div class="section-line"></div>
+        </div>
 
-            <button type="submit" class="filter-button">
-                Применить фильтры
-            </button>
-        </form>
-
-        <section class="section">
-            <div class="section-title">
-                <h2>Основные показатели</h2>
-                <div class="section-line"></div>
-            </div>
-
-            <div class="stats-grid">
-
-                <article class="stat-card">
-                    <div class="stat-label">Выручка за выбранный период</div>
-
-                    <div class="stat-value">
-                        {% if analytics and analytics.revenue is not none %}
-                            {{ "%.2f"|format(analytics.revenue) }} ₽
-                        {% else %}
-                            —
-                        {% endif %}
-                    </div>
-
+        <div class="stats-grid">
+            <article class="stat-card">
+                <div class="stat-label">Выручка за выбранный период</div>
+                <div class="stat-value">
                     {% if analytics and analytics.revenue is not none %}
-                        <div class="stat-comparison">
-                            Общая сумма оплаченных заказов
-                        </div>
+                        <span class="money-value">
+                            {{ "%.2f"|format(analytics.revenue) }}<span class="currency-symbol">€</span>
+                        </span>
                     {% else %}
-                        <div class="stat-comparison">
-                            Данных о выручке пока нет
-                        </div>
+                        —
                     {% endif %}
-                </article>
-
-                <article class="stat-card">
-                    <div class="stat-label">Количество заказов</div>
-
-                    <div class="stat-value">
-                        {% if analytics and analytics.order_count is not none %}
-                            {{ analytics.order_count }}
-                        {% else %}
-                            —
-                        {% endif %}
-                    </div>
-
-                    <div class="stat-comparison">
-                        {% if analytics and analytics.order_count is not none %}
-                            За выбранный период
-                        {% else %}
-                            Данных о заказах пока нет
-                        {% endif %}
-                    </div>
-                </article>
-
-                <article class="stat-card">
-                    <div class="stat-label">Средний чек</div>
-
-                    <div class="stat-value">
-                        {% if analytics and analytics.average_check is not none %}
-                            {{ "%.2f"|format(analytics.average_check) }} ₽
-                        {% else %}
-                            —
-                        {% endif %}
-                    </div>
-
-                    <div class="stat-comparison">
-                        {% if analytics and analytics.average_check is not none %}
-                            Выручка, делённая на количество заказов
-                        {% else %}
-                            Пока недостаточно данных
-                        {% endif %}
-                    </div>
-                </article>
-
-                <article class="stat-card">
-                    <div class="stat-label">Выручка за предыдущий период</div>
-
-                    <div class="stat-value">
-                        {% if analytics and analytics.previous_revenue is not none %}
-                            {{ "%.2f"|format(analytics.previous_revenue) }} ₽
-                        {% else %}
-                            —
-                        {% endif %}
-                    </div>
-
-                    <div class="stat-comparison">
-                        {% if analytics and analytics.revenue_change_percent is not none %}
-                            {% if analytics.revenue_change_percent > 0 %}
-                                <span class="comparison-positive">
-                                    +{{ "%.1f"|format(analytics.revenue_change_percent) }}%
-                                </span>
-                                к предыдущему периоду
-                            {% elif analytics.revenue_change_percent < 0 %}
-                                <span class="comparison-negative">
-                                    {{ "%.1f"|format(analytics.revenue_change_percent) }}%
-                                </span>
-                                к предыдущему периоду
-                            {% else %}
-                                Без изменений к предыдущему периоду
-                            {% endif %}
-                        {% else %}
-                            Нет данных для сравнения
-                        {% endif %}
-                    </div>
-                </article>
-
-            </div>
-        </section>
-
-        <section class="section">
-            <div class="section-title">
-                <h2>Динамика выручки</h2>
-                <div class="section-line"></div>
-            </div>
-
-            <div class="panel-grid">
-
-                <article class="panel">
-                    <h3 class="panel-title">Выручка по периодам</h3>
-                    <p class="panel-description">
-                        Сравнение сумм оплаченных заказов
-                    </p>
-
-                    {% if monthly_sales %}
-                        <div class="chart-container">
-                            <canvas id="revenueChart"></canvas>
-                        </div>
+                </div>
+                <div class="stat-comparison">
+                    {% if analytics and analytics.revenue is not none %}
+                        Общая сумма оплаченных заказов
                     {% else %}
-                        <div class="empty">
-                            <div>
-                                <div class="empty-title">Данных пока нет</div>
-                                <p class="empty-description">
-                                    График появится, когда в системе появятся
-                                    оплаченные заказы.
-                                </p>
-                            </div>
-                        </div>
+                        Данных о выручке пока нет
                     {% endif %}
-                </article>
+                </div>
+            </article>
 
-                <article class="panel">
-                    <h3 class="panel-title">Количество заказов</h3>
-                    <p class="panel-description">
-                        Динамика заказов за выбранный период
-                    </p>
-
-                    {% if monthly_sales %}
-                        <div class="chart-container">
-                            <canvas id="ordersChart"></canvas>
-                        </div>
+            <article class="stat-card">
+                <div class="stat-label">Количество заказов</div>
+                <div class="stat-value">
+                    {% if analytics and analytics.order_count is not none %}
+                        {{ analytics.order_count }}
                     {% else %}
-                        <div class="empty">
-                            <div>
-                                <div class="empty-title">Данных пока нет</div>
-                                <p class="empty-description">
-                                    Здесь появится график количества заказов,
-                                    когда появятся данные.
-                                </p>
-                            </div>
-                        </div>
+                        —
                     {% endif %}
-                </article>
-
-            </div>
-        </section>
-
-        <section class="section">
-            <div class="section-title">
-                <h2>Продажи блюд</h2>
-                <div class="section-line"></div>
-            </div>
-
-            <div class="panel-grid">
-
-                <article class="panel">
-                    <h3 class="panel-title">Популярные блюда</h3>
-                    <p class="panel-description">
-                        Блюда с наибольшим количеством проданных порций
-                    </p>
-
-                    {% if top_dishes %}
-                        <div class="chart-container">
-                            <canvas id="dishesChart"></canvas>
-                        </div>
+                </div>
+                <div class="stat-comparison">
+                    {% if analytics and analytics.order_count is not none %}
+                        За выбранный период
                     {% else %}
-                        <div class="empty">
-                            <div>
-                                <div class="empty-title">Данных пока нет</div>
-                                <p class="empty-description">
-                                    Популярные блюда появятся после первых продаж.
-                                </p>
-                            </div>
-                        </div>
+                        Данных о заказах пока нет
                     {% endif %}
-                </article>
+                </div>
+            </article>
 
-                <article class="panel">
-                    <h3 class="panel-title">Продажи по категориям</h3>
-                    <p class="panel-description">
-                        Распределение выручки по категориям меню
-                    </p>
-
-                    {% if category_sales %}
-                        <div class="chart-container">
-                            <canvas id="categoriesChart"></canvas>
-                        </div>
+            <article class="stat-card">
+                <div class="stat-label">Средний чек</div>
+                <div class="stat-value">
+                    {% if analytics and analytics.average_check is not none %}
+                        <span class="money-value">
+                            {{ "%.2f"|format(analytics.average_check) }}<span class="currency-symbol">€</span>
+                        </span>
                     {% else %}
-                        <div class="empty">
-                            <div>
-                                <div class="empty-title">Данных пока нет</div>
-                                <p class="empty-description">
-                                    Распределение продаж появится, когда блюда
-                                    будут связаны с категориями меню.
-                                </p>
-                            </div>
-                        </div>
+                        —
                     {% endif %}
-                </article>
+                </div>
+                <div class="stat-comparison">
+                    {% if analytics and analytics.average_check is not none %}
+                        Выручка, делённая на количество заказов
+                    {% else %}
+                        Пока недостаточно данных
+                    {% endif %}
+                </div>
+            </article>
 
-            </div>
-        </section>
+            <article class="stat-card">
+                <div class="stat-label">Выручка за предыдущий период</div>
+                <div class="stat-value">
+                    {% if analytics and analytics.previous_revenue is not none %}
+                        <span class="money-value">
+                            {{ "%.2f"|format(analytics.previous_revenue) }}<span class="currency-symbol">€</span>
+                        </span>
+                    {% else %}
+                        —
+                    {% endif %}
+                </div>
+                <div class="stat-comparison">
+                    {% if analytics and analytics.revenue_change_percent is not none %}
+                        {% if analytics.revenue_change_percent > 0 %}
+                            <span class="comparison-positive">
+                                +{{ "%.1f"|format(analytics.revenue_change_percent) }}%
+                            </span>
+                            к предыдущему периоду
+                        {% elif analytics.revenue_change_percent < 0 %}
+                            <span class="comparison-negative">
+                                {{ "%.1f"|format(analytics.revenue_change_percent) }}%
+                            </span>
+                            к предыдущему периоду
+                        {% else %}
+                            Без изменений к предыдущему периоду
+                        {% endif %}
+                    {% else %}
+                        Нет данных для сравнения
+                    {% endif %}
+                </div>
+            </article>
+        </div>
+    </section>
 
-        <section class="section">
-            <div class="section-title">
-                <h2>Подробная статистика блюд</h2>
-                <div class="section-line"></div>
-            </div>
+    <section class="section">
+        <div class="section-title">
+            <h2>Динамика выручки</h2>
+            <div class="section-line"></div>
+        </div>
 
-            {% if top_dishes %}
-                <div class="table-wrap">
-                    <table class="data-table">
-                        <thead>
+        <div class="panel-grid">
+            <article class="panel">
+                <h3 class="panel-title">Выручка по периодам</h3>
+                <p class="panel-description">Сравнение сумм оплаченных заказов</p>
+
+                {% if monthly_sales %}
+                    <div class="chart-container">
+                        <canvas id="revenueChart"></canvas>
+                    </div>
+                {% else %}
+                    <div class="empty">
+                        <div>
+                            <div class="empty-title">Данных пока нет</div>
+                            <p class="empty-description">
+                                График появится, когда в системе появятся
+                                оплаченные заказы.
+                            </p>
+                        </div>
+                    </div>
+                {% endif %}
+            </article>
+
+            <article class="panel">
+                <h3 class="panel-title">Количество заказов</h3>
+                <p class="panel-description">
+                    Динамика заказов за выбранный период
+                </p>
+
+                {% if monthly_sales %}
+                    <div class="chart-container">
+                        <canvas id="ordersChart"></canvas>
+                    </div>
+                {% else %}
+                    <div class="empty">
+                        <div>
+                            <div class="empty-title">Данных пока нет</div>
+                            <p class="empty-description">
+                                Здесь появится график количества заказов,
+                                когда появятся данные.
+                            </p>
+                        </div>
+                    </div>
+                {% endif %}
+            </article>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-title">
+            <h2>Продажи блюд</h2>
+            <div class="section-line"></div>
+        </div>
+
+        <div class="panel-grid">
+            <article class="panel">
+                <h3 class="panel-title">Популярные блюда</h3>
+                <p class="panel-description">
+                    Блюда с наибольшим количеством проданных порций
+                </p>
+
+                {% if top_dishes %}
+                    <div class="chart-container">
+                        <canvas id="dishesChart"></canvas>
+                    </div>
+                {% else %}
+                    <div class="empty">
+                        <div>
+                            <div class="empty-title">Данных пока нет</div>
+                            <p class="empty-description">
+                                Популярные блюда появятся после первых продаж.
+                            </p>
+                        </div>
+                    </div>
+                {% endif %}
+            </article>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-title">
+            <h2>Подробная статистика блюд</h2>
+            <div class="section-line"></div>
+        </div>
+
+        {% if top_dishes %}
+            <div class="table-wrap">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Блюдо</th>
+                            <th>Продано порций</th>
+                            <th>Выручка</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for dish in top_dishes %}
                             <tr>
-                                <th>Блюдо</th>
-                                <th>Продано порций</th>
-                                <th>Выручка</th>
+                                <td>{{ dish.name }}</td>
+                                <td class="table-number">{{ dish.quantity }}</td>
+                                <td>
+                                    <span class="money-value">
+                                        {{ "%.2f"|format(dish.revenue) }}<span class="currency-symbol">€</span>
+                                    </span>
+                                </td>
                             </tr>
-                        </thead>
-
-                        <tbody>
-                            {% for dish in top_dishes %}
-                                <tr>
-                                    <td>{{ dish.name }}</td>
-                                    <td class="table-number">
-                                        {{ dish.quantity }}
-                                    </td>
-                                    <td class="table-number">
-                                        {{ "%.2f"|format(dish.revenue) }} ₽
-                                    </td>
-                                </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="empty">
+                <div>
+                    <div class="empty-title">Статистика пока отсутствует</div>
+                    <p class="empty-description">
+                        Когда появятся продажи блюд, здесь отобразятся
+                        количество проданных порций и выручка по каждому блюду.
+                    </p>
                 </div>
-            {% else %}
-                <div class="empty">
-                    <div>
-                        <div class="empty-title">Статистика пока отсутствует</div>
-                        <p class="empty-description">
-                            Когда появятся продажи блюд, здесь отобразятся
-                            количество проданных порций и выручка по каждому блюду.
-                        </p>
-                    </div>
-                </div>
-            {% endif %}
-        </section>
+            </div>
+        {% endif %}
+    </section>
 
-        <footer class="footer">
-            ФИНАНСЫ И АНАЛИТИКА · RESTAURANT MANAGEMENT
-        </footer>
+    <footer class="footer">
+        ФИНАНСЫ И АНАЛИТИКА · RESTAURANT MANAGEMENT
+    </footer>
+</main>
 
-    </main>
+<script>
+    const chartColors = {
+        gold: "#d5a65b",
+        purple: "#a78bfa",
+        text: "#aaa9ae",
+        grid: "rgba(255, 255, 255, 0.07)"
+    };
 
-    <script>
-        const chartColors = {
-            gold: "#d5a65b",
-            purple: "#a78bfa",
-            text: "#aaa9ae",
-            grid: "rgba(255, 255, 255, 0.07)"
-        };
+    Chart.defaults.color = chartColors.text;
+    Chart.defaults.font.family = "Arial";
 
-        Chart.defaults.color = chartColors.text;
-        Chart.defaults.font.family = "Arial";
+    const monthlySales = {{ monthly_sales | default([], true) | tojson }};
+    const topDishes = {{ top_dishes | default([], true) | tojson }};
 
-        const monthlySales = {{ monthly_sales | default([], true) | tojson }};
-        const topDishes = {{ top_dishes | default([], true) | tojson }};
-        const categorySales = {{ category_sales | default([], true) | tojson }};
+    function createRevenueChart() {
+        const canvas = document.getElementById("revenueChart");
+        if (!canvas || !monthlySales.length) return;
 
-        function createRevenueChart() {
-            const canvas = document.getElementById("revenueChart");
-
-            if (!canvas || monthlySales.length === 0) {
-                return;
-            }
-
-            new Chart(canvas, {
-                type: "line",
-                data: {
-                    labels: monthlySales.map(item => item.label),
-                    datasets: [{
-                        label: "Выручка",
-                        data: monthlySales.map(item => item.revenue),
-                        borderColor: chartColors.gold,
-                        backgroundColor: "rgba(213, 166, 91, 0.12)",
-                        borderWidth: 2,
-                        pointRadius: 4,
-                        pointBackgroundColor: chartColors.gold,
-                        fill: true,
-                        tension: 0.3
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: false
+        new Chart(canvas, {
+            type: "line",
+            data: {
+                labels: monthlySales.map(item => item.label),
+                datasets: [{
+                    label: "Выручка (€)",
+                    data: monthlySales.map(item => Number(item.revenue) || 0),
+                    borderColor: chartColors.gold,
+                    backgroundColor: "rgba(213, 166, 91, 0.12)",
+                    borderWidth: 2,
+                    pointRadius: 4,
+                    pointBackgroundColor: chartColors.gold,
+                    fill: true,
+                    tension: 0.3
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: context =>
+                                `${Number(context.parsed.y).toFixed(2)} €`
                         }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: { color: chartColors.grid }
                     },
-                    scales: {
-                        x: {
-                            grid: {
-                                color: chartColors.grid
-                            }
-                        },
-                        y: {
-                            beginAtZero: true,
-                            grid: {
-                                color: chartColors.grid
-                            }
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: chartColors.grid },
+                        ticks: {
+                            callback: value => `${value} €`
                         }
                     }
                 }
-            });
-        }
-
-        function createOrdersChart() {
-            const canvas = document.getElementById("ordersChart");
-
-            if (!canvas || monthlySales.length === 0) {
-                return;
             }
+        });
+    }
 
-            new Chart(canvas, {
-                type: "bar",
-                data: {
-                    labels: monthlySales.map(item => item.label),
-                    datasets: [{
-                        label: "Заказы",
-                        data: monthlySales.map(item => item.order_count),
-                        backgroundColor: "rgba(167, 139, 250, 0.65)",
-                        borderColor: chartColors.purple,
-                        borderWidth: 1,
-                        borderRadius: 5
-                    }]
+    function createOrdersChart() {
+        const canvas = document.getElementById("ordersChart");
+        if (!canvas || !monthlySales.length) return;
+
+        new Chart(canvas, {
+            type: "bar",
+            data: {
+                labels: monthlySales.map(item => item.label),
+                datasets: [{
+                    label: "Заказы",
+                    data: monthlySales.map(item => Number(item.order_count) || 0),
+                    backgroundColor: "rgba(167, 139, 250, 0.65)",
+                    borderColor: chartColors.purple,
+                    borderWidth: 1,
+                    borderRadius: 5
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
                 },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: false
-                        }
+                scales: {
+                    x: {
+                        grid: { display: false }
                     },
-                    scales: {
-                        x: {
-                            grid: {
-                                display: false
-                            }
-                        },
-                        y: {
-                            beginAtZero: true,
-                            ticks: {
-                                precision: 0
-                            },
-                            grid: {
-                                color: chartColors.grid
-                            }
-                        }
+                    y: {
+                        beginAtZero: true,
+                        ticks: { precision: 0 },
+                        grid: { color: chartColors.grid }
                     }
                 }
-            });
-        }
-
-        function createDishesChart() {
-            const canvas = document.getElementById("dishesChart");
-
-            if (!canvas || topDishes.length === 0) {
-                return;
             }
+        });
+    }
 
-            new Chart(canvas, {
-                type: "bar",
-                data: {
-                    labels: topDishes.map(item => item.name),
-                    datasets: [{
-                        label: "Продано порций",
-                        data: topDishes.map(item => item.quantity),
-                        backgroundColor: "rgba(213, 166, 91, 0.65)",
-                        borderColor: chartColors.gold,
-                        borderWidth: 1,
-                        borderRadius: 5
-                    }]
+    function createDishesChart() {
+        const canvas = document.getElementById("dishesChart");
+        if (!canvas || !topDishes.length) return;
+
+        new Chart(canvas, {
+            type: "bar",
+            data: {
+                labels: topDishes.map(item => item.name),
+                datasets: [{
+                    label: "Продано порций",
+                    data: topDishes.map(item => Number(item.quantity) || 0),
+                    backgroundColor: "rgba(213, 166, 91, 0.65)",
+                    borderColor: chartColors.gold,
+                    borderWidth: 1,
+                    borderRadius: 5
+                }]
+            },
+            options: {
+                indexAxis: "y",
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
                 },
-                options: {
-                    indexAxis: "y",
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: false
-                        }
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        grid: { color: chartColors.grid },
+                        ticks: { precision: 0 }
                     },
-                    scales: {
-                        x: {
-                            beginAtZero: true,
-                            grid: {
-                                color: chartColors.grid
-                            }
-                        },
-                        y: {
-                            grid: {
-                                display: false
-                            }
-                        }
+                    y: {
+                        grid: { display: false }
                     }
                 }
-            });
-        }
-
-        function createCategoriesChart() {
-            const canvas = document.getElementById("categoriesChart");
-
-            if (!canvas || categorySales.length === 0) {
-                return;
             }
+        });
+    }
 
-            new Chart(canvas, {
-                type: "doughnut",
-                data: {
-                    labels: categorySales.map(item => item.name),
-                    datasets: [{
-                        data: categorySales.map(item => item.revenue),
-                        backgroundColor: [
-                            "#d5a65b",
-                            "#a78bfa",
-                            "#8db9a9",
-                            "#8db4d3",
-                            "#d98282",
-                            "#b59bc9",
-                            "#9aaa8b"
-                        ],
-                        borderColor: "#1b191b",
-                        borderWidth: 3
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: "bottom",
-                            labels: {
-                                padding: 18
-                            }
-                        }
-                    }
-                }
-            });
+    /*
+     * Удаляем пустые значения date_from и date_to перед отправкой формы.
+     * Это предотвращает ошибку FastAPI при получении date_to="".
+     */
+    const filtersForm = document.querySelector(".filters");
+
+    filtersForm.addEventListener("submit", function () {
+        const dateFrom = document.getElementById("date_from");
+        const dateTo = document.getElementById("date_to");
+
+        if (!dateFrom.value) {
+            dateFrom.disabled = true;
         }
 
-        createRevenueChart();
-        createOrdersChart();
-        createDishesChart();
-        createCategoriesChart();
-    </script>
+        if (!dateTo.value) {
+            dateTo.disabled = true;
+        }
+    });
+
+    createRevenueChart();
+    createOrdersChart();
+    createDishesChart();
+</script>
 </body>
 </html>
-```
