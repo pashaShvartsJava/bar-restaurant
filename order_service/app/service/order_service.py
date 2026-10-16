@@ -118,3 +118,37 @@ class OrderService:
 
     async def split_order(self, data : SplitOrderDTO):
         return await self.order_repository.split_order(data)
+
+
+    async def get_analytics(self, date_from : date | None, date_to : date | None, period : str):
+        revenue = await self.get_revenue(date_from, date_to)
+        order_count = await self.get_order_count(date_from, date_to)
+        average_check = revenue/order_count if order_count > 0 else None
+        previous_revenue = await self.get_revenue_for_previous_period(date_from, date_to)
+        revenue_change_percent = (revenue/previous_revenue)*100 - 100
+        top_dishes = await self.get_top_dishes(date_from, date_to)
+        monthly_sales = await self.get_monthly_sales(date_from, date_to, period)
+        return {
+            "revenue" : revenue,
+            "order_count" : order_count,
+            "average_check" : average_check,
+            "previous_revenue" : previous_revenue,
+            "revenue_change_percent" : revenue_change_percent,
+            "top_dishes" : top_dishes,
+            "monthly_sales" : monthly_sales
+        }
+
+    async def get_revenue(self, date_from: date | None, date_to: date | None):
+        return await self.order_repository.get_revenue(date_from, date_to)
+
+    async def get_order_count(self, date_from: date | None, date_to: date | None):
+        return await self.order_repository.get_order_count(date_from, date_to)
+
+    async def get_revenue_for_previous_period(self, date_from: date | None, date_to: date | None):
+        return await self.order_repository.get_revenue_for_previous_period(date_from, date_to)
+
+    async def get_top_dishes(self, date_from: date | None, date_to: date | None):
+        return await self.order_repository.get_top_dishes(date_from, date_to)
+
+    async def get_monthly_sales(self, date_from: date | None, date_to: date | None, period: str):
+        return await self.order_repository.get_monthly_sales(date_from, date_to, period)

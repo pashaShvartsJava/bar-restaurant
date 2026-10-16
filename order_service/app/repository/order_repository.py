@@ -4,7 +4,7 @@ from decimal import Decimal
 from typing import List
 from uuid import UUID
 
-from sqlalchemy import select, or_
+from sqlalchemy import select, or_, and_
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
@@ -318,6 +318,125 @@ class OrderRepository:
             if old_order is None:
                 raise ValueError("Исходный заказ не найден")
             await self.db.delete(old_order)
+
+    async def get_revenue(self, date_from: date | None, date_to: date | None):
+        revenue = 0
+        if date_from is None and date_to is None:
+            today = date.today()
+            start_date = today.replace(day=1)
+            if today.month == 12:
+                next_month = today.replace(year=today.year + 1, month=1, day=1)
+            else:
+                next_month = today.replace(month=today.month + 1, day=1)
+            stmt = (select(Order)
+                    .where(Order.created_at>=start_date, Order.created_at < next_month, Order.status==OrderStatus.COMPLETED)
+                    .where(Order.created_at>=start_date, Order.created_at < next_month, Order.table_number.is_not(None), Order.status==OrderStatus.PAID))
+            result = await self.db.execute(stmt)
+            orders = result.scalars().all()
+            for order in orders:
+                revenue += order.sum
+        if date_from is not None and date_to is None:
+            stmt = (select(Order)
+                    .where(Order.created_at >= date_from, Order.status == OrderStatus.COMPLETED)
+                    .where(Order.created_at >= date_from, Order.table_number.is_not(None),
+                           Order.status == OrderStatus.PAID))
+            result = await self.db.execute(stmt)
+            orders = result.scalars().all()
+            for order in orders:
+                revenue += order.sum
+        if date_from is None and date_to is not None:
+            raise ValueError("Enter starting date")
+        if date_from is not None and date_to is not None:
+            stmt = (select(Order)
+                    .where(Order.created_at >= date_from, Order.created_at <= date_to, Order.status == OrderStatus.COMPLETED)
+                    .where(Order.created_at >= date_from, Order.created_at <= date_to, Order.table_number.is_not(None),
+                           Order.status == OrderStatus.PAID))
+            result = await self.db.execute(stmt)
+            orders = result.scalars().all()
+            for order in orders:
+                revenue += order.sum
+        return revenue
+
+    async def get_order_count(self, date_from: date | None, date_to: date | None):
+        if date_from is None and date_to is None:
+            today = date.today()
+            start_date = today.replace(day=1)
+            if date_from is None and date_to is None:
+                today = date.today()
+                start_date = today.replace(day=1)
+                if today.month == 12:
+                    next_month = today.replace(year=today.year + 1, month=1, day=1)
+                else:
+                    next_month = today.replace(month=today.month + 1, day=1)
+            stmt = (select(Order).where(Order.created_at>=start_date, Order.created_at < next_month,
+                           or_(
+                               and_(Order.status==OrderStatus.COMPLETED, Order.table_number.is_(None)),
+                               and_(Order.table_number.is_not(None), Order.status==OrderStatus.PAID))))
+            result = await self.db.execute(stmt)
+            orders : list[Order] = result.scalars().all()
+            return len(orders)
+        if date_from is not None and date_to is None:
+            stmt = (select(Order).where(Order.created_at >= date_from,
+                                        or_(
+                                            and_(Order.status == OrderStatus.COMPLETED, Order.table_number.is_(None)),
+                                            and_(Order.table_number.is_not(None), Order.status == OrderStatus.PAID))))
+            result = await self.db.execute(stmt)
+            orders: list[Order] = result.scalars().all()
+            return len(orders)
+        if date_from is None and date_to is not None:
+            raise ValueError("Enter starting date")
+        if date_from is not None and date_to is not None:
+            stmt = (select(Order).where(Order.created_at >= date_from, Order.created_at <= date_to,
+                                        or_(
+                                            and_(Order.status == OrderStatus.COMPLETED, Order.table_number.is_(None)),
+                                            and_(Order.table_number.is_not(None), Order.status == OrderStatus.PAID))))
+            result = await self.db.execute(stmt)
+            orders: list[Order] = result.scalars().all()
+            return len(orders)
+        return None
+
+    async def get_revenue_for_previous_period(self, date_from: date | None, date_to: date | None):
+        revenue = 0
+        today = date.today()
+        end_date = today.replace(day=1)
+        start_date = (end_date - timedelta(days=1)).replace(day=1)
+        if date_from is None and date_to is None:
+            stmt = (select(Order).where(Order.created_at >= start_date, Order.created_at < end_date,
+                or_(
+                    and_(Order.table_number.is_not(None), Order.status == OrderStatus.PAID),
+                    and_(Order.table_number.is_(None), Order.status == OrderStatus.COMPLETED))))
+            result = await self.db.execute(stmt)
+            orders : list[Order] = result.scalars().all()
+            for order in orders:
+                revenue += order.sum
+            return revenue
+        if date_from is not None and date_to is None:
+            day_dif = (today - date_from).days
+            start_date = date_from - timedelta(days=day_dif)
+            stmt = (select(Order).where(Order.created_at >= start_date,
+                           or_(
+                               and_(Order.table_number.is_not(None), Order.status == OrderStatus.PAID),
+                               and_(Order.table_number.is_(None), Order.status == OrderStatus.COMPLETED))))
+            result = await self.db.execute(stmt)
+            orders : list[Order] = result.scalars().all()
+            for order in orders:
+                revenue += order.sum
+            return revenue
+        if date_from is None and date_to is not None:
+            raise ValueError("Enter starting date")
+        if date_from is not None and date_to is not None:
+            day_dif = (date_to - date_from).days
+            start_date = date_from - timedelta(days=day_dif)
+            stmt = (select(Order).where(Order.created_at >= start_date, Order.created_at < date_to,
+                           or_(
+                               and_(Order.table_number.is_not(None), Order.status == OrderStatus.PAID),
+                               and_(Order.table_number.is_(None), Order.status == OrderStatus.COMPLETED))))
+            result = await self.db.execute(stmt)
+            orders : list[Order] = result.scalars().all()
+            for order in orders:
+                revenue += order.sum
+            return revenue
+        return None
 
 
 

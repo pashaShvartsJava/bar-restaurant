@@ -1,0 +1,919 @@
+```html
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Финансы и аналитика</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            background:
+                radial-gradient(
+                    ellipse at 50% 0%,
+                    rgba(145, 85, 75, .20) 0%,
+                    rgba(55, 35, 40, .22) 38%,
+                    rgba(9, 9, 11, 1) 78%
+                ),
+                linear-gradient(
+                    180deg,
+                    #211a1c 0%,
+                    #121214 50%,
+                    #09090b 100%
+                );
+            color: #fff;
+            font-family: Arial, sans-serif;
+        }
+
+        button, input, select {
+            font: inherit;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1500px;
+            margin: 0 auto;
+            padding: 60px 35px;
+        }
+
+        .top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 45px;
+        }
+
+        .back {
+            color: #77777d;
+            font-size: 11px;
+            text-decoration: none;
+        }
+
+        .back:hover {
+            color: #d5a65b;
+        }
+
+        .brand {
+            color: #d5a65b;
+            font-family: Georgia, serif;
+            font-size: 11px;
+            letter-spacing: 3px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        .header-label {
+            margin-bottom: 10px;
+            color: #d5a65b;
+            font-size: 9px;
+            letter-spacing: 3px;
+        }
+
+        .header h1 {
+            font-family: Georgia, serif;
+            font-size: 42px;
+            font-weight: normal;
+            letter-spacing: 3px;
+        }
+
+        .description {
+            margin-top: 12px;
+            color: #77777d;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .filters {
+            display: flex;
+            align-items: end;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 25px;
+            padding: 18px;
+            background: rgba(27, 25, 27, .96);
+            border: 1px solid rgba(213, 166, 91, .16);
+            border-radius: 12px;
+        }
+
+        .filter-field {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
+
+        .filter-field label {
+            color: #77777d;
+            font-size: 9px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .filter-field input,
+        .filter-field select {
+            min-height: 36px;
+            padding: 8px 10px;
+            background: #2a282a;
+            border: 1px solid rgba(255, 255, 255, .08);
+            border-radius: 6px;
+            color: #fff;
+            font-size: 10px;
+        }
+
+        .filter-button {
+            min-height: 36px;
+            padding: 9px 16px;
+            background: rgba(213, 166, 91, .12);
+            border: 1px solid rgba(213, 166, 91, .35);
+            border-radius: 6px;
+            color: #d5a65b;
+            font-size: 10px;
+            cursor: pointer;
+        }
+
+        .filter-button:hover {
+            background: rgba(213, 166, 91, .22);
+        }
+
+        .section {
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 16px;
+        }
+
+        .section-title h2 {
+            color: #aaa9ae;
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .section-line {
+            flex: 1;
+            height: 1px;
+            background: #29292d;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 14px;
+        }
+
+        .stat-card {
+            min-width: 0;
+            padding: 22px;
+            background: rgba(27, 25, 27, .96);
+            border: 1px solid rgba(213, 166, 91, .16);
+            border-radius: 12px;
+        }
+
+        .stat-label {
+            color: #85838a;
+            font-size: 10px;
+            line-height: 1.5;
+        }
+
+        .stat-value {
+            margin-top: 14px;
+            color: #d5a65b;
+            font-family: Georgia, serif;
+            font-size: 27px;
+            overflow-wrap: anywhere;
+        }
+
+        .stat-comparison {
+            margin-top: 10px;
+            color: #85838a;
+            font-size: 10px;
+            line-height: 1.5;
+        }
+
+        .comparison-positive {
+            color: #9aaa8b;
+        }
+
+        .comparison-negative {
+            color: #d98282;
+        }
+
+        .panel-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 16px;
+        }
+
+        .panel {
+            min-width: 0;
+            padding: 22px;
+            background: rgba(27, 25, 27, .96);
+            border: 1px solid rgba(213, 166, 91, .16);
+            border-radius: 12px;
+        }
+
+        .panel-title {
+            margin-bottom: 8px;
+            color: #fff;
+            font-family: Georgia, serif;
+            font-size: 18px;
+            font-weight: normal;
+        }
+
+        .panel-description {
+            margin-bottom: 22px;
+            color: #77777d;
+            font-size: 10px;
+            line-height: 1.6;
+        }
+
+        .chart-container {
+            position: relative;
+            width: 100%;
+            height: 290px;
+        }
+
+        .empty {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 180px;
+            padding: 25px;
+            background: rgba(42, 40, 42, .35);
+            border: 1px dashed rgba(255, 255, 255, .10);
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .empty-title {
+            color: #aaa9ae;
+            font-family: Georgia, serif;
+            font-size: 16px;
+        }
+
+        .empty-description {
+            margin-top: 9px;
+            color: #77777d;
+            font-size: 10px;
+            line-height: 1.7;
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+            background: rgba(27, 25, 27, .96);
+            border: 1px solid rgba(213, 166, 91, .16);
+            border-radius: 12px;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        .data-table th {
+            padding: 16px 20px;
+            background: rgba(40, 34, 32, .98);
+            border-bottom: 1px solid rgba(255, 255, 255, .07);
+            color: #77777d;
+            font-size: 9px;
+            font-weight: normal;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        .data-table td {
+            padding: 16px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, .055);
+            color: #aaa9ae;
+            font-size: 11px;
+        }
+
+        .data-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .data-table tbody tr:hover {
+            background: rgba(255, 255, 255, .025);
+        }
+
+        .table-number {
+            color: #d5a65b !important;
+            font-weight: 600;
+        }
+
+        .footer {
+            padding-top: 30px;
+            color: #4f4f54;
+            font-size: 9px;
+            letter-spacing: 1px;
+            text-align: center;
+        }
+
+        @media (max-width: 1000px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .panel-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 35px 16px;
+            }
+
+            .top {
+                margin-bottom: 35px;
+            }
+
+            .header h1 {
+                font-size: 29px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stat-card {
+                padding: 18px;
+            }
+
+            .stat-value {
+                font-size: 24px;
+            }
+
+            .filters {
+                align-items: stretch;
+                flex-direction: column;
+            }
+
+            .filter-field,
+            .filter-field input,
+            .filter-field select,
+            .filter-button {
+                width: 100%;
+            }
+
+            .panel {
+                padding: 16px;
+            }
+
+            .chart-container {
+                height: 240px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <main class="container">
+
+        <div class="top">
+            <a href="/admin_panel" class="back">← Назад в панель</a>
+            <div class="brand">RESTAURANT MANAGEMENT</div>
+        </div>
+
+        <header class="header">
+            <div class="header-label">ФИНАНСОВЫЙ ОБЗОР</div>
+            <h1>Финансы и аналитика</h1>
+            <p class="description">
+                Выручка, динамика продаж, популярные блюда и статистика заказов
+            </p>
+        </header>
+
+        <form class="filters" method="get" action="/analytics">
+            <div class="filter-field">
+                <label for="date_from">Дата начала</label>
+                <input
+                    type="date"
+                    id="date_from"
+                    name="date_from"
+                    value="{{ date_from or '' }}"
+                >
+            </div>
+
+            <div class="filter-field">
+                <label for="date_to">Дата окончания</label>
+                <input
+                    type="date"
+                    id="date_to"
+                    name="date_to"
+                    value="{{ date_to or '' }}"
+                >
+            </div>
+
+            <div class="filter-field">
+                <label for="period">Период графика</label>
+                <select id="period" name="period">
+                    <option value="month"
+                        {% if period == 'month' %}selected{% endif %}>
+                        По месяцам
+                    </option>
+                    <option value="day"
+                        {% if period == 'day' %}selected{% endif %}>
+                        По дням
+                    </option>
+                </select>
+            </div>
+
+            <button type="submit" class="filter-button">
+                Применить фильтры
+            </button>
+        </form>
+
+        <section class="section">
+            <div class="section-title">
+                <h2>Основные показатели</h2>
+                <div class="section-line"></div>
+            </div>
+
+            <div class="stats-grid">
+
+                <article class="stat-card">
+                    <div class="stat-label">Выручка за выбранный период</div>
+
+                    <div class="stat-value">
+                        {% if analytics and analytics.revenue is not none %}
+                            {{ "%.2f"|format(analytics.revenue) }} ₽
+                        {% else %}
+                            —
+                        {% endif %}
+                    </div>
+
+                    {% if analytics and analytics.revenue is not none %}
+                        <div class="stat-comparison">
+                            Общая сумма оплаченных заказов
+                        </div>
+                    {% else %}
+                        <div class="stat-comparison">
+                            Данных о выручке пока нет
+                        </div>
+                    {% endif %}
+                </article>
+
+                <article class="stat-card">
+                    <div class="stat-label">Количество заказов</div>
+
+                    <div class="stat-value">
+                        {% if analytics and analytics.order_count is not none %}
+                            {{ analytics.order_count }}
+                        {% else %}
+                            —
+                        {% endif %}
+                    </div>
+
+                    <div class="stat-comparison">
+                        {% if analytics and analytics.order_count is not none %}
+                            За выбранный период
+                        {% else %}
+                            Данных о заказах пока нет
+                        {% endif %}
+                    </div>
+                </article>
+
+                <article class="stat-card">
+                    <div class="stat-label">Средний чек</div>
+
+                    <div class="stat-value">
+                        {% if analytics and analytics.average_check is not none %}
+                            {{ "%.2f"|format(analytics.average_check) }} ₽
+                        {% else %}
+                            —
+                        {% endif %}
+                    </div>
+
+                    <div class="stat-comparison">
+                        {% if analytics and analytics.average_check is not none %}
+                            Выручка, делённая на количество заказов
+                        {% else %}
+                            Пока недостаточно данных
+                        {% endif %}
+                    </div>
+                </article>
+
+                <article class="stat-card">
+                    <div class="stat-label">Выручка за предыдущий период</div>
+
+                    <div class="stat-value">
+                        {% if analytics and analytics.previous_revenue is not none %}
+                            {{ "%.2f"|format(analytics.previous_revenue) }} ₽
+                        {% else %}
+                            —
+                        {% endif %}
+                    </div>
+
+                    <div class="stat-comparison">
+                        {% if analytics and analytics.revenue_change_percent is not none %}
+                            {% if analytics.revenue_change_percent > 0 %}
+                                <span class="comparison-positive">
+                                    +{{ "%.1f"|format(analytics.revenue_change_percent) }}%
+                                </span>
+                                к предыдущему периоду
+                            {% elif analytics.revenue_change_percent < 0 %}
+                                <span class="comparison-negative">
+                                    {{ "%.1f"|format(analytics.revenue_change_percent) }}%
+                                </span>
+                                к предыдущему периоду
+                            {% else %}
+                                Без изменений к предыдущему периоду
+                            {% endif %}
+                        {% else %}
+                            Нет данных для сравнения
+                        {% endif %}
+                    </div>
+                </article>
+
+            </div>
+        </section>
+
+        <section class="section">
+            <div class="section-title">
+                <h2>Динамика выручки</h2>
+                <div class="section-line"></div>
+            </div>
+
+            <div class="panel-grid">
+
+                <article class="panel">
+                    <h3 class="panel-title">Выручка по периодам</h3>
+                    <p class="panel-description">
+                        Сравнение сумм оплаченных заказов
+                    </p>
+
+                    {% if monthly_sales %}
+                        <div class="chart-container">
+                            <canvas id="revenueChart"></canvas>
+                        </div>
+                    {% else %}
+                        <div class="empty">
+                            <div>
+                                <div class="empty-title">Данных пока нет</div>
+                                <p class="empty-description">
+                                    График появится, когда в системе появятся
+                                    оплаченные заказы.
+                                </p>
+                            </div>
+                        </div>
+                    {% endif %}
+                </article>
+
+                <article class="panel">
+                    <h3 class="panel-title">Количество заказов</h3>
+                    <p class="panel-description">
+                        Динамика заказов за выбранный период
+                    </p>
+
+                    {% if monthly_sales %}
+                        <div class="chart-container">
+                            <canvas id="ordersChart"></canvas>
+                        </div>
+                    {% else %}
+                        <div class="empty">
+                            <div>
+                                <div class="empty-title">Данных пока нет</div>
+                                <p class="empty-description">
+                                    Здесь появится график количества заказов,
+                                    когда появятся данные.
+                                </p>
+                            </div>
+                        </div>
+                    {% endif %}
+                </article>
+
+            </div>
+        </section>
+
+        <section class="section">
+            <div class="section-title">
+                <h2>Продажи блюд</h2>
+                <div class="section-line"></div>
+            </div>
+
+            <div class="panel-grid">
+
+                <article class="panel">
+                    <h3 class="panel-title">Популярные блюда</h3>
+                    <p class="panel-description">
+                        Блюда с наибольшим количеством проданных порций
+                    </p>
+
+                    {% if top_dishes %}
+                        <div class="chart-container">
+                            <canvas id="dishesChart"></canvas>
+                        </div>
+                    {% else %}
+                        <div class="empty">
+                            <div>
+                                <div class="empty-title">Данных пока нет</div>
+                                <p class="empty-description">
+                                    Популярные блюда появятся после первых продаж.
+                                </p>
+                            </div>
+                        </div>
+                    {% endif %}
+                </article>
+
+                <article class="panel">
+                    <h3 class="panel-title">Продажи по категориям</h3>
+                    <p class="panel-description">
+                        Распределение выручки по категориям меню
+                    </p>
+
+                    {% if category_sales %}
+                        <div class="chart-container">
+                            <canvas id="categoriesChart"></canvas>
+                        </div>
+                    {% else %}
+                        <div class="empty">
+                            <div>
+                                <div class="empty-title">Данных пока нет</div>
+                                <p class="empty-description">
+                                    Распределение продаж появится, когда блюда
+                                    будут связаны с категориями меню.
+                                </p>
+                            </div>
+                        </div>
+                    {% endif %}
+                </article>
+
+            </div>
+        </section>
+
+        <section class="section">
+            <div class="section-title">
+                <h2>Подробная статистика блюд</h2>
+                <div class="section-line"></div>
+            </div>
+
+            {% if top_dishes %}
+                <div class="table-wrap">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Блюдо</th>
+                                <th>Продано порций</th>
+                                <th>Выручка</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            {% for dish in top_dishes %}
+                                <tr>
+                                    <td>{{ dish.name }}</td>
+                                    <td class="table-number">
+                                        {{ dish.quantity }}
+                                    </td>
+                                    <td class="table-number">
+                                        {{ "%.2f"|format(dish.revenue) }} ₽
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="empty">
+                    <div>
+                        <div class="empty-title">Статистика пока отсутствует</div>
+                        <p class="empty-description">
+                            Когда появятся продажи блюд, здесь отобразятся
+                            количество проданных порций и выручка по каждому блюду.
+                        </p>
+                    </div>
+                </div>
+            {% endif %}
+        </section>
+
+        <footer class="footer">
+            ФИНАНСЫ И АНАЛИТИКА · RESTAURANT MANAGEMENT
+        </footer>
+
+    </main>
+
+    <script>
+        const chartColors = {
+            gold: "#d5a65b",
+            purple: "#a78bfa",
+            text: "#aaa9ae",
+            grid: "rgba(255, 255, 255, 0.07)"
+        };
+
+        Chart.defaults.color = chartColors.text;
+        Chart.defaults.font.family = "Arial";
+
+        const monthlySales = {{ monthly_sales | default([], true) | tojson }};
+        const topDishes = {{ top_dishes | default([], true) | tojson }};
+        const categorySales = {{ category_sales | default([], true) | tojson }};
+
+        function createRevenueChart() {
+            const canvas = document.getElementById("revenueChart");
+
+            if (!canvas || monthlySales.length === 0) {
+                return;
+            }
+
+            new Chart(canvas, {
+                type: "line",
+                data: {
+                    labels: monthlySales.map(item => item.label),
+                    datasets: [{
+                        label: "Выручка",
+                        data: monthlySales.map(item => item.revenue),
+                        borderColor: chartColors.gold,
+                        backgroundColor: "rgba(213, 166, 91, 0.12)",
+                        borderWidth: 2,
+                        pointRadius: 4,
+                        pointBackgroundColor: chartColors.gold,
+                        fill: true,
+                        tension: 0.3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                color: chartColors.grid
+                            }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: chartColors.grid
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function createOrdersChart() {
+            const canvas = document.getElementById("ordersChart");
+
+            if (!canvas || monthlySales.length === 0) {
+                return;
+            }
+
+            new Chart(canvas, {
+                type: "bar",
+                data: {
+                    labels: monthlySales.map(item => item.label),
+                    datasets: [{
+                        label: "Заказы",
+                        data: monthlySales.map(item => item.order_count),
+                        backgroundColor: "rgba(167, 139, 250, 0.65)",
+                        borderColor: chartColors.purple,
+                        borderWidth: 1,
+                        borderRadius: 5
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                precision: 0
+                            },
+                            grid: {
+                                color: chartColors.grid
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function createDishesChart() {
+            const canvas = document.getElementById("dishesChart");
+
+            if (!canvas || topDishes.length === 0) {
+                return;
+            }
+
+            new Chart(canvas, {
+                type: "bar",
+                data: {
+                    labels: topDishes.map(item => item.name),
+                    datasets: [{
+                        label: "Продано порций",
+                        data: topDishes.map(item => item.quantity),
+                        backgroundColor: "rgba(213, 166, 91, 0.65)",
+                        borderColor: chartColors.gold,
+                        borderWidth: 1,
+                        borderRadius: 5
+                    }]
+                },
+                options: {
+                    indexAxis: "y",
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            grid: {
+                                color: chartColors.grid
+                            }
+                        },
+                        y: {
+                            grid: {
+                                display: false
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function createCategoriesChart() {
+            const canvas = document.getElementById("categoriesChart");
+
+            if (!canvas || categorySales.length === 0) {
+                return;
+            }
+
+            new Chart(canvas, {
+                type: "doughnut",
+                data: {
+                    labels: categorySales.map(item => item.name),
+                    datasets: [{
+                        data: categorySales.map(item => item.revenue),
+                        backgroundColor: [
+                            "#d5a65b",
+                            "#a78bfa",
+                            "#8db9a9",
+                            "#8db4d3",
+                            "#d98282",
+                            "#b59bc9",
+                            "#9aaa8b"
+                        ],
+                        borderColor: "#1b191b",
+                        borderWidth: 3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: "bottom",
+                            labels: {
+                                padding: 18
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        createRevenueChart();
+        createOrdersChart();
+        createDishesChart();
+        createCategoriesChart();
+    </script>
+</body>
+</html>
+```

@@ -5,6 +5,7 @@ from fastapi import FastAPI
 
 from .broker.consumer import OrderPaidConsumer
 from .routes.routes import router as order_router
+from .routes.analytics_routes import router as analytics_router
 from .async_processes.async_processes import expire_order_loop, outbox_publisher
 from .database.database import SessionLocal
 from .broker.instance import rabbitmq
@@ -38,3 +39,4 @@ async def lifespan(app: FastAPI):
         await rabbitmq.close()
 app = FastAPI(lifespan=lifespan)
 app.include_router(order_router)
+app.include_router(analytics_router)
