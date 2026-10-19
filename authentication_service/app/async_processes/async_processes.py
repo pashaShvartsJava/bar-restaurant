@@ -1,5 +1,7 @@
 import asyncio
 
+import httpx
+
 from ..database.database import SessionLocal
 from ..repositories.authentication_repository import AuthenticationRepository
 from ..broker.producer import publish_email_verification, publish_change_password_verification, publish_reset_password

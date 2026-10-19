@@ -23,8 +23,8 @@ class AdminService:
     async def fins_by_name(self, admin_name : str):
         return await self.admin_repository.get_by_name(admin_name)
 
-    async def create_new_admin(self, adminDTO : AdminRegistrationDTO) -> AdminRegistrationDTO:
-        return await self.admin_repository.create_admin(adminDTO)
+    async def create_new_admin(self, adminDTO : AdminRegistrationDTO, restaurant_id : UUID) -> AdminRegistrationDTO:
+        return await self.admin_repository.create_admin(adminDTO, restaurant_id)
 
     async def update_admin(self, updated_admin_id : int, updated_admin : AdminUpdateDTO) -> AdminUpdateDTO:
         return await self.admin_repository.update_admin(updated_admin_id, updated_admin)

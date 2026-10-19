@@ -52,6 +52,9 @@ class AuthenticationService:
     def __init__(self, authentication_repository : AuthenticationRepository):
         self.authentication_repository = authentication_repository
 
+    async def create_owner_key(self, restaurant_id):
+        return await self.authentication_repository.create_owner_key(restaurant_id)
+
     async def get_all_identities(self):
         return await self.authentication_repository.get_all_identities()
 

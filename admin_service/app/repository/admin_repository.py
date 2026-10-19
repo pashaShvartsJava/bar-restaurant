@@ -32,13 +32,14 @@ class AdminRepository:
             select(Admin).where(or_(Admin.name == admin_name,Admin.surname == admin_name)))
         return result.scalar_one_or_none()
 
-    async def create_admin(self, admin: AdminRegistrationDTO):
+    async def create_admin(self, admin: AdminRegistrationDTO, restaurant_id : UUID):
         new_admin = Admin(identity_id=admin.identity_id,
                           name = admin.name,
                           surname = admin.surname,
                           birthday=admin.birthday,
                           phone = admin.phone,
-                          email = admin.email)
+                          email = admin.email,
+                          restaurant_id=restaurant_id)
         self.db.add(new_admin)
         await self.db.commit()
         await self.db.refresh(new_admin)

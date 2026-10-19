@@ -1,0 +1,1743 @@
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Restaurant Platform — Для владельцев ресторанов</title>
+
+    <style>
+        :root {
+            --bg: #100e11;
+            --bg-soft: #191418;
+            --panel: rgba(25, 21, 25, 0.94);
+            --panel-light: rgba(39, 29, 32, 0.92);
+            --text: #eee5df;
+            --muted: #93898d;
+            --muted-dark: #6f666c;
+            --gold: #d5a65b;
+            --gold-light: #e8c58e;
+            --rose: #b76b66;
+            --border: rgba(255, 255, 255, 0.08);
+            --gold-border: rgba(213, 166, 91, 0.38);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            scroll-padding-top: 100px;
+        }
+
+        body {
+            min-height: 100vh;
+            overflow-x: hidden;
+            background:
+                radial-gradient(
+                    ellipse at 50% -8%,
+                    rgba(157, 69, 76, 0.32) 0%,
+                    rgba(89, 39, 49, 0.26) 28%,
+                    rgba(35, 24, 30, 0.72) 54%,
+                    rgba(15, 14, 17, 0.98) 82%
+                ),
+                linear-gradient(
+                    180deg,
+                    #301b22 0%,
+                    #1d171c 34%,
+                    #121114 70%,
+                    #0c0c0e 100%
+                );
+            background-attachment: fixed;
+            color: var(--text);
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            background:
+                radial-gradient(
+                    circle at 12% 20%,
+                    rgba(183, 91, 78, 0.055),
+                    transparent 30%
+                ),
+                radial-gradient(
+                    circle at 88% 34%,
+                    rgba(213, 166, 91, 0.035),
+                    transparent 28%
+                );
+        }
+
+        a {
+            color: inherit;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        button {
+            font: inherit;
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 1120px;
+            margin: 0 auto;
+            padding: 0 30px;
+        }
+
+        /* Navigation */
+
+        .nav-wrap {
+            position: fixed;
+            top: 15px;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            padding: 0 18px;
+        }
+
+        .navbar {
+            max-width: 1060px;
+            min-height: 62px;
+            margin: 0 auto;
+            padding: 8px 10px 8px 19px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.09);
+            border-radius: 15px;
+            background: rgba(17, 15, 18, 0.93);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.38);
+            backdrop-filter: blur(18px);
+        }
+
+        .brand {
+            flex-shrink: 0;
+            font-family: Georgia, serif;
+            font-size: 18px;
+            letter-spacing: 2px;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
+        .brand span {
+            color: var(--gold);
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 25px;
+        }
+
+        .nav-links a {
+            color: #aaa0a2;
+            font-size: 11px;
+            text-decoration: none;
+            transition: color 0.2s;
+            white-space: nowrap;
+        }
+
+        .nav-links a:hover {
+            color: var(--gold-light);
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-button {
+            min-height: 38px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 15px;
+            border: 1px solid var(--border);
+            border-radius: 9px;
+            background: rgba(255, 255, 255, 0.035);
+            color: #d9ceca;
+            font-size: 10px;
+            font-weight: 600;
+            text-decoration: none;
+            white-space: nowrap;
+            transition: 0.2s ease;
+        }
+
+        .nav-button:hover {
+            border-color: var(--gold-border);
+            color: var(--gold-light);
+            transform: translateY(-1px);
+        }
+
+        .nav-button.primary {
+            border-color: rgba(213, 166, 91, 0.48);
+            background: linear-gradient(
+                135deg,
+                rgba(133, 83, 53, 0.36),
+                rgba(79, 44, 43, 0.48)
+            );
+            color: var(--gold-light);
+        }
+
+        .nav-button.primary:hover {
+            background: rgba(151, 99, 57, 0.35);
+            border-color: var(--gold);
+        }
+
+        /* Shared elements */
+
+        .eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 9px;
+            padding: 8px 12px;
+            border: 1px solid rgba(213, 166, 91, 0.2);
+            border-radius: 30px;
+            background: rgba(213, 166, 91, 0.055);
+            color: #c5a77c;
+            font-size: 9px;
+            font-weight: 600;
+            letter-spacing: 1.8px;
+            text-transform: uppercase;
+        }
+
+        .eyebrow-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--gold);
+            box-shadow: 0 0 12px rgba(213, 166, 91, 0.6);
+        }
+
+        .section {
+            margin-bottom: 105px;
+            scroll-margin-top: 105px;
+        }
+
+        .section-heading {
+            max-width: 660px;
+            margin: 0 auto 42px;
+            text-align: center;
+        }
+
+        .section-heading h2 {
+            margin-top: 17px;
+            font-family: Georgia, serif;
+            font-size: clamp(27px, 4vw, 39px);
+            font-weight: normal;
+            line-height: 1.25;
+            color: #eee3dc;
+        }
+
+        .section-heading p {
+            max-width: 530px;
+            margin: 15px auto 0;
+            color: var(--muted);
+            font-size: 12px;
+            line-height: 1.9;
+        }
+
+        .gold {
+            color: var(--gold-light);
+        }
+
+        .section-label {
+            display: flex;
+            align-items: center;
+            gap: 13px;
+            margin-bottom: 22px;
+        }
+
+        .section-label h3 {
+            color: #b6aaab;
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        .section-label span {
+            height: 1px;
+            flex: 1;
+            background: rgba(255, 255, 255, 0.09);
+        }
+
+        /* Hero */
+
+        .hero {
+            min-height: 690px;
+            display: flex;
+            align-items: center;
+            padding: 150px 0 85px;
+        }
+
+        .hero-grid {
+            display: grid;
+            grid-template-columns: 1.05fr 0.95fr;
+            align-items: center;
+            gap: 55px;
+        }
+
+        .hero-copy {
+            max-width: 550px;
+        }
+
+        .hero h1 {
+            margin-top: 25px;
+            font-family: Georgia, serif;
+            font-size: clamp(42px, 5.6vw, 66px);
+            font-weight: normal;
+            letter-spacing: -1.7px;
+            line-height: 1.12;
+            color: #f0e5de;
+            text-shadow: 0 8px 35px rgba(0, 0, 0, 0.3);
+        }
+
+        .hero h1 span {
+            color: var(--gold-light);
+        }
+
+        .hero-description {
+            max-width: 455px;
+            margin-top: 22px;
+            color: #aaa0a2;
+            font-size: 13px;
+            line-height: 1.95;
+        }
+
+        .hero-actions {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 32px;
+        }
+
+        .action-button {
+            min-height: 48px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 0 21px;
+            border: 1px solid rgba(213, 166, 91, 0.45);
+            border-radius: 10px;
+            background: linear-gradient(
+                135deg,
+                rgba(111, 67, 49, 0.5),
+                rgba(66, 38, 42, 0.8)
+            );
+            color: var(--gold-light);
+            font-size: 11px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: transform 0.22s, background 0.22s, border-color 0.22s;
+        }
+
+        .action-button:hover {
+            transform: translateY(-3px);
+            border-color: var(--gold);
+            background: linear-gradient(
+                135deg,
+                rgba(142, 88, 55, 0.56),
+                rgba(83, 45, 46, 0.9)
+            );
+        }
+
+        .action-button.secondary {
+            border-color: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.035);
+            color: #d6ccca;
+        }
+
+        .action-button.secondary:hover {
+            border-color: rgba(255, 255, 255, 0.23);
+            background: rgba(255, 255, 255, 0.065);
+        }
+
+        .action-arrow {
+            font-size: 16px;
+            transition: transform 0.2s;
+        }
+
+        .action-button:hover .action-arrow {
+            transform: translateX(3px);
+        }
+
+        .hero-note {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 24px;
+            color: #7f7479;
+            font-size: 10px;
+        }
+
+        .hero-note span {
+            color: var(--gold);
+            font-size: 14px;
+        }
+
+        /* Dashboard preview: based on the real admin panel style */
+
+        .dashboard-preview {
+            position: relative;
+            padding: 17px;
+            border: 1px solid rgba(213, 166, 91, 0.25);
+            border-radius: 19px;
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(41, 29, 33, 0.98),
+                    rgba(16, 15, 18, 0.99)
+                );
+            box-shadow:
+                0 35px 90px rgba(0, 0, 0, 0.4),
+                inset 0 1px rgba(255, 255, 255, 0.04);
+            transform: perspective(1200px) rotateY(-3deg) rotateX(1deg);
+            transition: transform 0.35s ease, border-color 0.35s ease;
+        }
+
+        .dashboard-preview:hover {
+            transform: perspective(1200px) rotateY(0) rotateX(0) translateY(-4px);
+            border-color: rgba(213, 166, 91, 0.4);
+        }
+
+        .preview-topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            padding: 3px 2px 17px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.075);
+        }
+
+        .preview-brand {
+            font-family: Georgia, serif;
+            font-size: 14px;
+            letter-spacing: 1.5px;
+            color: #f0e4dc;
+        }
+
+        .preview-brand span {
+            color: var(--gold);
+        }
+
+        .preview-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 9px;
+            border: 1px solid rgba(213, 166, 91, 0.19);
+            border-radius: 20px;
+            background: rgba(213, 166, 91, 0.06);
+            color: #cbb18a;
+            font-size: 8px;
+            white-space: nowrap;
+        }
+
+        .preview-status::before {
+            content: "";
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: #b9a06f;
+        }
+
+        .preview-heading {
+            padding: 20px 2px 18px;
+        }
+
+        .preview-heading h3 {
+            font-family: Georgia, serif;
+            font-size: 22px;
+            font-weight: normal;
+            color: #f0e4dc;
+        }
+
+        .preview-heading p {
+            margin-top: 4px;
+            color: #80767b;
+            font-size: 10px;
+        }
+
+        .preview-section-title {
+            margin: 0 0 10px 2px;
+            color: #9b9094;
+            font-size: 8px;
+            letter-spacing: 1.8px;
+            text-transform: uppercase;
+        }
+
+        .preview-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 9px;
+        }
+
+        .preview-card {
+            min-height: 104px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 5px;
+            border: 1px solid rgba(213, 166, 91, 0.22);
+            border-radius: 10px;
+            background: linear-gradient(
+                145deg,
+                rgba(32, 26, 28, 0.97),
+                rgba(20, 18, 21, 0.97)
+            );
+            text-align: center;
+            transition: border-color 0.2s, transform 0.2s, background 0.2s;
+        }
+
+        .preview-card:hover {
+            transform: translateY(-2px);
+            border-color: rgba(213, 166, 91, 0.55);
+            background: rgba(47, 34, 34, 0.95);
+        }
+
+        .preview-icon {
+            width: 34px;
+            height: 34px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 9px;
+            border: 1px solid rgba(213, 166, 91, 0.25);
+            border-radius: 9px;
+            background: rgba(213, 166, 91, 0.09);
+            font-size: 16px;
+        }
+
+        .preview-card h4 {
+            color: #e7deda;
+            font-size: 9px;
+            font-weight: 600;
+        }
+
+        .preview-card p {
+            margin-top: 3px;
+            color: #776e73;
+            font-size: 8px;
+        }
+
+        .preview-bottom {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 9px;
+            margin-top: 9px;
+        }
+
+        .preview-mini {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.025);
+        }
+
+        .preview-mini-icon {
+            font-size: 17px;
+        }
+
+        .preview-mini strong {
+            display: block;
+            color: #e5dad6;
+            font-size: 9px;
+        }
+
+        .preview-mini span {
+            display: block;
+            margin-top: 3px;
+            color: #766d72;
+            font-size: 8px;
+        }
+
+        .preview-caption {
+            margin-top: 15px;
+            color: #766c71;
+            font-size: 9px;
+            text-align: center;
+        }
+
+        /* Benefits strip */
+
+        .benefits-strip {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            margin-top: 10px;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .benefit-item {
+            padding: 25px 18px;
+            text-align: center;
+        }
+
+        .benefit-item + .benefit-item {
+            border-left: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .benefit-item strong {
+            display: block;
+            color: #e5d7cf;
+            font-family: Georgia, serif;
+            font-size: 19px;
+            font-weight: normal;
+        }
+
+        .benefit-item p {
+            margin-top: 5px;
+            color: #82787d;
+            font-size: 10px;
+        }
+
+        /* Platform capabilities */
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 14px;
+        }
+
+        .feature-card {
+            position: relative;
+            min-height: 215px;
+            padding: 25px 22px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.075);
+            border-radius: 14px;
+            background: linear-gradient(
+                145deg,
+                rgba(32, 26, 29, 0.91),
+                rgba(17, 16, 19, 0.96)
+            );
+            transition: transform 0.25s, border-color 0.25s, background 0.25s;
+        }
+
+        .feature-card::after {
+            content: "";
+            position: absolute;
+            top: -60px;
+            right: -60px;
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            background: rgba(213, 166, 91, 0.045);
+            filter: blur(20px);
+            pointer-events: none;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(213, 166, 91, 0.32);
+            background: linear-gradient(
+                145deg,
+                rgba(43, 31, 34, 0.96),
+                rgba(21, 18, 21, 0.98)
+            );
+        }
+
+        .feature-icon {
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 19px;
+            border: 1px solid rgba(213, 166, 91, 0.27);
+            border-radius: 11px;
+            background: rgba(213, 166, 91, 0.085);
+            font-size: 20px;
+        }
+
+        .feature-card h3 {
+            color: #e8ded9;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .feature-card p {
+            margin-top: 10px;
+            color: #8c8186;
+            font-size: 11px;
+            line-height: 1.8;
+        }
+
+        /* How it works */
+
+        .steps {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 13px;
+        }
+
+        .step {
+            position: relative;
+            padding: 25px 19px;
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            border-radius: 13px;
+            background: rgba(22, 19, 22, 0.84);
+            transition: transform 0.2s, border-color 0.2s;
+        }
+
+        .step:hover {
+            transform: translateY(-4px);
+            border-color: rgba(213, 166, 91, 0.3);
+        }
+
+        .step-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 34px;
+            height: 34px;
+            border: 1px solid rgba(213, 166, 91, 0.3);
+            border-radius: 9px;
+            background: rgba(213, 166, 91, 0.08);
+            color: var(--gold-light);
+            font-family: Georgia, serif;
+            font-size: 15px;
+        }
+
+        .step h3 {
+            margin-top: 19px;
+            color: #e8deda;
+            font-size: 12px;
+        }
+
+        .step p {
+            margin-top: 8px;
+            color: #847a7f;
+            font-size: 10px;
+            line-height: 1.8;
+        }
+
+        /* Advantages */
+
+        .advantages-layout {
+            display: grid;
+            grid-template-columns: 0.85fr 1.15fr;
+            gap: 35px;
+            align-items: start;
+        }
+
+        .advantages-intro {
+            padding: 28px;
+            border: 1px solid rgba(213, 166, 91, 0.2);
+            border-radius: 15px;
+            background: linear-gradient(
+                145deg,
+                rgba(51, 33, 37, 0.82),
+                rgba(20, 17, 21, 0.95)
+            );
+        }
+
+        .advantages-intro h3 {
+            font-family: Georgia, serif;
+            font-size: 27px;
+            font-weight: normal;
+            line-height: 1.35;
+        }
+
+        .advantages-intro p {
+            margin-top: 14px;
+            color: #9a8d91;
+            font-size: 11px;
+            line-height: 1.9;
+        }
+
+        .advantages-list {
+            display: grid;
+            gap: 11px;
+        }
+
+        .advantage-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            padding: 18px;
+            border: 1px solid rgba(255, 255, 255, 0.065);
+            border-radius: 12px;
+            background: rgba(22, 19, 22, 0.8);
+            transition: border-color 0.2s, transform 0.2s;
+        }
+
+        .advantage-row:hover {
+            transform: translateX(3px);
+            border-color: rgba(213, 166, 91, 0.27);
+        }
+
+        .check-icon {
+            flex-shrink: 0;
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(213, 166, 91, 0.25);
+            border-radius: 8px;
+            background: rgba(213, 166, 91, 0.08);
+            color: var(--gold-light);
+            font-size: 12px;
+        }
+
+        .advantage-row h4 {
+            color: #e5dad6;
+            font-size: 12px;
+        }
+
+        .advantage-row p {
+            margin-top: 5px;
+            color: #857b80;
+            font-size: 10px;
+            line-height: 1.7;
+        }
+
+        /* CTA */
+
+        .cta {
+            position: relative;
+            padding: 55px 35px;
+            overflow: hidden;
+            border: 1px solid rgba(213, 166, 91, 0.28);
+            border-radius: 18px;
+            background:
+                radial-gradient(
+                    ellipse at 50% 0%,
+                    rgba(143, 75, 70, 0.22),
+                    transparent 68%
+                ),
+                linear-gradient(
+                    145deg,
+                    rgba(43, 29, 33, 0.96),
+                    rgba(18, 16, 19, 0.98)
+                );
+            box-shadow: 0 25px 70px rgba(0, 0, 0, 0.23);
+            text-align: center;
+        }
+
+        .cta h2 {
+            max-width: 650px;
+            margin: 0 auto;
+            font-family: Georgia, serif;
+            font-size: clamp(28px, 4vw, 40px);
+            font-weight: normal;
+            line-height: 1.3;
+        }
+
+        .cta p {
+            max-width: 480px;
+            margin: 15px auto 0;
+            color: #9c9094;
+            font-size: 12px;
+            line-height: 1.9;
+        }
+
+        .cta .hero-actions {
+            justify-content: center;
+            margin-top: 27px;
+        }
+
+        /* Footer */
+
+        .footer {
+            padding: 35px 0 28px;
+            border-top: 1px solid rgba(255, 255, 255, 0.07);
+        }
+
+        .footer-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        .footer-brand {
+            font-family: Georgia, serif;
+            font-size: 13px;
+            letter-spacing: 1.5px;
+            color: #bfb0aa;
+        }
+
+        .footer-brand span {
+            color: var(--gold);
+        }
+
+        .footer p {
+            color: #655d62;
+            font-size: 9px;
+        }
+
+        .footer-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 18px;
+        }
+
+        .footer-links a {
+            color: #81767c;
+            font-size: 10px;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .footer-links a:hover {
+            color: var(--gold-light);
+        }
+
+        /* Smooth reveal */
+
+        .reveal {
+            opacity: 0;
+            transform: translateY(20px);
+            transition:
+                opacity 0.65s ease,
+                transform 0.65s ease;
+        }
+
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Responsive */
+
+        @media (max-width: 950px) {
+            .nav-links {
+                gap: 13px;
+            }
+
+            .nav-links a {
+                font-size: 10px;
+            }
+
+            .hero-grid {
+                gap: 30px;
+            }
+
+            .dashboard-preview {
+                transform: none;
+            }
+
+            .features-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .steps {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 760px) {
+            html {
+                scroll-padding-top: 85px;
+            }
+
+            .nav-wrap {
+                top: 10px;
+                padding: 0 10px;
+            }
+
+            .navbar {
+                min-height: 55px;
+                padding: 7px 9px 7px 13px;
+                gap: 10px;
+            }
+
+            .brand {
+                font-size: 15px;
+                letter-spacing: 1px;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .nav-actions {
+                margin-left: auto;
+            }
+
+            .nav-button {
+                min-height: 35px;
+                padding: 0 10px;
+                font-size: 9px;
+            }
+
+            .container {
+                padding-right: 22px;
+                padding-left: 22px;
+            }
+
+            .hero {
+                min-height: auto;
+                padding: 125px 0 60px;
+            }
+
+            .hero-grid {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+
+            .hero-copy {
+                max-width: 600px;
+                margin: 0 auto;
+                text-align: center;
+            }
+
+            .hero-description {
+                margin-right: auto;
+                margin-left: auto;
+            }
+
+            .hero-actions {
+                justify-content: center;
+            }
+
+            .hero-note {
+                justify-content: center;
+            }
+
+            .dashboard-preview {
+                width: 100%;
+                max-width: 510px;
+                margin: 0 auto;
+            }
+
+            .section {
+                margin-bottom: 75px;
+            }
+
+            .advantages-layout {
+                grid-template-columns: 1fr;
+                gap: 18px;
+            }
+
+            .benefit-item {
+                padding: 22px 10px;
+            }
+        }
+
+        @media (max-width: 520px) {
+            .container {
+                padding-right: 17px;
+                padding-left: 17px;
+            }
+
+            .hero h1 {
+                font-size: 42px;
+            }
+
+            .hero-description {
+                font-size: 12px;
+            }
+
+            .hero-actions {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .action-button {
+                width: 100%;
+                min-height: 46px;
+            }
+
+            .dashboard-preview {
+                padding: 12px;
+                border-radius: 14px;
+            }
+
+            .preview-heading h3 {
+                font-size: 19px;
+            }
+
+            .preview-grid {
+                gap: 6px;
+            }
+
+            .preview-card {
+                min-height: 95px;
+                padding: 10px 3px;
+            }
+
+            .preview-card h4 {
+                font-size: 8px;
+            }
+
+            .preview-card p {
+                font-size: 7px;
+            }
+
+            .preview-icon {
+                width: 30px;
+                height: 30px;
+                font-size: 14px;
+            }
+
+            .preview-mini {
+                padding: 9px 7px;
+                gap: 6px;
+            }
+
+            .preview-mini strong {
+                font-size: 8px;
+            }
+
+            .preview-mini span {
+                font-size: 7px;
+            }
+
+            .benefits-strip {
+                grid-template-columns: 1fr;
+            }
+
+            .benefit-item {
+                padding: 18px 12px;
+            }
+
+            .benefit-item + .benefit-item {
+                border-top: 1px solid rgba(255, 255, 255, 0.08);
+                border-left: 0;
+            }
+
+            .features-grid,
+            .steps {
+                grid-template-columns: 1fr;
+            }
+
+            .feature-card {
+                min-height: auto;
+                padding: 23px;
+            }
+
+            .step {
+                padding: 22px;
+            }
+
+            .section-heading {
+                margin-bottom: 30px;
+            }
+
+            .section-heading h2 {
+                font-size: 29px;
+            }
+
+            .advantages-intro {
+                padding: 24px;
+            }
+
+            .cta {
+                padding: 38px 20px;
+            }
+
+            .footer-inner {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .footer-links {
+                justify-content: center;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            html {
+                scroll-behavior: auto;
+            }
+
+            *,
+            *::before,
+            *::after {
+                transition-duration: 0.01ms !important;
+                animation-duration: 0.01ms !important;
+            }
+
+            .reveal {
+                opacity: 1;
+                transform: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="nav-wrap">
+        <nav class="navbar">
+            <a href="#" class="brand">
+                RESTAURANT<span>.</span>
+            </a>
+
+            <div class="nav-links">
+                <a href="#features">Возможности</a>
+                <a href="#how-it-works">Как начать</a>
+                <a href="#advantages">Преимущества</a>
+            </div>
+
+            <div class="nav-actions">
+                <a href="/restaurants" class="nav-button">
+                    Все рестораны
+                </a>
+
+                <a href="/restaurant/register" class="nav-button primary">
+                    Создать ресторан
+                </a>
+            </div>
+        </nav>
+    </div>
+
+
+    <main>
+
+        <!-- Главный экран -->
+        <section class="hero">
+            <div class="container">
+                <div class="hero-grid">
+
+                    <div class="hero-copy">
+                        <div class="eyebrow">
+                            <span class="eyebrow-dot"></span>
+                            Платформа для ресторанного бизнеса
+                        </div>
+
+                        <h1>
+                            Ваш бизнес.<br>
+                            <span>В одном месте.</span>
+                        </h1>
+
+                        <p class="hero-description">
+                            Управляйте рестораном через единую платформу:
+                            публикуйте меню, принимайте заказы, работайте
+                            с бронированиями и взаимодействуйте с клиентами.
+                            Всё необходимое для повседневной работы заведения
+                            в одной административной панели.
+                        </p>
+
+                        <div class="hero-actions">
+                            <a href="/restaurant/register" class="action-button">
+                                Создать ресторан
+                                <span class="action-arrow">→</span>
+                            </a>
+
+                            <a href="/restaurants" class="action-button secondary">
+                                Посмотреть рестораны
+                                <span class="action-arrow">↗</span>
+                            </a>
+                        </div>
+
+                        <div class="hero-note">
+                            <span>✦</span>
+                            Начните с регистрации своего заведения
+                        </div>
+                    </div>
+
+
+                    <!-- Макет настоящей административной панели -->
+                    <div class="dashboard-preview">
+                        <div class="preview-topbar">
+                            <div class="preview-brand">
+                                ADMIN<span>.</span> PANEL
+                            </div>
+
+                            <div class="preview-status">
+                                Панель управления
+                            </div>
+                        </div>
+
+                        <div class="preview-heading">
+                            <h3>Управление заведением</h3>
+                            <p>Все основные инструменты в одном месте</p>
+                        </div>
+
+                        <div class="preview-section-title">
+                            Работа заведения
+                        </div>
+
+                        <div class="preview-grid">
+
+                            <div class="preview-card">
+                                <div class="preview-icon">🍸</div>
+                                <h4>Меню</h4>
+                                <p>Управление меню</p>
+                            </div>
+
+                            <div class="preview-card">
+                                <div class="preview-icon">🛵</div>
+                                <h4>Заказы</h4>
+                                <p>Доставка</p>
+                            </div>
+
+                            <div class="preview-card">
+                                <div class="preview-icon">▦</div>
+                                <h4>Бронь</h4>
+                                <p>Столики</p>
+                            </div>
+
+                        </div>
+
+                        <div class="preview-section-title" style="margin-top: 20px;">
+                            Клиенты и управление
+                        </div>
+
+                        <div class="preview-grid">
+
+                            <div class="preview-card">
+                                <div class="preview-icon">💬</div>
+                                <h4>Поддержка</h4>
+                                <p>Общение</p>
+                            </div>
+
+                            <div class="preview-card">
+                                <div class="preview-icon">♙</div>
+                                <h4>Клиенты</h4>
+                                <p>Пользователи</p>
+                            </div>
+
+                            <div class="preview-card">
+                                <div class="preview-icon">♙</div>
+                                <h4>Администраторы</h4>
+                                <p>Доступы</p>
+                            </div>
+
+                        </div>
+
+                        <div class="preview-bottom">
+                            <div class="preview-mini">
+                                <div class="preview-mini-icon">↺</div>
+                                <div>
+                                    <strong>История заказов</strong>
+                                    <span>Архив заказов</span>
+                                </div>
+                            </div>
+
+                            <div class="preview-mini">
+                                <div class="preview-mini-icon">📊</div>
+                                <div>
+                                    <strong>Финансы и аналитика</strong>
+                                    <span>Продажи и статистика</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="preview-caption">
+                            Пример структуры панели управления рестораном
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+
+        <!-- Краткие преимущества -->
+        <div class="container">
+            <div class="benefits-strip reveal">
+                <div class="benefit-item">
+                    <strong>Одна платформа</strong>
+                    <p>Основные процессы ресторана в одном интерфейсе</p>
+                </div>
+
+                <div class="benefit-item">
+                    <strong>Собственная страница</strong>
+                    <p>Отдельная ссылка для каждого заведения</p>
+                </div>
+
+                <div class="benefit-item">
+                    <strong>Единая система</strong>
+                    <p>Заказы, меню и клиенты связаны между собой</p>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Возможности -->
+        <section class="section" id="features">
+            <div class="container">
+
+                <div class="section-heading reveal">
+                    <div class="eyebrow">
+                        <span class="eyebrow-dot"></span>
+                        Возможности платформы
+                    </div>
+
+                    <h2>
+                        Всё необходимое<br>
+                        <span class="gold">для работы ресторана</span>
+                    </h2>
+
+                    <p>
+                        Управляйте основными процессами заведения из
+                        административной панели, а клиенты смогут находить
+                        ваш ресторан и взаимодействовать с ним через платформу.
+                    </p>
+                </div>
+
+
+                <div class="features-grid">
+
+                    <article class="feature-card reveal">
+                        <div class="feature-icon">🍽</div>
+                        <h3>Управление меню</h3>
+                        <p>
+                            Добавляйте блюда, изменяйте описания и цены,
+                            поддерживайте актуальность меню для посетителей.
+                        </p>
+                    </article>
+
+                    <article class="feature-card reveal">
+                        <div class="feature-icon">🛵</div>
+                        <h3>Приём заказов</h3>
+                        <p>
+                            Просматривайте входящие заказы и управляйте
+                            их обработкой из единого рабочего интерфейса.
+                        </p>
+                    </article>
+
+                    <article class="feature-card reveal">
+                        <div class="feature-icon">▦</div>
+                        <h3>Бронирование столиков</h3>
+                        <p>
+                            Работайте с бронированиями, следите за заявками
+                            клиентов и организуйте посадку гостей.
+                        </p>
+                    </article>
+
+                    <article class="feature-card reveal">
+                        <div class="feature-icon">♙</div>
+                        <h3>Клиенты</h3>
+                        <p>
+                            Просматривайте данные зарегистрированных
+                            пользователей и работайте с клиентской базой.
+                        </p>
+                    </article>
+
+                    <article class="feature-card reveal">
+                        <div class="feature-icon">💬</div>
+                        <h3>Общение с клиентами</h3>
+                        <p>
+                            Используйте раздел поддержки для взаимодействия
+                            с пользователями и обработки их обращений.
+                        </p>
+                    </article>
+
+                    <article class="feature-card reveal">
+                        <div class="feature-icon">📊</div>
+                        <h3>Финансы и аналитика</h3>
+                        <p>
+                            Анализируйте продажи, изучайте историю заказов
+                            и получайте информацию о работе заведения.
+                        </p>
+                    </article>
+
+                    <article class="feature-card reveal">
+                        <div class="feature-icon">♙</div>
+                        <h3>Команда и доступы</h3>
+                        <p>
+                            Организуйте работу с администраторами и
+                            распределяйте доступ к управлению рестораном.
+                        </p>
+                    </article>
+
+                    <article class="feature-card reveal">
+                        <div class="feature-icon">🔗</div>
+                        <h3>Страница ресторана</h3>
+                        <p>
+                            Ваше заведение получает отдельную ссылку,
+                            по которой посетители смогут открыть его страницу.
+                        </p>
+                    </article>
+
+                    <article class="feature-card reveal">
+                        <div class="feature-icon">⚙</div>
+                        <h3>Управление заведением</h3>
+                        <p>
+                            Основные инструменты собраны в одном интерфейсе,
+                            чтобы повседневные задачи было проще выполнять.
+                        </p>
+                    </article>
+
+                </div>
+            </div>
+        </section>
+
+
+        <!-- Как начать -->
+        <section class="section" id="how-it-works">
+            <div class="container">
+
+                <div class="section-heading reveal">
+                    <div class="eyebrow">
+                        <span class="eyebrow-dot"></span>
+                        Начало работы
+                    </div>
+
+                    <h2>
+                        Запустите свой ресторан<br>
+                        <span class="gold">в несколько шагов</span>
+                    </h2>
+
+                    <p>
+                        Пройдите регистрацию, подтвердите адрес электронной
+                        почты и выберите подходящий тариф. После завершения
+                        необходимых этапов вы сможете перейти к управлению
+                        своим заведением.
+                    </p>
+                </div>
+
+
+                <div class="steps">
+
+                    <article class="step reveal">
+                        <div class="step-number">01</div>
+                        <h3>Создайте аккаунт</h3>
+                        <p>
+                            Укажите данные владельца и информацию
+                            о вашем ресторане.
+                        </p>
+                    </article>
+
+                    <article class="step reveal">
+                        <div class="step-number">02</div>
+                        <h3>Подтвердите почту</h3>
+                        <p>
+                            Подтвердите адрес электронной почты,
+                            чтобы продолжить регистрацию.
+                        </p>
+                    </article>
+
+                    <article class="step reveal">
+                        <div class="step-number">03</div>
+                        <h3>Выберите тариф</h3>
+                        <p>
+                            Ознакомьтесь с доступными условиями
+                            и завершите оформление подписки.
+                        </p>
+                    </article>
+
+                    <article class="step reveal">
+                        <div class="step-number">04</div>
+                        <h3>Управляйте рестораном</h3>
+                        <p>
+                            Войдите в административную панель
+                            и начните настраивать основные разделы.
+                        </p>
+                    </article>
+
+                </div>
+            </div>
+        </section>
+
+
+        <!-- Преимущества -->
+        <section class="section" id="advantages">
+            <div class="container">
+
+                <div class="section-heading reveal">
+                    <div class="eyebrow">
+                        <span class="eyebrow-dot"></span>
+                        Для владельцев заведений
+                    </div>
+
+                    <h2>
+                        Больше порядка<br>
+                        <span class="gold">в ежедневной работе</span>
+                    </h2>
+                </div>
+
+
+                <div class="advantages-layout">
+
+                    <div class="advantages-intro reveal">
+                        <h3>
+                            Сосредоточьтесь<br>
+                            на своём бизнесе.
+                        </h3>
+
+                        <p>
+                            Вместо разрозненных инструментов используйте
+                            общую платформу для основных процессов ресторана.
+                            Владелец получает доступ к управлению заведением,
+                            а посетители могут находить рестораны через
+                            общую страницу платформы.
+                        </p>
+
+                        <div class="hero-actions">
+                            <a href="/restaurant/register" class="action-button">
+                                Начать регистрацию
+                                <span class="action-arrow">→</span>
+                            </a>
+                        </div>
+                    </div>
+
+
+                    <div class="advantages-list">
+
+                        <div class="advantage-row reveal">
+                            <div class="check-icon">✓</div>
+                            <div>
+                                <h4>Отдельная страница для ресторана</h4>
+                                <p>
+                                    Каждое заведение имеет собственную ссылку,
+                                    по которой клиенты могут открыть его страницу.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="advantage-row reveal">
+                            <div class="check-icon">✓</div>
+                            <div>
+                                <h4>Единая административная панель</h4>
+                                <p>
+                                    Меню, заказы, бронирования, клиенты и
+                                    аналитика доступны из общего интерфейса.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="advantage-row reveal">
+                            <div class="check-icon">✓</div>
+                            <div>
+                                <h4>Общая платформа для посетителей</h4>
+                                <p>
+                                    Пользователи могут просматривать список
+                                    доступных заведений и выбирать ресторан.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="advantage-row reveal">
+                            <div class="check-icon">✓</div>
+                            <div>
+                                <h4>Управление доступом команды</h4>
+                                <p>
+                                    Возможность организовать работу владельцев
+                                    и сотрудников с соответствующими правами.
+                                </p>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- Финальный призыв -->
+        <section class="section">
+            <div class="container">
+                <div class="cta reveal">
+
+                    <div class="eyebrow">
+                        <span class="eyebrow-dot"></span>
+                        Для вашего ресторана
+                    </div>
+
+                    <h2 style="margin-top: 20px;">
+                        Готовы начать работу<br>
+                        <span class="gold">на своей платформе?</span>
+                    </h2>
+
+                    <p>
+                        Создайте аккаунт владельца, добавьте свой ресторан
+                        и пройдите необходимые этапы регистрации.
+                    </p>
+
+                    <div class="hero-actions">
+                        <a href="/restaurant/register" class="action-button">
+                            Зарегистрировать ресторан
+                            <span class="action-arrow">→</span>
+                        </a>
+
+                        <a href="/restaurants" class="action-button secondary">
+                            Перейти к ресторанам
+                            <span class="action-arrow">↗</span>
+                        </a>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+
+    <!-- Подвал -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-inner">
+
+                <div class="footer-brand">
+                    RESTAURANT<span>.</span>
+                </div>
+
+                <p>
+                    Платформа для управления ресторанным бизнесом
+                </p>
+
+                <div class="footer-links">
+                    <a href="#features">Возможности</a>
+                    <a href="#how-it-works">Как начать</a>
+                    <a href="/restaurants">Все рестораны</a>
+                    <a href="/restaurant/register">Регистрация</a>
+                </div>
+
+            </div>
+        </div>
+    </footer>
+
+
+    <script>
+        // Плавное появление блоков при прокрутке страницы.
+        // Если IntersectionObserver не поддерживается, блоки остаются видимыми.
+
+        const revealElements = document.querySelectorAll(".reveal");
+
+        if ("IntersectionObserver" in window) {
+            const observer = new IntersectionObserver(
+                (entries, currentObserver) => {
+                    entries.forEach((entry) => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add("visible");
+                            currentObserver.unobserve(entry.target);
+                        }
+                    });
+                },
+                {
+                    threshold: 0.12,
+                    rootMargin: "0px 0px -25px 0px"
+                }
+            );
+
+            revealElements.forEach((element) => {
+                observer.observe(element);
+            });
+        } else {
+            revealElements.forEach((element) => {
+                element.classList.add("visible");
+            });
+        }
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,16 @@
+.env
+.env.*
+!.env.example
+!.env.test.example
+properties
+.venv/
+__pycache__/
+*.py[cod]
+gateway/certs/key.pem
+gateway/certs/cert.pem
+**/*.pem
+venv/
+**/venv/
+
+admin_service/venv/
+authentication_service/venv/

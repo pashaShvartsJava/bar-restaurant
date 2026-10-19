@@ -50,6 +50,12 @@ class AuthenticationRepository:
         # registration process #
 #################################################
 
+    async def create_owner_key(self, restaurant_id):
+        new_owner_key = Key(restaurant_id=restaurant_id)
+        self.db.add(new_owner_key)
+        await self.db.commit()
+        await self.db.refresh(new_owner_key)
+
     async def create_identity(self, email : EmailStr, hashed_password : str) -> Identity:
         token = secrets.token_urlsafe(32)
         hashed_token = hashlib.sha256(token.encode("utf-8")).hexdigest()

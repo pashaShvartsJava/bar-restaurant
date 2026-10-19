@@ -153,11 +153,12 @@ async def edit_admin(request : Request, admin_id : int, service : AdminService =
 
 @router.post("/admins/add_admin")
 async def add_admin(data : AdminRegistrationDTO,
+                    restaurant_id : UUID,
                     service : AdminService = Depends(get_service_dependency),
                     internal_token : str = Header(..., alias="internal_token")):
     await verify_internal_token(internal_token)
     try:
-        await service.create_new_admin(data)
+        await service.create_new_admin(data, restaurant_id)
     except Exception:
         async with httpx.AsyncClient() as client:
             response = await client.patch("http://authentication-service:8000/edit_status",

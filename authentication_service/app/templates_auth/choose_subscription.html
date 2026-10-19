@@ -1,0 +1,1693 @@
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#100e10">
+    <title>Выбор тарифа — Restaurant SaaS</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg: #09090b;
+            --surface: rgba(29, 27, 29, .88);
+            --surface-hover: rgba(38, 35, 37, .98);
+            --gold: #d5a65b;
+            --gold-light: #f0cc86;
+            --muted: #929096;
+            --border: rgba(213, 166, 91, .18);
+            --purple: #b59aff;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            min-height: 100vh;
+            overflow-x: hidden;
+            background:
+                radial-gradient(
+                    ellipse at 50% 0%,
+                    rgba(145, 85, 75, .22) 0%,
+                    rgba(55, 35, 40, .18) 35%,
+                    transparent 68%
+                ),
+                linear-gradient(
+                    180deg,
+                    #211a1c 0%,
+                    #121214 48%,
+                    #09090b 100%
+                );
+            color: #fff;
+            font-family: Arial, sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body, button, a {
+            font-family: Arial, sans-serif;
+        }
+
+        button, a {
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        button:focus-visible,
+        a:focus-visible {
+            outline: 2px solid var(--purple);
+            outline-offset: 4px;
+        }
+
+        button {
+            font: inherit;
+        }
+
+        .ambient {
+            position: fixed;
+            z-index: -1;
+            top: -220px;
+            left: 50%;
+            width: 700px;
+            height: 500px;
+            transform: translateX(-50%);
+            border-radius: 50%;
+            background: rgba(213, 166, 91, .055);
+            filter: blur(100px);
+            pointer-events: none;
+            animation: ambientPulse 9s ease-in-out infinite alternate;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1320px;
+            margin: 0 auto;
+            padding: 35px 34px 25px;
+        }
+
+        .top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            margin-bottom: 70px;
+            animation: fadeDown .7s ease both;
+        }
+
+        .back {
+            display: inline-flex;
+            align-items: center;
+            gap: 9px;
+            color: #929096;
+            font-size: 11px;
+            text-decoration: none;
+            transition: color .25s ease;
+        }
+
+        .back:hover {
+            color: var(--gold);
+        }
+
+        .back-arrow {
+            font-size: 17px;
+            transition: transform .25s ease;
+        }
+
+        .back:hover .back-arrow {
+            transform: translateX(-4px);
+        }
+
+        .brand {
+            color: var(--gold);
+            font-family: Georgia, serif;
+            font-size: 11px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+        }
+
+        .secure {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            color: #77777d;
+            font-size: 10px;
+        }
+
+        .secure svg {
+            width: 14px;
+            height: 14px;
+            color: var(--gold);
+        }
+
+        .header {
+            max-width: 760px;
+            margin: 0 auto 38px;
+            text-align: center;
+            animation: fadeUp .8s .08s ease both;
+        }
+
+        .eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 19px;
+            color: var(--gold);
+            font-size: 9px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+        }
+
+        .eyebrow::before,
+        .eyebrow::after {
+            width: 24px;
+            height: 1px;
+            background: rgba(213, 166, 91, .5);
+            content: "";
+        }
+
+        h1 {
+            font-family: Georgia, serif;
+            font-size: clamp(32px, 4.3vw, 49px);
+            font-weight: normal;
+            letter-spacing: 1px;
+            line-height: 1.18;
+        }
+
+        h1 span {
+            color: var(--gold);
+            font-style: italic;
+        }
+
+        .subtitle {
+            max-width: 560px;
+            margin: 17px auto 0;
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.9;
+        }
+
+        .billing {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 13px;
+            margin: 28px auto 0;
+        }
+
+        .billing-label {
+            color: #77777d;
+            font-size: 11px;
+            transition: color .25s ease;
+        }
+
+        .billing-label.active {
+            color: #fff;
+        }
+
+        .toggle {
+            position: relative;
+            width: 43px;
+            height: 24px;
+            padding: 3px;
+            border: 1px solid rgba(213, 166, 91, .3);
+            border-radius: 30px;
+            background: rgba(213, 166, 91, .1);
+            cursor: pointer;
+            transition: background .25s ease;
+        }
+
+        .toggle-knob {
+            display: block;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--gold);
+            box-shadow: 0 0 12px rgba(213, 166, 91, .25);
+            transition: transform .3s cubic-bezier(.2, .8, .2, 1);
+        }
+
+        .toggle[aria-checked="true"] .toggle-knob {
+            transform: translateX(19px);
+        }
+
+        .save-badge {
+            padding: 6px 9px;
+            border: 1px solid rgba(115, 160, 119, .22);
+            border-radius: 5px;
+            background: rgba(80, 125, 85, .1);
+            color: #9ac49d;
+            font-size: 9px;
+            letter-spacing: .3px;
+        }
+
+        .trial-banner {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            max-width: 850px;
+            margin: 0 auto 35px;
+            padding: 19px 23px;
+            border: 1px solid rgba(213, 166, 91, .25);
+            border-radius: 10px;
+            background:
+                linear-gradient(
+                    110deg,
+                    rgba(213, 166, 91, .09),
+                    rgba(213, 166, 91, .025)
+                );
+            animation: fadeUp .8s .16s ease both;
+        }
+
+        .trial-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex: 0 0 42px;
+            width: 42px;
+            height: 42px;
+            border: 1px solid rgba(213, 166, 91, .3);
+            border-radius: 50%;
+            color: var(--gold-light);
+            font-size: 21px;
+        }
+
+        .trial-content {
+            flex: 1;
+        }
+
+        .trial-content strong {
+            display: block;
+            margin-bottom: 5px;
+            color: var(--gold-light);
+            font-size: 12px;
+            font-weight: normal;
+        }
+
+        .trial-content span {
+            display: block;
+            color: #99959c;
+            font-size: 11px;
+            line-height: 1.7;
+        }
+
+        .trial-badge {
+            flex-shrink: 0;
+            padding: 8px 10px;
+            border: 1px solid rgba(115, 160, 119, .25);
+            border-radius: 5px;
+            background: rgba(80, 125, 85, .1);
+            color: #9ac49d;
+            font-size: 9px;
+            letter-spacing: 1px;
+        }
+
+        .plans {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            align-items: stretch;
+            gap: 19px;
+            margin-top: 30px;
+        }
+
+        .plan {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+            padding: 29px 25px 25px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, .075);
+            border-radius: 13px;
+            background:
+                linear-gradient(
+                    155deg,
+                    rgba(40, 37, 39, .94),
+                    rgba(23, 22, 24, .98) 62%
+                );
+            box-shadow: 0 15px 50px rgba(0, 0, 0, .12);
+            opacity: 0;
+            animation: cardReveal .75s ease forwards;
+            transition:
+                transform .35s ease,
+                border-color .35s ease,
+                box-shadow .35s ease,
+                background .35s ease;
+        }
+
+        .plan:nth-child(1) {
+            animation-delay: .14s;
+        }
+
+        .plan:nth-child(2) {
+            animation-delay: .25s;
+        }
+
+        .plan:nth-child(3) {
+            animation-delay: .36s;
+        }
+
+        .plan::before {
+            position: absolute;
+            top: 0;
+            left: 15%;
+            width: 70%;
+            height: 1px;
+            background: linear-gradient(
+                90deg,
+                transparent,
+                rgba(213, 166, 91, .45),
+                transparent
+            );
+            content: "";
+            opacity: .6;
+            transition: opacity .3s ease;
+        }
+
+        .plan:hover {
+            transform: translateY(-7px);
+            border-color: rgba(213, 166, 91, .38);
+            box-shadow: 0 24px 65px rgba(0, 0, 0, .3);
+        }
+
+        .plan:hover::before {
+            opacity: 1;
+        }
+
+        .plan.featured {
+            border-color: rgba(213, 166, 91, .45);
+            background:
+                radial-gradient(
+                    ellipse at 50% 0%,
+                    rgba(213, 166, 91, .10),
+                    transparent 58%
+                ),
+                linear-gradient(155deg, #302a27, #1c1a1c 68%);
+            box-shadow:
+                0 15px 60px rgba(0, 0, 0, .22),
+                inset 0 0 35px rgba(213, 166, 91, .025);
+        }
+
+        .plan.featured::before {
+            height: 2px;
+            opacity: 1;
+        }
+
+        .popular {
+            position: absolute;
+            top: 0;
+            right: 21px;
+            padding: 7px 10px 8px;
+            border-radius: 0 0 6px 6px;
+            background: rgba(213, 166, 91, .16);
+            color: var(--gold-light);
+            font-size: 8px;
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+        }
+
+        .plan-top {
+            min-height: 104px;
+        }
+
+        .plan-number {
+            margin-bottom: 13px;
+            color: var(--gold);
+            font-family: Georgia, serif;
+            font-size: 11px;
+            letter-spacing: 2px;
+        }
+
+        .plan h2 {
+            margin-bottom: 10px;
+            font-family: Georgia, serif;
+            font-size: 23px;
+            font-weight: normal;
+            letter-spacing: .3px;
+        }
+
+        .plan-description {
+            color: var(--muted);
+            font-size: 11px;
+            line-height: 1.7;
+        }
+
+        .price-area {
+            min-height: 135px;
+            padding: 23px 0 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, .075);
+        }
+
+        .price-line {
+            display: flex;
+            align-items: baseline;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+
+        .currency {
+            align-self: flex-start;
+            margin-top: 8px;
+            color: var(--gold);
+            font-size: 15px;
+        }
+
+        .price {
+            color: #fff;
+            font-family: Georgia, serif;
+            font-size: clamp(34px, 3.1vw, 43px);
+            line-height: 1.15;
+            letter-spacing: -1.4px;
+            transition: opacity .2s ease, transform .2s ease;
+        }
+
+        .period {
+            color: #85838a;
+            font-size: 10px;
+        }
+
+        .price-note {
+            margin-top: 10px;
+            color: #77777d;
+            font-size: 10px;
+            line-height: 1.7;
+        }
+
+        .price-note strong {
+            color: #9ac49d;
+            font-weight: normal;
+        }
+
+        .plan-features {
+            flex: 1;
+            padding: 23px 0 25px;
+        }
+
+        .features-heading {
+            margin-bottom: 16px;
+            color: #a8a5ab;
+            font-size: 9px;
+            letter-spacing: 1.6px;
+            text-transform: uppercase;
+        }
+
+        .feature-list {
+            display: grid;
+            gap: 14px;
+            list-style: none;
+        }
+
+        .feature-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            color: #d1cfd3;
+            font-size: 11px;
+            line-height: 1.65;
+        }
+
+        .check {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex: 0 0 17px;
+            width: 17px;
+            height: 17px;
+            margin-top: 0;
+            border: 1px solid rgba(213, 166, 91, .32);
+            border-radius: 50%;
+            color: var(--gold);
+            font-size: 10px;
+        }
+
+        .feature-list strong {
+            color: #fff;
+            font-weight: 500;
+        }
+
+        .feature-list small {
+            display: block;
+            margin-top: 3px;
+            color: #77777d;
+            font-size: 10px;
+            line-height: 1.55;
+        }
+
+        .plan-divider {
+            height: 1px;
+            background: rgba(255, 255, 255, .06);
+        }
+
+        .plan-bottom {
+            padding-top: 20px;
+        }
+
+        .select-plan {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 9px;
+            width: 100%;
+            min-height: 45px;
+            padding: 12px 15px;
+            border: 1px solid rgba(213, 166, 91, .3);
+            border-radius: 7px;
+            background: rgba(213, 166, 91, .065);
+            color: var(--gold-light);
+            font-size: 10px;
+            letter-spacing: .35px;
+            cursor: pointer;
+            transition:
+                background .25s ease,
+                border-color .25s ease,
+                color .25s ease,
+                transform .25s ease;
+        }
+
+        .select-plan .arrow {
+            font-size: 15px;
+            transition: transform .25s ease;
+        }
+
+        .select-plan:hover {
+            border-color: var(--gold);
+            background: rgba(213, 166, 91, .16);
+            color: #fff0d1;
+        }
+
+        .select-plan:hover .arrow {
+            transform: translateX(4px);
+        }
+
+        .featured .select-plan {
+            border-color: var(--gold);
+            background: linear-gradient(
+                120deg,
+                #d5a65b,
+                #e5bc77
+            );
+            color: #1a1410;
+            font-weight: 600;
+        }
+
+        .featured .select-plan:hover {
+            background: linear-gradient(
+                120deg,
+                #e5bc77,
+                #f0cc86
+            );
+            box-shadow: 0 5px 22px rgba(213, 166, 91, .16);
+        }
+
+        .plan-footnote {
+            margin-top: 12px;
+            color: #69676d;
+            font-size: 9px;
+            line-height: 1.65;
+            text-align: center;
+        }
+
+        .comparison {
+            margin-top: 66px;
+            animation: fadeUp .8s .4s ease both;
+        }
+
+        .section-heading {
+            margin-bottom: 23px;
+            text-align: center;
+        }
+
+        .section-heading h2 {
+            font-family: Georgia, serif;
+            font-size: 25px;
+            font-weight: normal;
+        }
+
+        .section-heading p {
+            margin-top: 9px;
+            color: #85838a;
+            font-size: 11px;
+        }
+
+        .comparison-wrap {
+            overflow-x: auto;
+            border: 1px solid rgba(213, 166, 91, .14);
+            border-radius: 10px;
+            background: rgba(24, 22, 24, .72);
+        }
+
+        .comparison table {
+            width: 100%;
+            min-width: 610px;
+            border-collapse: collapse;
+            text-align: center;
+        }
+
+        .comparison th,
+        .comparison td {
+            padding: 16px 19px;
+            border-bottom: 1px solid rgba(255, 255, 255, .055);
+            font-size: 10px;
+        }
+
+        .comparison th {
+            color: var(--gold);
+            font-weight: normal;
+            letter-spacing: .4px;
+        }
+
+        .comparison th:first-child,
+        .comparison td:first-child {
+            width: 37%;
+            color: #c3c0c6;
+            text-align: left;
+        }
+
+        .comparison td {
+            color: #aaa7ae;
+        }
+
+        .comparison tr:last-child td {
+            border-bottom: none;
+        }
+
+        .yes {
+            color: #9ac49d !important;
+            font-size: 13px !important;
+        }
+
+        .no {
+            color: #5f5d63 !important;
+        }
+
+        .commission-note {
+            display: flex;
+            align-items: flex-start;
+            gap: 13px;
+            max-width: 850px;
+            margin: 28px auto 0;
+            padding: 17px 19px;
+            border: 1px solid rgba(213, 166, 91, .14);
+            border-radius: 8px;
+            background: rgba(213, 166, 91, .035);
+        }
+
+        .note-icon {
+            flex-shrink: 0;
+            color: var(--gold);
+            font-size: 16px;
+        }
+
+        .commission-note p {
+            color: #8c8990;
+            font-size: 10px;
+            line-height: 1.8;
+        }
+
+        .commission-note strong {
+            color: #d7c3a2;
+            font-weight: normal;
+        }
+
+        .faq {
+            max-width: 780px;
+            margin: 66px auto 0;
+            animation: fadeUp .8s .45s ease both;
+        }
+
+        .faq-list {
+            display: grid;
+            gap: 9px;
+            margin-top: 25px;
+        }
+
+        .faq-item {
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, .075);
+            border-radius: 8px;
+            background: rgba(28, 26, 28, .65);
+            transition: border-color .25s ease;
+        }
+
+        .faq-item:has(.faq-question[aria-expanded="true"]) {
+            border-color: rgba(213, 166, 91, .25);
+        }
+
+        .faq-question {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            width: 100%;
+            padding: 18px 20px;
+            border: 0;
+            background: transparent;
+            color: #dedbe0;
+            font-size: 11px;
+            text-align: left;
+            cursor: pointer;
+        }
+
+        .faq-plus {
+            color: var(--gold);
+            font-size: 17px;
+            transition: transform .3s ease;
+        }
+
+        .faq-question[aria-expanded="true"] .faq-plus {
+            transform: rotate(45deg);
+        }
+
+        .faq-answer {
+            display: grid;
+            grid-template-rows: 0fr;
+            transition: grid-template-rows .3s ease;
+        }
+
+        .faq-answer > div {
+            overflow: hidden;
+        }
+
+        .faq-answer p {
+            padding: 0 20px 18px;
+            color: #8c8990;
+            font-size: 11px;
+            line-height: 1.8;
+        }
+
+        .faq-item.open .faq-answer {
+            grid-template-rows: 1fr;
+        }
+
+        .footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 70px;
+            padding: 24px 0 10px;
+            border-top: 1px solid rgba(255, 255, 255, .06);
+            color: #626067;
+            font-size: 9px;
+            letter-spacing: .4px;
+        }
+
+        .footer-brand {
+            color: #a98752;
+            font-family: Georgia, serif;
+            letter-spacing: 2px;
+        }
+
+        .footer-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 18px;
+        }
+
+        .footer a {
+            color: #77747b;
+            text-decoration: none;
+            transition: color .2s ease;
+        }
+
+        .footer a:hover {
+            color: var(--gold);
+        }
+
+        .toast {
+            position: fixed;
+            right: 22px;
+            bottom: 22px;
+            z-index: 100;
+            width: min(380px, calc(100vw - 32px));
+            padding: 18px 20px;
+            border: 1px solid rgba(213, 166, 91, .3);
+            border-radius: 10px;
+            background: #211d1e;
+            box-shadow: 0 18px 55px rgba(0, 0, 0, .45);
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(15px);
+            transition: opacity .3s ease, transform .3s ease;
+        }
+
+        .toast.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .toast strong {
+            display: block;
+            margin-bottom: 7px;
+            color: var(--gold-light);
+            font-family: Georgia, serif;
+            font-size: 15px;
+            font-weight: normal;
+        }
+
+        .toast p {
+            color: #aaa7ae;
+            font-size: 11px;
+            line-height: 1.7;
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(18px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeDown {
+            from {
+                opacity: 0;
+                transform: translateY(-12px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes cardReveal {
+            from {
+                opacity: 0;
+                transform: translateY(25px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes ambientPulse {
+            from {
+                opacity: .55;
+                transform: translateX(-50%) scale(.9);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(-50%) scale(1.1);
+            }
+        }
+
+        @media (max-width: 980px) {
+            .container {
+                padding-right: 22px;
+                padding-left: 22px;
+            }
+
+            .top {
+                margin-bottom: 54px;
+            }
+
+            .plans {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                max-width: 760px;
+                margin-right: auto;
+                margin-left: auto;
+            }
+
+            .plan.featured {
+                grid-column: 1 / -1;
+            }
+
+            .plan.featured .plan-top {
+                min-height: auto;
+            }
+
+            .plan.featured .plan-features {
+                padding-bottom: 20px;
+            }
+
+            .plan.featured .feature-list {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .price {
+                font-size: 39px;
+            }
+        }
+
+        @media (max-width: 620px) {
+            .container {
+                padding: 24px 16px 18px;
+            }
+
+            .top {
+                margin-bottom: 47px;
+            }
+
+            .secure {
+                display: none;
+            }
+
+            .brand {
+                font-size: 9px;
+                letter-spacing: 2px;
+            }
+
+            .header {
+                margin-bottom: 28px;
+            }
+
+            h1 {
+                font-size: 34px;
+                letter-spacing: .3px;
+            }
+
+            .subtitle {
+                max-width: 360px;
+                font-size: 12px;
+            }
+
+            .billing {
+                gap: 9px;
+            }
+
+            .billing-label {
+                font-size: 10px;
+            }
+
+            .save-badge {
+                font-size: 8px;
+            }
+
+            .trial-banner {
+                align-items: flex-start;
+                gap: 12px;
+                margin-bottom: 27px;
+                padding: 16px;
+            }
+
+            .trial-icon {
+                flex-basis: 34px;
+                width: 34px;
+                height: 34px;
+                font-size: 18px;
+            }
+
+            .trial-content strong {
+                font-size: 11px;
+                line-height: 1.6;
+            }
+
+            .trial-content span {
+                font-size: 10px;
+            }
+
+            .trial-badge {
+                display: none;
+            }
+
+            .plans {
+                grid-template-columns: 1fr;
+                max-width: 410px;
+                gap: 14px;
+                margin-top: 32px;
+            }
+
+            .plan,
+            .plan.featured {
+                grid-column: auto;
+                padding: 25px 22px 21px;
+            }
+
+            .plan-top {
+                min-height: auto;
+            }
+
+            .plan h2 {
+                font-size: 24px;
+            }
+
+            .price-area {
+                min-height: auto;
+                padding: 20px 0;
+            }
+
+            .price {
+                font-size: 42px;
+            }
+
+            .plan-features {
+                padding: 22px 0;
+            }
+
+            .plan.featured .feature-list {
+                grid-template-columns: 1fr;
+            }
+
+            .comparison {
+                margin-top: 52px;
+            }
+
+            .section-heading h2 {
+                font-size: 23px;
+            }
+
+            .commission-note {
+                padding: 14px;
+            }
+
+            .faq {
+                margin-top: 52px;
+            }
+
+            .footer {
+                justify-content: center;
+                margin-top: 48px;
+                text-align: center;
+            }
+
+            .footer-links {
+                justify-content: center;
+                width: 100%;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                scroll-behavior: auto !important;
+                animation-duration: .01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: .01ms !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="ambient" aria-hidden="true"></div>
+
+    <main class="container">
+        <nav class="top" aria-label="Навигация">
+            <a class="back" href="/restaurant/register">
+                <span class="back-arrow" aria-hidden="true">←</span>
+                Вернуться к настройке
+            </a>
+
+            <div class="brand">Restaurant Platform</div>
+
+            <div class="secure">
+                <svg viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="1.5"
+                     aria-hidden="true">
+                    <rect x="5" y="10" width="14" height="11" rx="2"/>
+                    <path d="M8 10V7a4 4 0 0 1 8 0v3"/>
+                    <path d="M12 14v3"/>
+                </svg>
+                Безопасное оформление
+            </div>
+        </nav>
+
+        <header class="header">
+            <div class="eyebrow">Выберите свой план</div>
+
+            <h1>
+                Больше возможностей<br>
+                для <span>вашего ресторана</span>
+            </h1>
+
+            <p class="subtitle">
+                Всё необходимое для управления заведением,
+                приёма заказов и роста бизнеса — в одном месте.
+                Выберите тариф, который подходит именно вам.
+            </p>
+
+            <div class="billing">
+                <span class="billing-label active" id="monthlyLabel">
+                    Ежемесячно
+                </span>
+
+                <button
+                    class="toggle"
+                    id="billingToggle"
+                    type="button"
+                    role="switch"
+                    aria-checked="false"
+                    aria-label="Переключить период оплаты"
+                >
+                    <span class="toggle-knob"></span>
+                </button>
+
+                <span class="billing-label" id="yearlyLabel">
+                    Ежегодно
+                </span>
+
+                <span class="save-badge" id="saveBadge">
+                    Экономия 12,5%
+                </span>
+            </div>
+        </header>
+
+        <section class="trial-banner" aria-label="Пробный период">
+            <div class="trial-icon" aria-hidden="true">✦</div>
+
+            <div class="trial-content">
+                <strong>14 дней бесплатно на любом тарифе</strong>
+                <span>
+                    Попробуйте все возможности выбранного плана.
+                    Подписка начнёт оплачиваться после окончания пробного периода
+                    согласно условиям оформления.
+                </span>
+            </div>
+
+            <div class="trial-badge">14 DAYS FREE</div>
+        </section>
+
+        <section class="plans" aria-label="Тарифные планы">
+            <article class="plan">
+                <div class="plan-top">
+                    <div class="plan-number">01 / START</div>
+                    <h2>Starter</h2>
+                    <p class="plan-description">
+                        Для ресторанов, которые начинают принимать
+                        заказы онлайн.
+                    </p>
+                </div>
+
+                <div class="price-area">
+                    <div class="price-line">
+                        <span class="currency">€</span>
+                        <span class="price">39,99</span>
+                        <span class="period">/ месяц</span>
+                    </div>
+                    <p class="price-note">
+                        <strong>14 дней бесплатно</strong>
+                        <br>
+                        Затем 39,99 € в месяц
+                        <br>
+                        Комиссия 1% с каждого онлайн-заказа
+                    </p>
+                </div>
+
+                <div class="plan-features">
+                    <p class="features-heading">В тариф включено</p>
+                    <ul class="feature-list">
+                        <li>
+                            <span class="check">✓</span>
+                            <span>
+                                <strong>Онлайн-доставка</strong>
+                                <small>Приём заказов через интернет</small>
+                            </span>
+                        </li>
+                        <li>
+                            <span class="check">✓</span>
+                            <span>Управление меню и ценами</span>
+                        </li>
+                        <li>
+                            <span class="check">✓</span>
+                            <span>Управление заказами</span>
+                        </li>
+                        <li>
+                            <span class="check">✓</span>
+                            <span>Базовая панель управления</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="plan-divider"></div>
+
+                <div class="plan-bottom">
+                    <button class="select-plan" data-plan="starter" type="button">
+                        Выбрать Starter
+                        <span class="arrow">→</span>
+                    </button>
+                    <p class="plan-footnote">
+                        После пробного периода взимается ежемесячная плата
+                        и комиссия за онлайн-заказы.
+                    </p>
+                </div>
+            </article>
+
+            <article class="plan">
+                <div class="plan-top">
+                    <div class="plan-number">02 / GROWTH</div>
+                    <h2>Advanced</h2>
+                    <p class="plan-description">
+                        Для заведений, которые хотят обслуживать
+                        гостей и в зале, и онлайн.
+                    </p>
+                </div>
+
+                <div class="price-area">
+                    <div class="price-line">
+                        <span class="currency">€</span>
+                        <span class="price">119,99</span>
+                        <span class="period">/ месяц</span>
+                    </div>
+                    <p class="price-note">
+                        <strong>14 дней бесплатно</strong>
+                        <br>
+                        Затем 119,99 € в месяц
+                        <br>
+                        Без комиссии платформы с заказов
+                    </p>
+                </div>
+
+                <div class="plan-features">
+                    <p class="features-heading">Всё из Starter, плюс</p>
+                    <ul class="feature-list">
+                        <li>
+                            <span class="check">✓</span>
+                            <span>
+                                <strong>QR-коды в заведении</strong>
+                                <small>Гости открывают меню по QR-коду</small>
+                            </span>
+                        </li>
+                        <li>
+                            <span class="check">✓</span>
+                            <span>Заказы со столиков</span>
+                        </li>
+                        <li>
+                            <span class="check">✓</span>
+                            <span>Идентификация столов</span>
+                        </li>
+                        <li>
+                            <span class="check">✓</span>
+                            <span>Онлайн-доставка и управление заказами</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="plan-divider"></div>
+
+                <div class="plan-bottom">
+                    <button class="select-plan" data-plan="advanced" type="button">
+                        Выбрать Advanced
+                        <span class="arrow">→</span>
+                    </button>
+                    <p class="plan-footnote">
+                        После пробного периода — 119,99 € в месяц.
+                        Без комиссии платформы.
+                    </p>
+                </div>
+            </article>
+
+            <article class="plan featured">
+                <div class="popular">Полный доступ</div>
+
+                <div class="plan-top">
+                    <div class="plan-number">03 / PROFESSIONAL</div>
+                    <h2>Professional Business</h2>
+                    <p class="plan-description">
+                        Полный набор инструментов для управления,
+                        планирования и развития бизнеса.
+                    </p>
+                </div>
+
+                <div class="price-area">
+                    <div class="price-line">
+                        <span class="currency">€</span>
+                        <span class="price" id="proPrice">199,99</span>
+                        <span class="period" id="proPeriod">/ месяц</span>
+                    </div>
+                    <p class="price-note" id="proPriceNote">
+                        <strong>14 дней бесплатно</strong>
+                        <br>
+                        Затем 199,99 € в месяц
+                        <br>
+                        Без комиссии платформы с заказов
+                    </p>
+                </div>
+
+                <div class="plan-features">
+                    <p class="features-heading">Всё из Advanced, плюс</p>
+                    <ul class="feature-list">
+                        <li>
+                            <span class="check">✓</span>
+                            <span>
+                                <strong>Онлайн-бронирование</strong>
+                                <small>Приём и управление резервированиями</small>
+                            </span>
+                        </li>
+                        <li>
+                            <span class="check">✓</span>
+                            <span>
+                                <strong>Финансы</strong>
+                                <small>Контроль финансовых показателей</small>
+                            </span>
+                        </li>
+                        <li>
+                            <span class="check">✓</span>
+                            <span>
+                                <strong>Расширенная аналитика</strong>
+                                <small>Выручка, динамика и эффективность</small>
+                            </span>
+                        </li>
+                        <li>
+                            <span class="check">✓</span>
+                            <span>Все возможности платформы</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="plan-divider"></div>
+
+                <div class="plan-bottom">
+                    <button class="select-plan" data-plan="professional" type="button">
+                        Выбрать Professional
+                        <span class="arrow">→</span>
+                    </button>
+                    <p class="plan-footnote" id="proFootnote">
+                        Оплата после 14-дневного пробного периода.
+                    </p>
+                </div>
+            </article>
+        </section>
+
+        <section class="comparison" aria-label="Сравнение тарифов">
+            <div class="section-heading">
+                <div class="eyebrow">Возможности платформы</div>
+                <h2>Сравните тарифы</h2>
+                <p>Найдите инструменты, которые нужны вашему бизнесу.</p>
+            </div>
+
+            <div class="comparison-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Возможность</th>
+                            <th>Starter</th>
+                            <th>Advanced</th>
+                            <th>Professional</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Онлайн-доставка</td>
+                            <td class="yes">✓</td>
+                            <td class="yes">✓</td>
+                            <td class="yes">✓</td>
+                        </tr>
+                        <tr>
+                            <td>Управление меню и заказами</td>
+                            <td class="yes">✓</td>
+                            <td class="yes">✓</td>
+                            <td class="yes">✓</td>
+                        </tr>
+                        <tr>
+                            <td>QR-меню в заведении</td>
+                            <td class="no">—</td>
+                            <td class="yes">✓</td>
+                            <td class="yes">✓</td>
+                        </tr>
+                        <tr>
+                            <td>Заказы со столиков</td>
+                            <td class="no">—</td>
+                            <td class="yes">✓</td>
+                            <td class="yes">✓</td>
+                        </tr>
+                        <tr>
+                            <td>Онлайн-бронирование</td>
+                            <td class="no">—</td>
+                            <td class="no">—</td>
+                            <td class="yes">✓</td>
+                        </tr>
+                        <tr>
+                            <td>Финансы</td>
+                            <td class="no">—</td>
+                            <td class="no">—</td>
+                            <td class="yes">✓</td>
+                        </tr>
+                        <tr>
+                            <td>Расширенная аналитика</td>
+                            <td class="no">—</td>
+                            <td class="no">—</td>
+                            <td class="yes">✓</td>
+                        </tr>
+                        <tr>
+                            <td>Комиссия платформы с онлайн-заказов</td>
+                            <td>1%</td>
+                            <td class="yes">0%</td>
+                            <td class="yes">0%</td>
+                        </tr>
+                        <tr>
+                            <td>Бесплатный пробный период</td>
+                            <td class="yes">14 дней</td>
+                            <td class="yes">14 дней</td>
+                            <td class="yes">14 дней</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="commission-note">
+                <span class="note-icon" aria-hidden="true">ⓘ</span>
+                <p>
+                    <strong>О комиссии Starter.</strong>
+                    К стоимости подписки добавляется комиссия 1% с каждого
+                    онлайн-заказа. Условия расчёта комиссии, возвратов и
+                    платёжных сборов указываются отдельно в условиях тарифа.
+                    Комиссия платформы не взимается на тарифах Advanced
+                    и Professional Business.
+                </p>
+            </div>
+        </section>
+
+        <section class="faq">
+            <div class="section-heading">
+                <div class="eyebrow">Есть вопросы?</div>
+                <h2>Перед тем как начать</h2>
+                <p>Коротко о подписке и выборе тарифа.</p>
+            </div>
+
+            <div class="faq-list">
+                <article class="faq-item">
+                    <button class="faq-question" type="button" aria-expanded="false">
+                        Как работает бесплатный пробный период?
+                        <span class="faq-plus">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div>
+                            <p>
+                                Каждый тариф включает 14 дней пробного периода.
+                                После его окончания начнётся оплата выбранной
+                                подписки согласно условиям оформления.
+                                Возможность отменить подписку и условия
+                                предоставления пробного периода отображаются
+                                перед подтверждением оплаты.
+                            </p>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="faq-item">
+                    <button class="faq-question" type="button" aria-expanded="false">
+                        Можно ли позже изменить тариф?
+                        <span class="faq-plus">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div>
+                            <p>
+                                Да. Вы сможете перейти на другой тариф.
+                                Правила перерасчёта и дата вступления
+                                изменений в силу будут зависеть от настроек
+                                подписки и условий оплаты.
+                            </p>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="faq-item">
+                    <button class="faq-question" type="button" aria-expanded="false">
+                        Как работает комиссия за онлайн-заказы?
+                        <span class="faq-plus">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div>
+                            <p>
+                                В Starter взимается дополнительная комиссия
+                                1% с онлайн-заказов, соответствующих условиям
+                                тарифа. На тарифах Advanced и Professional
+                                Business комиссия платформы составляет 0%.
+                                Условия расчёта, возвраты и платёжные сборы
+                                определяются отдельно.
+                            </p>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="faq-item">
+                    <button class="faq-question" type="button" aria-expanded="false">
+                        Что входит в годовую подписку Professional?
+                        <span class="faq-plus">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div>
+                            <p>
+                                Годовой вариант стоит 2 099,99 € за год
+                                и включает те же функции, что и ежемесячный
+                                Professional Business. Экономия относительно
+                                оплаты за каждый месяц составляет 299,89 € в год.
+                            </p>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="faq-item">
+                    <button class="faq-question" type="button" aria-expanded="false">
+                        Когда активируется мой тариф?
+                        <span class="faq-plus">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div>
+                            <p>
+                                После успешного оформления пробного периода
+                                сервер сохраняет статус подписки. Доступ к
+                                функциям должен определяться сервером на
+                                основании подтверждённых событий Stripe,
+                                а не только перехода пользователя на страницу
+                                успешного оформления.
+                            </p>
+                        </div>
+                    </div>
+                </article>
+            </div>
+        </section>
+
+        <footer class="footer">
+            <div class="footer-brand">RESTAURANT PLATFORM</div>
+
+            <div>Инструменты для современного ресторанного бизнеса</div>
+
+            <div class="footer-links">
+                <a href="/terms">Условия использования</a>
+                <a href="/privacy">Конфиденциальность</a>
+                <a href="/contact">Поддержка</a>
+            </div>
+        </footer>
+    </main>
+
+    <div class="toast" id="toast" role="status" aria-live="polite">
+        <strong id="toastTitle">Тариф выбран</strong>
+        <p id="toastMessage"></p>
+    </div>
+
+    <script>
+        const billingToggle = document.getElementById("billingToggle");
+        const monthlyLabel = document.getElementById("monthlyLabel");
+        const yearlyLabel = document.getElementById("yearlyLabel");
+        const proPrice = document.getElementById("proPrice");
+        const proPeriod = document.getElementById("proPeriod");
+        const proPriceNote = document.getElementById("proPriceNote");
+        const proFootnote = document.getElementById("proFootnote");
+
+        let yearly = false;
+        let toastTimer;
+
+        function updateBilling(isYearly) {
+            yearly = isYearly;
+
+            billingToggle.setAttribute("aria-checked", String(yearly));
+            monthlyLabel.classList.toggle("active", !yearly);
+            yearlyLabel.classList.toggle("active", yearly);
+
+            proPrice.style.opacity = "0";
+            proPrice.style.transform = "translateY(5px)";
+
+            window.setTimeout(() => {
+                if (yearly) {
+                    proPrice.textContent = "2 099,99";
+                    proPeriod.textContent = "/ год";
+
+                    proPriceNote.innerHTML =
+                        "<strong>14 дней бесплатно</strong><br>" +
+                        "Затем 2 099,99 € за год<br>" +
+                        "Экономия 299,89 € в год";
+
+                    proFootnote.textContent =
+                        "Годовая оплата после пробного периода.";
+                } else {
+                    proPrice.textContent = "199,99";
+                    proPeriod.textContent = "/ месяц";
+
+                    proPriceNote.innerHTML =
+                        "<strong>14 дней бесплатно</strong><br>" +
+                        "Затем 199,99 € в месяц<br>" +
+                        "Без комиссии платформы с заказов";
+
+                    proFootnote.textContent =
+                        "Ежемесячная оплата после пробного периода.";
+                }
+
+                proPrice.style.opacity = "1";
+                proPrice.style.transform = "translateY(0)";
+            }, 150);
+        }
+
+        billingToggle.addEventListener("click", () => {
+            updateBilling(!yearly);
+        });
+
+        document.querySelectorAll(".select-plan").forEach((button) => {
+            button.addEventListener("click", async () => {
+                const plan = button.dataset.plan;
+
+                const billingPeriod =
+                    plan === "professional" && yearly
+                        ? "yearly"
+                        : "monthly";
+
+                const planNames = {
+                    starter: "Starter",
+                    advanced: "Advanced",
+                    professional: "Professional Business"
+                };
+
+                showToast(
+                    "Вы выбрали " + planNames[plan],
+                    "14 дней бесплатно. " +
+                    "Период оплаты: " +
+                    (billingPeriod === "yearly" ? "за год" : "за месяц") +
+                    ". Для оформления подключите этот обработчик к Stripe Checkout через FastAPI."
+                );
+            });
+        });
+
+        document.querySelectorAll(".faq-question").forEach((button) => {
+            button.addEventListener("click", () => {
+                const item = button.closest(".faq-item");
+                const isOpen = item.classList.contains("open");
+
+                document.querySelectorAll(".faq-item").forEach((other) => {
+                    other.classList.remove("open");
+                    other.querySelector(".faq-question")
+                        .setAttribute("aria-expanded", "false");
+                });
+
+                if (!isOpen) {
+                    item.classList.add("open");
+                    button.setAttribute("aria-expanded", "true");
+                }
+            });
+        });
+
+        function showToast(title, message) {
+            const toast = document.getElementById("toast");
+
+            document.getElementById("toastTitle").textContent = title;
+            document.getElementById("toastMessage").textContent = message;
+
+            toast.classList.add("visible");
+            window.clearTimeout(toastTimer);
+
+            toastTimer = window.setTimeout(() => {
+                toast.classList.remove("visible");
+            }, 5000);
+        }
+    </script>
+</body>
+</html>
