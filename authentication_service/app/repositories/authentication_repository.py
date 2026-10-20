@@ -70,19 +70,36 @@ class AuthenticationRepository:
             await self.create_outbox_event_email_verification(event_id=str(uuid.uuid4()), email=new_identity.email, token=token)
         return new_identity
 
-    async def create_admin_identity(self, email : EmailStr, hashed_password : str) -> Identity:
+    async def create_admin_identity(self, email : EmailStr,
+                                    hashed_password : str,
+                                    role : IdentityRole | None,
+                                    restaurant_id : UUID | None,
+                                    identity_id : UUID | None) -> Identity:
+        identity_role = IdentityRole.ADMIN
+        if role==IdentityRole.OWNER:
+            identity_role = role
         token = secrets.token_urlsafe(32)
         hashed_token = hashlib.sha256(token.encode("utf-8")).hexdigest()
         async with self.db.begin():
-            new_identity = Identity(
-                email=email,
-                password_hash=hashed_password,
-                role=IdentityRole.ADMIN
-            )
+            if identity_id is not None:
+                new_identity = Identity(
+                    id=identity_id,
+                    email=email,
+                    password_hash=hashed_password,
+                    role=identity_role
+                )
+            else:
+                new_identity = Identity(
+                    email=email,
+                    password_hash=hashed_password,
+                    role=identity_role
+                )
             self.db.add(new_identity)
             await self.db.flush()
             await self.create_verification_token(new_identity.id, hashed_token)
             await self.create_outbox_event_email_verification(str(uuid.uuid4()), new_identity.email, token)
+            if restaurant_id is not None:
+                await self.create_owner_key(restaurant_id)
         return new_identity
 
     async def get_by_identity(self, identity_id : UUID) -> Identity:

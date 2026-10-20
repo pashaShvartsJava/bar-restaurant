@@ -97,9 +97,13 @@ class AuthenticationService:
     async def delete_identity(self, identity_id : UUID):
         return await self.authentication_repository.delete_identity(identity_id)
 
-    async def create_admin_identity(self, email : EmailStr, password : str):
+    async def create_admin_identity(self, email : EmailStr,
+                                    password : str,
+                                    role : IdentityRole | None,
+                                    restaurant_id : UUID | None,
+                                    identity_id : UUID | None):
         await self.authentication_repository.db.rollback()
-        return await self.authentication_repository.create_admin_identity(email, hash_password(password))
+        return await self.authentication_repository.create_admin_identity(email, hash_password(password), role, restaurant_id, identity_id)
 
     async def verify_registration_key(self, key : str) -> str | None:
         return await self.authentication_repository.verify_registration_key(key)

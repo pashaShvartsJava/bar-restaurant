@@ -9,7 +9,7 @@ from starlette.templating import Jinja2Templates
 
 from ..schemas.admin_schema import AddAdminRequest
 from ..exceptions.exceptions import InvalidCredentialsError
-from ..model.identity_model import Status, IdentityRole
+from ..model.identity_model import Status
 from ..schemas.admin_schema import IdentityEdit
 from ..schemas.schema import LoginSchema, RegisterRequest, RegisterRequestDTO, AddressResponseDTO, PasswordUpdateDTO, \
     EmailRequest, RegistrationSchema, IdentityDto

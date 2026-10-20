@@ -39,6 +39,7 @@ class AdminRegistrationDTO(BaseModel):
     birthday: date = Field(..., description="birthday")
     phone: str
     email: EmailStr
+    role: IdentityRole = Field(...)
 
     @field_validator("phone")
     @classmethod

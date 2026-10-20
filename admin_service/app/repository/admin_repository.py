@@ -3,9 +3,12 @@ from uuid import UUID
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import List, Optional
-from ..model.admin import Admin
+from ..model.admin import Admin, AdminRole
 from ..schema.admin import AdminRegistrationDTO, AdminUpdateDTO, AdminRegistrationForm
 from sqlalchemy import or_
+
+from ..security.role.role import IdentityRole
+
 
 class AdminRepository:
     def __init__(self, db: AsyncSession):
@@ -33,13 +36,15 @@ class AdminRepository:
         return result.scalar_one_or_none()
 
     async def create_admin(self, admin: AdminRegistrationDTO, restaurant_id : UUID):
+        admin_role = AdminRole(admin.role.value)
         new_admin = Admin(identity_id=admin.identity_id,
                           name = admin.name,
                           surname = admin.surname,
                           birthday=admin.birthday,
                           phone = admin.phone,
                           email = admin.email,
-                          restaurant_id=restaurant_id)
+                          restaurant_id=restaurant_id,
+                          role=admin_role)
         self.db.add(new_admin)
         await self.db.commit()
         await self.db.refresh(new_admin)

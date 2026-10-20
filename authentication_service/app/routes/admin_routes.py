@@ -7,8 +7,9 @@ from pydantic import EmailStr, TypeAdapter
 from starlette.responses import HTMLResponse, RedirectResponse
 from starlette.templating import Jinja2Templates
 
+
 from ..exceptions.exceptions import InvalidCredentialsError
-from ..model.identity_model import Status
+from ..model.identity_model import Status, IdentityRole
 from ..schemas.admin_schema import AdminRegistration, AdminRegistrationDTO, AdminLogin
 from ..schemas.schema import LoginSchema
 from ..dependencies.dependency import get_service_dependency
@@ -44,7 +45,7 @@ async def admin_registration(data : Annotated[AdminRegistration, Form()],
     if existing_admin is not None and (existing_admin.status==Status.PENDING or existing_admin.status==Status.FAILED):
         old_admin_dto = AdminRegistrationDTO(identity_id=existing_admin.id, name=data.name,
                                              surname=data.surname, phone=data.phone,
-                                             birthday=data.birthday, email=existing_admin.email)
+                                             birthday=data.birthday, email=existing_admin.email, role=IdentityRole.ADMIN)
         async with httpx.AsyncClient() as client:
             response = await client.post("http://admin-service:8002/admins/add_admin",
                                          json=old_admin_dto.model_dump(mode="json"),
@@ -53,7 +54,7 @@ async def admin_registration(data : Annotated[AdminRegistration, Form()],
         await service.update_status_identity(existing_admin, Status.ACTIVE)
         return RedirectResponse(url="/admin/login", status_code=303)
 
-    created_admin = await service.create_admin_identity(data.email, data.password)
+    created_admin = await service.create_admin_identity(data.email, data.password, None, None, None)
     admin_dto = AdminRegistrationDTO(identity_id=created_admin.id, name=data.name, surname=data.surname, phone=data.phone, birthday=data.birthday, email=data.email)
 
     async with httpx.AsyncClient() as client:

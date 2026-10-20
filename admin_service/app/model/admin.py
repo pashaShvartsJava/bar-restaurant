@@ -7,6 +7,7 @@ from enum import Enum
 class AdminRole(str, Enum):
     ADMIN = "admin"
     MODERATOR = "moderator"
+    OWNER = "owner"
 
 class Status(str, Enum):
     ACTIVE = "active"

@@ -11,6 +11,7 @@ class IdentityRole(str, Enum):
     USER = "user"
     ADMIN = "admin"
     MODERATOR = "moderator"
+    OWNER = "owner"
 
 class Status(str, Enum):
     ACTIVE = "active"

@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
 
-from sqlalchemy import Column, String, Enum as SQLEnum, Integer, Date, DateTime, ForeignKey
+from sqlalchemy import Column, String, Enum as SQLEnum, Integer, Date, DateTime, ForeignKey, func
 from enum import Enum
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
@@ -31,7 +31,7 @@ class User(Base):
     phone = Column(String, nullable=False)
     role = Column(SQLEnum(IdentityRole), nullable=False, index=True)
     address_id = Column(Integer, ForeignKey("addresses.id"), nullable=False, unique=True)
-    created_at = Column(DateTime(timezone=True), nullable=False, default=lambda : datetime.now(timezone.utc))
-    updated_at = Column(DateTime(timezone=True), nullable=False, default=lambda: datetime.now(timezone.utc))
+    created_at = Column(DateTime(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now(),)
+    updated_at = Column(DateTime(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now(),)
 
     address = relationship("Address", back_populates="users")

@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
 
-from sqlalchemy import Column, String, Integer, UUID, Enum as SQLEnum, DECIMAL, DateTime
+from sqlalchemy import Column, String, Integer, UUID, Enum as SQLEnum, DECIMAL, DateTime, func
 from enum import Enum
 
 from ..database.database import Base
@@ -23,7 +23,7 @@ class Payment(Base):
     client_id = Column(UUID(as_uuid=True), nullable=False)
     status = Column(SQLEnum(PaymentStatus), nullable=False, default=PaymentStatus.CREATED)
     sum = Column(DECIMAL(10, 2), nullable=False, index=True)
-    created_at = Column(DateTime(timezone=True), nullable=False, default=lambda: datetime.now(timezone.utc))
-    updated_status = Column(DateTime(timezone=True), nullable=False, default=lambda: datetime.now(timezone.utc))
+    created_at = Column(DateTime(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now(),)
+    updated_status = Column(DateTime(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now(),)
     stripe_session_id = Column(String, nullable=True, unique=True)
     stripe_payment_intent_id = Column(String, nullable=True, unique=True)
