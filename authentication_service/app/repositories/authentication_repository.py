@@ -42,7 +42,7 @@ class AuthenticationRepository:
 ################################################
 
     async def get_by_email(self, email : EmailStr) -> Identity | None:
-        result = await self.db.execute(select(Identity).where(Identity.email == email))
+        result = await self.db.execute(select(Identity).options(selectinload(Identity.key)).where(Identity.email == email))
         return result.scalar_one_or_none()
 
 
@@ -50,11 +50,10 @@ class AuthenticationRepository:
         # registration process #
 #################################################
 
-    async def create_owner_key(self, restaurant_id):
-        new_owner_key = Key(restaurant_id=restaurant_id)
+    async def create_owner_key(self, restaurant_id : UUID, identity_id : UUID):
+        new_owner_key = Key(restaurant_id=restaurant_id, identity_id=identity_id)
         self.db.add(new_owner_key)
-        await self.db.commit()
-        await self.db.refresh(new_owner_key)
+        await self.db.flush()
 
     async def create_identity(self, email : EmailStr, hashed_password : str) -> Identity:
         token = secrets.token_urlsafe(32)
@@ -99,7 +98,7 @@ class AuthenticationRepository:
             await self.create_verification_token(new_identity.id, hashed_token)
             await self.create_outbox_event_email_verification(str(uuid.uuid4()), new_identity.email, token)
             if restaurant_id is not None:
-                await self.create_owner_key(restaurant_id)
+                await self.create_owner_key(restaurant_id, identity_id)
         return new_identity
 
     async def get_by_identity(self, identity_id : UUID) -> Identity:
@@ -134,9 +133,14 @@ class AuthenticationRepository:
         result = await self.db.execute(select(Key).where(Key.registration_key==key))
         return result.scalar_one_or_none()
 
-    async def verify_authentication_key(self, key : str) -> str | None:
-        result = await self.db.execute(select(Key).where(Key.authentication_key==key))
-        return result.scalar_one_or_none()
+    async def verify_authentication_key(self, key : str, email : EmailStr) -> str | None:
+        identity = await self.get_by_email(email)
+        identity_key : Key | None = identity.key
+        if key is None:
+            raise HTTPException(detail="Доступ запрещен", status_code=403)
+        if identity_key.authentication_key != key:
+            raise HTTPException(detail="Неверный ключ безопасности", status_code=403)
+        return identity_key
 
     async def update_status_identity(self, identity : Identity, status : Status):
         identity.status = status
@@ -222,8 +226,6 @@ class AuthenticationRepository:
     async def mark_event_as_published(self, event: OutboxEmailVerificationEvents):
         event.published_at = datetime.now(timezone.utc)
         await self.db.flush()
-
-
 
     async def create_outbox_event_email_verification(self, event_id : str, email : EmailStr, token : str) -> OutboxEmailVerificationEvents:
         found_event = await self.get_event_by_event_id(event_id)

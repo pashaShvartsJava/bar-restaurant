@@ -36,7 +36,7 @@ async def verify_csrf(request: Request):
 @router.post("/admin/logout")
 def logout(request : Request):
     payload = get_payload(request)
-    required_roles(IdentityRole.ADMIN, IdentityRole.MODERATOR, payload=payload)
+    required_roles(IdentityRole.OWNER, IdentityRole.ADMIN, IdentityRole.MODERATOR, payload=payload)
     verify_csrf(request)
     redirect = RedirectResponse(url="/admin/login", status_code=303)
     redirect.delete_cookie("access_token")
@@ -45,7 +45,7 @@ def logout(request : Request):
 @router.get("/admin_panel", response_class=HTMLResponse)
 async def show_admin_panel(request: Request):
     payload = get_payload(request)
-    required_roles(IdentityRole.ADMIN, IdentityRole.MODERATOR, payload=payload)
+    required_roles(IdentityRole.OWNER,IdentityRole.ADMIN, IdentityRole.MODERATOR, payload=payload)
     async with httpx.AsyncClient() as client:
         response = await client.get("http://support-service:8006/support/unread/count", headers={"internal_token" : INTERNAL_TOKEN})
     support_data = response.json()
@@ -55,21 +55,21 @@ async def show_admin_panel(request: Request):
 @router.get("/admin_panel/all_admins")
 async def show_all_admins(request: Request, admin_service : AdminService = Depends(get_service_dependency)):
     payload = get_payload(request)
-    required_role(IdentityRole.MODERATOR, payload)
+    required_roles(IdentityRole.OWNER,IdentityRole.MODERATOR, payload=payload)
     admins = await admin_service.find_all_admins()
     return templates.TemplateResponse('all_admins.html', {"request" : request, "admins" : admins})
 
 @router.get("/admin_panel/all_admins/add_admin")
 def show_page_add_admin(request : Request):
     payload = get_payload(request)
-    required_role(IdentityRole.MODERATOR, payload)
+    required_roles(IdentityRole.OWNER, IdentityRole.MODERATOR, payload=payload)
     return templates.TemplateResponse("add_admins.html", {"request" : request})
 
 @router.post("/admin_panel/all_admins/add_admin")
 async def add_admin(request : Request, data : Annotated[AdminRegistrationForm, Form()],
                     admin_service : AdminService = Depends(get_service_dependency)):
     payload = get_payload(request)
-    required_role(IdentityRole.MODERATOR, payload)
+    required_roles(IdentityRole.OWNER, IdentityRole.MODERATOR, payload=payload)
     await verify_csrf(request)
     identity_id = uuid.uuid4()
     new_identity = AddAdminRequest(identity_id=identity_id, email=data.email, password=data.password, role=data.role, status=Status.ACTIVE)
@@ -91,7 +91,7 @@ async def add_admin(request : Request, data : Annotated[AdminRegistrationForm, F
 @router.post("/admin_panel/delete_admin/{admin_id}")
 async def delete_admin(request : Request, admin_id : int, admin_service : AdminService = Depends(get_service_dependency)):
     payload = get_payload(request)
-    required_role(IdentityRole.MODERATOR, payload)
+    required_roles(IdentityRole.OWNER,IdentityRole.MODERATOR, payload=payload)
     await verify_csrf(request)
     admin = await admin_service.find_by_id(admin_id)
     async with httpx.AsyncClient() as client:
@@ -111,7 +111,7 @@ async def delete_admin(request : Request, admin_id : int, admin_service : AdminS
 @router.get("/admin_panel/edit/{admin_id}")
 async def show_edit_page(request : Request, admin_id : int, service : AdminService = Depends(get_service_dependency)):
     payload = get_payload(request)
-    required_roles(IdentityRole.ADMIN, IdentityRole.MODERATOR, payload=payload)
+    required_roles(IdentityRole.OWNER, IdentityRole.ADMIN, IdentityRole.MODERATOR, payload=payload)
     admin = await service.find_by_id(admin_id)
     return templates.TemplateResponse("edit_admin.html", {"request" : request, "admin" : admin})
 
@@ -125,7 +125,7 @@ async def edit_admin(request : Request, admin_id : int, service : AdminService =
                role: IdentityRole | None  = Form(None)
                ):
     payload = get_payload(request)
-    required_roles(IdentityRole.ADMIN, IdentityRole.MODERATOR, payload=payload)
+    required_roles(IdentityRole.OWNER, IdentityRole.ADMIN, IdentityRole.MODERATOR, payload=payload)
     await verify_csrf(request)
     updated_admin = AdminUpdateDTO(name = name,
                                    surname = surname,
@@ -170,7 +170,7 @@ async def add_admin(data : AdminRegistrationDTO,
 @router.get("/admin_panel/edit/password/{id}")
 async def edit_password_page(request : Request, id : int, service : AdminService = Depends(get_service_dependency)):
     payload = get_payload(request)
-    required_roles(IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
+    required_roles(IdentityRole.OWNER, IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
     admin = await service.find_by_identity(payload["sub"])
     if admin.id != id:
         raise HTTPException(status_code=403, detail="Доступ запрещен")
@@ -182,7 +182,7 @@ async def edit_password(request: Request, service: AdminService = Depends(get_se
                         new_password: str = Form(..., min_length=8, description="password"),
                         confirmed_password: str = Form(..., min_length=8, description="password")):
     payload = get_payload(request)
-    required_roles(IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
+    required_roles(IdentityRole.OWNER, IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
     await verify_csrf(request)
     admin = await service.find_by_identity(payload["sub"])
 
@@ -207,7 +207,7 @@ async def edit_password(request: Request, service: AdminService = Depends(get_se
 @router.get("/admin_panel/all_customers")
 async def show_all_customers(request : Request):
     payload = get_payload(request)
-    required_roles(IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
+    required_roles(IdentityRole.OWNER, IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
     async with httpx.AsyncClient() as client:
         response = await client.get(url="http://user-service:8005/get_all_users", headers={"internal_token" : INTERNAL_TOKEN} )
         response.raise_for_status()
@@ -227,7 +227,7 @@ async def show_all_customers(request : Request):
 @router.patch("/admin_panel/all_customers/{identity_id}/block")
 async def block_customer(request : Request, identity_id: UUID):
     payload = get_payload(request)
-    required_roles(IdentityRole.MODERATOR, payload=payload)
+    required_roles(IdentityRole.OWNER, IdentityRole.MODERATOR, payload=payload)
     await verify_csrf(request)
     async with httpx.AsyncClient() as client:
         response = await client.patch("http://authentication-service:8000/edit_status",
@@ -238,7 +238,7 @@ async def block_customer(request : Request, identity_id: UUID):
 @router.patch("/admin_panel/all_customers/{identity_id}/unblock")
 async def unblock_customer(request : Request, identity_id: UUID):
     payload = get_payload(request)
-    required_roles(IdentityRole.MODERATOR, payload=payload)
+    required_roles(IdentityRole.OWNER, IdentityRole.MODERATOR, payload=payload)
     await verify_csrf(request)
     async with httpx.AsyncClient() as client:
         response = await client.patch("http://authentication-service:8000/edit_status",
@@ -249,7 +249,7 @@ async def unblock_customer(request : Request, identity_id: UUID):
 @router.get("/admin_panel/all_customers/found_customer")
 async def search_customer(request : Request, client_id : UUID):
     payload = get_payload(request)
-    required_roles(IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
+    required_roles(IdentityRole.OWNER, IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
     async with httpx.AsyncClient() as client:
         response = await client.get(url="http://user-service:8005/get_all_users",
                                     headers={"internal_token": INTERNAL_TOKEN})
@@ -274,7 +274,7 @@ async def search_customer(request : Request, client_id : UUID):
 @router.get("/admin_panel/all_customers/{identity_id}")
 async def customer_info(request : Request, identity_id : UUID):
     payload = get_payload(request)
-    required_roles(IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
+    required_roles(IdentityRole.OWNER, IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
     async with httpx.AsyncClient() as client:
         response = await client.get(url="http://user-service:8005/get_user_address",
                                     params={"identity_id" : str(identity_id)},
@@ -295,7 +295,7 @@ async def customer_info(request : Request, identity_id : UUID):
 @router.get("/admin_panel/all_customers/orders/{identity_id}")
 async def customer_info(request : Request, identity_id : UUID):
     payload = get_payload(request)
-    required_roles(IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
+    required_roles(IdentityRole.OWNER, IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
     async with httpx.AsyncClient() as client:
         response = await client.get("http://order-service:8007/orders/get_customer_orders",
                                     params={"identity_id": str(identity_id)},

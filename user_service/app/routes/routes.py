@@ -35,6 +35,7 @@ async def verify_csrf(request: Request):
 @router.get("/user/my_profile")
 async def get_user_profile(request : Request, service : UserService = Depends(get_service_dependency)):
     payload = get_payload(request)
+    required_roles(IdentityRole.USER, payload=payload)
     user = await service.find_by_identity_id(payload["sub"])
     async with httpx.AsyncClient() as client:
         response = await client.get("http://order-service:8007/orders/get_user_active_orders",
@@ -75,6 +76,8 @@ async def register_user(data : RegisterRequest,
 
 @router.post("/logout")
 async def logout(request : Request):
+    payload = get_payload(request)
+    required_roles(IdentityRole.USER, payload=payload)
     await verify_csrf(request)
     redirect = RedirectResponse(url="/login", status_code=303)
     redirect.delete_cookie("access_token")
@@ -172,7 +175,7 @@ async def get_user_address(request : Request,
                            internal_token : str = Header(..., alias="internal_token")):
     await verify_internal_token(internal_token)
     payload = get_payload(request)
-    required_roles(IdentityRole.ADMIN, IdentityRole.MODERATOR, payload=payload)
+    required_roles(IdentityRole.OWNER, IdentityRole.ADMIN, IdentityRole.MODERATOR, payload=payload)
     user = await service.find_by_identity_id(identity_id)
     return UserInfo(
         name=user.name,

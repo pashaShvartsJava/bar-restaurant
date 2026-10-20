@@ -79,9 +79,7 @@ async def admin_login(data : Annotated[AdminLogin, Form()], service : Authentica
             "msg": "Неверный email или пароль"
         }
     ])
-    authentication_key = await service.verify_authentication_key(data.authentication_key)
-    if authentication_key is None:
-        raise HTTPException(detail="Доступ запрещен", status_code=403)
+    await service.verify_authentication_key(data.authentication_key, data.email)
     admin = await service.find_by_email(data.email)
     if not admin.verified_email:
         raise HTTPException(detail="У этого аккаунта не верифицирован email", status_code=403)

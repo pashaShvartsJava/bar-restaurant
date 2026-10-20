@@ -30,9 +30,7 @@ INTERNAL_TOKEN = settings.internal_token
 templates = Jinja2Templates(directory="app/templates_auth")
 router = APIRouter()
 
-async def create_restaurant_dto(data : Annotated[RestaurantRegistrationDTO, Form()],
-                            client : Annotated[httpx.AsyncClient, Depends(get_httpx_async_connection)],
-                            identity_id : UUID):
+async def create_restaurant_dto(data : Annotated[RestaurantRegistrationDTO, Form()], identity_id : UUID):
     r_dto = RestaurantCreationDTO(
         country=data.country,
         city=data.city,
@@ -43,11 +41,12 @@ async def create_restaurant_dto(data : Annotated[RestaurantRegistrationDTO, Form
         currency=data.currency,
         identity_id=identity_id
     )
-    r_response = await client.post("http://restaurant-service/restaurants/add_restaurant",
-                                   headers={"internal_token": INTERNAL_TOKEN},
-                                   json=r_dto.model_dump(mode="json"))
-    r_response.raise_for_status()
-    restaurant_id = r_response.json()
+    async with httpx.AsyncClient() as client:
+        r_response = await client.post("http://restaurant-service:8010/restaurants/add_restaurant",
+                                       headers={"internal_token": INTERNAL_TOKEN},
+                                       json=r_dto.model_dump(mode="json"))
+        r_response.raise_for_status()
+        restaurant_id = r_response.json()
     return restaurant_id
 
 @router.get("/restaurant-platform")
@@ -68,7 +67,7 @@ async def create_restaurant(data : Annotated[RestaurantRegistrationDTO, Form()],
         raise HTTPException(detail="Такой пользователь уже существует", status_code=409)
 
     if existing_owner is not None and (existing_owner.status==Status.PENDING or existing_owner.status==Status.FAILED):
-        restaurant_id = await create_restaurant_dto(data, client, existing_owner.id)
+        restaurant_id = await create_restaurant_dto(data, existing_owner.id)
         old_admin_dto = AdminRegistrationDTO(identity_id=existing_owner.id, name=data.name,
                                              surname=data.surname, phone=data.phone,
                                              birthday=data.birthday, email=existing_owner.email, role=IdentityRole.OWNER)
@@ -76,11 +75,14 @@ async def create_restaurant(data : Annotated[RestaurantRegistrationDTO, Form()],
                                      json=old_admin_dto.model_dump(mode="json"),
                                      headers={"internal_token": INTERNAL_TOKEN},
                                      params={"restaurant_id" : restaurant_id})
+        if response.is_error:
+            print("Admin service status:", response.status_code)
+            print("Admin service response:", response.text)
         response.raise_for_status()
         await service.update_status_identity(existing_owner, Status.ACTIVE)
         return RedirectResponse(url="/choose_subscription", status_code=303)
     identity_id = uuid.uuid4()
-    restaurant_id = await create_restaurant_dto(data, client, identity_id)
+    restaurant_id = await create_restaurant_dto(data, identity_id)
     created_owner = await service.create_admin_identity(data.email, data.password, IdentityRole.OWNER, restaurant_id, identity_id)
     created_owner_dto = AdminRegistrationDTO(identity_id=created_owner.id, name=data.name,
                                          surname=data.surname, phone=data.phone,
@@ -89,8 +91,11 @@ async def create_restaurant(data : Annotated[RestaurantRegistrationDTO, Form()],
                                      json=created_owner_dto.model_dump(mode="json"),
                                      headers={"internal_token": INTERNAL_TOKEN},
                                      params={"restaurant_id" : restaurant_id})
+    if a_response.is_error:
+        print("Admin service status:", a_response.status_code)
+        print("Admin service response:", a_response.text)
     a_response.raise_for_status()
-    await service.update_status_identity(created_owner.id, Status.ACTIVE)
+    await service.update_status_identity(created_owner, Status.ACTIVE)
     return RedirectResponse(url="/choose_subscription", status_code=303)
 
 @router.get("/choose_subscription")

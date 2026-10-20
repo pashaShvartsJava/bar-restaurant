@@ -1,3 +1,5 @@
+import uuid
+
 from sqlalchemy import Column, DateTime, String, Enum as SQLEnum, func
 from sqlalchemy.dialects.postgresql  import UUID
 from enum import Enum
@@ -16,7 +18,7 @@ class Restaurant(Base):
 
     __tablename__ = "restaurants"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, index=True)
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     restaurant_name = Column(String, nullable=False, unique=True)
     slug = Column(String, nullable=False, unique=True)
     country = Column(String, nullable=False)
@@ -24,7 +26,7 @@ class Restaurant(Base):
     address = Column(String, nullable=False)
     timezone = Column(String, nullable=False)
     currency = Column(String(3), nullable=False, default="EUR")
-    status =Column(SQLEnum(RestaurantStatus, name="restaurant_status"), nullable=False, default=RestaurantStatus.PENDING)
+    status = Column(SQLEnum(RestaurantStatus, name="restaurant_status"), nullable=False, default=RestaurantStatus.PENDING)
     created_at = Column(DateTime(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now(),)
     updated_at = Column(DateTime(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now(),)
 

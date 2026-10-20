@@ -20,6 +20,6 @@ async def show_analytics_page(request : Request,
                               date_to : date | None = None,
                               service : OrderService = Depends(get_order_service_dependency)):
     payload = get_payload(request)
-    required_roles(IdentityRole.MODERATOR, payload=payload)
+    required_roles(IdentityRole.OWNER, IdentityRole.MODERATOR, payload=payload)
     analytics = await service.get_analytics(date_from, date_to)
     return templates.TemplateResponse("analytics.html", {"request" : request,"analytics" : analytics, **analytics})

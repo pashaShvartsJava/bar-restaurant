@@ -9,8 +9,8 @@ from ..dependencies.dependency import get_restaurant_dependency
 router = APIRouter()
 
 @router.post("/restaurants/add_restaurant")
-async def create_restaurant(internal_token : Header(..., alias="internal_token"),
-                            data : RestaurantCreationDTO,
+async def create_restaurant(data : RestaurantCreationDTO,
+                            internal_token : str = Header(..., alias="internal_token"),
                             service : RestaurantService = Depends(get_restaurant_dependency)):
     await verify_internal_token(internal_token)
     restaurant = await service.create_restaurant(data)

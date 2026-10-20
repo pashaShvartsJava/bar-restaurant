@@ -35,14 +35,14 @@ async def verify_csrf(request: Request):
 @router.get("/orders/history")
 async def orders_history_page(request : Request, service : OrderService = Depends(get_order_service_dependency)):
     payload = get_payload(request)
-    required_roles(IdentityRole.ADMIN, IdentityRole.MODERATOR, payload=payload)
+    required_roles(IdentityRole.OWNER, IdentityRole.ADMIN, IdentityRole.MODERATOR, payload=payload)
     orders = await service.get_all_orders_history()
     return templates.TemplateResponse("old_orders.html", {"request": request, "orders": orders})
 
 @router.get("/orders/get_orders")
 async def get_all_orders(request : Request, service : OrderService = Depends(get_order_service_dependency)):
     payload = get_payload(request)
-    required_roles(IdentityRole.ADMIN, IdentityRole.MODERATOR, payload=payload)
+    required_roles(IdentityRole.OWNER, IdentityRole.ADMIN, IdentityRole.MODERATOR, payload=payload)
     orders = await service.get_all_orders()
     return templates.TemplateResponse("all_orders.html", {"request" : request, "orders" : orders})
 
@@ -52,7 +52,7 @@ async def change_order_status(request : Request,
                               data : StatusDTO,
                               service : OrderService = Depends(get_order_service_dependency)):
     payload = get_payload(request)
-    required_roles(IdentityRole.ADMIN, IdentityRole.MODERATOR, payload=payload)
+    required_roles(IdentityRole.OWNER, IdentityRole.ADMIN, IdentityRole.MODERATOR, payload=payload)
     await verify_csrf(request)
     order = await service.get_order_by_order_number(UUID(order_number))
     if order.table_number is None:
@@ -170,7 +170,7 @@ async def search_and_sorting(request : Request,
                              sort: str = "created_desc",
                              service : OrderService = Depends(get_order_service_dependency)):
     payload = get_payload(request)
-    required_roles(IdentityRole.ADMIN, IdentityRole.MODERATOR, payload=payload)
+    required_roles(IdentityRole.OWNER, IdentityRole.ADMIN, IdentityRole.MODERATOR, payload=payload)
     orders = await service.search_or_sort_orders(search, status, date_from, date_to, sum_from, sum_to, sort)
     return templates.TemplateResponse("all_orders.html", {"request" : request, "orders" : orders})
 
@@ -181,7 +181,7 @@ async def get_user_orders(request : Request,
                           internal_token : str = Header(..., alias="internal_token")):
     await verify_internal_token(internal_token)
     payload = get_payload(request)
-    required_roles(IdentityRole.ADMIN, IdentityRole.MODERATOR, payload=payload)
+    required_roles(IdentityRole.OWNER, IdentityRole.ADMIN, IdentityRole.MODERATOR, payload=payload)
     orders = await service.find_orders_by_client_id(identity_id)
     return orders
 
@@ -241,6 +241,8 @@ async def make_internal_order(status : str,
 
 @router.get("/orders/create_order_manually")
 async def create_order_manually(request : Request):
+    payload = get_payload(request)
+    required_roles(IdentityRole.OWNER, IdentityRole.ADMIN, IdentityRole.MODERATOR, payload=payload)
     async with httpx.AsyncClient() as client:
         response = await client.get(url="http://reservation-service:8003/tables/available_tables",
                                     headers={"internal_token": INTERNAL_TOKEN},
@@ -263,7 +265,7 @@ async def create_order_manually(request : Request,
                                 table_number : int,
                                 service : OrderService = Depends(get_order_service_dependency)):
     payload = get_payload(request)
-    required_roles(IdentityRole.ADMIN, IdentityRole.MODERATOR, payload=payload)
+    required_roles(IdentityRole.OWNER, IdentityRole.ADMIN, IdentityRole.MODERATOR, payload=payload)
     await verify_csrf(request)
     await service.create_order_for_guest(data,OrderStatus.INTERNAL_ORDER, table_number)
 
@@ -273,7 +275,7 @@ async def merge_orders(request : Request,
                        service : OrderService = Depends(get_order_service_dependency)):
     await verify_csrf(request)
     payload = get_payload(request)
-    required_roles(IdentityRole.ADMIN, IdentityRole.MODERATOR, payload=payload)
+    required_roles(IdentityRole.OWNER, IdentityRole.ADMIN, IdentityRole.MODERATOR, payload=payload)
     await service.merge_orders(data)
 
 @router.post("/orders/split")
@@ -282,13 +284,13 @@ async def split_order(request : Request,
                       service : OrderService = Depends(get_order_service_dependency)):
     await verify_csrf(request)
     payload = get_payload(request)
-    required_roles(IdentityRole.ADMIN, IdentityRole.MODERATOR, payload=payload)
+    required_roles(IdentityRole.OWNER, IdentityRole.ADMIN, IdentityRole.MODERATOR, payload=payload)
     await service.split_order(data)
 
 @router.get("/orders/{order_id}")
 async def get_order_info(request : Request, order_id : int, service : OrderService = Depends(get_order_service_dependency)):
     payload = get_payload(request)
-    required_roles(IdentityRole.ADMIN, IdentityRole.MODERATOR, payload=payload)
+    required_roles(IdentityRole.OWNER, IdentityRole.ADMIN, IdentityRole.MODERATOR, payload=payload)
     order = await service.get_order_by_id(order_id)
     return templates.TemplateResponse("order_info.html", {"request" : request, "order" : order})
 

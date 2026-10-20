@@ -22,4 +22,4 @@ class GuestCustomer(Base):
     email = Column(String, nullable=False)
     birthday = Column(Date, nullable=False, index=True)
     phone = Column(String, nullable=False)
-    created_at = Column(DateTime(timezone=True), nullable=False, default=lambda: datetime.now(timezone.utc))
+    created_at = Column(DateTime(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now())

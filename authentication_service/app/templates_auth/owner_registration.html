@@ -7,38 +7,114 @@
     <title>Регистрация владельца — Restaurant Platform</title>
     <style>
         :root{--gold:#d5a65b;--gold-light:#e6c58f;--bg:#0c0b0e;--panel:#171316;--text:#eee5df;--muted:#91898a;--border:rgba(255,255,255,.09);--green:#9bc8a5;--red:#e58c8c}
-        *{margin:0;padding:0;box-sizing:border-box}html{scroll-behavior:smooth}
+        *{margin:0;padding:0;box-sizing:border-box}
+        html{scroll-behavior:smooth}
         body{min-height:100vh;padding:40px 20px;display:flex;align-items:center;justify-content:center;overflow-x:hidden;color:var(--text);font-family:Arial,sans-serif;background:radial-gradient(ellipse at 50% 0%,rgba(115,53,63,.30) 0%,rgba(56,31,39,.24) 32%,rgba(19,16,20,.96) 69%,#08080a 100%),linear-gradient(180deg,#302027 0%,#191419 50%,#08080a 100%)}
         body:before{content:"";position:fixed;inset:0;pointer-events:none;background:radial-gradient(circle at 13% 16%,rgba(175,91,75,.07),transparent 28%),radial-gradient(circle at 88% 30%,rgba(213,166,91,.045),transparent 30%)}
-        button,input,select{font:inherit}a{color:#c9a05f;text-decoration:none}a:hover{color:#f0c77f;text-decoration:underline}
+        button,input,select{font:inherit}
+        a{color:#c9a05f;text-decoration:none}
+        a:hover{color:#f0c77f;text-decoration:underline}
         .page{position:relative;z-index:1;width:min(100%,1050px);display:grid;grid-template-columns:minmax(190px,230px) minmax(0,520px);justify-content:center;align-items:start;gap:32px}
-        .sidebar{display:flex;flex-direction:column;gap:14px;padding-top:35px}.side-box{padding:22px;border:1px solid rgba(255,255,255,.065);border-radius:13px;background:linear-gradient(145deg,rgba(30,24,28,.95),rgba(13,12,15,.97));box-shadow:0 18px 45px #0003;backdrop-filter:blur(12px)}
-        .side-label{display:block;margin-bottom:11px;color:#82787c;font-size:9px;letter-spacing:2px}.side-box h2{margin-bottom:10px;color:var(--gold);font:normal 20px/1.35 Georgia,serif}.side-box p{color:#93898d;font-size:11px;line-height:1.8}
-        .benefit-list{display:flex;flex-direction:column;gap:17px;margin-top:20px}.benefit{display:flex;align-items:flex-start;gap:11px}.benefit-icon{flex:0 0 31px;width:31px;height:31px;display:grid;place-items:center;border:1px solid #d5a65b3d;border-radius:9px;background:#d5a65b12;color:var(--gold-light);font-size:14px}.benefit strong{display:block;margin:2px 0 5px;color:#dcd2ce;font-size:11px;font-weight:600}.benefit p{font-size:10px;line-height:1.6}.side-note{padding:18px 20px;border-left:2px solid #d5a65b8c;color:#a79b9d;font:italic 13px/1.7 Georgia,serif}
+        .sidebar{display:flex;flex-direction:column;gap:14px;padding-top:35px}
+        .side-box{padding:22px;border:1px solid rgba(255,255,255,.065);border-radius:13px;background:linear-gradient(145deg,rgba(30,24,28,.95),rgba(13,12,15,.97));box-shadow:0 18px 45px #0003;backdrop-filter:blur(12px)}
+        .side-label{display:block;margin-bottom:11px;color:#82787c;font-size:9px;letter-spacing:2px}
+        .side-box h2{margin-bottom:10px;color:var(--gold);font:normal 20px/1.35 Georgia,serif}
+        .side-box p{color:#93898d;font-size:11px;line-height:1.8}
+        .benefit-list{display:flex;flex-direction:column;gap:17px;margin-top:20px}
+        .benefit{display:flex;align-items:flex-start;gap:11px}
+        .benefit-icon{flex:0 0 31px;width:31px;height:31px;display:grid;place-items:center;border:1px solid #d5a65b3d;border-radius:9px;background:#d5a65b12;color:var(--gold-light);font-size:14px}
+        .benefit strong{display:block;margin:2px 0 5px;color:#dcd2ce;font-size:11px;font-weight:600}
+        .benefit p{font-size:10px;line-height:1.6}
+        .side-note{padding:18px 20px;border-left:2px solid #d5a65b8c;color:#a79b9d;font:italic 13px/1.7 Georgia,serif}
         .card{min-width:0;padding:35px;border:1px solid #d5a65b38;border-radius:18px;background:linear-gradient(145deg,rgba(29,24,27,.98),rgba(13,12,15,.99));box-shadow:0 30px 90px #0007,0 0 45px #d5a65b09;backdrop-filter:blur(16px);animation:appear .65s ease both}
-        .logo{margin-bottom:13px;color:var(--gold);font:12px Georgia,serif;letter-spacing:5px;text-align:center}h1{color:#f0e7e0;font:normal clamp(25px,4vw,31px)/1.25 Georgia,serif;text-align:center}.subtitle{max-width:340px;margin:11px auto 25px;color:var(--muted);font-size:11px;line-height:1.8;text-align:center}
-        .progress-wrap{margin-bottom:25px}.progress-meta{display:flex;justify-content:space-between;gap:12px;margin-bottom:10px;color:#94898d;font-size:10px}.progress-meta strong{color:var(--gold-light);font-weight:normal}.progress-track{height:3px;overflow:hidden;border-radius:10px;background:#ffffff14}.progress-bar{width:0;height:100%;border-radius:inherit;background:linear-gradient(90deg,#98703b,#e5bf7b);transition:width .4s}
-        .steps{display:flex;flex-direction:column;gap:11px}.step{min-width:0;overflow:hidden;border:1px solid #ffffff13;border-radius:12px;background:#ffffff05;transition:.3s}.step.active{border-color:#d5a65b61;background:#d5a65b08;box-shadow:0 8px 28px #0002}.step.completed{border-color:#9bc8a533;background:#9bc8a505}
-        .step-header{width:100%;display:flex;align-items:center;gap:12px;padding:16px;border:0;background:transparent;color:inherit;text-align:left;cursor:pointer}.step-header:focus-visible,.button:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
-        .step-number{flex:0 0 32px;width:32px;height:32px;display:grid;place-items:center;border:1px solid #ffffff1f;border-radius:50%;background:#ffffff09;color:#8b8185;font-size:11px}.step.active .step-number{border-color:var(--gold);background:var(--gold);color:#211912}.step.completed .step-number{border-color:#9bc8a57a;background:#9bc8a51f;color:var(--green)}
-        .step-heading{flex:1;min-width:0}.step-title{display:block;color:#e5dcd7;font:normal 16px/1.4 Georgia,serif}.step-hint,.step-summary{display:block;margin-top:4px;overflow-wrap:anywhere;font-size:10px;line-height:1.5}.step-hint{color:#81777c}.step-summary{display:none;color:#b4c7b5}.step.completed .step-summary{display:block}.step.completed .step-hint{display:none}.step-chevron{color:#82777b;font-size:13px;transition:transform .3s}.step.active .step-chevron{color:var(--gold);transform:rotate(180deg)}
-        .step-body{display:none}.step.active .step-body{display:block}.step-content{padding:0 17px 20px}.step-divider{height:1px;margin-bottom:19px;background:#ffffff10}.step-description{margin-bottom:17px;color:#94898d;font-size:11px;line-height:1.7}
-        .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}.field{min-width:0;margin-bottom:15px}.field:last-child{margin-bottom:0}label{display:block;margin-bottom:8px;color:#c8bfc0;font-size:10px;line-height:1.5}.required{color:var(--gold)}
+        .logo{margin-bottom:13px;color:var(--gold);font:12px Georgia,serif;letter-spacing:5px;text-align:center}
+        h1{color:#f0e7e0;font:normal clamp(25px,4vw,31px)/1.25 Georgia,serif;text-align:center}
+        .subtitle{max-width:340px;margin:11px auto 25px;color:var(--muted);font-size:11px;line-height:1.8;text-align:center}
+        .progress-wrap{margin-bottom:25px}
+        .progress-meta{display:flex;justify-content:space-between;gap:12px;margin-bottom:10px;color:#94898d;font-size:10px}
+        .progress-meta strong{color:var(--gold-light);font-weight:normal}
+        .progress-track{height:3px;overflow:hidden;border-radius:10px;background:#ffffff14}
+        .progress-bar{width:0;height:100%;border-radius:inherit;background:linear-gradient(90deg,#98703b,#e5bf7b);transition:width .4s}
+        .steps{display:flex;flex-direction:column;gap:11px}
+        .step{min-width:0;overflow:hidden;border:1px solid #ffffff13;border-radius:12px;background:#ffffff05;transition:.3s}
+        .step.active{border-color:#d5a65b61;background:#d5a65b08;box-shadow:0 8px 28px #0002}
+        .step.completed{border-color:#9bc8a533;background:#9bc8a505}
+        .step-header{width:100%;display:flex;align-items:center;gap:12px;padding:16px;border:0;background:transparent;color:inherit;text-align:left;cursor:pointer}
+        .step-header:focus-visible,.button:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+        .step-number{flex:0 0 32px;width:32px;height:32px;display:grid;place-items:center;border:1px solid #ffffff1f;border-radius:50%;background:#ffffff09;color:#8b8185;font-size:11px}
+        .step.active .step-number{border-color:var(--gold);background:var(--gold);color:#211912}
+        .step.completed .step-number{border-color:#9bc8a57a;background:#9bc8a51f;color:var(--green)}
+        .step-heading{flex:1;min-width:0}
+        .step-title{display:block;color:#e5dcd7;font:normal 16px/1.4 Georgia,serif}
+        .step-hint,.step-summary{display:block;margin-top:4px;overflow-wrap:anywhere;font-size:10px;line-height:1.5}
+        .step-hint{color:#81777c}
+        .step-summary{display:none;color:#b4c7b5}
+        .step.completed .step-summary{display:block}
+        .step.completed .step-hint{display:none}
+        .step-chevron{color:#82777b;font-size:13px;transition:transform .3s}
+        .step.active .step-chevron{color:var(--gold);transform:rotate(180deg)}
+        .step-body{display:none}
+        .step.active .step-body{display:block}
+        .step-content{padding:0 17px 20px}
+        .step-divider{height:1px;margin-bottom:19px;background:#ffffff10}
+        .step-description{margin-bottom:17px;color:#94898d;font-size:11px;line-height:1.7}
+        .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+        .field{min-width:0;margin-bottom:15px}
+        .field:last-child{margin-bottom:0}
+        label{display:block;margin-bottom:8px;color:#c8bfc0;font-size:10px;line-height:1.5}
+        .required{color:var(--gold)}
         input:not([type=checkbox]),select{width:100%;min-width:0;min-height:43px;padding:12px 13px;border:1px solid #ffffff1a;border-radius:8px;outline:none;background:#ffffff09;color:#eee8e3;font-size:12px;transition:border-color .25s,box-shadow .25s}
-        input:hover,select:hover{border-color:#ffffff2b}input:focus,select:focus{border-color:#d5a65bbf;background:#ffffff0d;box-shadow:0 0 0 3px #d5a65b13}input::placeholder{color:#6e666b}input[type=date]{color-scheme:dark}
-        select{appearance:none;padding-right:32px;cursor:pointer}select:invalid{color:#8b8185}select option{background:#211a1f;color:#eee5df}.select-wrap{position:relative}.select-wrap:after{content:"⌄";position:absolute;top:50%;right:13px;color:#988b8f;font-size:15px;pointer-events:none;transform:translateY(-55%)}
-        .password-toggle{position:absolute;top:50%;right:11px;padding:4px;border:0;background:transparent;color:#9c9095;font-size:10px;cursor:pointer;transform:translateY(-50%)}.password-toggle:hover{color:var(--gold-light)}input.has-toggle{padding-right:65px}
-        .field-error{display:none;margin-top:6px;color:var(--red);font-size:10px;line-height:1.5}.field.invalid input:not([type=checkbox]),.field.invalid select{border-color:#e58c8cbf;box-shadow:0 0 0 2px #e58c8c0e}.field.invalid .field-error{display:block}.field.valid input:not([type=checkbox]),.field.valid select{border-color:#9bc8a559}.field-help{margin-top:7px;color:#777074;font-size:10px;line-height:1.6}
-        .password-rules{display:flex;flex-wrap:wrap;gap:7px 12px;margin-top:9px}.password-rule{color:#766e72;font-size:9px}.password-rule.met{color:var(--green)}.password-rule:before{content:"○";margin-right:5px}.password-rule.met:before{content:"✓"}
-        .check-row{display:flex;align-items:flex-start;gap:10px;margin:15px 0}.check-row input[type=checkbox]{flex:0 0 15px;width:15px;height:15px;margin-top:2px;accent-color:var(--gold);cursor:pointer}.check-row label{margin:0;color:#9a9093;font-size:10px;line-height:1.7;cursor:pointer}.checkbox-error{display:none;margin:-7px 0 12px 25px;color:var(--red);font-size:10px}.checkbox-error.show{display:block}
-        .button{width:100%;min-height:45px;display:flex;align-items:center;justify-content:center;gap:9px;padding:13px 15px;border:1px solid #d5a65b8c;border-radius:8px;background:linear-gradient(145deg,#392920f5,#20191bfa);color:#f0e7df;font-size:11px;font-weight:600;cursor:pointer;transition:transform .25s,border-color .25s,box-shadow .25s}.button:hover{transform:translateY(-2px);border-color:var(--gold);box-shadow:0 9px 25px #d5a65b1a}.button:active{transform:translateY(0)}.button-arrow{font-size:15px;transition:transform .25s}.button:hover .button-arrow{transform:translateX(3px)}.button-secondary{margin-top:9px;border-color:#ffffff17;background:#ffffff04;color:#a1989b;font-weight:normal}.button-secondary:hover{border-color:#ffffff33;background:#ffffff09;box-shadow:none;color:#e0d6d1}.button:disabled{opacity:.65;cursor:wait;transform:none}
-        .form-error{display:none;margin-bottom:15px;padding:12px 13px;border:1px solid #e58c8c4d;border-radius:8px;background:#731b2630;color:#f0a5a5;font-size:11px;line-height:1.6}.form-error.show{display:block}
-        .footer{margin-top:22px;color:#777074;font-size:10px;line-height:1.9;text-align:center}.footer a{white-space:nowrap}.security-note{display:flex;justify-content:center;align-items:center;gap:7px;margin-top:15px;color:#696267;font-size:9px}.security-note span{color:var(--gold)}
-        .success-panel{display:none;padding:30px 10px 10px;text-align:center;animation:appear .5s ease both}.success-panel.show{display:block}.success-icon{width:62px;height:62px;display:grid;place-items:center;margin:0 auto 20px;border:1px solid #9bc8a559;border-radius:50%;background:#9bc8a514;color:var(--green);font-size:25px}.success-panel h2{margin-bottom:12px;font:normal 25px Georgia,serif}.success-panel p{margin:0 auto 24px;color:#9b9094;font-size:12px;line-height:1.8}
-        @keyframes appear{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}@media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;animation-duration:.01ms!important;transition-duration:.01ms!important}}
+        input:hover,select:hover{border-color:#ffffff2b}
+        input:focus,select:focus{border-color:#d5a65bbf;background:#ffffff0d;box-shadow:0 0 0 3px #d5a65b13}
+        input::placeholder{color:#6e666b}
+        input[type=date]{color-scheme:dark}
+        select{appearance:none;padding-right:32px;cursor:pointer}
+        select:invalid{color:#8b8185}
+        select option{background:#211a1f;color:#eee5df}
+        .select-wrap{position:relative}
+        .select-wrap:after{content:"⌄";position:absolute;top:50%;right:13px;color:#988b8f;font-size:15px;pointer-events:none;transform:translateY(-55%)}
+        .password-toggle{position:absolute;top:50%;right:11px;padding:4px;border:0;background:transparent;color:#9c9095;font-size:10px;cursor:pointer;transform:translateY(-50%)}
+        .password-toggle:hover{color:var(--gold-light)}
+        input.has-toggle{padding-right:65px}
+        .field-error{display:none;margin-top:6px;color:var(--red);font-size:10px;line-height:1.5}
+        .field.invalid input:not([type=checkbox]),.field.invalid select{border-color:#d98c8c88;box-shadow:0 0 0 1px #d98c8c0a}
+        .field.invalid .field-error{display:block}
+        .field.valid input:not([type=checkbox]),.field.valid select{border-color:#9bc8a559}
+        .field-help{margin-top:7px;color:#777074;font-size:10px;line-height:1.6}
+        .password-rules{display:flex;flex-wrap:wrap;gap:7px 12px;margin-top:9px}
+        .password-rule{color:#766e72;font-size:9px}
+        .password-rule.met{color:var(--green)}
+        .password-rule:before{content:"○";margin-right:5px}
+        .password-rule.met:before{content:"✓"}
+        .check-row{display:flex;align-items:flex-start;gap:10px;margin:15px 0}
+        .check-row input[type=checkbox]{flex:0 0 15px;width:15px;height:15px;margin-top:2px;accent-color:var(--gold);cursor:pointer}
+        .check-row label{margin:0;color:#9a9093;font-size:10px;line-height:1.7;cursor:pointer}
+        .checkbox-error{display:none;margin:-7px 0 12px 25px;color:var(--red);font-size:10px}
+        .checkbox-error.show{display:block}
+        .button{width:100%;min-height:45px;display:flex;align-items:center;justify-content:center;gap:9px;padding:13px 15px;border:1px solid #d5a65b8c;border-radius:8px;background:linear-gradient(145deg,#392920f5,#20191bfa);color:#f0e7df;font-size:11px;font-weight:600;cursor:pointer;transition:transform .25s,border-color .25s,box-shadow .25s}
+        .button:hover{transform:translateY(-2px);border-color:var(--gold);box-shadow:0 9px 25px #d5a65b1a}
+        .button:active{transform:translateY(0)}
+        .button-arrow{font-size:15px;transition:transform .25s}
+        .button:hover .button-arrow{transform:translateX(3px)}
+        .button-secondary{margin-top:9px;border-color:#ffffff17;background:#ffffff04;color:#a1989b;font-weight:normal}
+        .button-secondary:hover{border-color:#ffffff33;background:#ffffff09;box-shadow:none;color:#e0d6d1}
+        .button:disabled{opacity:.65;cursor:wait;transform:none}
+        .form-error{display:none;margin:16px 0;padding:12px 15px;border:1px solid rgba(229,140,140,.55);border-radius:6px;background:rgba(229,140,140,.055);color:#e58c8c;font-size:13px;font-weight:600;line-height:1.5;overflow-wrap:anywhere}
+        .form-error.show{display:block}
+        .footer{margin-top:22px;color:#777074;font-size:10px;line-height:1.9;text-align:center}
+        .footer a{white-space:nowrap}
+        .security-note{display:flex;justify-content:center;align-items:center;gap:7px;margin-top:15px;color:#696267;font-size:9px}
+        .security-note span{color:var(--gold)}
+        .success-panel{display:none;padding:30px 10px 10px;text-align:center;animation:appear .5s ease both}
+        .success-panel.show{display:block}
+        .success-icon{width:62px;height:62px;display:grid;place-items:center;margin:0 auto 20px;border:1px solid #9bc8a559;border-radius:50%;background:#9bc8a514;color:var(--green);font-size:25px}
+        .success-panel h2{margin-bottom:12px;font:normal 25px Georgia,serif}
+        .success-panel p{margin:0 auto 24px;color:#9b9094;font-size:12px;line-height:1.8}
+        @keyframes appear{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+        @media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;animation-duration:.01ms!important;transition-duration:.01ms!important}}
         @media(max-width:850px){body{padding:25px 18px}.page{width:min(100%,520px);grid-template-columns:minmax(0,1fr);gap:0}.sidebar{display:none}.card{padding:30px}}
         @media(max-width:480px){body{align-items:flex-start;padding:14px 10px}.card{padding:25px 16px;border-radius:14px}.subtitle{margin-bottom:22px}.step-header{gap:10px;padding:13px 12px}.step-content{padding:0 12px 16px}.step-title{font-size:15px}.row{grid-template-columns:minmax(0,1fr);gap:0}input:not([type=checkbox]),select{min-height:44px}}
-    </style>
+</style>
 </head>
 <body>
 <main class="page">
@@ -50,18 +126,15 @@
             <div class="benefit-list">
                 <div class="benefit">
                     <div class="benefit-icon">⌘</div>
-                    <div><strong>Всё под контролем</strong>
-                        <p>Меню, заказы и бронирования в одной панели.</p></div>
+                    <div><strong>Всё под контролем</strong><p>Меню, заказы и бронирования в одной панели.</p></div>
                 </div>
                 <div class="benefit">
                     <div class="benefit-icon">↗</div>
-                    <div><strong>Меньше рутины</strong>
-                        <p>Управляйте заведением из единого интерфейса.</p></div>
+                    <div><strong>Меньше рутины</strong><p>Управляйте заведением из единого интерфейса.</p></div>
                 </div>
                 <div class="benefit">
                     <div class="benefit-icon">◇</div>
-                    <div><strong>Отдельное пространство</strong>
-                        <p>Настройки и данные вашего заведения.</p></div>
+                    <div><strong>Отдельное пространство</strong><p>Настройки и данные вашего заведения.</p></div>
                 </div>
             </div>
         </section>
@@ -71,206 +144,81 @@
         <header>
             <div class="logo">RESTAURANT PLATFORM</div>
             <h1 id="pageTitle">Регистрация владельца</h1>
-            <p class="subtitle" id="pageSubtitle">Несколько простых шагов — и вы сможете настроить пространство своего
-                заведения.</p></header>
+            <p class="subtitle" id="pageSubtitle">Несколько простых шагов — и вы сможете настроить пространство своего заведения.</p>
+        </header>
         <div class="progress-wrap" id="progressWrap">
-            <div class="progress-meta"><span id="progressLabel">Шаг 1 из 3</span><strong
-                    id="progressPercent">33%</strong></div>
-            <div class="progress-track" role="progressbar" aria-label="Прогресс регистрации" aria-valuemin="0"
-                 aria-valuemax="100" aria-valuenow="33" id="progressTrack">
+            <div class="progress-meta"><span id="progressLabel">Шаг 1 из 3</span><strong id="progressPercent">33%</strong></div>
+            <div class="progress-track" role="progressbar" aria-label="Прогресс регистрации" aria-valuemin="0" aria-valuemax="100" aria-valuenow="33" id="progressTrack">
                 <div class="progress-bar" id="progressBar"></div>
             </div>
         </div>
-        <div class="form-error" id="formError" role="alert"></div>
-        <form id="registrationForm" action="/restaurant/register" method="post" novalidate>
+        <div class="form-error" id="formError" role="alert" aria-live="assertive"></div>
+        <form id="registrationForm" action="/restaurant/register" method="post" novalidate onsubmit="return false;">
             <div class="steps">
                 <section class="step active" data-step="0">
-                    <button class="step-header" type="button" aria-expanded="true" aria-controls="stepBody0"><span
-                            class="step-number">1</span><span class="step-heading"><span class="step-title">Данные владельца</span><span
-                            class="step-hint">Контактные данные и подтверждение возраста</span><span
-                            class="step-summary"></span></span><span class="step-chevron" aria-hidden="true">⌄</span>
+                    <button class="step-header" type="button" aria-expanded="true" aria-controls="stepBody0">
+                        <span class="step-number">1</span>
+                        <span class="step-heading"><span class="step-title">Данные владельца</span><span class="step-hint">Контактные данные и подтверждение возраста</span><span class="step-summary"></span></span>
+                        <span class="step-chevron" aria-hidden="true">⌄</span>
                     </button>
                     <div class="step-body" id="stepBody0">
                         <div class="step-content">
                             <div class="step-divider"></div>
-                            <p class="step-description">Укажите контактные данные человека, который будет управлять
-                                заведением. Для регистрации необходимо быть совершеннолетним.</p>
+                            <p class="step-description">Укажите контактные данные человека, который будет управлять заведением. Для регистрации необходимо быть совершеннолетним.</p>
                             <div class="row">
-                                <div class="field"><label for="name">Имя <span class="required">*</span></label><input
-                                        id="name" name="name" type="text" placeholder="Ваше имя"
-                                        autocomplete="given-name" minlength="2" maxlength="50" required>
-                                    <div class="field-error">Введите имя (от 2 до 50 символов).</div>
-                                </div>
-                                <div class="field"><label for="surname">Фамилия <span
-                                        class="required">*</span></label><input id="surname" name="surname" type="text"
-                                                                                placeholder="Ваша фамилия"
-                                                                                autocomplete="family-name" minlength="2"
-                                                                                maxlength="50" required>
-                                    <div class="field-error">Введите фамилию (от 2 до 50 символов).</div>
-                                </div>
+                                <div class="field"><label for="name">Имя <span class="required">*</span></label><input id="name" name="name" type="text" placeholder="Ваше имя" autocomplete="given-name" minlength="2" maxlength="50" required><div class="field-error">Введите имя (от 2 до 50 символов).</div></div>
+                                <div class="field"><label for="surname">Фамилия <span class="required">*</span></label><input id="surname" name="surname" type="text" placeholder="Ваша фамилия" autocomplete="family-name" minlength="2" maxlength="50" required><div class="field-error">Введите фамилию (от 2 до 50 символов).</div></div>
                             </div>
-                            <div class="field"><label for="email">Электронная почта <span
-                                    class="required">*</span></label><input id="email" name="email" type="email"
-                                                                            placeholder="name@example.com"
-                                                                            autocomplete="email" maxlength="254"
-                                                                            required>
-                                <div class="field-error">Введите корректный адрес электронной почты.</div>
-                            </div>
-                            <div class="field"><label for="phone">Телефон <span class="required">*</span></label><input
-                                    id="phone" name="phone" type="tel" placeholder="+995555123456" autocomplete="tel"
-                                    maxlength="25" required>
-                                <div class="field-help">Укажите код страны, например +995 для Грузии или +49 для
-                                    Германии.
-                                </div>
-                                <div class="field-error">Укажите телефон в международном формате, например
-                                    +995555123456.
-                                </div>
-                            </div>
-                            <div class="field"><label for="birthday">Дата рождения <span
-                                    class="required">*</span></label><input id="birthday" name="birthday" type="date"
-                                                                            autocomplete="bday" required
-                                                                            aria-describedby="birthdayHelp">
-                                <div class="field-help" id="birthdayHelp">Регистрация доступна только пользователям от
-                                    18 лет.
-                                </div>
-                                <div class="field-error">Регистрация доступна только пользователям от 18 лет.</div>
-                            </div>
-                            <button class="button next-button" type="button">Продолжить <span class="button-arrow"
-                                                                                              aria-hidden="true">→</span>
-                            </button>
+                            <div class="field"><label for="email">Электронная почта <span class="required">*</span></label><input id="email" name="email" type="email" placeholder="name@example.com" autocomplete="email" maxlength="254" required><div class="field-error">Введите корректный адрес электронной почты.</div></div>
+                            <div class="field"><label for="phone">Телефон <span class="required">*</span></label><input id="phone" name="phone" type="tel" placeholder="+995555123456" autocomplete="tel" maxlength="25" required><div class="field-help">Укажите код страны, например +995 для Грузии или +49 для Германии.</div><div class="field-error">Укажите телефон в международном формате, например +995555123456.</div></div>
+                            <div class="field"><label for="birthday">Дата рождения <span class="required">*</span></label><input id="birthday" name="birthday" type="date" autocomplete="bday" required aria-describedby="birthdayHelp"><div class="field-help" id="birthdayHelp">Регистрация доступна только пользователям от 18 лет.</div><div class="field-error">Регистрация доступна только пользователям от 18 лет.</div></div>
+                            <button class="button next-button" type="button">Продолжить <span class="button-arrow" aria-hidden="true">→</span></button>
                         </div>
                     </div>
                 </section>
                 <section class="step" data-step="1">
-                    <button class="step-header" type="button" aria-expanded="false" aria-controls="stepBody1"><span
-                            class="step-number">2</span><span class="step-heading"><span class="step-title">Ваше заведение</span><span
-                            class="step-hint">Название, адрес и региональные настройки</span><span
-                            class="step-summary"></span></span><span class="step-chevron" aria-hidden="true">⌄</span>
+                    <button class="step-header" type="button" aria-expanded="false" aria-controls="stepBody1">
+                        <span class="step-number">2</span>
+                        <span class="step-heading"><span class="step-title">Ваше заведение</span><span class="step-hint">Название, адрес и региональные настройки</span><span class="step-summary"></span></span>
+                        <span class="step-chevron" aria-hidden="true">⌄</span>
                     </button>
                     <div class="step-body" id="stepBody1">
                         <div class="step-content">
                             <div class="step-divider"></div>
-                            <p class="step-description">Укажите сведения о заведении. Они будут использоваться для
-                                настройки рабочего пространства ресторана.</p>
-                            <div class="field"><label for="restaurantName">Название заведения <span
-                                    class="required">*</span></label><input id="restaurantName" name="restaurant_name"
-                                                                            type="text"
-                                                                            placeholder="Например, Atelier Bistro"
-                                                                            autocomplete="organization" minlength="2"
-                                                                            maxlength="100" required>
-                                <div class="field-error">Укажите название от 2 до 100 символов.</div>
-                            </div>
+                            <p class="step-description">Укажите сведения о заведении. Они будут использоваться для настройки рабочего пространства ресторана.</p>
+                            <div class="field"><label for="restaurantName">Название заведения <span class="required">*</span></label><input id="restaurantName" name="restaurant_name" type="text" placeholder="Например, Atelier Bistro" autocomplete="organization" minlength="2" maxlength="100" required><div class="field-error">Укажите название от 2 до 100 символов.</div></div>
                             <div class="row">
-                                <div class="field"><label for="country">Страна <span class="required">*</span></label>
-                                    <div class="select-wrap"><select id="country" name="country" autocomplete="country"
-                                                                     required>
-                                        <option value="">Загрузка списка стран…</option>
-                                    </select></div>
-                                    <div class="field-help">Выберите страну, в которой находится заведение.</div>
-                                    <div class="field-error">Выберите страну из списка.</div>
-                                </div>
-                                <div class="field"><label for="city">Город <span class="required">*</span></label><input
-                                        id="city" name="city" type="text" placeholder="Например, Тбилиси"
-                                        autocomplete="address-level2" minlength="2" maxlength="100" required>
-                                    <div class="field-error">Укажите город (от 2 до 100 символов).</div>
-                                </div>
+                                <div class="field"><label for="country">Страна <span class="required">*</span></label><div class="select-wrap"><select id="country" name="country" autocomplete="country" required><option value="">Загрузка списка стран…</option></select></div><div class="field-help">Выберите страну, в которой находится заведение.</div><div class="field-error">Выберите страну из списка.</div></div>
+                                <div class="field"><label for="city">Город <span class="required">*</span></label><input id="city" name="city" type="text" placeholder="Например, Тбилиси" autocomplete="address-level2" minlength="2" maxlength="100" required><div class="field-error">Укажите город (от 2 до 100 символов).</div></div>
                             </div>
-                            <div class="field"><label for="address">Адрес <span class="required">*</span></label><input
-                                    id="address" name="address" type="text" placeholder="Улица и номер"
-                                    autocomplete="street-address" minlength="3" maxlength="200" required>
-                                <div class="field-error">Укажите адрес заведения (от 3 до 200 символов).</div>
-                            </div>
-                            <div class="field"><label for="slug">Адрес страницы заведения (slug) <span class="required">*</span></label><input
-                                    id="slug" name="slug" type="text" placeholder="atelier-bistro" minlength="2"
-                                    maxlength="100" pattern="[a-z0-9]+(-[a-z0-9]+)*" autocomplete="off" required>
-                                <div class="field-help">Генерируется из названия. Можно изменить вручную. Только
-                                    строчные латинские буквы, цифры и дефисы.
-                                </div>
-                                <div class="field-error">Используйте латинские буквы, цифры и одиночные дефисы.</div>
-                            </div>
+                            <div class="field"><label for="address">Адрес <span class="required">*</span></label><input id="address" name="address" type="text" placeholder="Улица и номер" autocomplete="street-address" minlength="3" maxlength="200" required><div class="field-error">Укажите адрес заведения (от 3 до 200 символов).</div></div>
+                            <div class="field"><label for="slug">Адрес страницы заведения (slug) <span class="required">*</span></label><input id="slug" name="slug" type="text" placeholder="atelier-bistro" minlength="2" maxlength="100" pattern="[a-z0-9]+(-[a-z0-9]+)*" autocomplete="off" required><div class="field-help">Генерируется из названия. Можно изменить вручную. Только строчные латинские буквы, цифры и дефисы.</div><div class="field-error">Используйте латинские буквы, цифры и одиночные дефисы.</div></div>
                             <div class="row">
-                                <div class="field"><label for="currency">Валюта <span class="required">*</span></label>
-                                    <div class="select-wrap"><select id="currency" name="currency" required>
-                                        <option value="">Выберите валюту</option>
-                                        <option value="GEL">GEL — Грузинский лари</option>
-                                        <option value="EUR">EUR — Евро</option>
-                                        <option value="USD">USD — Доллар США</option>
-                                        <option value="GBP">GBP — Фунт стерлингов</option>
-                                        <option value="CHF">CHF — Швейцарский франк</option>
-                                        <option value="PLN">PLN — Польский злотый</option>
-                                    </select></div>
-                                    <div class="field-error">Выберите валюту.</div>
-                                </div>
-                                <div class="field"><label for="timezone">Часовой пояс <span
-                                        class="required">*</span></label>
-                                    <div class="select-wrap"><select id="timezone" name="timezone" required>
-                                        <option value="">Загрузка часовых поясов…</option>
-                                    </select></div>
-                                    <div class="field-help">Список часовых поясов IANA с городами и UTC-смещением.</div>
-                                    <div class="field-error">Выберите часовой пояс из списка.</div>
-                                </div>
+                                <div class="field"><label for="currency">Валюта <span class="required">*</span></label><div class="select-wrap"><select id="currency" name="currency" required><option value="">Выберите валюту</option><option value="GEL">GEL — Грузинский лари</option><option value="EUR">EUR — Евро</option><option value="USD">USD — Доллар США</option><option value="GBP">GBP — Фунт стерлингов</option><option value="CHF">CHF — Швейцарский франк</option><option value="PLN">PLN — Польский злотый</option></select></div><div class="field-error">Выберите валюту.</div></div>
+                                <div class="field"><label for="timezone">Часовой пояс <span class="required">*</span></label><div class="select-wrap"><select id="timezone" name="timezone" required><option value="">Загрузка часовых поясов…</option></select></div><div class="field-help">Список часовых поясов IANA с городами и UTC-смещением.</div><div class="field-error">Выберите часовой пояс из списка.</div></div>
                             </div>
-                            <button class="button next-button" type="button">Продолжить <span class="button-arrow"
-                                                                                              aria-hidden="true">→</span>
-                            </button>
-                            <button class="button button-secondary back-button" type="button" data-back="0">← Вернуться
-                                к данным владельца
-                            </button>
+                            <button class="button next-button" type="button">Продолжить <span class="button-arrow" aria-hidden="true">→</span></button>
+                            <button class="button button-secondary back-button" type="button" data-back="0">← Вернуться к данным владельца</button>
                         </div>
                     </div>
                 </section>
                 <section class="step" data-step="2">
-                    <button class="step-header" type="button" aria-expanded="false" aria-controls="stepBody2"><span
-                            class="step-number">3</span><span class="step-heading"><span class="step-title">Учётная запись</span><span
-                            class="step-hint">Пароль и согласия</span><span class="step-summary"></span></span><span
-                            class="step-chevron" aria-hidden="true">⌄</span></button>
+                    <button class="step-header" type="button" aria-expanded="false" aria-controls="stepBody2">
+                        <span class="step-number">3</span>
+                        <span class="step-heading"><span class="step-title">Учётная запись</span><span class="step-hint">Пароль и согласия</span><span class="step-summary"></span></span>
+                        <span class="step-chevron" aria-hidden="true">⌄</span>
+                    </button>
                     <div class="step-body" id="stepBody2">
                         <div class="step-content">
                             <div class="step-divider"></div>
                             <p class="step-description">Создайте пароль для входа в панель управления.</p>
-                            <div class="field"><label for="password">Пароль <span class="required">*</span></label>
-                                <div class="input-wrap"><input class="has-toggle" id="password" name="password"
-                                                               type="password" placeholder="Не менее 8 символов"
-                                                               autocomplete="new-password" minlength="8" maxlength="64"
-                                                               required>
-                                    <button class="password-toggle" type="button" data-toggle-password="password"
-                                            aria-label="Показать пароль">Показать
-                                    </button>
-                                </div>
-                                <div class="field-error">Пароль должен содержать от 8 до 64 символов, букву и цифру.
-                                </div>
-                                <div class="password-rules" aria-live="polite"><span class="password-rule"
-                                                                                     id="ruleLength">8–64 символа</span><span
-                                        class="password-rule" id="ruleLetter">Хотя бы одна буква</span><span
-                                        class="password-rule" id="ruleNumber">Хотя бы одна цифра</span></div>
-                            </div>
-                            <div class="field"><label for="password_confirm">Повторите пароль <span
-                                    class="required">*</span></label>
-                                <div class="input-wrap"><input class="has-toggle" id="password_confirm"
-                                                               name="password_confirm" type="password"
-                                                               placeholder="Введите пароль ещё раз"
-                                                               autocomplete="new-password" required>
-                                    <button class="password-toggle" type="button"
-                                            data-toggle-password="password_confirm"
-                                            aria-label="Показать повторный пароль">Показать
-                                    </button>
-                                </div>
-                                <div class="field-error">Пароли не совпадают.</div>
-                            </div>
-                            <div class="check-row"><input id="terms" name="terms" type="checkbox" value="true" required><label
-                                    for="terms">Я принимаю <a href="/terms" target="_blank" rel="noopener">условия
-                                использования</a> и <a href="/privacy" target="_blank" rel="noopener">политику
-                                конфиденциальности</a>. <span class="required">*</span></label></div>
-                            <div class="checkbox-error" id="termsError">Для продолжения необходимо принять условия.
-                            </div>
-                            <div class="check-row"><input id="newsletter" name="newsletter" type="checkbox"
-                                                          value="true"><label for="newsletter">Хочу получать полезные
-                                новости и обновления платформы по электронной почте. (Необязательно)</label></div>
-                            <button class="button" type="submit" id="submitButton">Создать аккаунт <span
-                                    class="button-arrow" aria-hidden="true">→</span></button>
-                            <button class="button button-secondary back-button" type="button" data-back="1">← Вернуться
-                                к данным заведения
-                            </button>
+                            <div class="field"><label for="password">Пароль <span class="required">*</span></label><div class="input-wrap"><input class="has-toggle" id="password" name="password" type="password" placeholder="Не менее 8 символов" autocomplete="new-password" minlength="8" maxlength="64" required><button class="password-toggle" type="button" data-toggle-password="password" aria-label="Показать пароль">Показать</button></div><div class="field-error">Пароль должен содержать от 8 до 64 символов, букву и цифру.</div><div class="password-rules" aria-live="polite"><span class="password-rule" id="ruleLength">8–64 символа</span><span class="password-rule" id="ruleLetter">Хотя бы одна буква</span><span class="password-rule" id="ruleNumber">Хотя бы одна цифра</span></div></div>
+                            <div class="field"><label for="password_confirm">Повторите пароль <span class="required">*</span></label><div class="input-wrap"><input class="has-toggle" id="password_confirm" name="password_confirm" type="password" placeholder="Введите пароль ещё раз" autocomplete="new-password" required><button class="password-toggle" type="button" data-toggle-password="password_confirm" aria-label="Показать повторный пароль">Показать</button></div><div class="field-error">Пароли не совпадают.</div></div>
+                            <div class="check-row"><input id="terms" name="terms" type="checkbox" value="true" required><label for="terms">Я принимаю <a href="/terms" target="_blank" rel="noopener">условия использования</a> и <a href="/privacy" target="_blank" rel="noopener">политику конфиденциальности</a>. <span class="required">*</span></label></div>
+                            <div class="checkbox-error" id="termsError">Для продолжения необходимо принять условия.</div>
+                            <div class="check-row"><input id="newsletter" name="newsletter" type="checkbox" value="true"><label for="newsletter">Хочу получать полезные новости и обновления платформы по электронной почте. (Необязательно)</label></div>
+                            <button class="button" type="submit" id="submitButton">Создать аккаунт <span class="button-arrow" aria-hidden="true">→</span></button>
+                            <button class="button button-secondary back-button" type="button" data-back="1">← Вернуться к данным заведения</button>
                         </div>
                     </div>
                 </section>
@@ -279,160 +227,675 @@
         <section class="success-panel" id="successPanel" aria-live="polite">
             <div class="success-icon">✓</div>
             <h2>Регистрация завершена</h2>
-            <p>Аккаунт создан. Теперь вы можете войти в систему.</p><a class="button" href="/admin/login">Перейти ко
-            входу</a></section>
-        <div class="footer" id="footer">Уже есть аккаунт? <a href="/admin/login">Войти в систему</a>
-            <div><a href="/restaurant-platform">На главную</a></div>
-        </div>
-        <div class="security-note" id="securityNote"><span>◇</span> Данные отправляются серверу после отправки формы.
-        </div>
+            <p>Аккаунт создан. Теперь вы можете войти в систему.</p>
+            <a class="button" href="/admin/login">Перейти ко входу</a>
+        </section>
+        <div class="footer" id="footer">Уже есть аккаунт? <a href="/admin/login">Войти в систему</a><div><a href="/restaurant-platform">На главную</a></div></div>
+        <div class="security-note" id="securityNote"><span>◇</span> Данные отправляются серверу после отправки формы.</div>
     </section>
 </main>
 <script>
-    (() => {
+(() => {
     "use strict";
-    const form=document.getElementById("registrationForm");
-    const steps=Array.from(document.querySelectorAll(".step"));
-    const progressBar=document.getElementById("progressBar");
-    const progressLabel=document.getElementById("progressLabel");
-    const progressPercent=document.getElementById("progressPercent");
-    const progressTrack=document.getElementById("progressTrack");
-    const formError=document.getElementById("formError");
-    const terms=document.getElementById("terms");
-    const termsError=document.getElementById("termsError");
-    const password=document.getElementById("password");
-    const passwordConfirm=document.getElementById("password_confirm");
-    const birthday=document.getElementById("birthday");
-    const submitButton=document.getElementById("submitButton");
-    const restaurantNameInput=document.getElementById("restaurantName");
-    const slugInput=document.getElementById("slug");
-    const countrySelect=document.getElementById("country");
-    const timezoneSelect=document.getElementById("timezone");
-    const currencySelect=document.getElementById("currency");
-    let currentStep=0,slugEditedManually=false;
-    const completedSteps=new Set();
-    const getField=id=>document.getElementById(id);
 
-    /* Полный список стран ISO 3166-1 alpha-2. Названия отображаются на русском и английском. */
-    const countryData=[
-    ["AF","Афганистан","Afghanistan"],["AL","Албания","Albania"],["DZ","Алжир","Algeria"],["AD","Андорра","Andorra"],["AO","Ангола","Angola"],["AG","Антигуа и Барбуда","Antigua and Barbuda"],["AR","Аргентина","Argentina"],["AM","Армения","Armenia"],["AU","Австралия","Australia"],["AT","Австрия","Austria"],["AZ","Азербайджан","Azerbaijan"],["BS","Багамы","Bahamas"],["BH","Бахрейн","Bahrain"],["BD","Бангладеш","Bangladesh"],["BB","Барбадос","Barbados"],["BY","Беларусь","Belarus"],["BE","Бельгия","Belgium"],["BZ","Белиз","Belize"],["BJ","Бенин","Benin"],["BT","Бутан","Bhutan"],["BO","Боливия","Bolivia"],["BA","Босния и Герцеговина","Bosnia and Herzegovina"],["BW","Ботсвана","Botswana"],["BR","Бразилия","Brazil"],["BN","Бруней","Brunei"],["BG","Болгария","Bulgaria"],["BF","Буркина-Фасо","Burkina Faso"],["BI","Бурунди","Burundi"],["KH","Камбоджа","Cambodia"],["CM","Камерун","Cameroon"],["CA","Канада","Canada"],["CV","Кабо-Верде","Cabo Verde"],["CF","Центральноафриканская Республика","Central African Republic"],["TD","Чад","Chad"],["CL","Чили","Chile"],["CN","Китай","China"],["CO","Колумбия","Colombia"],["KM","Коморы","Comoros"],["CG","Республика Конго","Republic of the Congo"],["CD","Демократическая Республика Конго","Democratic Republic of the Congo"],["CR","Коста-Рика","Costa Rica"],["CI","Кот-д’Ивуар","Côte d’Ivoire"],["HR","Хорватия","Croatia"],["CU","Куба","Cuba"],["CY","Кипр","Cyprus"],["CZ","Чехия","Czechia"],["DK","Дания","Denmark"],["DJ","Джибути","Djibouti"],["DM","Доминика","Dominica"],["DO","Доминиканская Республика","Dominican Republic"],["EC","Эквадор","Ecuador"],["EG","Египет","Egypt"],["SV","Сальвадор","El Salvador"],["GQ","Экваториальная Гвинея","Equatorial Guinea"],["ER","Эритрея","Eritrea"],["EE","Эстония","Estonia"],["SZ","Эсватини","Eswatini"],["ET","Эфиопия","Ethiopia"],["FJ","Фиджи","Fiji"],["FI","Финляндия","Finland"],["FR","Франция","France"],["GA","Габон","Gabon"],["GM","Гамбия","Gambia"],["GE","Грузия","Georgia"],["DE","Германия","Germany"],["GH","Гана","Ghana"],["GR","Греция","Greece"],["GD","Гренада","Grenada"],["GT","Гватемала","Guatemala"],["GN","Гвинея","Guinea"],["GW","Гвинея-Бисау","Guinea-Bissau"],["GY","Гайана","Guyana"],["HT","Гаити","Haiti"],["HN","Гондурас","Honduras"],["HU","Венгрия","Hungary"],["IS","Исландия","Iceland"],["IN","Индия","India"],["ID","Индонезия","Indonesia"],["IR","Иран","Iran"],["IQ","Ирак","Iraq"],["IE","Ирландия","Ireland"],["IL","Израиль","Israel"],["IT","Италия","Italy"],["JM","Ямайка","Jamaica"],["JP","Япония","Japan"],["JO","Иордания","Jordan"],["KZ","Казахстан","Kazakhstan"],["KE","Кения","Kenya"],["KI","Кирибати","Kiribati"],["KW","Кувейт","Kuwait"],["KG","Кыргызстан","Kyrgyzstan"],["LA","Лаос","Laos"],["LV","Латвия","Latvia"],["LB","Ливан","Lebanon"],["LS","Лесото","Lesotho"],["LR","Либерия","Liberia"],["LY","Ливия","Libya"],["LI","Лихтенштейн","Liechtenstein"],["LT","Литва","Lithuania"],["LU","Люксембург","Luxembourg"],["MG","Мадагаскар","Madagascar"],["MW","Малави","Malawi"],["MY","Малайзия","Malaysia"],["MV","Мальдивы","Maldives"],["ML","Мали","Mali"],["MT","Мальта","Malta"],["MH","Маршалловы Острова","Marshall Islands"],["MR","Мавритания","Mauritania"],["MU","Маврикий","Mauritius"],["MX","Мексика","Mexico"],["FM","Микронезия","Micronesia"],["MD","Молдова","Moldova"],["MC","Монако","Monaco"],["MN","Монголия","Mongolia"],["ME","Черногория","Montenegro"],["MA","Марокко","Morocco"],["MZ","Мозамбик","Mozambique"],["MM","Мьянма","Myanmar"],["NA","Намибия","Namibia"],["NR","Науру","Nauru"],["NP","Непал","Nepal"],["NL","Нидерланды","Netherlands"],["NZ","Новая Зеландия","New Zealand"],["NI","Никарагуа","Nicaragua"],["NE","Нигер","Niger"],["NG","Нигерия","Nigeria"],["KP","КНДР","North Korea"],["MK","Северная Македония","North Macedonia"],["NO","Норвегия","Norway"],["OM","Оман","Oman"],["PK","Пакистан","Pakistan"],["PW","Палау","Palau"],["PS","Палестина","Palestine"],["PA","Панама","Panama"],["PG","Папуа — Новая Гвинея","Papua New Guinea"],["PY","Парагвай","Paraguay"],["PE","Перу","Peru"],["PH","Филиппины","Philippines"],["PL","Польша","Poland"],["PT","Португалия","Portugal"],["QA","Катар","Qatar"],["RO","Румыния","Romania"],["RU","Россия","Russia"],["RW","Руанда","Rwanda"],["KN","Сент-Китс и Невис","Saint Kitts and Nevis"],["LC","Сент-Люсия","Saint Lucia"],["VC","Сент-Винсент и Гренадины","Saint Vincent and the Grenadines"],["WS","Самоа","Samoa"],["SM","Сан-Марино","San Marino"],["ST","Сан-Томе и Принсипи","Sao Tome and Principe"],["SA","Саудовская Аравия","Saudi Arabia"],["SN","Сенегал","Senegal"],["RS","Сербия","Serbia"],["SC","Сейшелы","Seychelles"],["SL","Сьерра-Леоне","Sierra Leone"],["SG","Сингапур","Singapore"],["SK","Словакия","Slovakia"],["SI","Словения","Slovenia"],["SB","Соломоновы Острова","Solomon Islands"],["SO","Сомали","Somalia"],["ZA","ЮАР","South Africa"],["KR","Южная Корея","South Korea"],["SS","Южный Судан","South Sudan"],["ES","Испания","Spain"],["LK","Шри-Ланка","Sri Lanka"],["SD","Судан","Sudan"],["SR","Суринам","Suriname"],["SE","Швеция","Sweden"],["CH","Швейцария","Switzerland"],["SY","Сирия","Syria"],["TW","Тайвань","Taiwan"],["TJ","Таджикистан","Tajikistan"],["TZ","Танзания","Tanzania"],["TH","Таиланд","Thailand"],["TL","Восточный Тимор","Timor-Leste"],["TG","Того","Togo"],["TO","Тонга","Tonga"],["TT","Тринидад и Тобаго","Trinidad and Tobago"],["TN","Тунис","Tunisia"],["TR","Турция","Türkiye"],["TM","Туркменистан","Turkmenistan"],["TV","Тувалу","Tuvalu"],["UG","Уганда","Uganda"],["UA","Украина","Ukraine"],["AE","ОАЭ","United Arab Emirates"],["GB","Великобритания","United Kingdom"],["US","США","United States"],["UY","Уругвай","Uruguay"],["UZ","Узбекистан","Uzbekistan"],["VU","Вануату","Vanuatu"],["VA","Ватикан","Vatican City"],["VE","Венесуэла","Venezuela"],["VN","Вьетнам","Vietnam"],["YE","Йемен","Yemen"],["ZM","Замбия","Zambia"],["ZW","Зимбабве","Zimbabwe"]
+    const form = document.getElementById("registrationForm");
+    const steps = Array.from(document.querySelectorAll(".step"));
+    const progressBar = document.getElementById("progressBar");
+    const progressLabel = document.getElementById("progressLabel");
+    const progressPercent = document.getElementById("progressPercent");
+    const progressTrack = document.getElementById("progressTrack");
+    const formError = document.getElementById("formError");
+    const terms = document.getElementById("terms");
+    const termsError = document.getElementById("termsError");
+    const password = document.getElementById("password");
+    const passwordConfirm = document.getElementById("password_confirm");
+    const birthday = document.getElementById("birthday");
+    const submitButton = document.getElementById("submitButton");
+    const restaurantNameInput = document.getElementById("restaurantName");
+    const slugInput = document.getElementById("slug");
+    const countrySelect = document.getElementById("country");
+    const timezoneSelect = document.getElementById("timezone");
+    const currencySelect = document.getElementById("currency");
+
+    let currentStep = 0;
+    let slugEditedManually = false;
+    let isSubmitting = false;
+
+    const completedSteps = new Set();
+    const getField = id => document.getElementById(id);
+
+    const countryData = [
+        ["AF","Афганистан","Afghanistan"],["AL","Албания","Albania"],
+        ["DZ","Алжир","Algeria"],["AD","Андорра","Andorra"],
+        ["AO","Ангола","Angola"],["AG","Антигуа и Барбуда","Antigua and Barbuda"],
+        ["AR","Аргентина","Argentina"],["AM","Армения","Armenia"],
+        ["AU","Австралия","Australia"],["AT","Австрия","Austria"],
+        ["AZ","Азербайджан","Azerbaijan"],["BS","Багамы","Bahamas"],
+        ["BH","Бахрейн","Bahrain"],["BD","Бангладеш","Bangladesh"],
+        ["BB","Барбадос","Barbados"],["BY","Беларусь","Belarus"],
+        ["BE","Бельгия","Belgium"],["BZ","Белиз","Belize"],
+        ["BJ","Бенин","Benin"],["BT","Бутан","Bhutan"],
+        ["BO","Боливия","Bolivia"],["BA","Босния и Герцеговина","Bosnia and Herzegovina"],
+        ["BW","Ботсвана","Botswana"],["BR","Бразилия","Brazil"],
+        ["BN","Бруней","Brunei"],["BG","Болгария","Bulgaria"],
+        ["BF","Буркина-Фасо","Burkina Faso"],["BI","Бурунди","Burundi"],
+        ["KH","Камбоджа","Cambodia"],["CM","Камерун","Cameroon"],
+        ["CA","Канада","Canada"],["CV","Кабо-Верде","Cabo Verde"],
+        ["CF","Центральноафриканская Республика","Central African Republic"],
+        ["TD","Чад","Chad"],["CL","Чили","Chile"],
+        ["CN","Китай","China"],["CO","Колумбия","Colombia"],
+        ["KM","Коморы","Comoros"],["CG","Республика Конго","Republic of the Congo"],
+        ["CD","Демократическая Республика Конго","Democratic Republic of the Congo"],
+        ["CR","Коста-Рика","Costa Rica"],["CI","Кот-д’Ивуар","Côte d’Ivoire"],
+        ["HR","Хорватия","Croatia"],["CU","Куба","Cuba"],
+        ["CY","Кипр","Cyprus"],["CZ","Чехия","Czechia"],
+        ["DK","Дания","Denmark"],["DJ","Джибути","Djibouti"],
+        ["DM","Доминика","Dominica"],
+        ["DO","Доминиканская Республика","Dominican Republic"],
+        ["EC","Эквадор","Ecuador"],["EG","Египет","Egypt"],
+        ["SV","Сальвадор","El Salvador"],
+        ["GQ","Экваториальная Гвинея","Equatorial Guinea"],
+        ["ER","Эритрея","Eritrea"],["EE","Эстония","Estonia"],
+        ["SZ","Эсватини","Eswatini"],["ET","Эфиопия","Ethiopia"],
+        ["FJ","Фиджи","Fiji"],["FI","Финляндия","Finland"],
+        ["FR","Франция","France"],["GA","Габон","Gabon"],
+        ["GM","Гамбия","Gambia"],["GE","Грузия","Georgia"],
+        ["DE","Германия","Germany"],["GH","Гана","Ghana"],
+        ["GR","Греция","Greece"],["GD","Гренада","Grenada"],
+        ["GT","Гватемала","Guatemala"],["GN","Гвинея","Guinea"],
+        ["GW","Гвинея-Бисау","Guinea-Bissau"],["GY","Гайана","Guyana"],
+        ["HT","Гаити","Haiti"],["HN","Гондурас","Honduras"],
+        ["HU","Венгрия","Hungary"],["IS","Исландия","Iceland"],
+        ["IN","Индия","India"],["ID","Индонезия","Indonesia"],
+        ["IR","Иран","Iran"],["IQ","Ирак","Iraq"],
+        ["IE","Ирландия","Ireland"],["IL","Израиль","Israel"],
+        ["IT","Италия","Italy"],["JM","Ямайка","Jamaica"],
+        ["JP","Япония","Japan"],["JO","Иордания","Jordan"],
+        ["KZ","Казахстан","Kazakhstan"],["KE","Кения","Kenya"],
+        ["KI","Кирибати","Kiribati"],["KW","Кувейт","Kuwait"],
+        ["KG","Кыргызстан","Kyrgyzstan"],["LA","Лаос","Laos"],
+        ["LV","Латвия","Latvia"],["LB","Ливан","Lebanon"],
+        ["LS","Лесото","Lesotho"],["LR","Либерия","Liberia"],
+        ["LY","Ливия","Libya"],["LI","Лихтенштейн","Liechtenstein"],
+        ["LT","Литва","Lithuania"],["LU","Люксембург","Luxembourg"],
+        ["MG","Мадагаскар","Madagascar"],["MW","Малави","Malawi"],
+        ["MY","Малайзия","Malaysia"],["MV","Мальдивы","Maldives"],
+        ["ML","Мали","Mali"],["MT","Мальта","Malta"],
+        ["MH","Маршалловы Острова","Marshall Islands"],
+        ["MR","Мавритания","Mauritania"],["MU","Маврикий","Mauritius"],
+        ["MX","Мексика","Mexico"],["FM","Микронезия","Micronesia"],
+        ["MD","Молдова","Moldova"],["MC","Монако","Monaco"],
+        ["MN","Монголия","Mongolia"],["ME","Черногория","Montenegro"],
+        ["MA","Марокко","Morocco"],["MZ","Мозамбик","Mozambique"],
+        ["MM","Мьянма","Myanmar"],["NA","Намибия","Namibia"],
+        ["NR","Науру","Nauru"],["NP","Непал","Nepal"],
+        ["NL","Нидерланды","Netherlands"],["NZ","Новая Зеландия","New Zealand"],
+        ["NI","Никарагуа","Nicaragua"],["NE","Нигер","Niger"],
+        ["NG","Нигерия","Nigeria"],["KP","КНДР","North Korea"],
+        ["MK","Северная Македония","North Macedonia"],["NO","Норвегия","Norway"],
+        ["OM","Оман","Oman"],["PK","Пакистан","Pakistan"],
+        ["PW","Палау","Palau"],["PS","Палестина","Palestine"],
+        ["PA","Панама","Panama"],["PG","Папуа — Новая Гвинея","Papua New Guinea"],
+        ["PY","Парагвай","Paraguay"],["PE","Перу","Peru"],
+        ["PH","Филиппины","Philippines"],["PL","Польша","Poland"],
+        ["PT","Португалия","Portugal"],["QA","Катар","Qatar"],
+        ["RO","Румыния","Romania"],["RU","Россия","Russia"],
+        ["RW","Руанда","Rwanda"],["KN","Сент-Китс и Невис","Saint Kitts and Nevis"],
+        ["LC","Сент-Люсия","Saint Lucia"],
+        ["VC","Сент-Винсент и Гренадины","Saint Vincent and the Grenadines"],
+        ["WS","Самоа","Samoa"],["SM","Сан-Марино","San Marino"],
+        ["ST","Сан-Томе и Принсипи","Sao Tome and Principe"],
+        ["SA","Саудовская Аравия","Saudi Arabia"],["SN","Сенегал","Senegal"],
+        ["RS","Сербия","Serbia"],["SC","Сейшелы","Seychelles"],
+        ["SL","Сьерра-Леоне","Sierra Leone"],["SG","Сингапур","Singapore"],
+        ["SK","Словакия","Slovakia"],["SI","Словения","Slovenia"],
+        ["SB","Соломоновы Острова","Solomon Islands"],["SO","Сомали","Somalia"],
+        ["ZA","ЮАР","South Africa"],["KR","Южная Корея","South Korea"],
+        ["SS","Южный Судан","South Sudan"],["ES","Испания","Spain"],
+        ["LK","Шри-Ланка","Sri Lanka"],["SD","Судан","Sudan"],
+        ["SR","Суринам","Suriname"],["SE","Швеция","Sweden"],
+        ["CH","Швейцария","Switzerland"],["SY","Сирия","Syria"],
+        ["TW","Тайвань","Taiwan"],["TJ","Таджикистан","Tajikistan"],
+        ["TZ","Танзания","Tanzania"],["TH","Таиланд","Thailand"],
+        ["TL","Восточный Тимор","Timor-Leste"],["TG","Того","Togo"],
+        ["TO","Тонга","Tonga"],["TT","Тринидад и Тобаго","Trinidad and Tobago"],
+        ["TN","Тунис","Tunisia"],["TR","Турция","Türkiye"],
+        ["TM","Туркменистан","Turkmenistan"],["TV","Тувалу","Tuvalu"],
+        ["UG","Уганда","Uganda"],["UA","Украина","Ukraine"],
+        ["AE","ОАЭ","United Arab Emirates"],["GB","Великобритания","United Kingdom"],
+        ["US","США","United States"],["UY","Уругвай","Uruguay"],
+        ["UZ","Узбекистан","Uzbekistan"],["VU","Вануату","Vanuatu"],
+        ["VA","Ватикан","Vatican City"],["VE","Венесуэла","Venezuela"],
+        ["VN","Вьетнам","Vietnam"],["YE","Йемен","Yemen"],
+        ["ZM","Замбия","Zambia"],["ZW","Зимбабве","Zimbabwe"]
     ];
-    const countryFragment=document.createDocumentFragment();
-    countryData.sort((a,b)=>a[1].localeCompare(b[1],"ru"));
-    countryData.forEach(([code,ru,en])=>{const o=document.createElement("option");o.value=code;o.textContent=`${ru} — ${en} (${code})`;countryFragment.appendChild(o)});
-    countrySelect.replaceChildren(new Option("Выберите страну",""),countryFragment);
 
-    /* Часовые пояса IANA. Берём из Intl в текущем браузере, включая регионы и острова. */
-    function getOffset(timeZone,date=new Date()){
-     const parts=new Intl.DateTimeFormat("en-GB",{timeZone, timeZoneName:"longOffset",hour:"2-digit"}).formatToParts(date);
-     const raw=parts.find(p=>p.type==="timeZoneName")?.value||"GMT";
-     if(raw==="GMT"||raw==="UTC")return "UTC+00:00";
-     return raw.replace("GMT","UTC");
-    }
-    function timezoneCityName(zone){
-     const parts=zone.split("/");
-     const city=(parts[parts.length-1]||zone).replace(/_/g," ");
-     const names={"Tbilisi":"Тбилиси","Berlin":"Берлин","Paris":"Париж","London":"Лондон","Vienna":"Вена","Rome":"Рим","Madrid":"Мадрид","Warsaw":"Варшава","Kyiv":"Киев","Moscow":"Москва","Istanbul":"Стамбул","Tokyo":"Токио","Singapore":"Сингапур","Dubai":"Дубай","New York":"Нью-Йорк","Los Angeles":"Лос-Анджелес","Chicago":"Чикаго","Toronto":"Торонто","Sydney":"Сидней","Auckland":"Окленд","Hong Kong":"Гонконг","Bangkok":"Бангкок","Yerevan":"Ереван","Baku":"Баку","Almaty":"Алматы","Tashkent":"Ташкент","Kolkata":"Калькутта","Kathmandu":"Катманду","Cairo":"Каир","Johannesburg":"Йоханнесбург","Reykjavik":"Рейкьявик","Lisbon":"Лиссабон","Athens":"Афины","Helsinki":"Хельсинки","Stockholm":"Стокгольм","Prague":"Прага","Zurich":"Цюрих","Amsterdam":"Амстердам","Brussels":"Брюссель","Copenhagen":"Копенгаген","Dublin":"Дублин","Chisinau":"Кишинёв","Belgrade":"Белград","Sofia":"София","Bucharest":"Бухарест","Tel Aviv":"Тель-Авив","Seoul":"Сеул","Taipei":"Тайбэй","Manila":"Манила","Jakarta":"Джакарта","Ho Chi Minh":"Хошимин","Kuala Lumpur":"Куала-Лумпур","Anchorage":"Анкоридж","Honolulu":"Гонолулу","Fiji":"Фиджи","UTC":"UTC"};
-     return names[city]||city;
-    }
-    try{
-     const zones=Intl.supportedValuesOf("timeZone");
-     const tzFragment=document.createDocumentFragment();
-     zones.sort((a,b)=>a.localeCompare(b));
-     zones.forEach(zone=>{const o=document.createElement("option");o.value=zone;o.textContent=`${timezoneCityName(zone)} — ${zone} (${getOffset(zone)})`;tzFragment.appendChild(o)});
-     timezoneSelect.replaceChildren(new Option("Выберите часовой пояс",""),tzFragment);
-    }catch(e){
-     const fallback=["Asia/Tbilisi","Europe/Berlin","Europe/Paris","Europe/London","Europe/Warsaw","Europe/Moscow","Europe/Istanbul","Asia/Yerevan","Asia/Baku","Asia/Dubai","Asia/Tokyo","Asia/Singapore","America/New_York","America/Chicago","America/Los_Angeles","Australia/Sydney","Pacific/Auckland","UTC"];
-     timezoneSelect.replaceChildren(new Option("Выберите часовой пояс",""),...fallback.map(z=>new Option(`${timezoneCityName(z)} — ${z} (${getOffset(z)})`,z)));
-    }
-    function localDateString(date){return [date.getFullYear(),String(date.getMonth()+1).padStart(2,"0"),String(date.getDate()).padStart(2,"0")].join("-")}
-    birthday.max=localDateString(new Date());birthday.min="1900-01-01";
-    function calculateAge(value){
-     if(!value)return null;const m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(value);if(!m)return null;
-     const y=+m[1],mo=+m[2],d=+m[3],birth=new Date(y,mo-1,d);
-     if(birth.getFullYear()!==y||birth.getMonth()!==mo-1||birth.getDate()!==d)return null;
-     const today=new Date();today.setHours(0,0,0,0);if(birth>today)return null;
-     let age=today.getFullYear()-y;if(today.getMonth()<mo-1||(today.getMonth()===mo-1&&today.getDate()<d))age--;return age;
-    }
-    function showFormError(message){formError.textContent=message;formError.classList.add("show")}
-    function clearFormError(){formError.textContent="";formError.classList.remove("show")}
-    function updateProgress(){const p=Math.round((currentStep+1)/steps.length*100);progressBar.style.width=`${p}%`;progressLabel.textContent=`Шаг ${currentStep+1} из ${steps.length}`;progressPercent.textContent=`${p}%`;progressTrack.setAttribute("aria-valuenow",p)}
-    function updateStepSummary(i){
-     const summary=steps[i].querySelector(".step-summary");let text="";
-     if(i===0){text=[getField("name").value.trim(),getField("surname").value.trim()].filter(Boolean).join(" ");const email=getField("email").value.trim(),age=calculateAge(birthday.value);if(email)text+=(text?" · ":"")+email;if(age!==null)text+=(text?" · ":"")+`${age} лет`}
-     if(i===1)text=[getField("restaurantName").value.trim(),getField("city").value.trim(),countrySelect.selectedOptions[0]?.textContent.split(" (")[0]].filter(Boolean).join(" · ");
-     if(i===2)text="Данные учётной записи заполнены";summary.textContent=text;
-    }
-    function openStep(index,options={}){
-     if(index<0||index>=steps.length)return;currentStep=index;clearFormError();
-     steps.forEach((step,i)=>{const active=i===index,completed=completedSteps.has(i);step.classList.toggle("active",active);step.classList.toggle("completed",completed);step.querySelector(".step-header").setAttribute("aria-expanded",String(active));step.querySelector(".step-number").textContent=completed?"✓":String(i+1);if(completed)updateStepSummary(i)});
-     updateProgress();if(options.scroll!==false)steps[index].scrollIntoView({behavior:"smooth",block:"start"});
-    }
-    function setFieldError(field,message){
-     const wrapper=field.closest(".field");if(!wrapper)return;
-     wrapper.classList.toggle("invalid",Boolean(message));wrapper.classList.toggle("valid",!message&&field.value.trim()!=="");
-     const error=wrapper.querySelector(".field-error");if(error&&message)error.textContent=message;
-    }
-    function validateField(field){
-     const value=field.value.trim();let message="";
-     if(field.required&&field.type!=="checkbox"&&!value)message="Это поле обязательно для заполнения.";
-     else if(["name","surname"].includes(field.id)&&(value.length<2||value.length>50))message="Введите от 2 до 50 символов.";
-     else if(field.id==="email"&&value&&!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value))message="Введите корректный адрес электронной почты.";
-     else if(field.id==="phone"&&value&&!/^\+?[0-9]{10,15}$/.test(value))message="Введите телефон с кодом страны и 10–15 цифрами, например +995555123456.";
-     else if(field.id==="birthday"){const age=calculateAge(value);if(!value)message="Укажите дату рождения.";else if(age===null)message="Укажите корректную дату рождения не позднее сегодняшнего дня.";else if(age<18)message="Регистрация доступна только пользователям от 18 лет."}
-     else if(field.id==="restaurantName"&&(value.length<2||value.length>100))message="Название должно содержать от 2 до 100 символов.";
-     else if(field.id==="city"&&(value.length<2||value.length>100))message="Город должен содержать от 2 до 100 символов.";
-     else if(field.id==="address"&&(value.length<3||value.length>200))message="Адрес должен содержать от 3 до 200 символов.";
-     else if(field.id==="country"&&!countryData.some(c=>c[0]===value))message="Выберите страну из списка.";
-     else if(field.id==="slug"&&value&&!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(value))message="Slug должен содержать строчные латинские буквы, цифры и одиночные дефисы.";
-     else if(field.id==="currency"&&value&&!["GEL","EUR","USD","GBP","CHF","PLN"].includes(value))message="Выберите валюту из списка.";
-     else if(field.id==="timezone"&&value&&!Array.from(field.options).some(o=>o.value===value))message="Выберите часовой пояс из списка.";
-     else if(field.id==="password"){if(value.length<8||value.length>64)message="Пароль должен содержать от 8 до 64 символов.";else if(!/[A-Za-zА-Яа-яЁё]/.test(value))message="Добавьте в пароль хотя бы одну букву.";else if(!/[0-9]/.test(value))message="Добавьте в пароль хотя бы одну цифру."}
-     else if(field.id==="password_confirm"&&value!==password.value)message="Пароли не совпадают.";
-     setFieldError(field,message);return !message;
-    }
-    function validateStep(index){
-     const fields=Array.from(steps[index].querySelectorAll("input,select")).filter(f=>f.type!=="checkbox"&&f.type!=="hidden");let valid=true,first=null;
-     fields.forEach(f=>{if(!validateField(f)){valid=false;if(!first)first=f}});
-     if(index===2&&!terms.checked){termsError.classList.add("show");valid=false}else if(index===2)termsError.classList.remove("show");
-     if(!valid&&first){first.focus({preventScroll:true});first.scrollIntoView({behavior:"smooth",block:"center"})}return valid;
-    }
-    steps.forEach((step,index)=>{
-     const next=step.querySelector(".next-button");
-     if(next)next.addEventListener("click",()=>{clearFormError();if(!validateStep(index)){showFormError("Проверьте отмеченные поля и заполните их корректно.");return}completedSteps.add(index);updateStepSummary(index);openStep(index+1)});
-     step.querySelector(".step-header").addEventListener("click",()=>{if(index===currentStep)return;for(let i=0;i<index;i++){if(!completedSteps.has(i)){showFormError("Сначала завершите предыдущий этап регистрации.");openStep(i);return}}openStep(index)});
+    const countryFragment = document.createDocumentFragment();
+    countryData.sort((a, b) => a[1].localeCompare(b[1], "ru"));
+
+    countryData.forEach(([code, ru, en]) => {
+        const option = document.createElement("option");
+        option.value = code;
+        option.textContent = `${ru} — ${en} (${code})`;
+        countryFragment.appendChild(option);
     });
-    document.querySelectorAll("[data-back]").forEach(b=>b.addEventListener("click",()=>openStep(Number(b.dataset.back))));
-    const transliteration={а:"a",б:"b",в:"v",г:"g",д:"d",е:"e",ё:"yo",ж:"zh",з:"z",и:"i",й:"y",к:"k",л:"l",м:"m",н:"n",о:"o",п:"p",р:"r",с:"s",т:"t",у:"u",ф:"f",х:"kh",ц:"ts",ч:"ch",ш:"sh",щ:"shch",ъ:"",ы:"y",ь:"",э:"e",ю:"yu",я:"ya"};
-    function generateSlug(v){return v.toLowerCase().split("").map(c=>transliteration[c]??c).join("").normalize("NFKD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"").slice(0,100).replace(/-+$/g,"")}
-    slugInput.addEventListener("input",()=>{slugEditedManually=true;validateField(slugInput)});
-    restaurantNameInput.addEventListener("input",()=>{if(!slugEditedManually){slugInput.value=generateSlug(restaurantNameInput.value);if(slugInput.value)validateField(slugInput)}});
-    function updatePasswordRules(){const v=password.value;document.getElementById("ruleLength").classList.toggle("met",v.length>=8&&v.length<=64);document.getElementById("ruleLetter").classList.toggle("met",/[A-Za-zА-Яа-яЁё]/.test(v));document.getElementById("ruleNumber").classList.toggle("met",/[0-9]/.test(v))}
-    form.querySelectorAll("input,select").forEach(field=>{
-     field.addEventListener("input",()=>{clearFormError();if(field.type==="checkbox"){if(field===terms&&terms.checked)termsError.classList.remove("show");return}
-     if(field.value.trim()!=="")validateField(field);else{const w=field.closest(".field");if(w)w.classList.remove("invalid","valid")}
-     if(field===password||field===passwordConfirm){updatePasswordRules();if(passwordConfirm.value)validateField(passwordConfirm)}
-     const s=field.closest(".step");if(s&&completedSteps.has(Number(s.dataset.step)))updateStepSummary(Number(s.dataset.step));
-     });
-     field.addEventListener("change",()=>{
-      if(field.tagName==="SELECT"||field.type==="date")validateField(field);
-      if(field===countrySelect){const defaults={GE:{currency:"GEL",timezone:"Asia/Tbilisi"},DE:{currency:"EUR",timezone:"Europe/Berlin"},US:{currency:"USD",timezone:"America/New_York"},GB:{currency:"GBP",timezone:"Europe/London"},PL:{currency:"PLN",timezone:"Europe/Warsaw"},CH:{currency:"CHF",timezone:"Europe/Zurich"}};
-       const d=defaults[countrySelect.value];if(d){if(!currencySelect.dataset.userChanged||!currencySelect.value)currencySelect.value=d.currency;if(!timezoneSelect.dataset.userChanged||!timezoneSelect.value)timezoneSelect.value=d.timezone}
-      }
-      if(field===currencySelect)currencySelect.dataset.userChanged="1";
-      if(field===timezoneSelect)timezoneSelect.dataset.userChanged="1";
-     });
+
+    countrySelect.replaceChildren(new Option("Выберите страну", ""), countryFragment);
+
+    function getOffset(timeZone, date = new Date()) {
+        try {
+            const parts = new Intl.DateTimeFormat("en-GB", {
+                timeZone,
+                timeZoneName: "longOffset",
+                hour: "2-digit"
+            }).formatToParts(date);
+            const raw = parts.find(p => p.type === "timeZoneName")?.value || "GMT";
+            if (raw === "GMT" || raw === "UTC") return "UTC+00:00";
+            return raw.replace("GMT", "UTC");
+        } catch {
+            return "UTC+00:00";
+        }
+    }
+
+    function timezoneCityName(zone) {
+        const parts = zone.split("/");
+        const city = (parts[parts.length - 1] || zone).replace(/_/g, " ");
+        const names = {
+            Tbilisi:"Тбилиси",Berlin:"Берлин",Paris:"Париж",London:"Лондон",
+            Vienna:"Вена",Rome:"Рим",Madrid:"Мадрид",Warsaw:"Варшава",
+            Kyiv:"Киев",Moscow:"Москва",Istanbul:"Стамбул",Tokyo:"Токио",
+            Singapore:"Сингапур",Dubai:"Дубай","New York":"Нью-Йорк",
+            "Los Angeles":"Лос-Анджелес",Chicago:"Чикаго",Toronto:"Торонто",
+            Sydney:"Сидней",Auckland:"Окленд","Hong Kong":"Гонконг",
+            Bangkok:"Бангкок",Yerevan:"Ереван",Baku:"Баку",Almaty:"Алматы",
+            Tashkent:"Ташкент",Kolkata:"Калькутта",Kathmandu:"Катманду",
+            Cairo:"Каир",Johannesburg:"Йоханнесбург",Reykjavik:"Рейкьявик",
+            Lisbon:"Лиссабон",Athens:"Афины",Helsinki:"Хельсинки",
+            Stockholm:"Стокгольм",Prague:"Прага",Zurich:"Цюрих",
+            Amsterdam:"Амстердам",Brussels:"Брюссель",Copenhagen:"Копенгаген",
+            Dublin:"Дублин",Chisinau:"Кишинёв",Belgrade:"Белград",
+            Sofia:"София",Bucharest:"Бухарест","Tel Aviv":"Тель-Авив",
+            Seoul:"Сеул",Taipei:"Тайбэй",Manila:"Манила",Jakarta:"Джакарта",
+            "Ho Chi Minh":"Хошимин","Kuala Lumpur":"Куала-Лумпур",
+            Anchorage:"Анкоридж",Honolulu:"Гонолулу",Fiji:"Фиджи",UTC:"UTC"
+        };
+        return names[city] || city;
+    }
+
+    try {
+        const zones = Intl.supportedValuesOf("timeZone");
+        const tzFragment = document.createDocumentFragment();
+        zones.sort((a, b) => a.localeCompare(b));
+        zones.forEach(zone => {
+            const option = document.createElement("option");
+            option.value = zone;
+            option.textContent = `${timezoneCityName(zone)} — ${zone} (${getOffset(zone)})`;
+            tzFragment.appendChild(option);
+        });
+        timezoneSelect.replaceChildren(new Option("Выберите часовой пояс", ""), tzFragment);
+    } catch {
+        const fallback = [
+            "Asia/Tbilisi","Europe/Berlin","Europe/Paris","Europe/London",
+            "Europe/Warsaw","Europe/Moscow","Europe/Istanbul","Asia/Yerevan",
+            "Asia/Baku","Asia/Dubai","Asia/Tokyo","Asia/Singapore",
+            "America/New_York","America/Chicago","America/Los_Angeles",
+            "Australia/Sydney","Pacific/Auckland","UTC"
+        ];
+        timezoneSelect.replaceChildren(
+            new Option("Выберите часовой пояс", ""),
+            ...fallback.map(zone => new Option(
+                `${timezoneCityName(zone)} — ${zone} (${getOffset(zone)})`,
+                zone
+            ))
+        );
+    }
+
+    function localDateString(date) {
+        return [
+            date.getFullYear(),
+            String(date.getMonth() + 1).padStart(2, "0"),
+            String(date.getDate()).padStart(2, "0")
+        ].join("-");
+    }
+
+    birthday.max = localDateString(new Date());
+    birthday.min = "1900-01-01";
+
+    function calculateAge(value) {
+        if (!value) return null;
+        const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
+        if (!match) return null;
+        const year = Number(match[1]);
+        const month = Number(match[2]);
+        const day = Number(match[3]);
+        const birth = new Date(year, month - 1, day);
+        if (birth.getFullYear() !== year || birth.getMonth() !== month - 1 || birth.getDate() !== day) return null;
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        if (birth > today) return null;
+        let age = today.getFullYear() - year;
+        if (today.getMonth() < month - 1 || (today.getMonth() === month - 1 && today.getDate() < day)) age--;
+        return age;
+    }
+
+    function showFormError(message) {
+        formError.textContent = message;
+        formError.classList.add("show");
+        formError.setAttribute("role", "alert");
+        formError.setAttribute("aria-live", "assertive");
+        formError.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+
+    function showServerError() {
+        showFormError("Ошибка сервера (500). Попробуйте позже.");
+    }
+
+    function clearFormError() {
+        formError.textContent = "";
+        formError.classList.remove("show");
+    }
+
+    function updateProgress() {
+        const percent = Math.round((currentStep + 1) / steps.length * 100);
+        progressBar.style.width = `${percent}%`;
+        progressLabel.textContent = `Шаг ${currentStep + 1} из ${steps.length}`;
+        progressPercent.textContent = `${percent}%`;
+        progressTrack.setAttribute("aria-valuenow", percent);
+    }
+
+    function updateStepSummary(index) {
+        const summary = steps[index].querySelector(".step-summary");
+        if (!summary) return;
+        let text = "";
+        if (index === 0) {
+            text = [getField("name").value.trim(), getField("surname").value.trim()].filter(Boolean).join(" ");
+            const email = getField("email").value.trim();
+            const age = calculateAge(birthday.value);
+            if (email) text += (text ? " · " : "") + email;
+            if (age !== null) text += (text ? " · " : "") + `${age} лет`;
+        }
+        if (index === 1) {
+            text = [
+                restaurantNameInput.value.trim(),
+                getField("city").value.trim(),
+                countrySelect.selectedOptions[0]?.textContent.split(" (")[0]
+            ].filter(Boolean).join(" · ");
+        }
+        if (index === 2) text = "Данные учётной записи заполнены";
+        summary.textContent = text;
+    }
+
+    function openStep(index, options = {}) {
+        if (index < 0 || index >= steps.length) return;
+        currentStep = index;
+        clearFormError();
+        steps.forEach((step, i) => {
+            const active = i === index;
+            const completed = completedSteps.has(i);
+            step.classList.toggle("active", active);
+            step.classList.toggle("completed", completed);
+            const header = step.querySelector(".step-header");
+            const number = step.querySelector(".step-number");
+            if (header) header.setAttribute("aria-expanded", String(active));
+            if (number) number.textContent = completed ? "✓" : String(i + 1);
+            if (completed) updateStepSummary(i);
+        });
+        updateProgress();
+        if (options.scroll !== false) {
+            steps[index].scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+    }
+
+    function setFieldError(field, message) {
+        const wrapper = field.closest(".field");
+        if (!wrapper) return;
+        wrapper.classList.toggle("invalid", Boolean(message));
+        wrapper.classList.toggle("valid", !message && field.value.trim() !== "");
+        const error = wrapper.querySelector(".field-error");
+        if (error) error.textContent = message || "";
+        field.setAttribute("aria-invalid", String(Boolean(message)));
+    }
+
+    function validateField(field) {
+        const value = field.value.trim();
+        let message = "";
+
+        if (field.required && field.type !== "checkbox" && !value) {
+            message = "Это поле обязательно для заполнения.";
+        } else if (["name", "surname"].includes(field.id) && (value.length < 2 || value.length > 50)) {
+            message = "Введите от 2 до 50 символов.";
+        } else if (field.id === "email" && value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+            message = "Введите корректный адрес электронной почты.";
+        } else if (field.id === "phone" && value && !/^\+?[0-9]{10,15}$/.test(value)) {
+            message = "Введите телефон с кодом страны и 10–15 цифрами, например +995555123456.";
+        } else if (field.id === "birthday") {
+            const age = calculateAge(value);
+            if (!value) message = "Укажите дату рождения.";
+            else if (age === null) message = "Укажите корректную дату рождения не позднее сегодняшнего дня.";
+            else if (age < 18) message = "Регистрация доступна только пользователям от 18 лет.";
+        } else if (field.id === "restaurantName" && (value.length < 2 || value.length > 100)) {
+            message = "Название должно содержать от 2 до 100 символов.";
+        } else if (field.id === "city" && (value.length < 2 || value.length > 100)) {
+            message = "Город должен содержать от 2 до 100 символов.";
+        } else if (field.id === "address" && (value.length < 3 || value.length > 200)) {
+            message = "Адрес должен содержать от 3 до 200 символов.";
+        } else if (field.id === "country" && !countryData.some(country => country[0] === value)) {
+            message = "Выберите страну из списка.";
+        } else if (field.id === "slug" && value && !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(value)) {
+            message = "Slug должен содержать строчные латинские буквы, цифры и одиночные дефисы.";
+        } else if (field.id === "currency" && value && !["GEL", "EUR", "USD", "GBP", "CHF", "PLN"].includes(value)) {
+            message = "Выберите валюту из списка.";
+        } else if (field.id === "timezone" && value && !Array.from(field.options).some(option => option.value === value)) {
+            message = "Выберите часовой пояс из списка.";
+        } else if (field.id === "password") {
+            if (value.length < 8 || value.length > 64) message = "Пароль должен содержать от 8 до 64 символов.";
+            else if (!/[A-Za-zА-Яа-яЁё]/.test(value)) message = "Добавьте в пароль хотя бы одну букву.";
+            else if (!/[0-9]/.test(value)) message = "Добавьте в пароль хотя бы одну цифру.";
+        } else if (field.id === "password_confirm" && value !== password.value) {
+            message = "Пароли не совпадают.";
+        }
+
+        setFieldError(field, message);
+        return !message;
+    }
+
+    function validateStep(index) {
+        const fields = Array.from(steps[index].querySelectorAll("input, select")).filter(
+            field => field.type !== "checkbox" && field.type !== "hidden"
+        );
+        let valid = true;
+        let firstInvalid = null;
+
+        fields.forEach(field => {
+            if (!validateField(field)) {
+                valid = false;
+                if (!firstInvalid) firstInvalid = field;
+            }
+        });
+
+        if (index === 2 && !terms.checked) {
+            termsError.classList.add("show");
+            valid = false;
+        } else if (index === 2) {
+            termsError.classList.remove("show");
+        }
+
+        if (!valid && firstInvalid) {
+            firstInvalid.focus({ preventScroll: true });
+            firstInvalid.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
+        return valid;
+    }
+
+    steps.forEach((step, index) => {
+        const nextButton = step.querySelector(".next-button");
+        if (nextButton) {
+            nextButton.addEventListener("click", () => {
+                clearFormError();
+                if (!validateStep(index)) {
+                    showFormError("Проверьте отмеченные поля и заполните их корректно.");
+                    return;
+                }
+                completedSteps.add(index);
+                updateStepSummary(index);
+                openStep(index + 1);
+            });
+        }
+
+        const header = step.querySelector(".step-header");
+        if (header) {
+            header.addEventListener("click", () => {
+                if (index === currentStep) return;
+                for (let i = 0; i < index; i++) {
+                    if (!completedSteps.has(i)) {
+                        showFormError("Сначала завершите предыдущий этап регистрации.");
+                        openStep(i);
+                        return;
+                    }
+                }
+                openStep(index);
+            });
+        }
     });
-    document.querySelectorAll("[data-toggle-password]").forEach(b=>b.addEventListener("click",()=>{const input=getField(b.dataset.togglePassword),show=input.type==="password";input.type=show?"text":"password";b.textContent=show?"Скрыть":"Показать";b.setAttribute("aria-label",show?"Скрыть пароль":"Показать пароль")}));
-    form.addEventListener("submit",event=>{
-     clearFormError();for(let i=0;i<steps.length;i++){if(!validateStep(i)){event.preventDefault();completedSteps.delete(i);openStep(i);showFormError("Проверьте обязательные поля, пароль и согласие с условиями.");return}}
-     completedSteps.add(0);completedSteps.add(1);completedSteps.add(2);submitButton.disabled=true;submitButton.textContent="Отправка…";
+
+    document.querySelectorAll("[data-back]").forEach(button => {
+        button.addEventListener("click", () => openStep(Number(button.dataset.back)));
     });
-    window.addEventListener("pageshow",()=>{submitButton.disabled=false;submitButton.innerHTML='Создать аккаунт <span class="button-arrow" aria-hidden="true">→</span>'});
-    const params=new URLSearchParams(window.location.search);
-    if(params.get("registered")==="1"){form.style.display="none";document.getElementById("progressWrap").style.display="none";document.getElementById("successPanel").classList.add("show");document.getElementById("footer").style.display="none";document.getElementById("securityNote").style.display="none";document.getElementById("pageTitle").textContent="Регистрация завершена";document.getElementById("pageSubtitle").textContent="Ваш запрос на регистрацию обработан."}
-    updatePasswordRules();openStep(0,{scroll:false});
-    })();
+
+    const transliteration = {
+        а:"a",б:"b",в:"v",г:"g",д:"d",е:"e",ё:"yo",ж:"zh",з:"z",и:"i",й:"y",
+        к:"k",л:"l",м:"m",н:"n",о:"o",п:"p",р:"r",с:"s",т:"t",у:"u",ф:"f",
+        х:"kh",ц:"ts",ч:"ch",ш:"sh",щ:"shch",ъ:"",ы:"y",ь:"",э:"e",ю:"yu",я:"ya"
+    };
+
+    function generateSlug(value) {
+        return value.toLowerCase().split("").map(char => transliteration[char] ?? char).join("")
+            .normalize("NFKD").replace(/[\u0300-\u036f]/g, "")
+            .replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "")
+            .slice(0, 100).replace(/-+$/g, "");
+    }
+
+    slugInput.addEventListener("input", () => {
+        slugEditedManually = true;
+        validateField(slugInput);
+    });
+
+    restaurantNameInput.addEventListener("input", () => {
+        if (!slugEditedManually) {
+            slugInput.value = generateSlug(restaurantNameInput.value);
+            if (slugInput.value) validateField(slugInput);
+        }
+    });
+
+    function updatePasswordRules() {
+        const value = password.value;
+        document.getElementById("ruleLength").classList.toggle("met", value.length >= 8 && value.length <= 64);
+        document.getElementById("ruleLetter").classList.toggle("met", /[A-Za-zА-Яа-яЁё]/.test(value));
+        document.getElementById("ruleNumber").classList.toggle("met", /[0-9]/.test(value));
+    }
+
+    form.querySelectorAll("input, select").forEach(field => {
+        field.addEventListener("input", () => {
+            clearFormError();
+            if (field.type === "checkbox") {
+                if (field === terms && terms.checked) termsError.classList.remove("show");
+                return;
+            }
+            if (field.value.trim() !== "") {
+                validateField(field);
+            } else {
+                const wrapper = field.closest(".field");
+                if (wrapper) wrapper.classList.remove("invalid", "valid");
+                field.removeAttribute("aria-invalid");
+            }
+            if (field === password || field === passwordConfirm) {
+                updatePasswordRules();
+                if (passwordConfirm.value) validateField(passwordConfirm);
+            }
+            const step = field.closest(".step");
+            if (step && completedSteps.has(Number(step.dataset.step))) {
+                updateStepSummary(Number(step.dataset.step));
+            }
+        });
+
+        field.addEventListener("change", () => {
+            if (field.tagName === "SELECT" || field.type === "date") validateField(field);
+
+            if (field === countrySelect) {
+                const defaults = {
+                    GE:{currency:"GEL",timezone:"Asia/Tbilisi"},
+                    DE:{currency:"EUR",timezone:"Europe/Berlin"},
+                    US:{currency:"USD",timezone:"America/New_York"},
+                    GB:{currency:"GBP",timezone:"Europe/London"},
+                    PL:{currency:"PLN",timezone:"Europe/Warsaw"},
+                    CH:{currency:"CHF",timezone:"Europe/Zurich"}
+                };
+                const defaultsForCountry = defaults[countrySelect.value];
+                if (defaultsForCountry) {
+                    if (!currencySelect.dataset.userChanged || !currencySelect.value) currencySelect.value = defaultsForCountry.currency;
+                    if (!timezoneSelect.dataset.userChanged || !timezoneSelect.value) timezoneSelect.value = defaultsForCountry.timezone;
+                }
+            }
+            if (field === currencySelect) currencySelect.dataset.userChanged = "1";
+            if (field === timezoneSelect) timezoneSelect.dataset.userChanged = "1";
+        });
+    });
+
+    document.querySelectorAll("[data-toggle-password]").forEach(button => {
+        button.addEventListener("click", () => {
+            const input = getField(button.dataset.togglePassword);
+            const show = input.type === "password";
+            input.type = show ? "text" : "password";
+            button.textContent = show ? "Скрыть" : "Показать";
+            button.setAttribute("aria-label", show ? "Скрыть пароль" : "Показать пароль");
+        });
+    });
+
+    form.addEventListener("submit", async event => {
+        event.preventDefault();
+        clearFormError();
+
+        if (isSubmitting) return;
+
+        for (let i = 0; i < steps.length; i++) {
+            if (!validateStep(i)) {
+                completedSteps.delete(i);
+                openStep(i);
+                showFormError("Проверьте обязательные поля, пароль и согласие с условиями.");
+                return;
+            }
+        }
+
+        isSubmitting = true;
+        submitButton.disabled = true;
+        submitButton.textContent = "Отправка…";
+
+        try {
+            const response = await fetch(form.action, {
+                method: "POST",
+                body: new FormData(form),
+                headers: {"Accept": "application/json, text/html"},
+                redirect: "follow",
+                credentials: "same-origin"
+            });
+
+            if (response.status === 500 || response.status >= 500) {
+                showServerError();
+                return;
+            }
+
+            if (!response.ok) {
+                const messages = {
+                    400:"Некорректные данные. Проверьте заполненные поля.",
+                    401:"Не удалось выполнить авторизацию.",
+                    403:"Недостаточно прав для выполнения действия.",
+                    404:"Страница регистрации не найдена.",
+                    409:"Аккаунт с такими данными уже существует.",
+                    422:"Сервер не смог проверить введённые данные.",
+                    429:"Слишком много попыток. Попробуйте позже."
+                };
+                showFormError(messages[response.status] || `Ошибка сервера (${response.status}). Попробуйте позже.`);
+                return;
+            }
+
+            if (response.redirected) {
+                const finalUrl = new URL(response.url);
+                const code = finalUrl.searchParams.get("error");
+                if (code === "500" || code === "502" || code === "503" || code === "504") {
+                    showServerError();
+                    return;
+                }
+                if (code) {
+                    showFormError(`Ошибка регистрации: ${code}`);
+                    return;
+                }
+            }
+
+            const contentType = response.headers.get("content-type") || "";
+
+            if (contentType.includes("application/json")) {
+                const data = await response.json();
+                if (data.success === true) {
+                    window.location.href = "/restaurant/register?registered=1";
+                    return;
+                }
+                if (data.status === 500 || data.statusCode === 500 || data.error === 500 || data.error === "500") {
+                    showServerError();
+                    return;
+                }
+                if (data.success === false && data.message) {
+                    showFormError(data.message);
+                    return;
+                }
+            }
+
+            const responseText = await response.clone().text().catch(() => "");
+            if (/\b(500|internal server error|ошибка сервера)\b/i.test(responseText)) {
+                showServerError();
+                return;
+            }
+
+            showFormError("Сервер не подтвердил успешную регистрацию. Попробуйте позже.");
+        } catch (error) {
+            console.error("Ошибка регистрации:", error);
+            showFormError("Не удалось связаться с сервером. Проверьте подключение и попробуйте ещё раз.");
+        } finally {
+            isSubmitting = false;
+            submitButton.disabled = false;
+            submitButton.innerHTML = 'Создать аккаунт <span class="button-arrow" aria-hidden="true">→</span>';
+        }
+    });
+
+    const params = new URLSearchParams(window.location.search);
+    const errorCode = params.get("error");
+
+    const serverErrors = {
+        "400":"Некорректные данные. Проверьте заполненные поля.",
+        "401":"Не удалось выполнить авторизацию. Попробуйте снова.",
+        "403":"У вас нет разрешения на выполнение этого действия.",
+        "404":"Запрашиваемый ресурс не найден.",
+        "409":"Аккаунт с такими данными уже существует.",
+        "422":"Сервер не смог проверить введённые данные. Проверьте форму.",
+        "429":"Слишком много попыток. Подождите немного и повторите.",
+        "500":"Ошибка сервера. Попробуйте позже.",
+        "502":"Ошибка сервера. Попробуйте позже.",
+        "503":"Ошибка сервера. Попробуйте позже.",
+        "504":"Ошибка сервера. Попробуйте позже."
+    };
+
+    if (errorCode && serverErrors[errorCode]) {
+        isSubmitting = false;
+        submitButton.disabled = false;
+        submitButton.innerHTML = 'Создать аккаунт <span class="button-arrow" aria-hidden="true">→</span>';
+        if (errorCode === "500" || errorCode === "502" || errorCode === "503" || errorCode === "504") {
+            showServerError();
+        } else {
+            showFormError(serverErrors[errorCode]);
+        }
+        const cleanUrl = new URL(window.location.href);
+        cleanUrl.searchParams.delete("error");
+        window.history.replaceState({}, "", cleanUrl);
+    }
+
+    window.addEventListener("pageshow", () => {
+        isSubmitting = false;
+        submitButton.disabled = false;
+        submitButton.innerHTML = 'Создать аккаунт <span class="button-arrow" aria-hidden="true">→</span>';
+    });
+
+    if (params.get("registered") === "1") {
+        form.style.display = "none";
+        document.getElementById("progressWrap").style.display = "none";
+        document.getElementById("successPanel").classList.add("show");
+        document.getElementById("footer").style.display = "none";
+        document.getElementById("securityNote").style.display = "none";
+        document.getElementById("pageTitle").textContent = "Регистрация завершена";
+        document.getElementById("pageSubtitle").textContent = "Ваш запрос на регистрацию обработан.";
+    }
+
+    updatePasswordRules();
+    openStep(0, {scroll:false});
+})();
 </script>
 </body>
 </html>

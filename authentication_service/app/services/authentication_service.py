@@ -108,8 +108,8 @@ class AuthenticationService:
     async def verify_registration_key(self, key : str) -> str | None:
         return await self.authentication_repository.verify_registration_key(key)
 
-    async def verify_authentication_key(self, key : str) -> str | None:
-        return await self.authentication_repository.verify_authentication_key(key)
+    async def verify_authentication_key(self, key : str, email : EmailStr) -> str | None:
+        return await self.authentication_repository.verify_authentication_key(key, email)
 
     async def update_status_identity(self, identity : Identity, status : Status):
         return await self.authentication_repository.update_status_identity(identity, status)

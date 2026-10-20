@@ -29,7 +29,7 @@ class Order(Base):
     order_number = Column(UUID(as_uuid=True), index=True, nullable=False, default=uuid.uuid4)
     client_id = Column(UUID(as_uuid=True))
     status = Column(SQLEnum(OrderStatus), nullable=False, default=OrderStatus.PENDING)
-    created_at = Column(DateTime(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now(),)
+    created_at = Column(DateTime(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now())
     updated_status = Column(DateTime(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now(),)
     sum = Column(DECIMAL(10, 2), nullable=False, index=True)
     table_number = Column(Integer, nullable=True)

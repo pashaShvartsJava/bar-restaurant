@@ -27,14 +27,14 @@ async def verify_csrf(request: Request):
 @router.get("/menu_page", response_class=HTMLResponse)
 async def get_menu_page(request: Request, category_service : CategoryService = Depends(get_category_service_dependency)):
     payload = get_payload(request)
-    required_roles(IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
+    required_roles(IdentityRole.OWNER, IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
     categories = await category_service.get_all_categories()
     return templates.TemplateResponse("menu.html", {"request":request, "categories" : categories})
 
 @router.get("/menu_page/add_category", response_class=HTMLResponse)
 async def get_categories_page(request: Request, category_service : CategoryService = Depends(get_category_service_dependency)):
     payload = get_payload(request)
-    required_roles(IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
+    required_roles(IdentityRole.OWNER, IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
     categories = await category_service.get_all_categories()
     return templates.TemplateResponse("add_category.html", {"request":request, "categories" : categories})
 
@@ -42,7 +42,7 @@ async def get_categories_page(request: Request, category_service : CategoryServi
 async def create_category(request : Request, category_name : str = Form(),
                               category_service : CategoryService = Depends(get_category_service_dependency)):
     payload = get_payload(request)
-    required_roles(IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
+    required_roles(IdentityRole.OWNER, IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
     await verify_csrf(request)
     await category_service.create_category(category_name)
     return RedirectResponse(url="/menu_page/add_category", status_code=303)
@@ -50,7 +50,7 @@ async def create_category(request : Request, category_name : str = Form(),
 @router.get("/menu_page/add_dish", response_class=HTMLResponse)
 async def add_dish_page(request: Request, category_service : CategoryService = Depends(get_category_service_dependency)):
     payload = get_payload(request)
-    required_roles(IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
+    required_roles(IdentityRole.OWNER, IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
     categories = await category_service.get_all_categories()
     return templates.TemplateResponse("add_dish.html", {"request":request, "categories" : categories})
 
@@ -62,7 +62,7 @@ async def create_dish(request : Request, dish_name : str = Form(...,),
                                image : UploadFile | None = File(None),
                                menu_service : MenuService = Depends(get_menu_service_dependency)):
     payload = get_payload(request)
-    required_roles(IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
+    required_roles(IdentityRole.OWNER, IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
     await verify_csrf(request)
     image_url = None
     if image:
@@ -77,14 +77,14 @@ async def create_dish(request : Request, dish_name : str = Form(...,),
 @router.patch("/menu_page/change_dish_status/{id}")
 async def take_away_dish_from_menu(request : Request, id : int, menu_service : MenuService = Depends(get_menu_service_dependency)):
     payload = get_payload(request)
-    required_roles(IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
+    required_roles(IdentityRole.OWNER, IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
     await verify_csrf(request)
     await menu_service.update_dish_status(id)
 
 @router.get("/menu_page/edit_dish/{id}")
 async def show_edit_dish_page(request : Request, id : int, menu_service : MenuService = Depends(get_menu_service_dependency)):
     payload = get_payload(request)
-    required_roles(IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
+    required_roles(IdentityRole.OWNER, IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
     dish = await menu_service.get_dish_by_id(id)
     return templates.TemplateResponse("edit_dish.html", {"request":request, "dish" : dish})
 
@@ -97,7 +97,7 @@ async def edit_dish(request : Request,
                     image : UploadFile | None = File(None),
                     menu_service : MenuService = Depends(get_menu_service_dependency)):
     payload = get_payload(request)
-    required_roles(IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
+    required_roles(IdentityRole.OWNER, IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
     await verify_csrf(request)
     image_url = None
     if image is not None and image.filename:
@@ -136,7 +136,7 @@ async def get_all_available_dishes(request : Request,
                                    service : MenuService = Depends(get_menu_service_dependency),
                                    internal_token : str = Header(..., alias="internal_token")):
     payload = get_payload(request)
-    required_roles(IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
+    required_roles(IdentityRole.OWNER, IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
     await verify_internal_token(internal_token)
     all_available_dishes = await service.get_all_available_dishes()
     return all_available_dishes
