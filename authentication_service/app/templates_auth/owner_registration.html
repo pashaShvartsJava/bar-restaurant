@@ -778,6 +778,14 @@
                 redirect: "follow",
                 credentials: "same-origin"
             });
+            if (response.redirected) {
+    const finalUrl = new URL(response.url);
+
+    if (finalUrl.pathname === "/choose_subscription") {
+        window.location.assign(finalUrl.href);
+        return;
+    }
+}
 
             if (response.status === 500 || response.status >= 500) {
                 showServerError();
