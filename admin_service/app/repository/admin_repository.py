@@ -74,6 +74,11 @@ class AdminRepository:
         await self.db.commit()
         return old_admin
 
+    async def delete_admin_by_identity_id(self, identity_id: UUID):
+        admin = await self.get_by_identity_id(identity_id)
+        await self.db.delete(admin)
+        await self.db.commit()
+
     async def add_new_admin(self, admin_form : AdminRegistrationForm, identity_id : UUID):
         new_admin = Admin(identity_id=identity_id, name=admin_form.name, surname=admin_form.surname, birthday=admin_form.birthday,
                           phone=admin_form.phone, email=admin_form.email, role=admin_form.role)

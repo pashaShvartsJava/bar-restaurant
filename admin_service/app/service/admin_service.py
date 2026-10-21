@@ -32,5 +32,8 @@ class AdminService:
     async def delete_admin(self, delete_admin_id : int) -> Admin:
         return await self.admin_repository.delete_admin(delete_admin_id)
 
+    async def delete_admin_by_identity_id(self, identity_id : UUID):
+        return await self.admin_repository.delete_admin_by_identity_id(identity_id)
+
     async def add_new_admin(self, admin_form : AdminRegistrationForm, identity_id : UUID):
         return await self.admin_repository.add_new_admin(admin_form, identity_id)

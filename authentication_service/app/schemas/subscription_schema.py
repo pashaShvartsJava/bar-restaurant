@@ -53,6 +53,8 @@ class SubscriptionDTO(BaseModel):
 
 class SubscriptionCheckoutDTO(BaseModel):
     user_id: UUID
+    restaurant_id: UUID
+    sub_idempotency_key: UUID
     email: EmailStr
     plan_id: str
     billing_period: str

@@ -5,7 +5,13 @@ from ..config.config import settings
 
 URL_DATABASE = settings.database_url
 
-engine = create_async_engine(URL_DATABASE)
+engine = create_async_engine(
+    URL_DATABASE,
+    pool_pre_ping=True,
+    pool_size=5,
+    max_overflow=10,
+    pool_timeout=10,
+    connect_args={"timeout": 10})
 
 SessionLocal = async_sessionmaker(
     bind=engine,

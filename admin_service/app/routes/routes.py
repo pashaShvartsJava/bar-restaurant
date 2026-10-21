@@ -304,4 +304,10 @@ async def customer_info(request : Request, identity_id : UUID):
     orders = response.json()
     return templates.TemplateResponse("user_orders_history.html", {"request" : request, "orders" : orders})
 
+@router.post("/admins/delete_saga_admin")
+async def delete_saga_admin(admin_id : str,
+                            internal_token : str = Header(..., alias="internal_token"),
+                            service: AdminService = Depends(get_service_dependency)):
+    await verify_internal_token(internal_token)
+    await service.delete_admin_by_identity_id(uuid.UUID(admin_id))
 

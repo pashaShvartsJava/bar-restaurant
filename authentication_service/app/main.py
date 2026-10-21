@@ -11,6 +11,10 @@ from .broker.instance import rabbitmq
 from .routes.routes import router as auth_router
 from .routes.admin_routes import router as router
 from .routes.owner_routes import router as owner_router
+import logging
+
+
+logging.basicConfig(level=logging.INFO)
 
 
 @asynccontextmanager
