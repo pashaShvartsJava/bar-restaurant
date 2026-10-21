@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -1093,7 +1092,7 @@
 
     <main class="container">
         <nav class="top" aria-label="Навигация">
-            <a class="back" href="/restaurant/register">
+            <a class="back" href="/restaurant-platform">
                 <span class="back-arrow" aria-hidden="true">←</span>
                 Вернуться к настройке
             </a>
@@ -1156,15 +1155,17 @@
             <div class="trial-icon" aria-hidden="true">✦</div>
 
             <div class="trial-content">
-                <strong>14 дней бесплатно на любом тарифе</strong>
+                <strong>Пробный период на любом тарифе</strong>
                 <span>
                     Попробуйте все возможности выбранного плана.
-                    Подписка начнёт оплачиваться после окончания пробного периода
-                    согласно условиям оформления.
+                    Длительность пробного периода зависит от тарифа:
+                    Starter — 3 дня, Advanced — 7 дней,
+                    Professional Business — 14 дней.
+                    Подписка начнёт оплачиваться после окончания пробного периода.
                 </span>
             </div>
 
-            <div class="trial-badge">14 DAYS FREE</div>
+            <div class="trial-badge">3 / 7 / 14 DAYS</div>
         </section>
 
         <section class="plans" aria-label="Тарифные планы">
@@ -1185,7 +1186,7 @@
                         <span class="period">/ месяц</span>
                     </div>
                     <p class="price-note">
-                        <strong>14 дней бесплатно</strong>
+                        <strong>3 дня бесплатно</strong>
                         <br>
                         Затем 39,99 € в месяц
                         <br>
@@ -1226,8 +1227,8 @@
                         <span class="arrow">→</span>
                     </button>
                     <p class="plan-footnote">
-                        После пробного периода взимается ежемесячная плата
-                        и комиссия за онлайн-заказы.
+                        После 3-дневного пробного периода взимается
+                        ежемесячная плата и комиссия за онлайн-заказы.
                     </p>
                 </div>
             </article>
@@ -1249,7 +1250,7 @@
                         <span class="period">/ месяц</span>
                     </div>
                     <p class="price-note">
-                        <strong>14 дней бесплатно</strong>
+                        <strong>7 дней бесплатно</strong>
                         <br>
                         Затем 119,99 € в месяц
                         <br>
@@ -1290,7 +1291,7 @@
                         <span class="arrow">→</span>
                     </button>
                     <p class="plan-footnote">
-                        После пробного периода — 119,99 € в месяц.
+                        После 7-дневного пробного периода — 119,99 € в месяц.
                         Без комиссии платформы.
                     </p>
                 </div>
@@ -1436,8 +1437,8 @@
                         </tr>
                         <tr>
                             <td>Бесплатный пробный период</td>
-                            <td class="yes">14 дней</td>
-                            <td class="yes">14 дней</td>
+                            <td class="yes">3 дня</td>
+                            <td class="yes">7 дней</td>
                             <td class="yes">14 дней</td>
                         </tr>
                     </tbody>
@@ -1473,7 +1474,9 @@
                     <div class="faq-answer">
                         <div>
                             <p>
-                                Каждый тариф включает 14 дней пробного периода.
+                                Длительность пробного периода зависит от тарифа:
+                                Starter — 3 дня, Advanced — 7 дней,
+                                Professional Business — 14 дней.
                                 После его окончания начнётся оплата выбранной
                                 подписки согласно условиям оформления.
                                 Возможность отменить подписку и условия
@@ -1571,12 +1574,36 @@
         </footer>
     </main>
 
-    <div class="toast" id="toast" role="status" aria-live="polite">
-        <strong id="toastTitle">Тариф выбран</strong>
-        <p id="toastMessage"></p>
-    </div>
-
     <script>
+        /*
+         * ВАЖНО: цены и длительности пробного периода продублированы здесь,
+         * чтобы их можно было отправить в payment-сервис вместе с формой
+         * регистрации. Сервер ОБЯЗАТЕЛЬНО должен перепроверять сумму
+         * по plan_id, а не доверять присланной цене.
+         */
+        const PLANS = {
+            starter: {
+                name: "Starter",
+                monthlyPrice: 39.99,
+                yearlyPrice: 419.99,
+                trialDays: 3
+            },
+            advanced: {
+                name: "Advanced",
+                monthlyPrice: 119.99,
+                yearlyPrice: 1259.99,
+                trialDays: 7
+            },
+            professional: {
+                name: "Professional Business",
+                monthlyPrice: 199.99,
+                yearlyPrice: 2099.99,
+                trialDays: 14
+            }
+        };
+
+        const REGISTER_URL = "/restaurant/register";
+
         const billingToggle = document.getElementById("billingToggle");
         const monthlyLabel = document.getElementById("monthlyLabel");
         const yearlyLabel = document.getElementById("yearlyLabel");
@@ -1586,7 +1613,6 @@
         const proFootnote = document.getElementById("proFootnote");
 
         let yearly = false;
-        let toastTimer;
 
         function updateBilling(isYearly) {
             yearly = isYearly;
@@ -1609,7 +1635,7 @@
                         "Экономия 299,89 € в год";
 
                     proFootnote.textContent =
-                        "Годовая оплата после пробного периода.";
+                        "Годовая оплата после 14-дневного пробного периода.";
                 } else {
                     proPrice.textContent = "199,99";
                     proPeriod.textContent = "/ месяц";
@@ -1620,7 +1646,7 @@
                         "Без комиссии платформы с заказов";
 
                     proFootnote.textContent =
-                        "Ежемесячная оплата после пробного периода.";
+                        "Ежемесячная оплата после 14-дневного пробного периода.";
                 }
 
                 proPrice.style.opacity = "1";
@@ -1632,28 +1658,58 @@
             updateBilling(!yearly);
         });
 
+        /*
+         * При выборе тарифа:
+         *  - определяем billingPeriod (monthly / yearly);
+         *  - собираем данные подписки;
+         *  - перенаправляем на /restaurant/register с query-параметрами.
+         *
+         * Страница регистрации должна:
+         *  1) прочитать эти параметры (или скрытые поля формы);
+         *  2) положить их в скрытые input'ы формы регистрации;
+         *  3) отправить вместе с остальными данными в payment-сервис
+         *     в виде DTO, например:
+         *
+         *     {
+         *         user: { ...данные формы... },
+         *         subscription: {
+         *             plan_id: "professional",
+         *             plan_name: "Professional Business",
+         *             billing_period: "monthly",
+         *             price: 199.99,
+         *             currency: "EUR",
+         *             trial_days: 14
+         *         }
+         *     }
+         */
         document.querySelectorAll(".select-plan").forEach((button) => {
-            button.addEventListener("click", async () => {
-                const plan = button.dataset.plan;
+            button.addEventListener("click", () => {
+                const planId = button.dataset.plan;
+                const plan = PLANS[planId];
+                if (!plan) return;
 
+                // Годовой период сейчас доступен только для Professional,
+                // остальные тарифы — помесячно.
                 const billingPeriod =
-                    plan === "professional" && yearly
+                    planId === "professional" && yearly
                         ? "yearly"
                         : "monthly";
 
-                const planNames = {
-                    starter: "Starter",
-                    advanced: "Advanced",
-                    professional: "Professional Business"
-                };
+                const price =
+                    billingPeriod === "yearly"
+                        ? plan.yearlyPrice
+                        : plan.monthlyPrice;
 
-                showToast(
-                    "Вы выбрали " + planNames[plan],
-                    "14 дней бесплатно. " +
-                    "Период оплаты: " +
-                    (billingPeriod === "yearly" ? "за год" : "за месяц") +
-                    ". Для оформления подключите этот обработчик к Stripe Checkout через FastAPI."
-                );
+                const params = new URLSearchParams({
+                    plan_id: planId,
+                    plan_name: plan.name,
+                    billing_period: billingPeriod,
+                    price: String(price),
+                    currency: "EUR",
+                    trial_days: String(plan.trialDays)
+                });
+
+                window.location.href = REGISTER_URL + "?" + params.toString();
             });
         });
 
@@ -1674,20 +1730,6 @@
                 }
             });
         });
-
-        function showToast(title, message) {
-            const toast = document.getElementById("toast");
-
-            document.getElementById("toastTitle").textContent = title;
-            document.getElementById("toastMessage").textContent = message;
-
-            toast.classList.add("visible");
-            window.clearTimeout(toastTimer);
-
-            toastTimer = window.setTimeout(() => {
-                toast.classList.remove("visible");
-            }, 5000);
-        }
     </script>
 </body>
 </html>

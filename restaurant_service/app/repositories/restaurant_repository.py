@@ -19,7 +19,7 @@ class RestaurantRepository:
                 city=data.city,
                 address=data.address,
                 timezone=data.timezone,
-                currency=data.currency
+                currency=data.restaurant_currency
             )
             self.db.add(new_restaurant)
             await self.db.flush()

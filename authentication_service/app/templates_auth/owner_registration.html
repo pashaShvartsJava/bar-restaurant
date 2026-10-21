@@ -76,20 +76,20 @@
         .password-toggle{position:absolute;top:50%;right:11px;padding:4px;border:0;background:transparent;color:#9c9095;font-size:10px;cursor:pointer;transform:translateY(-50%)}
         .password-toggle:hover{color:var(--gold-light)}
         input.has-toggle{padding-right:65px}
-        .field-error{display:none;margin-top:6px;color:var(--red);font-size:10px;line-height:1.5}
-        .field.invalid input:not([type=checkbox]),.field.invalid select{border-color:#d98c8c88;box-shadow:0 0 0 1px #d98c8c0a}
+        .field-error{display:none;margin-top:5px;color:#f0a8a8;font-size:10px;line-height:1.45;letter-spacing:.1px}
+        .field.invalid input:not([type=checkbox]),.field.invalid select{border-color:#e58c8c59;box-shadow:0 0 0 1px #e58c8c1a}
         .field.invalid .field-error{display:block}
-        .field.valid input:not([type=checkbox]),.field.valid select{border-color:#9bc8a559}
-        .field-help{margin-top:7px;color:#777074;font-size:10px;line-height:1.6}
-        .password-rules{display:flex;flex-wrap:wrap;gap:7px 12px;margin-top:9px}
-        .password-rule{color:#766e72;font-size:9px}
+        .field.valid input:not([type=checkbox]),.field.valid select{border-color:#9bc8a53d}
+        .field-help{margin-top:6px;color:#7a7276;font-size:10px;line-height:1.55}
+        .password-rules{display:flex;flex-wrap:wrap;gap:6px 11px;margin-top:8px}
+        .password-rule{color:#7d7579;font-size:9px}
         .password-rule.met{color:var(--green)}
-        .password-rule:before{content:"○";margin-right:5px}
+        .password-rule:before{content:"○";margin-right:4px}
         .password-rule.met:before{content:"✓"}
         .check-row{display:flex;align-items:flex-start;gap:10px;margin:15px 0}
         .check-row input[type=checkbox]{flex:0 0 15px;width:15px;height:15px;margin-top:2px;accent-color:var(--gold);cursor:pointer}
         .check-row label{margin:0;color:#9a9093;font-size:10px;line-height:1.7;cursor:pointer}
-        .checkbox-error{display:none;margin:-7px 0 12px 25px;color:var(--red);font-size:10px}
+        .checkbox-error{display:none;margin:-5px 0 12px 25px;color:#f0a8a8;font-size:10px;line-height:1.45}
         .checkbox-error.show{display:block}
         .button{width:100%;min-height:45px;display:flex;align-items:center;justify-content:center;gap:9px;padding:13px 15px;border:1px solid #d5a65b8c;border-radius:8px;background:linear-gradient(145deg,#392920f5,#20191bfa);color:#f0e7df;font-size:11px;font-weight:600;cursor:pointer;transition:transform .25s,border-color .25s,box-shadow .25s}
         .button:hover{transform:translateY(-2px);border-color:var(--gold);box-shadow:0 9px 25px #d5a65b1a}
@@ -99,7 +99,7 @@
         .button-secondary{margin-top:9px;border-color:#ffffff17;background:#ffffff04;color:#a1989b;font-weight:normal}
         .button-secondary:hover{border-color:#ffffff33;background:#ffffff09;box-shadow:none;color:#e0d6d1}
         .button:disabled{opacity:.65;cursor:wait;transform:none}
-        .form-error{display:none;margin:16px 0;padding:12px 15px;border:1px solid rgba(229,140,140,.55);border-radius:6px;background:rgba(229,140,140,.055);color:#e58c8c;font-size:13px;font-weight:600;line-height:1.5;overflow-wrap:anywhere}
+        .form-error{display:none;margin:14px 0;padding:9px 12px;border:1px solid rgba(240,168,168,.35);border-radius:7px;background:rgba(240,168,168,.045);color:#f2b6b6;font-size:11px;font-weight:500;line-height:1.5;letter-spacing:.1px;overflow-wrap:anywhere}
         .form-error.show{display:block}
         .footer{margin-top:22px;color:#777074;font-size:10px;line-height:1.9;text-align:center}
         .footer a{white-space:nowrap}
@@ -114,7 +114,7 @@
         @media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;animation-duration:.01ms!important;transition-duration:.01ms!important}}
         @media(max-width:850px){body{padding:25px 18px}.page{width:min(100%,520px);grid-template-columns:minmax(0,1fr);gap:0}.sidebar{display:none}.card{padding:30px}}
         @media(max-width:480px){body{align-items:flex-start;padding:14px 10px}.card{padding:25px 16px;border-radius:14px}.subtitle{margin-bottom:22px}.step-header{gap:10px;padding:13px 12px}.step-content{padding:0 12px 16px}.step-title{font-size:15px}.row{grid-template-columns:minmax(0,1fr);gap:0}input:not([type=checkbox]),select{min-height:44px}}
-</style>
+    </style>
 </head>
 <body>
 <main class="page">
@@ -153,7 +153,13 @@
             </div>
         </div>
         <div class="form-error" id="formError" role="alert" aria-live="assertive"></div>
-        <form id="registrationForm" action="/restaurant/register" method="post" novalidate onsubmit="return false;">
+        <form id="registrationForm" action="/restaurant/register" method="post" enctype="multipart/form-data" novalidate onsubmit="return false;">
+            <!-- Скрытые поля подписки. plan_id/billing_period/trial_days/price/currency — из SubscriptionDTO -->
+            <input type="hidden" name="plan_id" id="plan_id" value="">
+            <input type="hidden" name="billing_period" id="billing_period" value="">
+            <input type="hidden" name="trial_days" id="trial_days" value="">
+            <input type="hidden" name="price" id="price" value="">
+            <input type="hidden" name="currency" id="currency_subscription" value="">
             <div class="steps">
                 <section class="step active" data-step="0">
                     <button class="step-header" type="button" aria-expanded="true" aria-controls="stepBody0">
@@ -194,7 +200,7 @@
                             <div class="field"><label for="address">Адрес <span class="required">*</span></label><input id="address" name="address" type="text" placeholder="Улица и номер" autocomplete="street-address" minlength="3" maxlength="200" required><div class="field-error">Укажите адрес заведения (от 3 до 200 символов).</div></div>
                             <div class="field"><label for="slug">Адрес страницы заведения (slug) <span class="required">*</span></label><input id="slug" name="slug" type="text" placeholder="atelier-bistro" minlength="2" maxlength="100" pattern="[a-z0-9]+(-[a-z0-9]+)*" autocomplete="off" required><div class="field-help">Генерируется из названия. Можно изменить вручную. Только строчные латинские буквы, цифры и дефисы.</div><div class="field-error">Используйте латинские буквы, цифры и одиночные дефисы.</div></div>
                             <div class="row">
-                                <div class="field"><label for="currency">Валюта <span class="required">*</span></label><div class="select-wrap"><select id="currency" name="currency" required><option value="">Выберите валюту</option><option value="GEL">GEL — Грузинский лари</option><option value="EUR">EUR — Евро</option><option value="USD">USD — Доллар США</option><option value="GBP">GBP — Фунт стерлингов</option><option value="CHF">CHF — Швейцарский франк</option><option value="PLN">PLN — Польский злотый</option></select></div><div class="field-error">Выберите валюту.</div></div>
+                                <div class="field"><label for="currency">Валюта заведения <span class="required">*</span></label><div class="select-wrap"><select id="currency" name="restaurant_currency" required><option value="">Выберите валюту</option><option value="GEL">GEL — Грузинский лари</option><option value="EUR">EUR — Евро</option><option value="USD">USD — Доллар США</option><option value="GBP">GBP — Фунт стерлингов</option><option value="CHF">CHF — Швейцарский франк</option><option value="PLN">PLN — Польский злотый</option></select></div><div class="field-error">Выберите валюту.</div></div>
                                 <div class="field"><label for="timezone">Часовой пояс <span class="required">*</span></label><div class="select-wrap"><select id="timezone" name="timezone" required><option value="">Загрузка часовых поясов…</option></select></div><div class="field-help">Список часовых поясов IANA с городами и UTC-смещением.</div><div class="field-error">Выберите часовой пояс из списка.</div></div>
                             </div>
                             <button class="button next-button" type="button">Продолжить <span class="button-arrow" aria-hidden="true">→</span></button>
@@ -255,7 +261,7 @@
     const slugInput = document.getElementById("slug");
     const countrySelect = document.getElementById("country");
     const timezoneSelect = document.getElementById("timezone");
-    const currencySelect = document.getElementById("currency");
+    const currencySelect = document.getElementById("currency"); // id остался "currency", name теперь restaurant_currency
 
     let currentStep = 0;
     let slugEditedManually = false;
@@ -264,6 +270,61 @@
     const completedSteps = new Set();
     const getField = id => document.getElementById(id);
 
+    /* =========================================================
+     * Подписка: поля SubscriptionDTO — plan_id, billing_period,
+     * trial_days, price, currency. Кладём их в скрытые input'ы
+     * из query-параметров. currency подписки — отдельное поле
+     * с name="currency", валюта заведения — name="restaurant_currency".
+     * ========================================================= */
+    const PLAN_IDS = ["starter", "advanced", "professional"];
+    const SUBSCRIPTION_FIELDS = ["plan_id", "billing_period", "trial_days", "price", "currency"];
+
+    function readSubscriptionFromQuery() {
+        const qs = new URLSearchParams(window.location.search);
+        const sub = {};
+        SUBSCRIPTION_FIELDS.forEach((key) => {
+            sub[key] = qs.get(key) || "";
+        });
+
+        if (!PLAN_IDS.includes(sub.plan_id)) {
+            sub.plan_id = "";
+        }
+        if (sub.billing_period !== "monthly" && sub.billing_period !== "yearly") {
+            sub.billing_period = "monthly";
+        }
+        const price = Number(sub.price);
+        if (!Number.isFinite(price) || price <= 0) {
+            sub.price = "";
+        } else {
+            sub.price = price.toFixed(2);
+        }
+        if (!/^[A-Z]{3}$/.test(sub.currency)) {
+            sub.currency = "EUR";
+        }
+        const trial = Number(sub.trial_days);
+        if (!Number.isFinite(trial) || trial <= 0 || trial > 30) {
+            sub.trial_days = "";
+        } else {
+            sub.trial_days = String(Math.trunc(trial));
+        }
+        return sub;
+    }
+
+    const subscription = readSubscriptionFromQuery();
+
+    function applySubscriptionToForm(sub) {
+        document.getElementById("plan_id").value = sub.plan_id || "";
+        document.getElementById("billing_period").value = sub.billing_period || "";
+        document.getElementById("trial_days").value = sub.trial_days || "";
+        document.getElementById("price").value = sub.price || "";
+        document.getElementById("currency_subscription").value = sub.currency || "";
+    }
+
+    applySubscriptionToForm(subscription);
+
+    /* =========================================================
+     * Справочники: страны, часовые пояса
+     * ========================================================= */
     const countryData = [
         ["AF","Афганистан","Afghanistan"],["AL","Албания","Albania"],
         ["DZ","Алжир","Algeria"],["AD","Андорра","Andorra"],
@@ -774,76 +835,66 @@
             const response = await fetch(form.action, {
                 method: "POST",
                 body: new FormData(form),
-                headers: {"Accept": "application/json, text/html"},
+                headers: { "Accept": "application/json, text/html" },
                 redirect: "follow",
                 credentials: "same-origin"
             });
+
             if (response.redirected) {
-    const finalUrl = new URL(response.url);
+                const finalUrl = new URL(response.url);
+                if (
+                    finalUrl.pathname === "/choose_subscription" ||
+                    finalUrl.pathname === "/payment/subscription"
+                ) {
+                    window.location.assign(finalUrl.href);
+                    return;
+                }
+            }
 
-    if (finalUrl.pathname === "/choose_subscription") {
-        window.location.assign(finalUrl.href);
-        return;
-    }
-}
-
-            if (response.status === 500 || response.status >= 500) {
+            if (response.status >= 500) {
                 showServerError();
                 return;
             }
 
             if (!response.ok) {
                 const messages = {
-                    400:"Некорректные данные. Проверьте заполненные поля.",
-                    401:"Не удалось выполнить авторизацию.",
-                    403:"Недостаточно прав для выполнения действия.",
-                    404:"Страница регистрации не найдена.",
-                    409:"Аккаунт с такими данными уже существует.",
-                    422:"Сервер не смог проверить введённые данные.",
-                    429:"Слишком много попыток. Попробуйте позже."
+                    400: "Некорректные данные. Проверьте заполненные поля.",
+                    401: "Не удалось выполнить авторизацию.",
+                    403: "Недостаточно прав для выполнения действия.",
+                    404: "Страница регистрации не найдена.",
+                    409: "Аккаунт с такими данными уже существует.",
+                    422: "Сервер не смог проверить введённые данные.",
+                    429: "Слишком много попыток. Попробуйте позже."
                 };
                 showFormError(messages[response.status] || `Ошибка сервера (${response.status}). Попробуйте позже.`);
                 return;
             }
 
-            if (response.redirected) {
-                const finalUrl = new URL(response.url);
-                const code = finalUrl.searchParams.get("error");
-                if (code === "500" || code === "502" || code === "503" || code === "504") {
-                    showServerError();
-                    return;
-                }
-                if (code) {
-                    showFormError(`Ошибка регистрации: ${code}`);
-                    return;
-                }
-            }
-
             const contentType = response.headers.get("content-type") || "";
-
             if (contentType.includes("application/json")) {
                 const data = await response.json();
+
+                const checkoutUrl =
+                    data.url || data.checkout_url ||
+                    (data.session && (data.session.url || data.session.checkout_url));
+
+                if (checkoutUrl) {
+                    window.location.assign(checkoutUrl);
+                    return;
+                }
+
                 if (data.success === true) {
                     window.location.href = "/restaurant/register?registered=1";
                     return;
                 }
-                if (data.status === 500 || data.statusCode === 500 || data.error === 500 || data.error === "500") {
-                    showServerError();
-                    return;
-                }
+
                 if (data.success === false && data.message) {
                     showFormError(data.message);
                     return;
                 }
             }
 
-            const responseText = await response.clone().text().catch(() => "");
-            if (/\b(500|internal server error|ошибка сервера)\b/i.test(responseText)) {
-                showServerError();
-                return;
-            }
-
-            showFormError("Сервер не подтвердил успешную регистрацию. Попробуйте позже.");
+            window.location.href = "/restaurant/register?registered=1";
         } catch (error) {
             console.error("Ошибка регистрации:", error);
             showFormError("Не удалось связаться с сервером. Проверьте подключение и попробуйте ещё раз.");

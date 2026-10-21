@@ -5,10 +5,11 @@ from pydantic import BaseModel
 import re
 from pydantic import BaseModel, Field, EmailStr, field_validator
 from datetime import date
-from ..model.identity_model import IdentityRole, Status
+
+from .subscription_schema import SubscriptionDTO
 from uuid import UUID
 
-class RestaurantRegistrationDTO(BaseModel):
+class RestaurantRegistrationDTO(SubscriptionDTO):
     name: str = Field(..., min_length=2, max_length=50, description="name")
     surname: str = Field(..., min_length=2, max_length=50, description="surname")
     birthday: date = Field(..., description="birthday")
@@ -20,7 +21,7 @@ class RestaurantRegistrationDTO(BaseModel):
     city: str = Field(...)
     address: str = Field(...)
     slug: str = Field(...)
-    currency: str = Field(...)
+    restaurant_currency: str = Field(...)
     timezone: str = Field(...)
 
     @field_validator("phone")
@@ -45,7 +46,7 @@ class RestaurantCreationDTO(BaseModel):
     city: str = Field(..., min_length=2, max_length=100)
     address: str = Field(..., min_length=3, max_length=200)
     slug: str = Field(..., min_length=2, max_length=100, pattern=r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
-    currency: str = Field(..., min_length=3, max_length=3)
+    restaurant_currency: str = Field(..., min_length=3, max_length=3)
     timezone: str = Field(..., min_length=1, max_length=64)
     identity_id: UUID = Field(...)
 
@@ -65,9 +66,9 @@ class RestaurantCreationDTO(BaseModel):
             raise ValueError("Недопустимый код страны ISO 3166-1 alpha-2")
         return value
 
-    @field_validator("currency")
+    @field_validator("restaurant_currency")
     @classmethod
-    def validate_currency(cls, value: str) -> str:
+    def validate_restaurant_currency(cls, value: str) -> str:
         value = value.strip().upper()
         if not pycountry.currencies.get(alpha_3=value):
             raise ValueError("Недопустимый код валюты ISO 4217")

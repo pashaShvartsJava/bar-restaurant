@@ -31,7 +31,7 @@ class User(Base):
     phone = Column(String, nullable=False)
     role = Column(SQLEnum(IdentityRole), nullable=False, index=True)
     address_id = Column(Integer, ForeignKey("addresses.id"), nullable=False, unique=True)
-    created_at = Column(DateTime(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now(),)
-    updated_at = Column(DateTime(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now(),)
+    created_at = Column(DateTime(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now())
+    updated_at = Column(DateTime(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now(), )
 
     address = relationship("Address", back_populates="users")
