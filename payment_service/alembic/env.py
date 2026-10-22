@@ -11,6 +11,7 @@ from app.database.database import Base
 
 from app.database.database import Base
 from app.models.payments import Payment
+from app.models.subscriptions import Subscription
 from app.models.outbox_payment_events import OutboxPaymentEvents
 
 from app.config.config import settings

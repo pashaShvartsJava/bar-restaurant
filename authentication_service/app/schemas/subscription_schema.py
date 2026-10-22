@@ -50,6 +50,7 @@ class SubscriptionDTO(BaseModel):
     trial_days: int
     price: Decimal
     currency: str = "EUR"
+    order_commission_percent: Decimal = Decimal("0")
 
 class SubscriptionCheckoutDTO(BaseModel):
     user_id: UUID
@@ -60,4 +61,5 @@ class SubscriptionCheckoutDTO(BaseModel):
     billing_period: str
     trial_days: int
     price: Decimal
+    order_commission_percent: Decimal = Decimal("0")
     currency: str = "EUR"

@@ -112,12 +112,15 @@ async def create_restaurant_and_subscription_checkout(data : Annotated[Restauran
         server_trial = plan["trial_days"]
         server_currency = plan["currency"]
         server_price = plan[data.billing_period]
+        server_order_percent_commission = plan[data.order_commission_percent]
         if server_price != data.price:
             raise HTTPException(detail="Invalid price entered", status_code=400)
         if server_trial != data.trial_days:
             raise HTTPException(detail="Invalid trial day period entered", status_code=400)
         if server_currency != data.currency:
             raise HTTPException(detail="Invalid currency entered", status_code=400)
+        if server_order_percent_commission != data.order_commission_percent:
+            raise HTTPException(detail="Invalid order percent commission entered", status_code=400)
 
         subscription_checkout_dto = SubscriptionCheckoutDTO(
             user_id=created_owner.id,
@@ -128,6 +131,7 @@ async def create_restaurant_and_subscription_checkout(data : Annotated[Restauran
             billing_period=data.billing_period.value,
             trial_days=server_trial,
             price=server_price,
+            order_commission_percent=server_order_percent_commission,
             currency=server_currency.value
         )
         created_restaurant = True

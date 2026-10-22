@@ -154,12 +154,13 @@
         </div>
         <div class="form-error" id="formError" role="alert" aria-live="assertive"></div>
         <form id="registrationForm" action="/restaurant/register" method="post" enctype="multipart/form-data" novalidate onsubmit="return false;">
-            <!-- Скрытые поля подписки. plan_id/billing_period/trial_days/price/currency — из SubscriptionDTO -->
+            <!-- Скрытые поля подписки. plan_id/billing_period/trial_days/price/currency/order_commission_percent — из SubscriptionDTO -->
             <input type="hidden" name="plan_id" id="plan_id" value="">
             <input type="hidden" name="billing_period" id="billing_period" value="">
             <input type="hidden" name="trial_days" id="trial_days" value="">
             <input type="hidden" name="price" id="price" value="">
             <input type="hidden" name="currency" id="currency_subscription" value="">
+            <input type="hidden" name="order_commission_percent" id="order_commission_percent" value="0">
             <div class="steps">
                 <section class="step active" data-step="0">
                     <button class="step-header" type="button" aria-expanded="true" aria-controls="stepBody0">
@@ -272,12 +273,20 @@
 
     /* =========================================================
      * Подписка: поля SubscriptionDTO — plan_id, billing_period,
-     * trial_days, price, currency. Кладём их в скрытые input'ы
-     * из query-параметров. currency подписки — отдельное поле
-     * с name="currency", валюта заведения — name="restaurant_currency".
+     * trial_days, price, currency, order_commission_percent.
+     * Кладём их в скрытые input'ы из query-параметров.
+     * currency подписки — отдельное поле с name="currency",
+     * валюта заведения — name="restaurant_currency".
      * ========================================================= */
     const PLAN_IDS = ["starter", "advanced", "professional"];
-    const SUBSCRIPTION_FIELDS = ["plan_id", "billing_period", "trial_days", "price", "currency"];
+    const SUBSCRIPTION_FIELDS = [
+        "plan_id",
+        "billing_period",
+        "trial_days",
+        "price",
+        "currency",
+        "order_commission_percent"
+    ];
 
     function readSubscriptionFromQuery() {
         const qs = new URLSearchParams(window.location.search);
@@ -307,6 +316,13 @@
         } else {
             sub.trial_days = String(Math.trunc(trial));
         }
+        // Процент комиссии с заказов: 0..100, по умолчанию 0
+        const commission = Number(sub.order_commission_percent);
+        if (!Number.isFinite(commission) || commission < 0 || commission > 100) {
+            sub.order_commission_percent = "0";
+        } else {
+            sub.order_commission_percent = String(commission);
+        }
         return sub;
     }
 
@@ -318,6 +334,8 @@
         document.getElementById("trial_days").value = sub.trial_days || "";
         document.getElementById("price").value = sub.price || "";
         document.getElementById("currency_subscription").value = sub.currency || "";
+        document.getElementById("order_commission_percent").value =
+            sub.order_commission_percent || "0";
     }
 
     applySubscriptionToForm(subscription);

@@ -3,7 +3,8 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
-from .routes.routes import router as payment_router
+from .routes.payment_routes import router as payment_router
+from .routes.subscription_routes import router as subscription_router
 from .broker.instance import rabbitmq
 from .async_processes.async_processes import outbox_publisher
 
@@ -26,3 +27,4 @@ async def lifespan(app: FastAPI):
 app = FastAPI(lifespan=lifespan)
 
 app.include_router(payment_router)
+app.include_router(subscription_router)

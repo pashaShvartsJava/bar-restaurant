@@ -1580,25 +1580,31 @@
          * чтобы их можно было отправить в payment-сервис вместе с формой
          * регистрации. Сервер ОБЯЗАТЕЛЬНО должен перепроверять сумму
          * по plan_id, а не доверять присланной цене.
+         *
+         * orderCommissionPercent — процент комиссии платформы с каждого
+         * онлайн-заказа. Если комиссии нет — 0.
          */
         const PLANS = {
             starter: {
                 name: "Starter",
                 monthlyPrice: 39.99,
                 yearlyPrice: 419.99,
-                trialDays: 3
+                trialDays: 3,
+                orderCommissionPercent: 1
             },
             advanced: {
                 name: "Advanced",
                 monthlyPrice: 119.99,
                 yearlyPrice: 1259.99,
-                trialDays: 7
+                trialDays: 7,
+                orderCommissionPercent: 0
             },
             professional: {
                 name: "Professional Business",
                 monthlyPrice: 199.99,
                 yearlyPrice: 2099.99,
-                trialDays: 14
+                trialDays: 14,
+                orderCommissionPercent: 0
             }
         };
 
@@ -1661,26 +1667,26 @@
         /*
          * При выборе тарифа:
          *  - определяем billingPeriod (monthly / yearly);
-         *  - собираем данные подписки;
+         *  - собираем данные подписки, включая процент комиссии
+         *    с заказов (order_commission_percent);
          *  - перенаправляем на /restaurant/register с query-параметрами.
          *
-         * Страница регистрации должна:
-         *  1) прочитать эти параметры (или скрытые поля формы);
-         *  2) положить их в скрытые input'ы формы регистрации;
-         *  3) отправить вместе с остальными данными в payment-сервис
-         *     в виде DTO, например:
+         * Страница регистрации должна прочитать эти параметры
+         * и отправить их вместе с остальными данными в payment-сервис
+         * в виде DTO, например:
          *
-         *     {
-         *         user: { ...данные формы... },
-         *         subscription: {
-         *             plan_id: "professional",
-         *             plan_name: "Professional Business",
-         *             billing_period: "monthly",
-         *             price: 199.99,
-         *             currency: "EUR",
-         *             trial_days: 14
-         *         }
+         * {
+         *     user: { ...данные формы... },
+         *     subscription: {
+         *         plan_id: "professional",
+         *         plan_name: "Professional Business",
+         *         billing_period: "monthly",
+         *         price: 199.99,
+         *         currency: "EUR",
+         *         trial_days: 14,
+         *         order_commission_percent: 0
          *     }
+         * }
          */
         document.querySelectorAll(".select-plan").forEach((button) => {
             button.addEventListener("click", () => {
@@ -1706,7 +1712,8 @@
                     billing_period: billingPeriod,
                     price: String(price),
                     currency: "EUR",
-                    trial_days: String(plan.trialDays)
+                    trial_days: String(plan.trialDays),
+                    order_commission_percent: String(plan.orderCommissionPercent ?? 0)
                 });
 
                 window.location.href = REGISTER_URL + "?" + params.toString();

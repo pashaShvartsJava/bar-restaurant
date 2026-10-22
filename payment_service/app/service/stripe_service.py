@@ -4,11 +4,13 @@ import stripe
 
 from ..config.config import settings
 from ..models.payments import Payment
+from ..models.subscriptions import Subscription
 
 
 class StripeService:
     def __init__(self):
         self.client = stripe.StripeClient(settings.stripe_secret_key)
+        self.subscription_client = stripe.StripeClient(settings.stripe_secret_key_subscriptions)
 
     async def create_checkout_session(self, payment : Payment):
         session = await self.client.v1.checkout.sessions.create_async(
@@ -38,3 +40,31 @@ class StripeService:
 
     def construct_webhook_event(self, payload: bytes, signature: str):
         return stripe.Webhook.construct_event(payload, signature, settings.stripe_webhook_secret)
+
+    async def create_checkout_subscription_session(self, subscription: Subscription):
+        session = await self.subscription_client.v1.checkout.sessions.create_async(
+            mode="subscription",
+            line_items=[{
+                "price_data": {
+                    "currency": subscription.currency.lower(),
+                    "product_data": {"name": f"Plan {subscription.plan_id}"},
+                    "unit_amount": int(subscription.price * 100),
+                    "recurring": {"interval": "month" if subscription.billing_period == "monthly" else "year"},
+                },
+                "quantity": 1,
+            }],
+            subscription_data={
+                "trial_period_days": subscription.trial_days,
+                "metadata": {
+                    "sub_idempotency_key": str(subscription.sub_idempotency_key),
+                    "restaurant_id": str(subscription.restaurant_id),
+                    "owner_id": str(subscription.owner_id)
+                }
+            },
+            success_url=f"https://10.157.173.192:8443/payment/success?subscription_number={subscription.subscription_number}",
+            cancel_url="https://10.157.173.192:8443/payment/cancel",
+        )
+        return session
+
+    def construct_webhook_subscription_event(self, payload: bytes, signature: str):
+        return stripe.Webhook.construct_event(payload, signature, settings.stripe_webhook_secret_subscriptions)
