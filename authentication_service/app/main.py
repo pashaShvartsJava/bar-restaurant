@@ -27,6 +27,10 @@ async def lifespan(app: FastAPI):
             app.state.http_client = client
             outbox_task = asyncio.create_task(outbox_publisher())
             try:
+                await asyncio.wait_for(outbox_task, timeout=5.0)
+            except (asyncio.CancelledError, asyncio.TimeoutError):
+                pass
+            try:
                 yield
             finally:
                 outbox_task.cancel()

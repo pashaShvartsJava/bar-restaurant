@@ -1,6 +1,5 @@
 import uuid
 from typing import Annotated
-from venv import logger
 
 from fastapi import Request, APIRouter, HTTPException, Form
 from fastapi.params import Depends
@@ -50,7 +49,7 @@ async def create_restaurant_dto(data : Annotated[RestaurantRegistrationDTO, Form
                                       headers={"internal_token": INTERNAL_TOKEN},
                                       params={"restaurant_id": str(restaurant_id)})
             except Exception:
-                logger.exception("Не удалось удалить ресторан при откате саги")
+                print("Не удалось удалить ресторан при откате саги")
 
         raise HTTPException(status_code=502, detail="Не удалось завершить регистрацию. Попробуйте позже.") from exception
     return restaurant_id
@@ -89,6 +88,7 @@ async def create_restaurant_and_subscription_checkout(data : Annotated[Restauran
     restaurant_id = await create_restaurant_dto(data, identity_id)
     created_owner = None
     admin_created = False
+    created_restaurant = False
     subscription_created = False
     sub_idempotency_key = uuid.uuid4()
     try:
@@ -130,6 +130,7 @@ async def create_restaurant_and_subscription_checkout(data : Annotated[Restauran
             price=server_price,
             currency=server_currency.value
         )
+        created_restaurant = True
         checkout_response = await client.post("http://payment-service:8008/payment/subscription",
                                               headers={"internal-token": INTERNAL_TOKEN},
                                               json=subscription_checkout_dto.model_dump(mode="json"))
@@ -144,21 +145,28 @@ async def create_restaurant_and_subscription_checkout(data : Annotated[Restauran
                     params={"sub_idempotency_key": str(sub_idempotency_key)}
                 )
             except Exception:
-                logger.exception("Не удалось удалить админа при откате саги")
+                print("Не удалось удалить админа при откате саги")
+        if created_restaurant:
+            try:
+                await client.post("http://restaurant-service:8010/restaurants/delete_saga_restaurant",
+                                  headers={"internal_token": INTERNAL_TOKEN},
+                                  params={"restaurant_id": str(restaurant_id)})
+            except Exception:
+                print("Не удалось удалить админа при откате саги")
         if admin_created:
             try:
-                await client.delete(
+                await client.post(
                     "http://admin-service:8002/admins/delete_saga_admin",
                     headers={"internal_token": INTERNAL_TOKEN},
                     params={"admin_id": str(created_owner.id)}
                 )
             except Exception:
-                logger.exception("Не удалось удалить админа при откате саги")
+                print("Не удалось удалить админа при откате саги")
         if created_owner is not None:
             try:
                 await service.delete_identity(created_owner.id)
             except Exception:
-                logger.exception("Не удалось удалить identity при откате саги")
+                print("Не удалось удалить identity при откате саги")
         raise HTTPException(status_code=503, detail="Не удалось завершить регистрацию. Попробуйте позже.") from exception
 
     return checkout_response.json()
