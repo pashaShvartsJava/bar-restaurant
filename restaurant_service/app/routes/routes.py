@@ -1,10 +1,8 @@
 import uuid
-
-from fastapi import APIRouter, Request
+from fastapi import APIRouter
 from fastapi.params import Header, Depends
-from sqlalchemy import alias
 
-from ..schema.restaurant_schema import RestaurantCreationDTO
+from ..schema.restaurant_schema import RestaurantCreationDTO, KeyDTO
 from ..security.internal_security import verify_internal_token
 from ..services.restaurant_service import RestaurantService
 from ..dependencies.dependency import get_restaurant_dependency
@@ -25,3 +23,11 @@ async def delete_saga_restaurant( restaurant_id : str,
                                   service : RestaurantService = Depends(get_restaurant_dependency)):
     await verify_internal_token(internal_token)
     await service.delete_saga_restaurant(uuid.UUID(restaurant_id))
+
+@router.post("/restaurants/get_restaurant_status")
+async def get_restaurant_status(data : KeyDTO,
+                                internal_token : str = Header(..., alias="internal_token"),
+                                service : RestaurantService = Depends(get_restaurant_dependency)):
+    await verify_internal_token(internal_token)
+    restaurant_status = await service.get_status_by_owner_and_id(data)
+    return restaurant_status

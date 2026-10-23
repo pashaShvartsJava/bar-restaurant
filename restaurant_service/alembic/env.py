@@ -12,6 +12,7 @@ from app.database.database import Base
 from app.database.database import Base
 from app.models.restaurant_membership_model import RestaurantMembership
 from app.models.restaurant_model import Restaurant
+from app.models.processed_events import ProcessedEvent
 
 from app.config.config import settings
 

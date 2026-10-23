@@ -16,6 +16,9 @@ from ..services.authentication_service import AuthenticationService
 import httpx
 from uuid import UUID
 from ..config.config import settings
+import logging
+
+logger = logging.getLogger(__name__)
 
 INTERNAL_TOKEN = settings.internal_token
 templates = Jinja2Templates(directory="app/templates_auth")
@@ -53,6 +56,44 @@ async def create_restaurant_dto(data : Annotated[RestaurantRegistrationDTO, Form
 
         raise HTTPException(status_code=502, detail="Не удалось завершить регистрацию. Попробуйте позже.") from exception
     return restaurant_id
+
+async def compensate_saga_functions(subscription_created, created_restaurant, created_owner, admin_created,
+                                    sub_idempotency_key,
+                                    restaurant_id,
+                                    exception,
+                                    client : Annotated[httpx.AsyncClient, Depends(get_httpx_async_connection)],
+                                    service : AuthenticationService = Depends(get_service_dependency),):
+    if subscription_created:
+        try:
+            await client.delete(
+                "http://payment-service:8008/payment/subscription/saga_delete",
+                headers={"internal_token": INTERNAL_TOKEN},
+                params={"sub_idempotency_key": str(sub_idempotency_key)}
+            )
+        except Exception:
+            print("Не удалось удалить админа при откате саги")
+    if created_restaurant:
+        try:
+            await client.post("http://restaurant-service:8010/restaurants/delete_saga_restaurant",
+                              headers={"internal_token": INTERNAL_TOKEN},
+                              params={"restaurant_id": str(restaurant_id)})
+        except Exception:
+            print("Не удалось удалить админа при откате саги")
+    if admin_created:
+        try:
+            await client.post(
+                "http://admin-service:8002/admins/delete_saga_admin",
+                headers={"internal_token": INTERNAL_TOKEN},
+                params={"admin_id": str(created_owner.id)}
+            )
+        except Exception:
+            print("Не удалось удалить админа при откате саги")
+    if created_owner is not None:
+        try:
+            await service.delete_identity(created_owner.id)
+        except Exception:
+            print("Не удалось удалить identity при откате саги")
+    raise HTTPException(status_code=503, detail="Не удалось завершить регистрацию. Попробуйте позже.") from exception
 
 @router.get("/restaurant-platform")
 async def get_main_owner_page(request : Request):
@@ -92,6 +133,7 @@ async def create_restaurant_and_subscription_checkout(data : Annotated[Restauran
     subscription_created = False
     sub_idempotency_key = uuid.uuid4()
     try:
+        created_restaurant = True
         created_owner = await service.create_admin_identity(data.email, data.password, IdentityRole.OWNER,
                                                             restaurant_id, identity_id)
         created_owner_dto = AdminRegistrationDTO(identity_id=created_owner.id, name=data.name,
@@ -112,7 +154,7 @@ async def create_restaurant_and_subscription_checkout(data : Annotated[Restauran
         server_trial = plan["trial_days"]
         server_currency = plan["currency"]
         server_price = plan[data.billing_period]
-        server_order_percent_commission = plan[data.order_commission_percent]
+        server_order_percent_commission = plan["order_commission_percent"]
         if server_price != data.price:
             raise HTTPException(detail="Invalid price entered", status_code=400)
         if server_trial != data.trial_days:
@@ -134,9 +176,8 @@ async def create_restaurant_and_subscription_checkout(data : Annotated[Restauran
             order_commission_percent=server_order_percent_commission,
             currency=server_currency.value
         )
-        created_restaurant = True
         checkout_response = await client.post("http://payment-service:8008/payment/subscription",
-                                              headers={"internal-token": INTERNAL_TOKEN},
+                                              headers={"internal_token": INTERNAL_TOKEN},
                                               json=subscription_checkout_dto.model_dump(mode="json"))
         checkout_response.raise_for_status()
         subscription_created = True
@@ -149,14 +190,14 @@ async def create_restaurant_and_subscription_checkout(data : Annotated[Restauran
                     params={"sub_idempotency_key": str(sub_idempotency_key)}
                 )
             except Exception:
-                print("Не удалось удалить админа при откате саги")
+                logger.exception("Не удалось удалить админа при откате саги")
         if created_restaurant:
             try:
                 await client.post("http://restaurant-service:8010/restaurants/delete_saga_restaurant",
                                   headers={"internal_token": INTERNAL_TOKEN},
                                   params={"restaurant_id": str(restaurant_id)})
             except Exception:
-                print("Не удалось удалить админа при откате саги")
+                logger.exception("Не удалось удалить админа при откате саги")
         if admin_created:
             try:
                 await client.post(
@@ -165,13 +206,25 @@ async def create_restaurant_and_subscription_checkout(data : Annotated[Restauran
                     params={"admin_id": str(created_owner.id)}
                 )
             except Exception:
-                print("Не удалось удалить админа при откате саги")
+                logger.exception("Не удалось удалить админа при откате саги")
         if created_owner is not None:
             try:
                 await service.delete_identity(created_owner.id)
             except Exception:
-                print("Не удалось удалить identity при откате саги")
+                logger.exception("Не удалось удалить identity при откате саги")
         raise HTTPException(status_code=503, detail="Не удалось завершить регистрацию. Попробуйте позже.") from exception
+    except Exception as exception:
+        logger.exception("Unexpected error during registration. Try later.")
+        await compensate_saga_functions(subscription_created=subscription_created,
+                                        created_restaurant=created_restaurant,
+                                        created_owner=created_owner,
+                                        admin_created=admin_created,
+                                        sub_idempotency_key=sub_idempotency_key,
+                                        restaurant_id=restaurant_id,
+                                        exception=exception,
+                                        client=client,
+                                        service=service)
+        raise HTTPException(status_code=500, detail="Internal error") from exception
 
     return checkout_response.json()
 

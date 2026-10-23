@@ -1,3 +1,4 @@
+from enum import Enum
 from zoneinfo import ZoneInfoNotFoundError, ZoneInfo
 
 import pycountry
@@ -8,6 +9,12 @@ from datetime import date
 
 from .subscription_schema import SubscriptionDTO
 from uuid import UUID
+
+class RestaurantStatus(str, Enum):
+    PENDING = "pending"
+    ACTIVE = "active"
+    SUSPENDED = "suspended"
+    CLOSED = "closed"
 
 class RestaurantRegistrationDTO(SubscriptionDTO):
     name: str = Field(..., min_length=2, max_length=50, description="name")
@@ -83,3 +90,7 @@ class RestaurantCreationDTO(BaseModel):
         except (ZoneInfoNotFoundError, ValueError):
             raise ValueError("Недопустимый часовой пояс IANA")
         return value
+
+class KeyDTO(BaseModel):
+    restaurant_id: UUID
+    identity_id : UUID

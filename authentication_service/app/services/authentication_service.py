@@ -5,6 +5,7 @@ from pydantic import EmailStr
 from watchfiles import awatch
 
 from ..model.confirmation_token_model import EmailVerificationToken
+from ..model.key_model import Key
 from ..model.reset_password_token_model import ResetPasswordToken
 from ..model.update_password_email_token_model import UpdatePasswordEmailToken
 from ..repositories.authentication_repository import AuthenticationRepository
@@ -108,7 +109,7 @@ class AuthenticationService:
     async def verify_registration_key(self, key : str) -> str | None:
         return await self.authentication_repository.verify_registration_key(key)
 
-    async def verify_authentication_key(self, key : str, email : EmailStr) -> str | None:
+    async def verify_authentication_key(self, key : str, email : EmailStr) -> Key | None:
         return await self.authentication_repository.verify_authentication_key(key, email)
 
     async def update_status_identity(self, identity : Identity, status : Status):

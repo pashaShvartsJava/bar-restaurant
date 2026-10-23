@@ -25,22 +25,28 @@ class Currency(str, Enum):
 
 PLANS = {
     PlanId.STARTER: {
+        "name": "Starter",
         "monthly": Decimal("39.99"),
         "yearly": Decimal("419.99"),
         "trial_days": 3,
         "currency": Currency.EUR,
+        "order_commission_percent": 1,
     },
     PlanId.ADVANCED: {
+        "name": "Advanced",
         "monthly": Decimal("119.99"),
         "yearly": Decimal("1259.99"),
         "trial_days": 7,
         "currency": Currency.EUR,
+        "order_commission_percent": 0,
     },
     PlanId.PROFESSIONAL: {
+        "name": "Professional Business",
         "monthly": Decimal("199.99"),
         "yearly": Decimal("2099.99"),
         "trial_days": 14,
         "currency": Currency.EUR,
+        "order_commission_percent": 0,
     },
 }
 

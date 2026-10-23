@@ -27,12 +27,15 @@ class SubscriptionService:
         self.rabbitmq = rabbitmq
         self.outbox_repository = outbox_repository
 
-    async def create_subscription(self, data : SubscriptionCheckoutDTO, restaurant_id : UUID):
-        subscription = await self.subscription_repository.create_subscription(restaurant_id, data)
+    async def create_subscription(self, data : SubscriptionCheckoutDTO):
+        subscription = await self.subscription_repository.create_subscription(data)
         session = await self.stripe_service.create_checkout_subscription_session(subscription)
         subscription.stripe_checkout_session_id = session.id
         await self.subscription_repository.save_subscription(subscription)
         return subscription, session.url
+
+    async def delete_saga_subscription(self, sub_idempotency_key: str):
+        return await self.subscription_repository.delete_saga_subscription(sub_idempotency_key)
 
     async def handle_subscription_webhook(self, event) -> Subscription | None:
         session = event["data"]["object"]

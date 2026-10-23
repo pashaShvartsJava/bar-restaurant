@@ -2,9 +2,8 @@ import asyncio
 
 from ..database.database import SessionLocal
 from ..repository.outbox_repository import OutboxPaymentEventsRepository
-from ..broker.instance import rabbitmq
-from ..broker.producers import publish_subscription_event, publish_payment_paid
 import logging
+from ..broker.producers import publish_subscription_event, publish_payment_paid
 
 logger = logging.getLogger(__name__)
 
@@ -17,12 +16,12 @@ async def outbox_publisher():
             for event in events:
                 try:
                     if event.event_type == "PaymentPaid":
-                        await rabbitmq.publish_payment_paid(payment_id=event.payload["payment_id"],
+                        await publish_payment_paid(payment_id=event.payload["payment_id"],
                                                             client_id=event.payload["client_id"],
                                                             event_id=event.id,
                                                             order_id=event.payload["order_id"])
                     if event.event_type == "SubscriptionStatusChanged":
-                        await rabbitmq.publish_subscription_event(subscription_id=event.payload["subscription_id"],
+                        await publish_subscription_event(subscription_id=event.payload["subscription_id"],
                                                                   restaurant_id=event.payload["restaurant_id"],
                                                                   client_id=event.payload["client_id"],
                                                                   status=event.payload["status"],

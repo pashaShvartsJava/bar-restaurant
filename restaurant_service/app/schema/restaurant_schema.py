@@ -48,3 +48,7 @@ class RestaurantCreationDTO(BaseModel):
         except (ZoneInfoNotFoundError, ValueError):
             raise ValueError("Недопустимый часовой пояс IANA")
         return value
+
+class KeyDTO(BaseModel):
+    restaurant_id: UUID
+    identity_id : UUID

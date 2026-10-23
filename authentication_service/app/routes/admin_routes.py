@@ -11,6 +11,7 @@ from starlette.templating import Jinja2Templates
 from ..exceptions.exceptions import InvalidCredentialsError
 from ..model.identity_model import Status, IdentityRole
 from ..schemas.admin_schema import AdminRegistration, AdminRegistrationDTO, AdminLogin
+from ..schemas.restaurant_schema import KeyDTO, RestaurantStatus
 from ..schemas.schema import LoginSchema
 from ..dependencies.dependency import get_service_dependency
 from ..security.internal_security import verify_internal_token
@@ -79,7 +80,16 @@ async def admin_login(data : Annotated[AdminLogin, Form()], service : Authentica
             "msg": "Неверный email или пароль"
         }
     ])
-    await service.verify_authentication_key(data.authentication_key, data.email)
+    key = await service.verify_authentication_key(data.authentication_key, data.email)
+    key_dto = KeyDTO(restaurant_id=key.restaurant_id, identity_id=key.identity_id)
+    async with httpx.AsyncClient() as client:
+        response = await client.post("http://restaurant-service:8010/restaurants/get_restaurant_status",
+                                    headers={"internal_token": INTERNAL_TOKEN},
+                                    json=key_dto.model_dump(mode="json"))
+        response.raise_for_status()
+    restaurant_status = response.json()
+    if restaurant_status in (RestaurantStatus.CLOSED, RestaurantStatus.SUSPENDED, RestaurantStatus.PENDING):
+        raise HTTPException(status_code=403, detail="Доступ запрещен. Подписка на данный аккаунт для управления платформой не оплачена или приостановлена.")
     admin = await service.find_by_email(data.email)
     if not admin.verified_email:
         raise HTTPException(detail="У этого аккаунта не верифицирован email", status_code=403)

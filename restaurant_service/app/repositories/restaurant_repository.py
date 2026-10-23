@@ -5,8 +5,11 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from ..models.restaurant_membership_model import RestaurantMembership
-from ..models.restaurant_model import Restaurant
-from ..schema.restaurant_schema import RestaurantCreationDTO
+from ..models.restaurant_model import Restaurant, RestaurantStatus
+from ..schema.restaurant_schema import RestaurantCreationDTO, KeyDTO
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class RestaurantRepository:
@@ -43,4 +46,32 @@ class RestaurantRepository:
         restaurant = await self.get_restaurant_by_id(restaurant_id)
         await self.db.delete(restaurant)
         await self.db.commit()
+
+    async def change_restaurant_status(self, restaurant_id : UUID, new_status : str):
+        found_restaurant = await self.get_restaurant_by_id(restaurant_id)
+        if found_restaurant is None:
+            logger.warning("Restaurant %s not found", restaurant_id)
+            return
+
+        if found_restaurant.status == RestaurantStatus.CLOSED and new_status != RestaurantStatus.CLOSED:
+            logger.warning("Ignoring %s -> %s for closed restaurant %s", ...)
+            return
+        if new_status == "trialing" or new_status == "active":
+            found_restaurant.status = RestaurantStatus.ACTIVE
+        if new_status == "past_due" or new_status == "unpaid" or new_status == "paused":
+            found_restaurant.status = RestaurantStatus.SUSPENDED
+        if new_status == "canceled" or new_status == "incomplete_expired":
+            found_restaurant.status = RestaurantStatus.CLOSED
+        await self.db.flush()
+
+    async def get_status_by_owner_and_id(self, data : KeyDTO) -> RestaurantStatus:
+        result = await self.db.execute(select(RestaurantMembership)
+                                       .options(selectinload(RestaurantMembership.restaurant))
+                                       .where(RestaurantMembership.restaurant_id==data.restaurant_id,
+                                              RestaurantMembership.identity_id==data.identity_id))
+        membership : RestaurantMembership = result.scalar_one_or_none()
+        return membership.restaurant.status
+
+
+
 

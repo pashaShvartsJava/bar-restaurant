@@ -133,13 +133,13 @@ class AuthenticationRepository:
         result = await self.db.execute(select(Key).where(Key.registration_key==key))
         return result.scalar_one_or_none()
 
-    async def verify_authentication_key(self, key : str, email : EmailStr) -> str | None:
+    async def verify_authentication_key(self, key : str, email : EmailStr) -> Key | None:
         identity = await self.get_by_email(email)
         identity_key : Key | None = identity.key
         if key is None:
             raise HTTPException(detail="Доступ запрещен", status_code=403)
         if identity_key.authentication_key != key:
-            raise HTTPException(detail="Неверный ключ безопасности", status_code=403)
+            raise HTTPException(detail="Неверный ключ верификации", status_code=403)
         return identity_key
 
     async def update_status_identity(self, identity : Identity, status : Status):

@@ -110,6 +110,20 @@
         .success-icon{width:62px;height:62px;display:grid;place-items:center;margin:0 auto 20px;border:1px solid #9bc8a559;border-radius:50%;background:#9bc8a514;color:var(--green);font-size:25px}
         .success-panel h2{margin-bottom:12px;font:normal 25px Georgia,serif}
         .success-panel p{margin:0 auto 24px;color:#9b9094;font-size:12px;line-height:1.8}
+
+        /* ===== Модальное окно подтверждения почты ===== */
+        .confirm-overlay{position:fixed;inset:0;z-index:200;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(6,5,8,.72);backdrop-filter:blur(6px);opacity:0;transition:opacity .25s ease}
+        .confirm-overlay.show{display:flex;opacity:1}
+        .confirm-dialog{width:min(100%,440px);padding:30px 28px;border:1px solid #d5a65b61;border-radius:16px;background:linear-gradient(145deg,rgba(29,24,27,.99),rgba(13,12,15,.99));box-shadow:0 30px 90px #0007,0 0 45px #d5a65b09;animation:appear .3s ease both;text-align:center}
+        .confirm-icon{width:54px;height:54px;display:grid;place-items:center;margin:0 auto 18px;border:1px solid rgba(213,166,91,.4);border-radius:50%;background:rgba(213,166,91,.1);color:var(--gold-light);font-size:22px}
+        .confirm-dialog h3{margin-bottom:12px;color:#f0e7e0;font:normal 21px/1.3 Georgia,serif}
+        .confirm-dialog p{margin-bottom:10px;color:#a9a1a5;font-size:12px;line-height:1.7;text-align:left}
+        .confirm-dialog p strong{color:#e6c58f;font-weight:600}
+        .confirm-email{display:inline-block;margin:6px 0 16px;padding:7px 13px;border:1px solid rgba(213,166,91,.3);border-radius:7px;background:rgba(213,166,91,.07);color:var(--gold-light);font-family:"Courier New",monospace;font-size:12px;word-break:break-all}
+        .confirm-actions{display:flex;flex-direction:column;gap:9px;margin-top:20px}
+        .confirm-actions .button{min-height:42px;font-size:11px}
+        .confirm-actions .button-secondary{margin-top:0}
+
         @keyframes appear{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
         @media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;animation-duration:.01ms!important;transition-duration:.01ms!important}}
         @media(max-width:850px){body{padding:25px 18px}.page{width:min(100%,520px);grid-template-columns:minmax(0,1fr);gap:0}.sidebar{display:none}.card{padding:30px}}
@@ -224,7 +238,7 @@
                             <div class="check-row"><input id="terms" name="terms" type="checkbox" value="true" required><label for="terms">Я принимаю <a href="/terms" target="_blank" rel="noopener">условия использования</a> и <a href="/privacy" target="_blank" rel="noopener">политику конфиденциальности</a>. <span class="required">*</span></label></div>
                             <div class="checkbox-error" id="termsError">Для продолжения необходимо принять условия.</div>
                             <div class="check-row"><input id="newsletter" name="newsletter" type="checkbox" value="true"><label for="newsletter">Хочу получать полезные новости и обновления платформы по электронной почте. (Необязательно)</label></div>
-                            <button class="button" type="submit" id="submitButton">Создать аккаунт <span class="button-arrow" aria-hidden="true">→</span></button>
+                            <button class="button" type="submit" id="submitButton">Создать аккаунт и перейти к оплате <span class="button-arrow" aria-hidden="true">→</span></button>
                             <button class="button button-secondary back-button" type="button" data-back="1">← Вернуться к данным заведения</button>
                         </div>
                     </div>
@@ -238,9 +252,39 @@
             <a class="button" href="/admin/login">Перейти ко входу</a>
         </section>
         <div class="footer" id="footer">Уже есть аккаунт? <a href="/admin/login">Войти в систему</a><div><a href="/restaurant-platform">На главную</a></div></div>
-        <div class="security-note" id="securityNote"><span>◇</span> Данные отправляются серверу после отправки формы.</div>
     </section>
 </main>
+
+<div class="confirm-overlay" id="emailConfirmOverlay" role="dialog" aria-modal="true" aria-labelledby="emailConfirmTitle">
+    <div class="confirm-dialog">
+        <div class="confirm-icon">✉</div>
+
+        <h3 id="emailConfirmTitle">Подтвердите почту перед оплатой</h3>
+
+        <p>
+            Пожалуйста, убедитесь, что адрес электронной почты указан верно.
+            <strong>После оплаты вы не сможете войти в аккаунт, пока не подтвердите почту</strong>
+            по ссылке из письма.
+        </p>
+
+        <div class="confirm-email" id="confirmEmailValue">name@example.com</div>
+
+        <p>
+            Если адрес указан с ошибкой, вернитесь на шаг «Данные владельца» и исправьте его.
+        </p>
+
+        <div class="confirm-actions">
+            <button class="button" type="button" id="confirmEmailProceed">
+                Всё верно, перейти к оплате
+                <span class="button-arrow" aria-hidden="true">→</span>
+            </button>
+            <button class="button button-secondary" type="button" id="confirmEmailRecheck">
+                Перепроверить почту
+            </button>
+        </div>
+    </div>
+</div>
+
 <script>
 (() => {
     "use strict";
@@ -267,6 +311,7 @@
     let currentStep = 0;
     let slugEditedManually = false;
     let isSubmitting = false;
+    let emailConfirmedForSubmit = false;
 
     const completedSteps = new Set();
     const getField = id => document.getElementById(id);
@@ -830,6 +875,57 @@
         });
     });
 
+    /* =========================================================
+     * Модальное окно подтверждения почты перед оплатой.
+     * ========================================================= */
+    const emailConfirmOverlay = document.getElementById("emailConfirmOverlay");
+    const confirmEmailValue = document.getElementById("confirmEmailValue");
+    const confirmEmailProceed = document.getElementById("confirmEmailProceed");
+    const confirmEmailRecheck = document.getElementById("confirmEmailRecheck");
+
+    function openEmailConfirm() {
+        confirmEmailValue.textContent = getField("email").value.trim() || "—";
+        emailConfirmOverlay.classList.add("show");
+        confirmEmailProceed.focus({ preventScroll: true });
+    }
+
+    function closeEmailConfirm() {
+        emailConfirmOverlay.classList.remove("show");
+    }
+
+    confirmEmailRecheck.addEventListener("click", () => {
+        closeEmailConfirm();
+        // возвращаем пользователя на шаг 1 (данные владельца), чтобы он мог исправить email
+        openStep(0);
+        const emailField = getField("email");
+        if (emailField) {
+            emailField.focus({ preventScroll: true });
+            emailField.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
+    });
+
+    confirmEmailProceed.addEventListener("click", () => {
+        closeEmailConfirm();
+        emailConfirmedForSubmit = true;
+        if (form.requestSubmit) {
+            form.requestSubmit();
+        } else {
+            form.submit();
+        }
+    });
+
+    emailConfirmOverlay.addEventListener("click", (event) => {
+        if (event.target === emailConfirmOverlay) {
+            closeEmailConfirm();
+        }
+    });
+
+    document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape" && emailConfirmOverlay.classList.contains("show")) {
+            closeEmailConfirm();
+        }
+    });
+
     form.addEventListener("submit", async event => {
         event.preventDefault();
         clearFormError();
@@ -844,6 +940,14 @@
                 return;
             }
         }
+
+        // Показываем модальное окно подтверждения почты, если ещё не подтвердили
+        if (!emailConfirmedForSubmit) {
+            openEmailConfirm();
+            return;
+        }
+
+        emailConfirmedForSubmit = false;
 
         isSubmitting = true;
         submitButton.disabled = true;
@@ -919,7 +1023,7 @@
         } finally {
             isSubmitting = false;
             submitButton.disabled = false;
-            submitButton.innerHTML = 'Создать аккаунт <span class="button-arrow" aria-hidden="true">→</span>';
+            submitButton.innerHTML = 'Создать аккаунт и перейти к оплате <span class="button-arrow" aria-hidden="true">→</span>';
         }
     });
 
@@ -943,7 +1047,7 @@
     if (errorCode && serverErrors[errorCode]) {
         isSubmitting = false;
         submitButton.disabled = false;
-        submitButton.innerHTML = 'Создать аккаунт <span class="button-arrow" aria-hidden="true">→</span>';
+        submitButton.innerHTML = 'Создать аккаунт и перейти к оплате <span class="button-arrow" aria-hidden="true">→</span>';
         if (errorCode === "500" || errorCode === "502" || errorCode === "503" || errorCode === "504") {
             showServerError();
         } else {
@@ -957,7 +1061,7 @@
     window.addEventListener("pageshow", () => {
         isSubmitting = false;
         submitButton.disabled = false;
-        submitButton.innerHTML = 'Создать аккаунт <span class="button-arrow" aria-hidden="true">→</span>';
+        submitButton.innerHTML = 'Создать аккаунт и перейти к оплате <span class="button-arrow" aria-hidden="true">→</span>';
     });
 
     if (params.get("registered") === "1") {
