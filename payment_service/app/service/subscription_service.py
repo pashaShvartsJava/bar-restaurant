@@ -61,7 +61,12 @@ class SubscriptionService:
             subscription = await self.subscription_repository.get_by_stripe_subscription_id(stripe_subscription_id)
             if subscription is None:
                 return None
-            subscription.status = SubscriptionStatus(stripe_subscription["status"])
+            old_status = subscription.status
+            try:
+                new_status = SubscriptionStatus(stripe_subscription["status"])
+            except ValueError:
+                print("Unknown subscription status from Stripe: %s", stripe_subscription["status"])
+                return None
             items = stripe_subscription.get("items", {}).get("data", [])
             if items:
                 subscription.current_period_start = datetime.fromtimestamp(items[0]["current_period_start"], tz=timezone.utc)
@@ -73,6 +78,15 @@ class SubscriptionService:
                 subscription.trial_start = datetime.fromtimestamp(stripe_subscription["trial_start"], tz=timezone.utc)
             if stripe_subscription.get("trial_end"):
                 subscription.trial_end = datetime.fromtimestamp(stripe_subscription["trial_end"], tz=timezone.utc)
+            subscription.status = new_status
+            if new_status != old_status:
+                await self.outbox_repository.create_outbox_subscription_event(
+                    subscription.id,
+                    subscription.restaurant_id,
+                    subscription.owner_id,
+                    new_status,
+                    event["id"]
+                )
         return subscription
 
     async def handle_subscription_deleted(self, event):
@@ -83,6 +97,11 @@ class SubscriptionService:
                 return None
             subscription.status = SubscriptionStatus.CANCELLED
             subscription.canceled_at = datetime.now(timezone.utc)
+            await self.outbox_repository.create_outbox_subscription_event(subscription.id,
+                                                                          subscription.restaurant_id,
+                                                                          subscription.owner_id,
+                                                                          subscription.status,
+                                                                          event["id"])
         return subscription
 
     async def handle_invoice_payment_failed(self, event):

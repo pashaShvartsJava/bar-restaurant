@@ -1,7 +1,6 @@
 import secrets
 import string
 
-from sentry_sdk import flush
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -51,6 +50,6 @@ class SubscriptionRepository:
         result = await self.db.execute(select(Subscription).where(Subscription.sub_idempotency_key==key))
         return result.scalar_one_or_none()
 
-    async def get_by_stripe_subscription_id(self, stripe_subscription_id : str):
+    async def get_by_stripe_subscription_id(self, stripe_subscription_id : str) -> Subscription:
         result = await self.db.execute(select(Subscription).where(Subscription.stripe_subscription_id==stripe_subscription_id))
         return result.scalar_one_or_none()

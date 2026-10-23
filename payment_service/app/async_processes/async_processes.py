@@ -3,6 +3,10 @@ import asyncio
 from ..database.database import SessionLocal
 from ..repository.outbox_repository import OutboxPaymentEventsRepository
 from ..broker.instance import rabbitmq
+from ..broker.producers import publish_subscription_event, publish_payment_paid
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 async def outbox_publisher():
@@ -17,8 +21,19 @@ async def outbox_publisher():
                                                             client_id=event.payload["client_id"],
                                                             event_id=event.id,
                                                             order_id=event.payload["order_id"])
+                    if event.event_type == "SubscriptionStatusChanged":
+                        await rabbitmq.publish_subscription_event(subscription_id=event.payload["subscription_id"],
+                                                                  restaurant_id=event.payload["restaurant_id"],
+                                                                  client_id=event.payload["client_id"],
+                                                                  status=event.payload["status"],
+                                                                  event_id=event.id)
+                    await repository.mark_event_as_published(event)
+                    await session.commit()
+                except KeyError:
+                    logger.exception("Malformed payload for event %s: %s", event.id, event.payload)
                     await repository.mark_event_as_published(event)
                     await session.commit()
                 except Exception:
                     await session.rollback()
+                    logger.exception("Failed to publish outbox event %s", event.id)
         await asyncio.sleep(1)

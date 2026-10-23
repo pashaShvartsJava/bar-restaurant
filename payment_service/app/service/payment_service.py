@@ -48,5 +48,5 @@ class PaymentService:
             payment.stripe_payment_intent_id = session["payment_intent"]
             payment.status = PaymentStatus.PAID
             payment.updated_status = datetime.now(timezone.utc)
-            await self.outbox_repository.create_outbox_event(payment.id, payment.order_id, payment.client_id, event_id)
+            await self.outbox_repository.create_outbox_payment_event(payment.id, payment.order_id, payment.client_id, event_id)
         return payment
