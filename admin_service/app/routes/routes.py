@@ -6,12 +6,13 @@ from asyncpg import InternalClientError
 from fastapi import Request, APIRouter, Form, HTTPException
 from fastapi.params import Depends, Header
 from pydantic import EmailStr
+from sqlalchemy.exc import SQLAlchemyError
 from starlette.responses import HTMLResponse, RedirectResponse, JSONResponse
 from starlette.templating import Jinja2Templates
 from ..schema.admin import AdminUpdateDTO, AdminRegistrationDTO, IdentityEdit, AdminRegistrationForm, AddAdminRequest
 from typing import Annotated
 
-from ..dependencies.dependencies import get_service_dependency
+from ..dependencies.dependencies import get_service_dependency, get_httpx_async_connection
 from ..security.internal_security import verify_internal_token
 from ..security.role.role import IdentityRole
 from ..service.admin_service import AdminService
@@ -21,11 +22,35 @@ from uuid import UUID
 
 from ..model.admin import Status
 from ..config.config import settings
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 INTERNAL_TOKEN = settings.internal_token
 templates = Jinja2Templates(directory="app/templates_admin")
 router = APIRouter()
+
+async def saga_compensation_during_adding_new_admin(identity_id, admin_created, membership_created, identity_created,
+                                                    client : Annotated[httpx.AsyncClient, Depends(get_httpx_async_connection)],
+                                                    admin_service : AdminService = Depends(get_service_dependency)):
+    if admin_created:
+        await admin_service.delete_admin_by_identity_id(identity_id)
+        raise HTTPException(detail="Ошибка сервера. Не удалось создать администратора", status_code=500)
+    if membership_created:
+        try:
+            await client.delete(
+                url=f"http://authentication-service:8010/delete_saga_membership?identity_id={identity_id}",
+                headers={"internal_token": INTERNAL_TOKEN})
+        except Exception:
+            logger.exception("Не удалось удалить membership при откате саги")
+    if identity_created:
+        try:
+            await client.delete(url=f"http://authentication-service:8000/delete_identity?identity_id={identity_id}",
+                                headers={"internal_token": INTERNAL_TOKEN})
+        except Exception:
+            logger.exception("Не удалось удалить identity при откате саги")
+        raise HTTPException(status_code=409, detail=[{"loc": ["body", "email"], "msg": "Этот email уже занят"}])
 
 async def verify_csrf(request: Request):
     cookie_token = request.cookies.get("csrf_token")
@@ -66,26 +91,38 @@ def show_page_add_admin(request : Request):
     return templates.TemplateResponse("add_admins.html", {"request" : request})
 
 @router.post("/admin_panel/all_admins/add_admin")
-async def add_admin(request : Request, data : Annotated[AdminRegistrationForm, Form()],
+async def add_admin(request : Request,
+                    data : Annotated[AdminRegistrationForm, Form()],
+                    client : Annotated[httpx.AsyncClient, Depends(get_httpx_async_connection)],
                     admin_service : AdminService = Depends(get_service_dependency)):
     payload = get_payload(request)
     required_roles(IdentityRole.OWNER, IdentityRole.MODERATOR, payload=payload)
     await verify_csrf(request)
+    admin_created = False
+    identity_created = False
+    membership_created = False
     identity_id = uuid.uuid4()
-    new_identity = AddAdminRequest(identity_id=identity_id, email=data.email, password=data.password, role=data.role, status=Status.ACTIVE)
-    async with httpx.AsyncClient() as client:
-        try:
-            response = await client.post(url="http://authentication-service:8000/add_identity",
-                                         json=new_identity.model_dump(mode="json"),
-                                         headers={"internal_token" : INTERNAL_TOKEN})
-            response.raise_for_status()
-        except httpx.HTTPStatusError as error:
-            if error.response.status_code == 409:
-                raise HTTPException(status_code=409, detail=[{"loc": ["body", "email"], "msg": "Этот email уже занят"}])
     try:
+        new_identity = AddAdminRequest(identity_id=identity_id, email=data.email, password=data.password,
+                                       role=data.role, status=Status.ACTIVE)
+        response = await client.post(url="http://authentication-service:8000/add_identity",
+                                             json=new_identity.model_dump(mode="json"),
+                                             headers={"internal_token": INTERNAL_TOKEN})
+        response.raise_for_status()
+        identity_created = True
+        response_r = await client.post(url=f"http://authentication-service:8000/add_membership?identity_id={identity_id}",
+                                             headers={"internal_token": INTERNAL_TOKEN})
+        response_r.raise_for_status()
+        membership_created = True
         await admin_service.add_new_admin(data, identity_id)
-    except:
-        raise HTTPException(detail="Ошибка сервера. Не удалось создать администратора", status_code=500)
+        admin_created = True
+    except (httpx.HTTPStatusError, httpx.RequestError, SQLAlchemyError) as exception:
+        await saga_compensation_during_adding_new_admin(identity_id, admin_created, membership_created, identity_created, client)
+    except Exception as exception:
+        await saga_compensation_during_adding_new_admin(identity_id, admin_created, membership_created, identity_created, client)
+        logger.exception("Unexpected error during adding admin. Try later.")
+        raise HTTPException(status_code=500, detail="Internal error") from exception
+
     return RedirectResponse(url="/admin_panel/all_admins", status_code=303)
 
 @router.post("/admin_panel/delete_admin/{admin_id}")

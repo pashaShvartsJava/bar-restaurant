@@ -161,7 +161,8 @@ class AuthenticationRepository:
         await self.db.refresh(identity)
 
     async def add_new_identity(self, data : AddAdminRequest):
-        new_identity = Identity(id=data.identity_id, email=data.email, password_hash=data.password, role=data.role, status=Status.ACTIVE)
+        new_identity = Identity(id=data.identity_id, email=data.email,
+                                password_hash=data.password, role=data.role, status=Status.ACTIVE, verified_email=True)
         self.db.add(new_identity)
         await self.db.commit()
         await self.db.refresh(new_identity)

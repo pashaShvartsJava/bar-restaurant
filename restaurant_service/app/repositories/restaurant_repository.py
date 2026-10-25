@@ -21,6 +21,10 @@ class RestaurantRepository:
         result = await self.db.execute(select(Restaurant).options(selectinload(Restaurant.memberships)).where(Restaurant.id==restaurant_id))
         return result.scalar_one_or_none()
 
+    async def get_membership_by_identity_id(self, identity_id : UUID):
+        result = await self.db.execute(select(RestaurantMembership).where(RestaurantMembership.identity_id == identity_id))
+        return result.scalar_one_or_none()
+
     async def create_restaurant(self, data : RestaurantCreationDTO) -> Restaurant:
         async with self.db.begin():
             new_restaurant = Restaurant(
@@ -71,6 +75,11 @@ class RestaurantRepository:
                                               RestaurantMembership.identity_id==data.identity_id))
         membership : RestaurantMembership = result.scalar_one_or_none()
         return membership.restaurant.status
+
+    async def delete_saga_membership(self, identity_id : UUID):
+        found_identity = await self.get_membership_by_identity_id(identity_id)
+        await self.db.delete(found_identity)
+        await self.db.commit()
 
 
 

@@ -1,5 +1,6 @@
 from uuid import UUID
 
+from watchfiles import awatch
 
 from ..models.restaurant_model import Restaurant, RestaurantStatus
 from ..repositories.restaurant_repository import RestaurantRepository
@@ -19,3 +20,6 @@ class RestaurantService:
 
     async def get_status_by_owner_and_id(self, data: KeyDTO) -> RestaurantStatus:
         return await self.restaurant_repository.get_status_by_owner_and_id(data)
+
+    async def delete_saga_membership(self, identity_id: UUID):
+        return await self.restaurant_repository.delete_saga_membership(identity_id)

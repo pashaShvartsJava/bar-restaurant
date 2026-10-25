@@ -28,44 +28,6 @@ INTERNAL_TOKEN = settings.internal_token
 def admin_login(request : Request):
     return templates.TemplateResponse("admin_login.html", {"request" : request})
 
-@router.get("/admin/registration", response_class=HTMLResponse)
-def admin_registration(request : Request):
-    return templates.TemplateResponse("admin_registration.html", {"request" : request})
-
-@router.post("/admin/registration")
-async def admin_registration(data : Annotated[AdminRegistration, Form()],
-                             service : AuthenticationService = Depends(get_service_dependency)):
-    existing_admin = await service.find_by_email(data.email)
-    if existing_admin is not None and (existing_admin.status==Status.ACTIVE or existing_admin.status==Status.BLOCKED):
-        raise HTTPException(detail="Такой пользователь уже существует", status_code=409)
-
-    key = await service.verify_registration_key(data.registration_key)
-
-    if key is None:
-        raise HTTPException(detail="Доступ запрещен", status_code=403)
-    if existing_admin is not None and (existing_admin.status==Status.PENDING or existing_admin.status==Status.FAILED):
-        old_admin_dto = AdminRegistrationDTO(identity_id=existing_admin.id, name=data.name,
-                                             surname=data.surname, phone=data.phone,
-                                             birthday=data.birthday, email=existing_admin.email, role=IdentityRole.ADMIN)
-        async with httpx.AsyncClient() as client:
-            response = await client.post("http://admin-service:8002/admins/add_admin",
-                                         json=old_admin_dto.model_dump(mode="json"),
-                                         headers={"internal_token" : INTERNAL_TOKEN})
-            response.raise_for_status()
-        await service.update_status_identity(existing_admin, Status.ACTIVE)
-        return RedirectResponse(url="/admin/login", status_code=303)
-
-    created_admin = await service.create_admin_identity(data.email, data.password, None, None, None)
-    admin_dto = AdminRegistrationDTO(identity_id=created_admin.id, name=data.name, surname=data.surname, phone=data.phone, birthday=data.birthday, email=data.email)
-
-    async with httpx.AsyncClient() as client:
-        response = await client.post("http://admin-service:8002/admins/add_admin",
-                                     json=admin_dto.model_dump(mode="json"),
-                                     headers={"internal_token" : INTERNAL_TOKEN})
-        response.raise_for_status()
-    await service.update_status_identity(created_admin, Status.ACTIVE)
-    return RedirectResponse(url="/admin/login", status_code=303)
-
 @router.post("/admin/login")
 async def admin_login(data : Annotated[AdminLogin, Form()], service : AuthenticationService = Depends(get_service_dependency) ):
     credentials = LoginSchema(email=data.email, password=data.password)
