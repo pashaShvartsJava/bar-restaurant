@@ -27,7 +27,7 @@ class RabbitMQ:
                 await asyncio.sleep(5)
 
         self.subscription_channel = await self.connection.channel(publisher_confirms=True)
-        self.subscription_exchange = await self.subscription_channel.declare_exchange("subscription_events",
+        self.subscription_exchange = await self.subscription_channel.declare_exchange("subscriptions_events",
                                                             aio_pika.ExchangeType.DIRECT,
                                                             durable=True)
         self.subscription_queue =await self.subscription_channel.declare_queue("subscriptions_queue", durable=True)

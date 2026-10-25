@@ -33,7 +33,7 @@ async def stripe_subscription_webhook(request: Request, sub_service : Subscripti
         raise HTTPException(status_code=400, detail="Invalid webhook")
     if event["type"] == "checkout.session.completed":
         await sub_service.handle_subscription_webhook(event)
-    elif event["type"] == "customer.subscription.updated":
+    elif event["type"] in ("customer.subscription.created", "customer.subscription.updated"):
         await sub_service.handle_subscription_updated(event)
     elif event["type"] == "customer.subscription.deleted":
         await sub_service.handle_subscription_deleted(event)

@@ -38,7 +38,7 @@ class SubscriptionService:
         return await self.subscription_repository.delete_saga_subscription(sub_idempotency_key)
 
     async def handle_subscription_webhook(self, event) -> Subscription | None:
-        session = event["data"]["object"]
+        session = event["data"]["object"].to_dict()
         if session.get("payment_status") not in ("paid", "no_payment_required"):
             return None
         sub_idempotency_key = session.get("metadata", {}).get("sub_idempotency_key")
@@ -56,12 +56,17 @@ class SubscriptionService:
         return subscription
 
     async def handle_subscription_updated(self, event):
-        stripe_subscription = event["data"]["object"]
-        stripe_subscription_id = stripe_subscription.get("id")
+        stripe_subscription = event["data"]["object"].to_dict()
+        stripe_subscription_id = stripe_subscription["id"]
         if not stripe_subscription_id:
             return None
         async with self.db.begin():
             subscription = await self.subscription_repository.get_by_stripe_subscription_id(stripe_subscription_id)
+            if subscription is None:
+                metadata = stripe_subscription.get("metadata", {}) or {}
+                sub_key = metadata.get("sub_idempotency_key")
+                if sub_key:
+                    subscription = await self.subscription_repository.get_by_idempotency_key(uuid.UUID(sub_key))
             if subscription is None:
                 return None
             old_status = subscription.status
@@ -70,7 +75,7 @@ class SubscriptionService:
             except ValueError:
                 print("Unknown subscription status from Stripe: %s", stripe_subscription["status"])
                 return None
-            items = stripe_subscription.get("items", {}).get("data", [])
+            items = stripe_subscription["items"]["data"] if "items" in stripe_subscription else []
             if items:
                 subscription.current_period_start = datetime.fromtimestamp(items[0]["current_period_start"], tz=timezone.utc)
                 subscription.current_period_end = datetime.fromtimestamp(items[0]["current_period_end"], tz=timezone.utc)

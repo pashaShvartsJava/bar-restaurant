@@ -28,4 +28,4 @@ async def publish_subscription_event(subscription_id : str,
             "status": status})
         .encode(), message_id=event_id, delivery_mode=aio_pika.DeliveryMode.PERSISTENT,
         content_type="application/json")
-    await rabbitmq.subscription_exchange.publish(message, routing_key="subscription_routing_key")
+    await rabbitmq.subscription_exchange.publish(message, routing_key="subscriptions_routing_key")

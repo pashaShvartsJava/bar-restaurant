@@ -88,13 +88,13 @@ async def admin_login(data : Annotated[AdminLogin, Form()], service : Authentica
                                     json=key_dto.model_dump(mode="json"))
         response.raise_for_status()
     restaurant_status = response.json()
-    if restaurant_status in (RestaurantStatus.CLOSED, RestaurantStatus.SUSPENDED, RestaurantStatus.PENDING):
-        raise HTTPException(status_code=403, detail="Доступ запрещен. Подписка на данный аккаунт для управления платформой не оплачена или приостановлена.")
     admin = await service.find_by_email(data.email)
     if not admin.verified_email:
         raise HTTPException(detail="У этого аккаунта не верифицирован email", status_code=403)
     if admin.status != Status.ACTIVE:
         raise HTTPException(detail="Этот аккаунт в состоянии незавершенной регистрации или заблокирован", status_code=403)
+    if restaurant_status in (RestaurantStatus.CLOSED, RestaurantStatus.SUSPENDED, RestaurantStatus.PENDING):
+        raise HTTPException(status_code=403, detail="Доступ запрещен. Подписка на данный аккаунт для управления платформой не оплачена или приостановлена.")
     redirect = RedirectResponse(url="/admin_panel", status_code=303)
     csrf_token = secrets.token_urlsafe(32)
     redirect.set_cookie(key="access_token", value=token, httponly=True, secure=False, max_age=3600, samesite="lax")

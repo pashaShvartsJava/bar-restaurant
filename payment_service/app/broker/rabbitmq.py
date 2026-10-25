@@ -34,7 +34,7 @@ class RabbitMQ:
                                                             durable=True)
 
         self.subscription_channel = await self.connection.channel(publisher_confirms=True)
-        self.subscription_exchange = await self.subscription_channel.declare_exchange("subscription_events",
+        self.subscription_exchange = await self.subscription_channel.declare_exchange("subscriptions_events",
                                                             aio_pika.ExchangeType.DIRECT,
                                                             durable=True)
 
