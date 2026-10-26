@@ -12,7 +12,7 @@ from ..repositories.authentication_repository import AuthenticationRepository
 from ..schemas.admin_schema import IdentityEdit, AddAdminRequest
 from ..schemas.schema import LoginSchema, RegisterIdentitySchema, RegisterRequestDTO, AddressResponseDTO
 from ..security.password.password import hash_password, verify_password
-from ..security.jwt.jwt import create_access_token
+from ..security.jwt.jwt import create_access_token, create_admin_access_token
 from datetime import date
 from ..model.identity_model import IdentityRole, Identity, Status
 from ..exceptions.exceptions import PasswordError, LoginError, InvalidCredentialsError, EmailError
@@ -82,6 +82,11 @@ class AuthenticationService:
         token = create_access_token(identity.id, identity.role, identity.status)
         return token
 
+    async def admin_login(self, data : LoginSchema, restaurant_id : UUID) -> str | None:
+        identity = await self.verify_credentials(data.email, data.password)
+        token = create_admin_access_token(identity.id, identity.role, identity.status, restaurant_id)
+        return token
+
     async def create_identity(self, email : EmailStr, password : str):
         await self.authentication_repository.db.rollback()
         return await self.authentication_repository.create_identity(email, hash_password(password))
@@ -122,6 +127,7 @@ class AuthenticationService:
         return await self.authentication_repository.update_identity(identity, data)
 
     async def add_new_identity(self, data : AddAdminRequest):
+        await self.authentication_repository.db.rollback()
         hashed_password = hash_password(data.password)
         data.password = hashed_password
         return await self.authentication_repository.add_new_identity(data)

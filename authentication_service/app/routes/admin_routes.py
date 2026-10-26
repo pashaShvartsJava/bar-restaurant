@@ -7,13 +7,13 @@ from pydantic import EmailStr, TypeAdapter
 from starlette.responses import HTMLResponse, RedirectResponse
 from starlette.templating import Jinja2Templates
 
-
+from .owner_routes import logger
 from ..exceptions.exceptions import InvalidCredentialsError
 from ..model.identity_model import Status, IdentityRole
 from ..schemas.admin_schema import AdminRegistration, AdminRegistrationDTO, AdminLogin
 from ..schemas.restaurant_schema import KeyDTO, RestaurantStatus
 from ..schemas.schema import LoginSchema
-from ..dependencies.dependency import get_service_dependency
+from ..dependencies.dependency import get_service_dependency, get_httpx_async_connection
 from ..security.internal_security import verify_internal_token
 from ..services.authentication_service import AuthenticationService
 from ..security.rate_limit import check_login_rate_limit, reset_login_rate_limit
@@ -29,11 +29,21 @@ def admin_login(request : Request):
     return templates.TemplateResponse("admin_login.html", {"request" : request})
 
 @router.post("/admin/login")
-async def admin_login(data : Annotated[AdminLogin, Form()], service : AuthenticationService = Depends(get_service_dependency) ):
+async def admin_login(data : Annotated[AdminLogin, Form()],
+                      client : Annotated[httpx.AsyncClient, Depends(get_httpx_async_connection)],
+                      service : AuthenticationService = Depends(get_service_dependency)):
     credentials = LoginSchema(email=data.email, password=data.password)
     await check_login_rate_limit(str(data.email))
+    identity = await service.find_by_email(data.email)
+    response = await client.get(url="http://restaurant-service:8010/restaurants/get_restaurant_id",
+                                headers={"internal_token": INTERNAL_TOKEN},
+                                params={"identity_id" : str(identity.id)})
+    if response.is_error:
+        logger.warning("422 DETAIL: ", response.text)
+    response.raise_for_status()
+    restaurant_id = response.json()
     try:
-        token = await service.login(credentials)
+        token = await service.admin_login(credentials, restaurant_id)
         await reset_login_rate_limit(str(data.email))
     except InvalidCredentialsError:
         raise HTTPException(status_code=401, detail=[

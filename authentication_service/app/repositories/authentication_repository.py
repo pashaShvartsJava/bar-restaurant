@@ -105,6 +105,10 @@ class AuthenticationRepository:
         result = await self.db.execute(select(Identity).where(Identity.id == identity_id))
         return result.scalar_one_or_none()
 
+    async def get_key_by_identity_id(self, identity_id) -> Key:
+        result = await self.db.execute(select(Key).where(Key.identity_id==identity_id).limit(1))
+        return result.scalar_one_or_none()
+
     async def update_password(self, identity_id : UUID, new_password : str):
         identity = await self.get_by_identity(identity_id)
         identity.password_hash = hash_password(new_password)
@@ -161,12 +165,22 @@ class AuthenticationRepository:
         await self.db.refresh(identity)
 
     async def add_new_identity(self, data : AddAdminRequest):
-        new_identity = Identity(id=data.identity_id, email=data.email,
-                                password_hash=data.password, role=data.role, status=Status.ACTIVE, verified_email=True)
-        self.db.add(new_identity)
-        await self.db.commit()
-        await self.db.refresh(new_identity)
+        async with self.db.begin():
+            key = await self.get_key_by_identity_id(data.identity_id)
+            new_identity = Identity(id=data.identity_id, email=data.email,
+                                    password_hash=data.password, role=data.role, status=Status.ACTIVE,
+                                    verified_email=True)
 
+            self.db.add(new_identity)
+            await self.db.flush()
+            new_key = Key(
+                authentication_key=key.authentication_key,
+                registration_key=key.registration_key,
+                restaurant_id=key.restaurant_id,
+                identity_id=data.identity_id
+            )
+            self.db.add(new_key)
+        await self.db.refresh(new_identity)
     #################################################
     # verification email process #
     #################################################

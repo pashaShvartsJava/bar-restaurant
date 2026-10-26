@@ -10,15 +10,15 @@ class MembershipRole(str, Enum):
     OWNER = "owner"
     ADMIN = "admin"
     MODERATOR = "moderator"
-    PENDING = "pending"
-    FAILED = "failed"
-    BLOCKED = "blocked"
 
 
 class MembershipStatus(str, Enum):
     INVITED = "invited"
     ACTIVE = "active"
     SUSPENDED = "suspended"
+    PENDING = "pending"
+    FAILED = "failed"
+    BLOCKED = "blocked"
 
 class RestaurantMembership(Base):
     __tablename__ = "restaurant_memberships"

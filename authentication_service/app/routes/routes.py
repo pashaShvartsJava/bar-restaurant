@@ -172,7 +172,8 @@ async def edit_identity(data : IdentityEdit, service: AuthenticationService = De
     await service.update_identity(identity, data)
 
 @router.post("/add_identity")
-async def add_new_identity(data : AddAdminRequest, service: AuthenticationService = Depends(get_service_dependency)):
+async def add_new_identity(data : AddAdminRequest,
+                           service: AuthenticationService = Depends(get_service_dependency)):
     taken_identity = await service.find_by_email(data.email)
     if taken_identity is not None and taken_identity.id != data.identity_id:
         raise HTTPException(detail="Этот email уже занят", status_code=409)

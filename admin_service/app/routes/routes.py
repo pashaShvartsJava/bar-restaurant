@@ -17,7 +17,7 @@ from ..security.internal_security import verify_internal_token
 from ..security.role.role import IdentityRole
 from ..service.admin_service import AdminService
 from ..security.jwt.jwt import get_payload
-from ..security.authorization.authorization import required_role, required_roles
+from ..security.authorization.authorization import required_roles
 from uuid import UUID
 
 from ..model.admin import Status
@@ -32,15 +32,17 @@ templates = Jinja2Templates(directory="app/templates_admin")
 router = APIRouter()
 
 async def saga_compensation_during_adding_new_admin(identity_id, admin_created, membership_created, identity_created,
-                                                    client : Annotated[httpx.AsyncClient, Depends(get_httpx_async_connection)],
+                                                    client : httpx.AsyncClient,
                                                     admin_service : AdminService = Depends(get_service_dependency)):
     if admin_created:
-        await admin_service.delete_admin_by_identity_id(identity_id)
-        raise HTTPException(detail="Ошибка сервера. Не удалось создать администратора", status_code=500)
+        try:
+            await admin_service.delete_admin_by_identity_id(identity_id)
+        except Exception:
+            logger.warning("Не удалось удалить admin при откате саги")
     if membership_created:
         try:
             await client.delete(
-                url=f"http://authentication-service:8010/delete_saga_membership?identity_id={identity_id}",
+                url=f"http://restaurant-service:8010/restaurants/delete_saga_membership?identity_id={str(identity_id)}",
                 headers={"internal_token": INTERNAL_TOKEN})
         except Exception:
             logger.exception("Не удалось удалить membership при откате саги")
@@ -50,7 +52,6 @@ async def saga_compensation_during_adding_new_admin(identity_id, admin_created, 
                                 headers={"internal_token": INTERNAL_TOKEN})
         except Exception:
             logger.exception("Не удалось удалить identity при откате саги")
-        raise HTTPException(status_code=409, detail=[{"loc": ["body", "email"], "msg": "Этот email уже занят"}])
 
 async def verify_csrf(request: Request):
     cookie_token = request.cookies.get("csrf_token")
@@ -102,6 +103,9 @@ async def add_admin(request : Request,
     identity_created = False
     membership_created = False
     identity_id = uuid.uuid4()
+    restaurant_id = payload.get("restaurant_id")
+    if restaurant_id is None:
+        raise HTTPException(detail="No restaurant in token", status_code=401)
     try:
         new_identity = AddAdminRequest(identity_id=identity_id, email=data.email, password=data.password,
                                        role=data.role, status=Status.ACTIVE)
@@ -110,11 +114,14 @@ async def add_admin(request : Request,
                                              headers={"internal_token": INTERNAL_TOKEN})
         response.raise_for_status()
         identity_created = True
-        response_r = await client.post(url=f"http://authentication-service:8000/add_membership?identity_id={identity_id}",
-                                             headers={"internal_token": INTERNAL_TOKEN})
+        response_r = await client.post(url="http://restaurant-service:8010/restaurants/add_membership",
+                                       headers={"internal_token": INTERNAL_TOKEN},
+                                       params={"restaurant_id" : str(restaurant_id),
+                                               "identity_id" : str(identity_id),
+                                               "role" : data.role.value})
         response_r.raise_for_status()
         membership_created = True
-        await admin_service.add_new_admin(data, identity_id)
+        await admin_service.add_new_admin(data, identity_id, uuid.UUID(restaurant_id))
         admin_created = True
     except (httpx.HTTPStatusError, httpx.RequestError, SQLAlchemyError) as exception:
         await saga_compensation_during_adding_new_admin(identity_id, admin_created, membership_created, identity_created, client)

@@ -1,5 +1,8 @@
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
+from uuid import UUID
+
+from pydantic.v1 import UUID1
 
 from ...config.config import settings
 from ...model.identity_model import IdentityRole, Status
@@ -19,6 +22,22 @@ def create_access_token(identity_id : str, role : IdentityRole, status : Status)
         "role" : role.value,
         "status" : status.value,
         "exp" : expire
+    }
+    private_key = Path(PRIVATE_KEY_PATH).read_text()
+
+    token = jwt.encode(payload, private_key, ALGORITHM)
+
+    return token
+
+def create_admin_access_token(identity_id : str, role : IdentityRole, status : Status, restaurant_id : UUID) -> str:
+    expire = datetime.now(timezone.utc) + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+
+    payload ={
+        "sub" : str(identity_id),
+        "role" : role.value,
+        "status" : status.value,
+        "exp" : expire,
+        "restaurant_id" : restaurant_id
     }
     private_key = Path(PRIVATE_KEY_PATH).read_text()
 

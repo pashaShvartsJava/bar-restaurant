@@ -4,10 +4,12 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
-from ..models.restaurant_membership_model import RestaurantMembership
+from ..models.restaurant_membership_model import RestaurantMembership, MembershipStatus, MembershipRole
 from ..models.restaurant_model import Restaurant, RestaurantStatus
 from ..schema.restaurant_schema import RestaurantCreationDTO, KeyDTO
 import logging
+
+from ..security.role.role import IdentityRole
 
 logger = logging.getLogger(__name__)
 
@@ -21,7 +23,7 @@ class RestaurantRepository:
         result = await self.db.execute(select(Restaurant).options(selectinload(Restaurant.memberships)).where(Restaurant.id==restaurant_id))
         return result.scalar_one_or_none()
 
-    async def get_membership_by_identity_id(self, identity_id : UUID):
+    async def get_membership_by_identity_id(self, identity_id : UUID) -> RestaurantMembership:
         result = await self.db.execute(select(RestaurantMembership).where(RestaurantMembership.identity_id == identity_id))
         return result.scalar_one_or_none()
 
@@ -80,6 +82,21 @@ class RestaurantRepository:
         found_identity = await self.get_membership_by_identity_id(identity_id)
         await self.db.delete(found_identity)
         await self.db.commit()
+
+    async def create_membership(self, identity_id : UUID, restaurant_id : UUID, role : str):
+        new_role  = None
+        if role == MembershipRole.ADMIN.value:
+            new_role = MembershipRole.ADMIN
+        if role == MembershipRole.MODERATOR.value:
+            new_role = MembershipRole.MODERATOR
+        new_membership = RestaurantMembership(
+            identity_id=identity_id,
+            restaurant_id=restaurant_id,
+            role=new_role
+        )
+        self.db.add(new_membership)
+        await self.db.commit()
+        await self.db.refresh(new_membership)
 
 
 

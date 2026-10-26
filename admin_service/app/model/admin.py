@@ -31,4 +31,4 @@ class Admin(Base):
         default=AdminRole.ADMIN
     )
     email = Column(String, nullable=False, index=True, unique=True)
-    restaurant_id = Column(UUID, unique=True)
+    restaurant_id = Column(UUID, nullable=False)
