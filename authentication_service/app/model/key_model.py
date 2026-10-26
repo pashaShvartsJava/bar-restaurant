@@ -19,4 +19,4 @@ class Key(Base):
     restaurant_id = Column(String, unique=True, nullable=False)
     identity_id = Column(UUID(as_uuid=True), ForeignKey("identity.id"), nullable=False, unique=True)
 
-    identities = relationship("Identity", back_populates="key")
+    identities = relationship("Identity", back_populates="key",uselist=True)

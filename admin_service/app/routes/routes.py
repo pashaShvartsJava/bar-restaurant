@@ -108,7 +108,7 @@ async def add_admin(request : Request,
         raise HTTPException(detail="No restaurant in token", status_code=401)
     try:
         new_identity = AddAdminRequest(identity_id=identity_id, email=data.email, password=data.password,
-                                       role=data.role, status=Status.ACTIVE)
+                                       role=data.role, status=Status.ACTIVE, restaurant_id=restaurant_id)
         response = await client.post(url="http://authentication-service:8000/add_identity",
                                              json=new_identity.model_dump(mode="json"),
                                              headers={"internal_token": INTERNAL_TOKEN})

@@ -74,3 +74,4 @@ class AddAdminRequest(BaseModel):
     role: IdentityRole = Field(..., description="role")
     password: str = Field(..., min_length=8, description="password")
     status : Status
+    restaurant_id: str
