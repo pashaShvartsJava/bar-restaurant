@@ -12,6 +12,12 @@ class RestaurantService:
     def __init__(self, restaurant_repository : RestaurantRepository):
         self.restaurant_repository = restaurant_repository
 
+    async def get_all_restaurants(self):
+        return await self.restaurant_repository.get_all_restaurants()
+
+    async def get_restaurant_by_slug(self, slug: str):
+        return await self.restaurant_repository.get_restaurant_by_slug(slug)
+
     async def create_restaurant(self, data: RestaurantCreationDTO) -> Restaurant:
         return await self.restaurant_repository.create_restaurant(data)
 

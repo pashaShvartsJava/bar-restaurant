@@ -23,6 +23,14 @@ class RestaurantRepository:
         result = await self.db.execute(select(Restaurant).options(selectinload(Restaurant.memberships)).where(Restaurant.id==restaurant_id))
         return result.scalar_one_or_none()
 
+    async def get_restaurant_by_slug(self, slug : str):
+        result = await self.db.execute(select(Restaurant).where(Restaurant.slug==slug))
+        return result.scalar_one_or_none()
+
+    async def get_all_restaurants(self):
+        result = await self.db.execute(select(Restaurant))
+        return result.scalars().all()
+
     async def get_membership_by_identity_id(self, identity_id : UUID) -> RestaurantMembership:
         result = await self.db.execute(select(RestaurantMembership).where(RestaurantMembership.identity_id == identity_id))
         return result.scalar_one_or_none()

@@ -18,8 +18,8 @@ class TableService:
     async def get_table_by_id(self, table_id : int):
         return await self.table_repository.get_table_by_id(table_id)
 
-    async def get_free_table(self, people_amount: int, requested_datetime: datetime):
-        return await self.table_repository.get_free_table(people_amount, requested_datetime)
+    async def get_free_table(self, people_amount: int, requested_datetime: datetime, restaurant_d : UUID):
+        return await self.table_repository.get_free_table(people_amount, requested_datetime, restaurant_d)
 
     async def find_all_available_tables(self):
         return await self.table_repository.find_all_available_tables()

@@ -15,7 +15,8 @@ from ..security.internal_security import verify_internal_token
 from ..security.jwt.jwt import get_payload
 from ..security.authorization.authorization import required_roles
 from ..security.role.role import IdentityRole
-from ..dependencies.dependencies import get_table_service_dependency, get_table_session_service_dependency, get_reservation_service_dependency
+from ..dependencies.dependencies import get_table_service_dependency, get_table_session_service_dependency, \
+    get_reservation_service_dependency, get_restaurant_id_dependency
 from ..service.table_service import TableService
 from ..service.table_session_service import TableSessionService
 from ..service.reservation_service import ReservationService
@@ -148,16 +149,18 @@ async def filter_reservations(request : Request,
     return templates.TemplateResponse("all_reservations.html", {"request": request, "reservations": reservations,
                                                                 "now": datetime.now(timezone.utc)})
 
-@router.get("/tables/get_free_table")
-async def find_free_table(request : Request):
-    return templates.TemplateResponse("get_free_table.html", {"request" : request})
+@router.get("/r/{slug}/tables/get_free_table")
+async def find_free_table(request : Request, slug : str):
+    return templates.TemplateResponse("get_free_table.html", {"request" : request, "slug" : slug})
 
-@router.post("/tables/get_free_table")
+@router.post("/r/{slug}/tables/get_free_table")
 async def find_free_table(response : Response,
+                          slug : str,
                           people_amount : int = Form(..., lt=7),
                           requested_datetime : datetime = Form(),
                           service : TableService = Depends(get_table_service_dependency)):
-    free_table = await service.get_free_table(people_amount, requested_datetime)
+    restaurant_id = await get_restaurant_id_dependency(slug)
+    free_table = await service.get_free_table(people_amount, requested_datetime, restaurant_id)
     if not free_table:
         raise HTTPException(status_code=409, detail="К сожалению, все столики уже заняты. Попробуйте выбрать другое время")
     table, minutes = next(iter(free_table.items()))

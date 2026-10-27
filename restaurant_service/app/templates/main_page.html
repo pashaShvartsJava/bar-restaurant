@@ -6,7 +6,7 @@
     <meta name="theme-color" content="#1b1518">
     <link rel="manifest" href="/static/manifest.json">
 
-    <title>MARANI — Georgian Cocktail Bar</title>
+    <title>{{ restaurant.name }} — Restaurant Platform</title>
 
     <style>
         * {
@@ -21,6 +21,16 @@
 
         body {
             min-height: 100vh;
+            {% if restaurant.background_photo_url %}
+            background:
+                linear-gradient(
+                    180deg,
+                    rgba(13, 13, 15, 0.55) 0%,
+                    rgba(13, 13, 15, 0.82) 55%,
+                    rgba(13, 13, 15, 0.97) 100%
+                ),
+                url("{{ restaurant.background_photo_url }}") center / cover fixed no-repeat;
+            {% else %}
             background:
                 radial-gradient(
                     ellipse at 50% 0%,
@@ -35,6 +45,7 @@
                     #251d22 48%,
                     #101012 100%
                 );
+            {% endif %}
             color: #eee5df;
             font-family: Arial, sans-serif;
             position: relative;
@@ -102,6 +113,19 @@
             color: #aaa0a0;
             font-size: 12px;
             letter-spacing: 2px;
+        }
+
+        .header .city {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 5px 11px;
+            border: 1px solid rgba(213, 166, 91, 0.3);
+            border-radius: 20px;
+            background: rgba(213, 166, 91, 0.08);
+            color: #e6c58f;
+            font-size: 10px;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
         }
 
         .quick-menu {
@@ -178,6 +202,52 @@
         .quick-button.about:hover {
             border-color: rgba(255, 255, 255, 0.25);
             color: #e2d8d3;
+        }
+
+        .back-to-list {
+            position: fixed;
+            top: 18px;
+            left: 18px;
+            z-index: 1001;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            height: 38px;
+            padding: 0 14px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 9px;
+            background: rgba(24, 21, 24, 0.91);
+            color: #c9bfc0;
+            font-size: 11px;
+            font-weight: 600;
+            text-decoration: none;
+            white-space: nowrap;
+            backdrop-filter: blur(14px);
+            box-shadow:
+                0 12px 35px rgba(0, 0, 0, 0.28),
+                inset 0 1px rgba(255, 255, 255, 0.04);
+            transition:
+                background 0.2s,
+                border-color 0.2s,
+                color 0.2s,
+                transform 0.2s;
+        }
+
+        .back-to-list:hover {
+            transform: translateY(-1px);
+            background: rgba(39, 30, 31, 0.95);
+            border-color: rgba(213, 166, 91, 0.45);
+            color: #e6c58f;
+        }
+
+        .back-to-list .arrow {
+            font-size: 14px;
+            line-height: 1;
+            transition: transform 0.2s;
+        }
+
+        .back-to-list:hover .arrow {
+            transform: translateX(-3px);
         }
 
         .hero {
@@ -433,6 +503,7 @@
             color: #938b8c;
             font-size: 12px;
             line-height: 1.75;
+            white-space: pre-line;
         }
 
         .advantages {
@@ -528,8 +599,18 @@
                 font-size: 10px;
             }
 
+            .back-to-list {
+                top: 62px;
+                left: 12px;
+                right: 12px;
+                justify-content: center;
+                width: auto;
+                height: 36px;
+                font-size: 10px;
+            }
+
             .container {
-                padding: 85px 25px 45px;
+                padding: 115px 25px 45px;
             }
 
             .header {
@@ -559,8 +640,14 @@
                 font-size: 9px;
             }
 
+            .back-to-list {
+                top: 60px;
+                height: 34px;
+                font-size: 9px;
+            }
+
             .container {
-                padding: 78px 18px 35px;
+                padding: 110px 18px 35px;
             }
 
             .header h1 {
@@ -589,6 +676,11 @@
 
 <body>
 
+    <a href="/restaurants" class="back-to-list">
+        <span class="arrow" aria-hidden="true">←</span>
+        К списку заведений
+    </a>
+
     <div class="quick-menu">
         <a href="/login" class="quick-button login">
             Войти
@@ -599,7 +691,7 @@
         </a>
 
         <a href="#about" class="quick-button about">
-            О баре
+            О заведении
         </a>
     </div>
 
@@ -608,23 +700,39 @@
         <header class="header">
             <div class="header-top">
                 <h1>
-                    MARANI
+                    {{ restaurant.name }}
                 </h1>
             </div>
 
-            <p>
-                GEORGIAN COCKTAIL BAR
-            </p>
+            {% if restaurant.slogan %}
+            <p>{{ restaurant.slogan }}</p>
+            {% elif restaurant.city %}
+            <p>{{ restaurant.city }}</p>
+            {% else %}
+            <p>Добро пожаловать</p>
+            {% endif %}
+
+            {% if restaurant.city %}
+            <span class="city">{{ restaurant.city }}</span>
+            {% endif %}
         </header>
 
         <section class="hero">
             <h2 class="hero-title">
-                Бар с грузинским характером
+                {% if restaurant.tagline %}
+                    {{ restaurant.tagline }}
+                {% else %}
+                    Заведение с характером
+                {% endif %}
             </h2>
 
             <p class="hero-text">
-                Коктейли, блюда и спокойная атмосфера вечера.
-                Всё необходимое доступно прямо с телефона.
+                {% if restaurant.short_description %}
+                    {{ restaurant.short_description }}
+                {% else %}
+                    Всё необходимое доступно прямо с телефона:
+                    меню, бронирование и заказ.
+                {% endif %}
             </p>
         </section>
 
@@ -638,7 +746,7 @@
             <div class="buttons buttons-main">
 
                 <a
-                    href="/tables/get_free_table"
+                    href="/r/{{ restaurant.slug }}/tables/get_free_table"
                     class="button button-large booking-card"
                 >
                     <div class="icon">◇</div>
@@ -653,7 +761,7 @@
                 </a>
 
                 <a
-                    href="/bar_name/delivery"
+                    href="/r/{{ restaurant.slug }}/delivery"
                     class="button button-large delivery-button"
                 >
                     <div class="icon">⌁</div>
@@ -663,7 +771,7 @@
                     </h3>
 
                     <p>
-                        Доставка из бара
+                        Доставка из заведения
                     </p>
                 </a>
 
@@ -677,20 +785,28 @@
         >
 
             <div class="section-title">
-                <h2>О баре</h2>
+                <h2>О заведении</h2>
                 <div class="section-line"></div>
             </div>
 
             <div class="about-box">
 
                 <h2>
-                    Бар, где всё просто
+                    {% if restaurant.about_title %}
+                        {{ restaurant.about_title }}
+                    {% else %}
+                        Заведение, где всё просто
+                    {% endif %}
                 </h2>
 
                 <p>
-                    Выбирайте столик, смотрите меню, оформляйте заказ
-                    и оставайтесь в атмосфере вечера. Всё необходимое
-                    доступно прямо с телефона.
+                    {% if restaurant.description %}
+                        {{ restaurant.description }}
+                    {% else %}
+                        Выбирайте столик, смотрите меню, оформляйте заказ
+                        и оставайтесь в атмосфере вечера. Всё необходимое
+                        доступно прямо с телефона.
+                    {% endif %}
                 </p>
 
                 <div class="advantages">
@@ -755,46 +871,56 @@
 
             <div class="contacts">
 
+                {% if restaurant.phone %}
                 <div class="contact">
                     <span class="contact-label">
                         Телефон
                     </span>
 
                     <div class="contact-value">
-                        <a href="tel:+380974561158">
-                            +380 97 456 11 58
+                        <a href="tel:{{ restaurant.phone }}">
+                            {{ restaurant.phone }}
                         </a>
                     </div>
                 </div>
+                {% endif %}
 
+                {% if restaurant.email %}
                 <div class="contact">
                     <span class="contact-label">
                         Почта
                     </span>
 
                     <div class="contact-value">
-                        <a href="mailto:tbilisibar.techsupport@gmail.com">
-                           tbilisibar.techsupport@gmail.com
+                        <a href="mailto:{{ restaurant.email }}">
+                            {{ restaurant.email }}
                         </a>
                     </div>
                 </div>
+                {% endif %}
 
+                {% if restaurant.address %}
                 <div class="contact">
                     <span class="contact-label">
                         Адрес
                     </span>
 
                     <div class="contact-value">
-                        Tbilisi, Gruzinskaya str., 12
+                        {% if restaurant.city %}
+                            {{ restaurant.city }}, {{ restaurant.address }}
+                        {% else %}
+                            {{ restaurant.address }}
+                        {% endif %}
                     </div>
                 </div>
+                {% endif %}
 
             </div>
 
         </section>
 
         <footer class="footer">
-            MARANI
+            {{ restaurant.name }}
         </footer>
 
     </div>

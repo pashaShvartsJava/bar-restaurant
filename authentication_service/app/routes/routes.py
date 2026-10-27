@@ -38,10 +38,6 @@ async def root(request: Request):
         return RedirectResponse(url="/bar_name", status_code=303)
     return RedirectResponse(url="/user/my_profile", status_code=303)
 
-@router.get("/bar_name", response_class=HTMLResponse)
-def main_page(request: Request):
-    return templates.TemplateResponse("main_page.html", context={"request": request})
-
 @router.get("/login", response_class=HTMLResponse)
 def authentication(request: Request):
     return templates.TemplateResponse("login.html", {"request" : request})

@@ -33,11 +33,11 @@ class TableRepository:
         await self.db.commit()
         await self.db.refresh(new_table)
 
-    async def get_free_table(self, people_amount: int, requested_datetime: datetime) -> dict[Table, int | None]:
+    async def get_free_table(self, people_amount: int, requested_datetime: datetime, restaurant_id : UUID) -> dict[Table, int | None]:
         result = await self.db.execute(
             select(Table)
             .options(selectinload(Table.reservations))
-            .where(Table.capacity >= people_amount)
+            .where(Table.capacity >= people_amount, Table.restaurant_id==restaurant_id)
         )
         tables = result.scalars().all()
         requested_datetime = requested_datetime.astimezone(timezone.utc)

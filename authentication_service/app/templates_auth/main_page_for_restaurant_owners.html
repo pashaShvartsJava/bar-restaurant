@@ -198,6 +198,25 @@
             border-color: var(--gold);
         }
 
+        /* Кнопка «К списку заведений» навигации */
+        .nav-button.list {
+            border-color: rgba(255, 255, 255, 0.12);
+            background: rgba(255, 255, 255, 0.025);
+            color: #c1b6b3;
+        }
+
+        .nav-button.list:hover {
+            border-color: var(--gold-border);
+            color: var(--gold-light);
+        }
+
+        .nav-button.list::before {
+            content: "←";
+            margin-right: 6px;
+            font-size: 12px;
+            line-height: 1;
+        }
+
         /* Shared elements */
 
         .eyebrow {
@@ -985,6 +1004,11 @@
                 font-size: 9px;
             }
 
+            /* на мобильных «К списку заведений» скрываем, оставляем главный CTA */
+            .nav-button.list {
+                display: none;
+            }
+
             .container {
                 padding-right: 22px;
                 padding-left: 22px;
@@ -1196,8 +1220,8 @@
             </div>
 
             <div class="nav-actions">
-                <a href="/restaurants" class="nav-button">
-                    Все рестораны
+                <a href="/restaurants" class="nav-button list">
+                    К списку заведений
                 </a>
 
                 <a href="/choose_subscription" class="nav-button primary">
@@ -1725,7 +1749,7 @@
                 },
                 {
                     threshold: 0.12,
-                    rootMargin: "0px 0px -25px 0px"
+                    rootMargin: "0px 0px -25px 25px"
                 }
             );
 

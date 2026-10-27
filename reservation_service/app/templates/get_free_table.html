@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#1b1518">
-    <title>Бронирование столика | MARANI</title>
+    <title>Бронирование столика | {{ restaurant.name if restaurant else 'Restaurant' }}</title>
 
     <style>
         * {
@@ -173,6 +173,7 @@
             font-size: 13px;
             letter-spacing: 5px;
             text-align: center;
+            text-transform: uppercase;
         }
 
         .auth-card h1 {
@@ -374,39 +375,18 @@
         }
 
         @keyframes appear {
-            from {
-                opacity: 0;
-                transform: translateY(12px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         @keyframes expand {
-            from {
-                opacity: 0;
-                transform: translateY(-8px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(-8px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         @keyframes errorAppear {
-            from {
-                opacity: 0;
-                transform: translateY(-6px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(-6px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         @media (max-width: 950px) {
@@ -452,7 +432,7 @@
 
     <aside class="side">
         <div class="side-card">
-            <span class="side-label">MARANI</span>
+            <span class="side-label">{{ restaurant.name if restaurant else 'Заведение' }}</span>
             <h3>Бронирование</h3>
             <p>
                 Выберите количество гостей и удобное
@@ -472,7 +452,7 @@
 
     <main class="auth-card">
 
-        <div class="logo">MARANI</div>
+        <div class="logo">{{ restaurant.name if restaurant else 'RESTAURANT' }}</div>
 
         <h1>Забронировать столик</h1>
 
@@ -485,7 +465,7 @@
         <form
             id="availabilityForm"
             method="post"
-            action="/tables/get_free_table"
+            action="/r/{{ slug }}/tables/get_free_table"
         >
             <div class="field-row">
 
@@ -622,8 +602,8 @@
             перейти к подтверждению бронирования.
         </div>
 
-        <a href="/bar_name" class="back-link">
-            ← Вернуться в MARANI
+        <a href="/r/{{ slug }}" class="back-link">
+            ← Вернуться в {{ restaurant.name if restaurant else 'заведение' }}
         </a>
 
     </main>
@@ -638,7 +618,7 @@
 
                 <div>
                     <div class="reservation-name">
-                        Столик в MARANI
+                        Столик в {{ restaurant.name if restaurant else 'заведении' }}
                     </div>
 
                     <div class="reservation-description">
@@ -664,6 +644,10 @@
 </div>
 
 <script>
+    // slug и название заведения из шаблона
+    const SLUG = "{{ slug }}";
+    const CONFIRM_URL = `/r/${SLUG}/tables/confirm_reservation`;
+
     const form = document.getElementById("availabilityForm");
     const message = document.getElementById("message");
     const contactFields = document.getElementById("contactFields");
@@ -795,22 +779,22 @@
             }
 
             if (response.status === 405) {
-    showMessage(
-        "error",
-        data.detail || "Некорректные данные поиска. Повторите поиск столика."
-    );
-    hideContactFields();
-    return;
-}
+                showMessage(
+                    "error",
+                    data.detail || "Некорректные данные поиска. Повторите поиск столика."
+                );
+                hideContactFields();
+                return;
+            }
 
-if (response.status === 406) {
-    showMessage(
-        "error",
-        data.detail || "Срок действия бронирования истёк. Повторите поиск столика."
-    );
-    hideContactFields();
-    return;
-}
+            if (response.status === 406) {
+                showMessage(
+                    "error",
+                    data.detail || "Срок действия бронирования истёк. Повторите поиск столика."
+                );
+                hideContactFields();
+                return;
+            }
 
             if (response.status === 409) {
                 showMessage(
@@ -917,17 +901,19 @@ if (response.status === 406) {
         confirmButton.disabled = true;
 
         try {
-            const formData = new FormData(contactFields.querySelector("input[name='name']").form || form);
+            const formData = new FormData();
 
-            formData.delete("people_amount");
-            formData.delete("requested_datetime");
+            // Параметры поиска, которые уже подтверждены
+            formData.set("people_amount", confirmedSearchValues.people_amount);
+            formData.set("requested_datetime", confirmedSearchValues.requested_datetime);
 
+            // Контактные данные
             formData.set("name", document.getElementById("firstName").value.trim());
             formData.set("surname", document.getElementById("lastName").value.trim());
             formData.set("phone_number", document.getElementById("phone").value.trim());
             formData.set("email", document.getElementById("email").value.trim());
 
-            const response = await fetch("/tables/confirm_reservation", {
+            const response = await fetch(CONFIRM_URL, {
                 method: "POST",
                 body: formData,
                 credentials: "same-origin"
