@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Enum as SQLEnum, Boolean
+from sqlalchemy import Column, String, Enum as SQLEnum, Boolean, ForeignKey
 from enum import Enum
 from sqlalchemy.dialects.postgresql import UUID
 import uuid
@@ -29,8 +29,9 @@ class Identity(Base):
     role = Column(SQLEnum(IdentityRole), nullable=False, default=IdentityRole.USER)
     status = Column(SQLEnum(Status), nullable=False, default=Status.PENDING)
     verified_email = Column(Boolean, nullable=False, default=False)
+    key_id = Column(UUID(as_uuid=True), ForeignKey("keys.id"), nullable=True)
 
     tokens = relationship("EmailVerificationToken",  back_populates="identity", cascade="all, delete-orphan")
     change_password_tokens = relationship("UpdatePasswordEmailToken", back_populates="identity", cascade="all, delete-orphan")
     reset_password_tokens = relationship("ResetPasswordToken", back_populates="identity", cascade="all, delete-orphan")
-    key = relationship("Key", back_populates="identities", cascade="all, delete-orphan", uselist=False)
+    key = relationship("Key", back_populates="identities")

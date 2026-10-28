@@ -5,3 +5,4 @@ class IdentityRole(str, Enum):
     ADMIN = "admin"
     MODERATOR = "moderator"
     OWNER = "owner"
+    SUPERADMIN = "superadmin"

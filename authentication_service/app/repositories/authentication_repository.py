@@ -50,10 +50,11 @@ class AuthenticationRepository:
         # registration process #
 #################################################
 
-    async def create_owner_key(self, restaurant_id : UUID, identity_id : UUID):
-        new_owner_key = Key(restaurant_id=restaurant_id, identity_id=identity_id)
+    async def create_owner_key(self, restaurant_id : UUID) -> Key:
+        new_owner_key = Key(restaurant_id=restaurant_id)
         self.db.add(new_owner_key)
         await self.db.flush()
+        return new_owner_key
 
     async def create_identity(self, email : EmailStr, hashed_password : str) -> Identity:
         token = secrets.token_urlsafe(32)
@@ -80,25 +81,27 @@ class AuthenticationRepository:
         token = secrets.token_urlsafe(32)
         hashed_token = hashlib.sha256(token.encode("utf-8")).hexdigest()
         async with self.db.begin():
+            if restaurant_id is not None:
+                new_key = await self.create_owner_key(restaurant_id)
             if identity_id is not None:
                 new_identity = Identity(
                     id=identity_id,
                     email=email,
                     password_hash=hashed_password,
-                    role=identity_role
+                    role=identity_role,
+                    key_id=new_key.id
                 )
             else:
                 new_identity = Identity(
                     email=email,
                     password_hash=hashed_password,
-                    role=identity_role
+                    role=identity_role,
+                    key_id=new_key.id
                 )
             self.db.add(new_identity)
             await self.db.flush()
             await self.create_verification_token(new_identity.id, hashed_token)
             await self.create_outbox_event_email_verification(str(uuid.uuid4()), new_identity.email, token)
-            if restaurant_id is not None:
-                await self.create_owner_key(restaurant_id, identity_id)
         return new_identity
 
     async def get_by_identity(self, identity_id : UUID) -> Identity:

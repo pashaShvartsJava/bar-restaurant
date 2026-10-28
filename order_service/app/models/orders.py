@@ -33,6 +33,7 @@ class Order(Base):
     updated_status = Column(DateTime(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now(),)
     sum = Column(DECIMAL(10, 2), nullable=False, index=True)
     table_number = Column(Integer, nullable=True)
+    restaurant_id = Column(UUID, nullable=False)
 
     order_items = relationship("OrderItem", back_populates="order", cascade="all, delete-orphan", passive_deletes=True)
     address = relationship("DeliveryAddress", back_populates="order", uselist=False)

@@ -13,12 +13,13 @@ class TableSessionRepository:
     def __init__(self, db : AsyncSession):
         self.db = db
 
-    async def get_session_by_table_id(self, id : int) -> TableSession:
-        result = await self.db.execute(select(TableSession).where(TableSession.table_id == id).where(TableSession.session_end.is_(None)))
+    async def get_session_by_table_id(self, id : int, restaurant_id : UUID) -> TableSession:
+        result = await self.db.execute(select(TableSession).where(TableSession.table_id == id,
+                                                                  TableSession.restaurant_id==restaurant_id).where(TableSession.session_end.is_(None)))
         return result.scalar_one_or_none()
 
-    async def start_session(self, table_id : int, table : Table):
-        new_session = TableSession(table_id=table_id)
+    async def start_session(self, table_id : int, table : Table, restaurant_id : UUID):
+        new_session = TableSession(table_id=table_id, restaurant_id=restaurant_id)
         table.status = TableStatus.TAKEN
         self.db.add(new_session)
         await self.db.commit()

@@ -14,20 +14,21 @@ class AdminRepository:
     def __init__(self, db: AsyncSession):
         self.db = db
 
-    async def get_all(self) -> List[Admin]:
-        result = await self.db.execute(select(Admin))
+    async def get_all(self, restaurant_id : UUID) -> List[Admin]:
+        result = await self.db.execute(select(Admin).where(Admin.restaurant_id==restaurant_id))
         return result.scalars().all()
 
     async def get_all_by_search(self, identity_id : UUID) -> List[Admin]:
         result = await self.db.execute(select(Admin).where(Admin.identity_id==identity_id))
         return result.scalars().all()
 
-    async def get_by_id(self, id: int) -> Optional[Admin]:
-        result = await self.db.execute(select(Admin).where(Admin.id == id))
+    async def get_by_id(self, id: int, restaurant_id : UUID) -> Optional[Admin]:
+        result = await self.db.execute(select(Admin).where(Admin.id == id, Admin.restaurant_id==restaurant_id))
         return result.scalar_one_or_none()
 
-    async def get_by_identity_id(self, identity_id : UUID):
-        result = await self.db.execute(select(Admin).where(Admin.identity_id == identity_id))
+    async def get_by_identity_id(self, identity_id : UUID, restaurant_id : UUID):
+        result = await self.db.execute(select(Admin).where(Admin.identity_id == identity_id,
+                                                           Admin.restaurant_id==restaurant_id))
         return result.scalar_one_or_none()
 
     async def get_by_name(self, admin_name: str) -> Optional[Admin]:
@@ -50,8 +51,8 @@ class AdminRepository:
         await self.db.refresh(new_admin)
         return new_admin
 
-    async def update_admin(self, updated_admin_id: int, updated_admin: AdminUpdateDTO) -> Admin:
-        admin = await self.get_by_id(updated_admin_id)
+    async def update_admin(self, updated_admin_id: int, updated_admin: AdminUpdateDTO, restaurant_id : UUID) -> Admin:
+        admin = await self.get_by_id(updated_admin_id, restaurant_id)
         if updated_admin.name is not None:
             admin.name = updated_admin.name
         if updated_admin.surname is not None:
@@ -68,14 +69,14 @@ class AdminRepository:
         await self.db.refresh(admin)
         return admin
 
-    async def delete_admin(self, deleted_admin_id : int) -> Admin:
-        old_admin = await self.get_by_id(deleted_admin_id)
+    async def delete_admin(self, deleted_admin_id : int, restaurant_id : UUID) -> Admin:
+        old_admin = await self.get_by_id(deleted_admin_id, restaurant_id)
         await self.db.delete(old_admin)
         await self.db.commit()
         return old_admin
 
-    async def delete_admin_by_identity_id(self, identity_id: UUID):
-        admin = await self.get_by_identity_id(identity_id)
+    async def delete_admin_by_identity_id(self, identity_id: UUID, restaurant_id : UUID):
+        admin = await self.get_by_identity_id(identity_id, restaurant_id)
         await self.db.delete(admin)
         await self.db.commit()
 

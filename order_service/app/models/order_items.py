@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, ForeignKey, String, DECIMAL
+from sqlalchemy import Column, Integer, ForeignKey, String, DECIMAL, UUID
 from sqlalchemy.orm import relationship
 
 
@@ -13,5 +13,6 @@ class OrderItem(Base):
     dish_name = Column(String, index=True, nullable=False)
     quantity = Column(Integer, nullable=False)
     price = Column(DECIMAL(10, 2), nullable=False, index=True)
+    restaurant_id = Column(UUID, nullable=False)
 
     order = relationship("Order", back_populates="order_items")

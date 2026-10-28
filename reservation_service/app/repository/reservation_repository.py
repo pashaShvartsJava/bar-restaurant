@@ -16,12 +16,14 @@ class ReservationRepository:
     def __init__(self, db : AsyncSession):
         self.db = db
 
-    async def get_all_reservations(self):
-        result = await self.db.execute(select(Reservation).options(selectinload(Reservation.table)).order_by(Reservation.reservation_start.desc()))
+    async def get_all_reservations(self, restaurant_id : UUID):
+        result = await self.db.execute(select(Reservation).options(selectinload(Reservation.table))
+                                       .order_by(Reservation.reservation_start.desc())
+                                       .where(Reservation.restaurant_id==restaurant_id))
         return result.scalars().all()
 
     async def create_reservation(self, table_id : int, name : str, surname : str, phone : str,
-                                 reservation_start : datetime, reservation_end : datetime, email : EmailStr | None) -> Reservation:
+                                 reservation_start : datetime, reservation_end : datetime, email : EmailStr | None, restaurant_id : UUID) -> Reservation:
         if email is None:
             new_reservation = Reservation(
                 table_id=table_id,
@@ -29,7 +31,8 @@ class ReservationRepository:
                 surname=surname,
                 phone=phone,
                 reservation_start=reservation_start,
-                reservation_end=reservation_end
+                reservation_end=reservation_end,
+                restaurant_id=restaurant_id
             )
             self.db.add(new_reservation)
             await self.db.flush()
@@ -41,24 +44,28 @@ class ReservationRepository:
             surname=surname,
             phone=phone,
             reservation_start=reservation_start,
-            reservation_end=reservation_end
+            reservation_end=reservation_end,
+            restaurant_id=restaurant_id
         )
         self.db.add(new_reservation)
         await self.db.flush()
         await self.create_outbox_reservation_event(name, surname, reservation_start, email)
         return new_reservation
 
-    async def get_reservation_by_id(self, reservation_id : int):
-        result = await self.db.execute(select(Reservation).where(Reservation.id==reservation_id))
+    async def get_reservation_by_id(self, reservation_id : int, restaurant_id : UUID):
+        result = await self.db.execute(select(Reservation).where(Reservation.id==reservation_id,
+                                                                 Reservation.restaurant_id==restaurant_id))
         return result.scalar_one_or_none()
 
-    async def cancel_reservation(self, reservation_id : int):
-        cancelled_reservation = await self.get_reservation_by_id(reservation_id)
+    async def cancel_reservation(self, reservation_id : int, restaurant_id : UUID):
+        cancelled_reservation = await self.get_reservation_by_id(reservation_id, restaurant_id)
         await self.db.delete(cancelled_reservation)
         await self.db.commit()
 
-    async def get_reservation_by_search(self, reservation_number : UUID, name : str, surname : str):
-        query = select(Reservation).options(selectinload(Reservation.table)).order_by(Reservation.reservation_start.desc())
+    async def get_reservation_by_search(self, reservation_number : UUID, name : str, surname : str, restaurant_id : UUID):
+        query = (select(Reservation).options(selectinload(Reservation.table))
+                 .order_by(Reservation.reservation_start.desc())
+                 .where(Reservation.restaurant_id==restaurant_id))
         if reservation_number is not None:
             query = query.where(Reservation.reservation_number==reservation_number)
         if name is not None:
@@ -68,8 +75,10 @@ class ReservationRepository:
         result = await self.db.execute(query)
         return result.scalars().all()
 
-    async def filter_reservations(self, date : date, status : str, table_number : int):
-        query = select(Reservation).options(selectinload(Reservation.table)).order_by(Reservation.reservation_start.desc())
+    async def filter_reservations(self, date : date, status : str, table_number : int, restaurant_id : UUID):
+        query = (select(Reservation).options(selectinload(Reservation.table))
+                 .order_by(Reservation.reservation_start.desc()).
+                 where(Reservation.restaurant_id==restaurant_id))
         now = datetime.now(timezone.utc)
         if date is not None:
             query = query.where(func.date(Reservation.reservation_start) == date)

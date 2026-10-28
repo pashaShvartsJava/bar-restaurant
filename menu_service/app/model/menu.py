@@ -22,5 +22,6 @@ class Menu(Base):
     dish_status = Column(SQLEnum(DishStatus), default=DishStatus.AVAILABLE)
     category_id = Column(UUID(as_uuid=True), ForeignKey("categories.id"), nullable=False)
     image_url = Column(String)
+    restaurant_id = Column(UUID(as_uuid=True), nullable=False)
 
     category = relationship("Category", back_populates="dishes")

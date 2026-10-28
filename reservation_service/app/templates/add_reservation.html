@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Новое бронирование</title>
+    <title>Новое бронирование — {{ restaurant.restaurant_name if restaurant else 'Restaurant' }}</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -37,6 +37,7 @@
         .header { margin-bottom: 35px; }
         .title { color: #ffffff; font-family: Georgia, serif; font-size: 42px; font-weight: normal; letter-spacing: 3px; }
         .subtitle { margin-top: 12px; color: #77777d; font-size: 13px; }
+        .subtitle strong { color: #a99c98; font-weight: normal; }
         .content { display: grid; grid-template-columns: 1fr 1.35fr; gap: 25px; align-items: start; }
         .card {
             width: 100%;
@@ -176,13 +177,18 @@
 </head>
 <body>
 <div class="page">
-    <a href="/tables" class="back">
+    <a href="/r/{{ slug }}/tables" class="back">
         <span class="back-arrow">←</span>
         Назад к столикам
     </a>
     <header class="header">
         <h1 class="title">Новое бронирование</h1>
-        <p class="subtitle">Создание нового бронирования для выбранного столика.</p>
+        <p class="subtitle">
+            Создание нового бронирования для выбранного столика.
+            {% if restaurant and restaurant.restaurant_name %}
+                <strong>— {{ restaurant.restaurant_name }}</strong>
+            {% endif %}
+        </p>
     </header>
     <main class="content">
         <section class="card">
@@ -212,7 +218,7 @@
                     <div class="table-number">Столик №{{ table.table_number }}</div>
                     <div class="table-capacity">Вместимость: до {{ table.capacity }} гостей</div>
                 </div>
-                <form id="reservationForm" action="/tables/create_reservation" method="post">
+                <form id="reservationForm" action="/r/{{ slug }}/tables/create_reservation" method="post">
                     <input type="hidden" name="table_id" value="{{ table.id }}">
                     <div class="field">
                         <label for="name">Имя</label>
@@ -235,7 +241,7 @@
                         <input type="datetime-local" id="reservation_end" name="reservation_end" required>
                     </div>
                     <div class="form-actions">
-                        <a href="/tables" class="button cancel">Отмена</a>
+                        <a href="/r/{{ slug }}/tables" class="button cancel">Отмена</a>
                         <button type="submit" class="button save">Забронировать</button>
                     </div>
                 </form>
@@ -276,109 +282,112 @@
             {% endif %}
         </section>
     </main>
-    <div class="footer">RESERVATION MANAGEMENT</div>
+    <div class="footer">
+        {{ restaurant.restaurant_name if restaurant else 'RESERVATION' }} · RESERVATION MANAGEMENT
+    </div>
 </div>
 <script src="/static/api.js"></script>
 <script>
+    const SLUG = "{{ slug }}";
+
     const reservationForm = document.getElementById("reservationForm");
     const submitButton = reservationForm.querySelector(".button.save");
     const formError = document.getElementById("formError");
     const formErrorText = document.getElementById("formErrorText");
 
-function showError(message) {
-    if (!formError || !formErrorText) {
-        return;
-    }
-    formErrorText.textContent = message;
-    formError.classList.remove("hidden");
-}
-
-function clearError() {
-    if (!formError || !formErrorText) {
-        return;
-    }
-    formErrorText.textContent = "";
-    formError.classList.add("hidden");
-}
-
-async function handleResponse(response) {
-    if (response.ok) {
-        return true;
-    }
-
-    if (response.status === 401) {
-        window.location.href = "/login";
-        return false;
-    }
-
-    if (response.status === 403) {
-        showError("У вас нет прав для создания бронирования.");
-        return false;
-    }
-
-    if (response.status === 404) {
-        showError("Столик не найден.");
-        return false;
-    }
-
-    if (response.status === 409) {
-        showError("На выбранное время столик уже забронирован.");
-        return false;
-    }
-
-    if (response.status >= 500) {
-        showError("Ошибка сервера. Попробуйте позже.");
-        return false;
-    }
-
-    try {
-        const data = await response.json();
-
-        if (Array.isArray(data.detail)) {
-            const messages = data.detail
-                .map(error => error.msg)
-                .filter(Boolean);
-
-            showError(
-                messages.length
-                    ? messages.join(", ")
-                    : "Не удалось создать бронирование."
-            );
-        } else {
-            showError(
-                data.detail ||
-                data.message ||
-                "Не удалось создать бронирование."
-            );
+    function showError(message) {
+        if (!formError || !formErrorText) {
+            return;
         }
-    } catch {
-        showError("Не удалось создать бронирование.");
+        formErrorText.textContent = message;
+        formError.classList.remove("hidden");
     }
 
-    return false;
-}
-
-reservationForm.addEventListener("submit", async function(event) {
-    event.preventDefault();
-    clearError();
-    submitButton.disabled = true;
-
-    try {
-        const response = await apiFetch(reservationForm.action, {
-            method: "POST",
-            body: new FormData(reservationForm)
-        });
-
-        if (await handleResponse(response)) {
-            window.location.href = "/tables";
+    function clearError() {
+        if (!formError || !formErrorText) {
+            return;
         }
-    } catch {
-        showError("Не удалось подключиться к серверу. Проверьте соединение.");
-    } finally {
-        submitButton.disabled = false;
+        formErrorText.textContent = "";
+        formError.classList.add("hidden");
     }
-});
 
+    async function handleResponse(response) {
+        if (response.ok) {
+            return true;
+        }
+
+        if (response.status === 401) {
+            window.location.href = "/login";
+            return false;
+        }
+
+        if (response.status === 403) {
+            showError("У вас нет прав для создания бронирования.");
+            return false;
+        }
+
+        if (response.status === 404) {
+            showError("Столик не найден.");
+            return false;
+        }
+
+        if (response.status === 409) {
+            showError("На выбранное время столик уже забронирован.");
+            return false;
+        }
+
+        if (response.status >= 500) {
+            showError("Ошибка сервера. Попробуйте позже.");
+            return false;
+        }
+
+        try {
+            const data = await response.json();
+
+            if (Array.isArray(data.detail)) {
+                const messages = data.detail
+                    .map(error => error.msg)
+                    .filter(Boolean);
+
+                showError(
+                    messages.length
+                        ? messages.join(", ")
+                        : "Не удалось создать бронирование."
+                );
+            } else {
+                showError(
+                    data.detail ||
+                    data.message ||
+                    "Не удалось создать бронирование."
+                );
+            }
+        } catch {
+            showError("Не удалось создать бронирование.");
+        }
+
+        return false;
+    }
+
+    reservationForm.addEventListener("submit", async function(event) {
+        event.preventDefault();
+        clearError();
+        submitButton.disabled = true;
+
+        try {
+            const response = await apiFetch(reservationForm.action, {
+                method: "POST",
+                body: new FormData(reservationForm)
+            });
+
+            if (await handleResponse(response)) {
+                window.location.href = `/r/${SLUG}/tables`;
+            }
+        } catch {
+            showError("Не удалось подключиться к серверу. Проверьте соединение.");
+        } finally {
+            submitButton.disabled = false;
+        }
+    });
 </script>
 </body>
 </html>

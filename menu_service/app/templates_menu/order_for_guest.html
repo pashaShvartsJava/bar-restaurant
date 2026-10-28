@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MARANI — Заказ</title>
+    <title>{{ restaurant.restaurant_name if restaurant else 'Restaurant' }} — Заказ</title>
 
     <style>
         * {
@@ -794,13 +794,21 @@
 <body>
     <nav class="navbar">
         <div class="nav-container">
-            <a href="/" class="brand">
-                MARANI
-                <span>GEORGIAN COCKTAIL BAR</span>
+            <a href="/r/{{ slug }}" class="brand">
+                {{ restaurant.restaurant_name if restaurant else 'RESTAURANT' }}
+                <span>
+                    {% if restaurant and restaurant.slogan %}
+                        {{ restaurant.slogan }}
+                    {% elif restaurant and restaurant.city %}
+                        {{ restaurant.city }}
+                    {% else %}
+                        RESTAURANT PLATFORM
+                    {% endif %}
+                </span>
             </a>
 
             <div class="nav-actions">
-                <a href="/bar_name" class="nav-link">Главная</a>
+                <a href="/r/{{ slug }}" class="nav-link">Главная</a>
                 <a href="/login" class="nav-link">Войти в аккаунт</a>
             </div>
         </div>
@@ -808,12 +816,18 @@
 
     <div class="page">
         <section class="hero">
-            <div class="hero-label">ქართული • MARANI</div>
+            <div class="hero-label">
+                {% if restaurant and restaurant.city %}
+                    {{ restaurant.city }} • {{ restaurant.restaurant_name }}
+                {% else %}
+                    {{ restaurant.restaurant_name if restaurant else 'MARANI' }}
+                {% endif %}
+            </div>
 
-            <h1>Выберите напитки</h1>
+            <h1>Выберите блюда и напитки</h1>
 
             <p>
-                Соберите свой заказ из наших коктейлей и напитков.
+                Соберите свой заказ из меню заведения.
                 Выбранные позиции появятся справа в вашей корзине.
             </p>
         </section>
@@ -821,8 +835,8 @@
         <main class="order-layout">
             <section class="menu-panel">
                 <header class="menu-header">
-                    <h2>Меню MARANI</h2>
-                    <p>Авторские коктейли, вино и напитки</p>
+                    <h2>Меню {{ restaurant.restaurant_name if restaurant else '' }}</h2>
+                    <p>Доступные блюда и напитки</p>
                 </header>
 
                 {% if categories %}
@@ -862,7 +876,7 @@
                                                 {% if dish.description %}
                                                     <p class="dish-description">{{ dish.description }}</p>
                                                 {% else %}
-                                                    <p class="dish-description">Авторский напиток MARANI</p>
+                                                    <p class="dish-description">Авторское блюдо</p>
                                                 {% endif %}
                                             </div>
 
@@ -913,10 +927,10 @@
                     {% endfor %}
                 {% else %}
                     <div class="empty-cart">
-                        <div class="empty-cart-icon">🍷</div>
+                        <div class="empty-cart-icon">🍽</div>
                         <div class="empty-cart-title">Меню пока пусто</div>
                         <div class="empty-cart-text">
-                            В данный момент нет доступных напитков.
+                            В данный момент нет доступных блюд.
                         </div>
                     </div>
                 {% endif %}
@@ -970,14 +984,17 @@
         </main>
 
         <footer class="footer">
-            <span>© 2026 MARANI Georgian Cocktail Bar</span>
+            <span>© 2026 {{ restaurant.restaurant_name if restaurant else 'Restaurant' }}</span>
+            <a href="/r/{{ slug }}">← Вернуться на страницу заведения</a>
         </footer>
     </div>
 
     <script src="/static/api.js"></script>
 
     <script>
-        const CART_STORAGE_KEY = "restaurant_cart";
+        const SLUG = "{{ slug }}";
+        const RESTAURANT_ID = "{{ restaurant.id if restaurant else '' }}";
+        const CART_STORAGE_KEY = `restaurant_cart_${SLUG}`;
 
         const cartContent =
             document.getElementById("cartContent");
@@ -1200,13 +1217,14 @@
             if (cart.length === 0) {
                 cartContent.innerHTML = `
                     <div class="empty-cart">
-                        <div class="empty-cart-icon">🍷</div>
+                        <div class="empty-cart-icon">🍽</div>
                         <div class="empty-cart-title">Корзина пуста</div>
                         <div class="empty-cart-text">
-                            Выберите напитки из меню,
+                            Выберите блюда из меню,
                             чтобы начать заказ.
                         </div>
-                    `;
+                    </div>
+                `;
 
                 checkoutButton.disabled = true;
                 return;
@@ -1447,6 +1465,12 @@
                     client_id:
                         clientId,
 
+                    restaurant_id:
+                        RESTAURANT_ID,
+
+                    slug:
+                        SLUG,
+
                     order_items:
                         cart.map(item => ({
                             dish_id:
@@ -1474,7 +1498,7 @@
                 try {
                     const response =
                         await apiFetch(
-                            "/orders/create/guest",
+                            `/r/${SLUG}/orders/create/guest`,
                             {
                                 method: "POST",
 
@@ -1537,7 +1561,7 @@
                     }
 
                     window.location.href =
-                        "/orders/confirm_address/guest";
+                        `/r/${SLUG}/orders/confirm_address/guest`;
                 } catch (error) {
                     console.error(
                         "CHECKOUT ERROR:",
@@ -1561,7 +1585,6 @@
                 }
             }
         );
-
         updateInterface();
     </script>
 </body>

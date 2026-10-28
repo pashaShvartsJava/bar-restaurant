@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#171315">
-    <title>MARANI — Меню ресторана</title>
+    <title>{{ restaurant.restaurant_name if restaurant else 'Restaurant' }} — Меню ресторана</title>
 
     <style>
         * {
@@ -72,6 +72,7 @@
             font-size: 26px;
             letter-spacing: 5px;
             text-decoration: none;
+            text-transform: uppercase;
         }
 
         .brand span {
@@ -81,6 +82,7 @@
             font-family: Arial, sans-serif;
             font-size: 8px;
             letter-spacing: 3px;
+            text-transform: none;
         }
 
         .table-badge {
@@ -90,6 +92,7 @@
             color: var(--gold-light);
             background: rgba(213, 166, 91, .05);
             font-size: 11px;
+            white-space: nowrap;
         }
 
         .hero {
@@ -604,6 +607,7 @@
             font-family: Georgia, serif;
             font-size: 13px;
             letter-spacing: 3px;
+            text-transform: uppercase;
         }
 
         @media (max-width: 950px) {
@@ -707,9 +711,17 @@
 <body>
     <nav class="navbar">
         <div class="navbar-inner">
-            <a href="/bar_name" class="brand">
-                MARANI
-                <span>GEORGIAN RESTAURANT</span>
+            <a href="/r/{{ slug }}" class="brand">
+                {{ restaurant.restaurant_name if restaurant else 'RESTAURANT' }}
+                <span>
+                    {% if restaurant and restaurant.slogan %}
+                        {{ restaurant.slogan }}
+                    {% elif restaurant and restaurant.city %}
+                        {{ restaurant.city }}
+                    {% else %}
+                        RESTAURANT PLATFORM
+                    {% endif %}
+                </span>
             </a>
 
             <div class="table-badge" id="tableBadge">
@@ -720,8 +732,14 @@
 
     <div class="page">
         <header class="hero">
-            <div class="hero-label">ქართული • MARANI</div>
-            <h1>Вкус Грузии</h1>
+            <div class="hero-label">
+                {% if restaurant and restaurant.city %}
+                    {{ restaurant.city }} • {{ restaurant.restaurant_name }}
+                {% else %}
+                    {{ restaurant.restaurant_name if restaurant else 'MENU' }}
+                {% endif %}
+            </div>
+            <h1>Меню ресторана</h1>
             <p class="hero-description">
                 Выберите любимые блюда и напитки.
                 Добавьте их в корзину, а затем решите,
@@ -783,7 +801,7 @@
                                                 {% if dish.description %}
                                                     {{ dish.description }}
                                                 {% else %}
-                                                    Приготовлено с заботой в MARANI
+                                                    Приготовлено с заботой в {{ restaurant.restaurant_name if restaurant else 'ресторане' }}
                                                 {% endif %}
                                             </p>
 
@@ -899,15 +917,22 @@
         </main>
 
         <footer class="footer">
-            <span class="footer-brand">MARANI</span>
-            Georgian Restaurant · С любовью к грузинской кухне
+            <span class="footer-brand">{{ restaurant.restaurant_name if restaurant else 'RESTAURANT' }}</span>
+            {% if restaurant and restaurant.slogan %}
+                {{ restaurant.slogan }}
+            {% else %}
+                С любовью к грузинской кухне
+            {% endif %}
         </footer>
     </div>
 
     <script>
-        const CART_STORAGE_KEY = "marani_qr_cart";
+        const SLUG = "{{ slug }}";
         const TABLE_NUMBER = {{ table_number | tojson }};
-        const ORDER_CREATE_URL = "/orders/create/internal";
+        const RESTAURANT_ID = "{{ restaurant.id if restaurant else '' }}";
+
+        const CART_STORAGE_KEY = `restaurant_qr_cart_${SLUG}`;
+        const ORDER_CREATE_URL = `/r/${SLUG}/menu_page/orders/create/internal`;
         const INTERNAL_ORDER_STATUS = "internal_order";
         const ONLINE_ORDER_STATUS = "online";
 
@@ -1239,6 +1264,9 @@
 
             const orderData = {
                 client_id: clientId,
+                restaurant_id: RESTAURANT_ID,
+                slug: SLUG,
+                table_number: Number(TABLE_NUMBER),
                 order_items: cart.map(item => ({
                     dish_id: Number(item.dish_id),
                     dish_name: String(item.dish_name),

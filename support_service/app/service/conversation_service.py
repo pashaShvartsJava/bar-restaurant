@@ -47,5 +47,5 @@ class ConversationService:
     async def get_unread_conversations(self):
         return await self.conversation_repository.get_unread_conversations()
 
-    async def count_unread_conversations(self):
-        return await self.conversation_repository.count_unread_conversations()
+    async def count_unread_conversations(self, restaurant_id : UUID):
+        return await self.conversation_repository.count_unread_conversations(restaurant_id)

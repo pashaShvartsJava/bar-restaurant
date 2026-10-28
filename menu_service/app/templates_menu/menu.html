@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Меню</title>
+    <title>Меню — {{ restaurant.restaurant_name if restaurant else 'Restaurant' }}</title>
     <style>
         * {
             margin: 0;
@@ -413,16 +413,24 @@
     <header class="header">
         <div>
             <h1 class="title">Меню</h1>
-            <div class="subtitle">Управление блюдами и категориями</div>
+            <div class="subtitle">
+                Управление блюдами и категориями
+                {% if restaurant and restaurant.restaurant_name %}
+                    — {{ restaurant.restaurant_name }}
+                {% endif %}
+            </div>
         </div>
 
         <div class="top">
-            <a href="/admin_panel" class="back">← Вернуться в панель управления</a>
+            <a href="/admin_panel" class="back">
+                <span class="back-arrow">←</span>
+                Вернуться в панель управления
+            </a>
         </div>
 
         <div class="header-actions">
-            <a href="/menu_page/add_category" class="btn add">+ Добавить категорию</a>
-            <a href="/menu_page/add_dish" class="btn add">+ Добавить блюдо</a>
+            <a href="/r/{{ slug }}/menu_page/add_category" class="btn add">+ Добавить категорию</a>
+            <a href="/r/{{ slug }}/menu_page/add_dish" class="btn add">+ Добавить блюдо</a>
         </div>
     </header>
 
@@ -514,6 +522,8 @@
 
 <script src="/static/api.js"></script>
 <script>
+const SLUG = "{{ slug }}";
+
 const formError = document.getElementById("formError");
 
 function showFormError(message) {
@@ -529,7 +539,7 @@ function clearFormError() {
 document.querySelectorAll(".action.edit").forEach(button => {
     button.addEventListener("click", function() {
         const dishId = this.dataset.dishId;
-        window.location.href = `/menu_page/edit_dish/${dishId}`;
+        window.location.href = `/r/${SLUG}/menu_page/edit_dish/${dishId}`;
     });
 });
 
@@ -549,7 +559,7 @@ document.querySelectorAll(".action.delete").forEach(button => {
 
         try {
             const response = await apiFetch(
-                `/menu_page/change_dish_status/${dishId}`,
+                `/r/${SLUG}/menu_page/change_dish_status/${dishId}`,
                 {
                     method: "PATCH"
                 }

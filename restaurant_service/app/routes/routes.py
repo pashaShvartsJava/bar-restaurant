@@ -7,7 +7,7 @@ from uuid import UUID
 from starlette.responses import HTMLResponse
 from starlette.templating import Jinja2Templates
 
-from ..schema.restaurant_schema import RestaurantCreationDTO, KeyDTO
+from ..schema.restaurant_schema import RestaurantCreationDTO, KeyDTO, RestaurantConstructorDTO
 from ..security.internal_security import verify_internal_token
 from ..services.restaurant_service import RestaurantService
 from ..dependencies.dependency import get_restaurant_dependency
@@ -67,13 +67,13 @@ async def get_restaurant(identity_id : str,
     membership = await service.get_membership_by_identity_id(uuid.UUID(identity_id))
     return membership.restaurant_id
 
-@router.get("/restaurants/get_restaurant_id_by_slug")
+@router.get("/restaurants/get_restaurant_by_slug")
 async def get_restaurant_by_slug(slug : str,
                          internal_token: str = Header(..., alias="internal_token"),
                          service: RestaurantService = Depends(get_restaurant_dependency)):
     await verify_internal_token(internal_token)
     restaurant = await service.get_restaurant_by_slug(slug)
-    return restaurant.restaurant_id
+    return RestaurantConstructorDTO.model_validate(restaurant, from_attributes=True)
 
 @router.post("/restaurants/add_membership")
 async def add_membership(identity_id : str,

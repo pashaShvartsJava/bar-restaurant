@@ -14,14 +14,15 @@ class GuestRepository:
     def __init__(self, db: AsyncSession):
         self.db = db
 
-    async def create_guest_order(self, data : GuestCustomerDTO, client_id : UUID) -> GuestCustomer:
+    async def create_guest_order(self, data : GuestCustomerDTO, client_id : UUID, restaurant_id : UUID) -> GuestCustomer:
         new_guest = GuestCustomer(
             client_id=client_id,
             name=data.name,
             surname=data.surname,
             email=data.email,
             birthday=data.birthday,
-            phone=data.phone
+            phone=data.phone,
+            restaurant_id=restaurant_id
         )
         self.db.add(new_guest)
         await self.db.commit()

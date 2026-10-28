@@ -1,3 +1,5 @@
+import uuid
+
 import httpx
 from fastapi import APIRouter, Request, HTTPException
 from fastapi.params import Depends, Header
@@ -7,7 +9,7 @@ from starlette.templating import Jinja2Templates
 from ..security.jwt.jwt import get_payload
 from ..security.authorization.authorization import required_roles
 from ..security.role.role import IdentityRole
-from ..dependencies.dependencies import get_conversation_service_dependency
+from ..dependencies.dependencies import get_conversation_service_dependency, get_restaurant_dependency
 from ..service.conversation_service import ConversationService
 from uuid import UUID
 from ..config.config import settings
@@ -50,9 +52,10 @@ async def general_support(request : Request, conversation_service : Conversation
     return templates.TemplateResponse("general_support.html", {"request" : request, "conversations" : conversations})
 
 @router.get("/support/unread/count")
-async def get_unread_support_count(internal_token : str = Header(..., alias="internal_token"),
+async def get_unread_support_count(restaurant_id : str,
+                                   internal_token : str = Header(..., alias="internal_token"),
                                    conversation_service: ConversationService = Depends(get_conversation_service_dependency)):
     if internal_token != INTERNAL_TOKEN or internal_token is None:
         raise HTTPException(detail="Forbidden", status_code=403)
-    count = await conversation_service.count_unread_conversations()
+    count = await conversation_service.count_unread_conversations(uuid.UUID(restaurant_id))
     return {"count": count}

@@ -1,6 +1,7 @@
 import httpx
 
 from ..repository.table_repository import TableRepository
+from ..schema.restaurant_schema import RestaurantConstructorDTO
 from ..service.table_service import TableService
 from ..repository.reservation_repository import ReservationRepository
 from ..service.reservation_service import ReservationService
@@ -22,11 +23,10 @@ def get_table_session_service_dependency(db : AsyncSession = Depends(get_db)):
 def get_reservation_service_dependency(db : AsyncSession = Depends(get_db)):
     return ReservationService(ReservationRepository(db), TableRepository(db))
 
-async def get_restaurant_id_dependency(slug : str):
+async def get_restaurant_dependency(slug : str):
     async with httpx.AsyncClient() as client:
-        response = await client.get(url="http://restaurant-service:8010//restaurants/get_restaurant_id_by_slug",
+        response = await client.get(url="http://restaurant-service:8010/restaurants/get_restaurant_by_slug",
                                     headers={"internal_token" : INTERNAL_TOKEN},
                                     params={"slug" : slug})
         response.raise_for_status()
-        restaurant_id = response.json()
-    return restaurant_id
+    return RestaurantConstructorDTO(**response.json())

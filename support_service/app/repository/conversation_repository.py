@@ -83,11 +83,12 @@ class ConversationRepository:
         await self.db.commit()
         await self.db.refresh(conversation)
 
-    async def count_unread_conversations(self):
+    async def count_unread_conversations(self, restaurant_id : UUID):
         result = await self.db.execute(
             select(func.count(Conversation.id))
             .where(exists(select(Message.id).where(
             Message.conversation_id == Conversation.id,
                         Message.sender_role == SenderRole.USER,
-                        Message.id > Conversation.last_read_message_by_admin_id))))
+                        Message.id > Conversation.last_read_message_by_admin_id,
+                        Conversation.restaurant_id==restaurant_id))))
         return result.scalar_one()

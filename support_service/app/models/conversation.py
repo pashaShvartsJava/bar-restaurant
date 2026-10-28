@@ -19,5 +19,6 @@ class Conversation(Base):
     created_at = Column(DateTime(timezone=True), nullable=False)
     last_read_message_by_user_id = Column(Integer, index=True)
     last_read_message_by_admin_id = Column(Integer, index=True)
+    restaurant_id = Column(UUID, nullable=False)
 
     messages = relationship("Message", back_populates="conversation")

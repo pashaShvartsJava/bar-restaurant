@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Данные для доставки | Bar & Lounge</title>
+    <title>Данные для доставки — {{ restaurant.restaurant_name if restaurant else 'Restaurant' }}</title>
     <style>
         * {
             box-sizing: border-box;
@@ -44,6 +44,7 @@
             font-family: Georgia, serif;
             letter-spacing: 3px;
             font-size: 11px;
+            text-transform: uppercase;
         }
         .card {
             background: rgba(39,32,38,.97);
@@ -265,8 +266,8 @@
 <body>
 <div class="page">
     <div class="top">
-        <a href="/bar_name/delivery" class="back">← Вернуться к меню</a>
-        <div class="brand">BAR & LOUNGE</div>
+        <a href="/r/{{ slug }}/delivery" class="back">← Вернуться к меню</a>
+        <div class="brand">{{ restaurant.restaurant_name if restaurant else 'RESTAURANT' }}</div>
     </div>
 
     <div class="card">
@@ -279,7 +280,7 @@
             </div>
         </div>
 
-        <form id="guestOrderForm" method="POST" action="/orders/confirm_address/guest">
+        <form id="guestOrderForm" method="POST" action="/r/{{ slug }}/orders/confirm_address/guest">
             <div class="section">
                 <div class="section-title">
                     <div class="section-number">1</div>
@@ -354,7 +355,7 @@
             <div id="formError" class="form-error"></div>
 
             <div class="bottom">
-                <a href="/bar_name/delivery" class="cancel">Вернуться к меню</a>
+                <a href="/r/{{ slug }}/delivery" class="cancel">Вернуться к меню</a>
                 <button id="submitButton" type="submit" class="continue">
                     Перейти к оплате
                     <span>→</span>
@@ -366,6 +367,8 @@
 
 <script src="/static/api.js"></script>
 <script>
+    const SLUG = "{{ slug }}";
+
     const guestOrderForm = document.getElementById("guestOrderForm");
     const formError = document.getElementById("formError");
     const submitButton = document.getElementById("submitButton");
@@ -408,7 +411,7 @@
                 return;
             }
 
-            window.location.reload();
+            window.location.href = `/r/${SLUG}/delivery`;
         } catch {
             formError.textContent = "Не удалось отправить данные. Проверьте соединение и попробуйте ещё раз.";
             formError.classList.add("active");

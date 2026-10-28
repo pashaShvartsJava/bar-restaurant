@@ -15,33 +15,34 @@ class MenuRepository:
         result = await self.db.execute(select(Menu))
         return result.scalars().all()
 
-    async def get_all_available_dishes(self):
-        result = await self.db.execute(select(Menu).where(Menu.dish_status==DishStatus.AVAILABLE))
+    async def get_all_available_dishes(self, restaurant_id : UUID):
+        result = await self.db.execute(select(Menu).where(Menu.dish_status==DishStatus.AVAILABLE, Menu.restaurant_id==restaurant_id))
         return result.scalars().all()
 
-    async def get_dish_by_id(self, id : int) -> Menu:
-        result = await self.db.execute(select(Menu).where(Menu.id==id))
+    async def get_dish_by_id(self, id : int, restaurant_id : UUID) -> Menu:
+        result = await self.db.execute(select(Menu).where(Menu.id==id, Menu.restaurant_id==restaurant_id))
         return result.scalar_one_or_none()
 
     async def get_dish_by_name(self, dish_name : str) -> Menu:
         result = await self.db.execute(select(Menu).where(Menu.dish_name==dish_name))
         return result.scalar_one_or_none()
 
-    async def create_dish(self, dish_name : str, price : Decimal, description : str, category_id : UUID, image_url : str) -> Menu:
+    async def create_dish(self, dish_name : str, price : Decimal, description : str, category_id : UUID, image_url : str, restaurant_id : UUID) -> Menu:
         new_dish = Menu(
             dish_name=dish_name,
             price=price,
             description=description,
             category_id=category_id,
-            image_url=image_url
+            image_url=image_url,
+            restaurant_id=restaurant_id
         )
         self.db.add(new_dish)
         await self.db.commit()
         await self.db.refresh(new_dish)
         return new_dish
 
-    async def update_dish(self, id : int, dish_name : str, description : str, price : Decimal, image_url : str) -> Menu:
-        updated_dish = await self.get_dish_by_id(id)
+    async def update_dish(self, id : int, dish_name : str, description : str, price : Decimal, image_url : str, restaurant_id : UUID) -> Menu:
+        updated_dish = await self.get_dish_by_id(id, restaurant_id)
         if dish_name is not None:
             updated_dish.dish_name = dish_name
         if description is not None:
@@ -55,8 +56,8 @@ class MenuRepository:
         await self.db.refresh(updated_dish)
         return updated_dish
 
-    async def update_dish_status(self, id : int):
-        updated_dish = await self.get_dish_by_id(id)
+    async def update_dish_status(self, id : int, restaurant_id : UUID):
+        updated_dish = await self.get_dish_by_id(id, restaurant_id)
         if updated_dish.dish_status == DishStatus.AVAILABLE:
             updated_dish.dish_status = DishStatus.UNAVAILABLE
         else:

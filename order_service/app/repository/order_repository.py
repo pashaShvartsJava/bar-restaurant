@@ -22,14 +22,15 @@ class OrderRepository:
     def __init__(self, db : AsyncSession):
         self.db=db
 
-    async def get_order_by_id(self, order_id : int) -> Order:
-        result = await self.db.execute(select(Order).options(selectinload(Order.order_items), selectinload(Order.address)).where(Order.id==order_id))
+    async def get_order_by_id(self, order_id : int, restaurant_id : UUID) -> Order:
+        result = await self.db.execute(select(Order).options(selectinload(Order.order_items),
+                                                             selectinload(Order.address)).where(Order.id==order_id, Order.restaurant_id==restaurant_id))
         return result.scalar_one_or_none()
 
-    async def get_order_by_order_number(self, order_number : UUID) -> Order:
+    async def get_order_by_order_number(self, order_number : UUID, restaurant_id : UUID) -> Order:
         result = await self.db.execute(
             select(Order).options(selectinload(Order.order_items), selectinload(Order.address)).where(
-                Order.order_number == order_number))
+                Order.order_number == order_number, Order.restaurant_id==restaurant_id))
         return result.scalar_one_or_none()
 
     async def get_order_by_client_id(self, client_id : UUID) -> Order:
@@ -38,23 +39,30 @@ class OrderRepository:
                                        .order_by(Order.created_at.desc()).limit(1))
         return result.scalar_one_or_none()
 
-    async def get_pending_by_client_id(self, client_id : UUID) -> Order:
+    async def get_pending_by_client_id(self, client_id : UUID, restaurant_id : UUID) -> Order:
         result = await self.db.execute(select(Order).options(selectinload(Order.order_items))
-                                       .where(Order.client_id==client_id, Order.status==OrderStatus.PENDING)
+                                       .where(Order.client_id==client_id,
+                                              Order.status==OrderStatus.PENDING,
+                                              Order.restaurant_id==restaurant_id)
                                        .order_by(Order.created_at.desc()).limit(1))
         return result.scalar_one_or_none()
 
-    async def get_all_orders_history(self):
+    async def get_all_orders_history(self, restaurant_id : UUID):
         today = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0)
-        result = await self.db.execute(select(Order).options(selectinload(Order.order_items)).where(Order.created_at<today))
+        result = await self.db.execute(select(Order).options(selectinload(Order.order_items)).where(Order.created_at<today,
+                                                                                                    Order.restaurant_id==restaurant_id))
         return result.scalars().all()
 
-    async def get_all_orders(self):
-        result = await self.db.execute(select(Order).options(selectinload(Order.order_items)).order_by(Order.created_at.desc()))
+    async def get_all_orders(self, restaurant_id : UUID):
+        result = await self.db.execute(select(Order).options(selectinload(Order.order_items))
+                                       .order_by(Order.created_at.desc())
+                                       .where(Order.restaurant_id==restaurant_id))
         return result.scalars().all()
 
-    async def get_unpaid_order_by_client(self, client_id : UUID) -> Order:
-        result = await self.db.execute(select(Order).where(Order.client_id==client_id, Order.status==OrderStatus.PENDING))
+    async def get_unpaid_order_by_client(self, client_id : UUID, restaurant_id : UUID) -> Order:
+        result = await self.db.execute(select(Order).where(Order.client_id==client_id,
+                                                           Order.status==OrderStatus.PENDING,
+                                                           Order.restaurant_id==restaurant_id))
         return result.scalar_one_or_none()
 
     async def create_order_address(self, order_id : int, delivery_data : DeliveryAddressDTO) -> DeliveryAddress:
@@ -71,11 +79,12 @@ class OrderRepository:
         await self.db.refresh(new_delivery_address)
         return new_delivery_address
 
-    async def create_order(self, order_items : ListOrderDTO, client_id : UUID, total_sum : Decimal) -> Order:
+    async def create_order(self, order_items : ListOrderDTO, client_id : UUID, total_sum : Decimal, restaurant_id : UUID) -> Order:
         async with self.db.begin():
             new_order = Order(
                 client_id=client_id,
-                sum=total_sum
+                sum=total_sum,
+                restaurant_id=restaurant_id
             )
             self.db.add(new_order)
             await self.db.flush()
@@ -86,13 +95,14 @@ class OrderRepository:
                     dish_id=order_item.dish_id,
                     dish_name=order_item.dish_name,
                     quantity=order_item.quantity,
-                    price=order_item.price
+                    price=order_item.price,
+                    restaurant_id=restaurant_id
                 )
                 self.db.add(new_order_item)
         await self.db.refresh(new_order)
         return new_order
 
-    async def create_order_for_guest(self, data : ListOrderGuestDTO, total_sum : Decimal, status : str, table_number : int | None):
+    async def create_order_for_guest(self, data : ListOrderGuestDTO, total_sum : Decimal, status : str, table_number : int | None, restaurant_id : UUID):
         if status == "":
             order_status = OrderStatus.PENDING
         else:
@@ -106,7 +116,8 @@ class OrderRepository:
                 client_id=data.client_id,
                 sum=total_sum,
                 status=order_status,
-                table_number=number
+                table_number=number,
+                restaurant_id=restaurant_id
             )
             self.db.add(new_order)
             await self.db.flush()
@@ -117,20 +128,21 @@ class OrderRepository:
                     dish_id=order_item.dish_id,
                     dish_name=order_item.dish_name,
                     quantity=order_item.quantity,
-                    price=order_item.price
+                    price=order_item.price,
+                    restaurant_id=restaurant_id
                 )
                 self.db.add(new_order_item)
         await self.db.refresh(new_order)
         return new_order
 
-    async def cancel_order_before_payment(self, client_id: UUID):
-        old_order = await self.get_unpaid_order_by_client(client_id)
+    async def cancel_order_before_payment(self, client_id: UUID, restaurant_id : UUID):
+        old_order = await self.get_unpaid_order_by_client(client_id, restaurant_id)
         old_order.status = OrderStatus.CANCELLED_BEFORE
         await self.db.commit()
         await self.db.refresh(old_order)
 
-    async def update_order_status(self, client_id : UUID, status : OrderStatus) -> Order:
-        old_order = await self.get_pending_by_client_id(client_id)
+    async def update_order_status(self, client_id : UUID, status : OrderStatus, restaurant_id : UUID) -> Order:
+        old_order = await self.get_pending_by_client_id(client_id, restaurant_id)
         old_order.status = status
         await self.db.commit()
         await self.db.refresh(old_order)
@@ -160,8 +172,9 @@ class OrderRepository:
                                     date_to : date,
                                     sum_from : Decimal,
                                     sum_to : Decimal,
-                                    sort : str):
-        query = select(Order).options(selectinload(Order.order_items))
+                                    sort : str,
+                                    restaurant_id : UUID):
+        query = select(Order).options(selectinload(Order.order_items)).where(Order.restaurant_id==restaurant_id)
         if search is not None:
             query = query.where(Order.order_number == search)
         if status is not None:
@@ -189,8 +202,10 @@ class OrderRepository:
         result = await self.db.execute(query)
         return result.scalars().all()
 
-    async def find_orders_by_client_id(self, client_id : UUID):
-        result = await self.db.execute(select(Order).options(selectinload(Order.order_items)).where(Order.client_id==client_id).order_by(Order.created_at.desc()))
+    async def find_orders_by_client_id(self, client_id : UUID, restaurant_id : UUID):
+        result = await self.db.execute(select(Order).options(selectinload(Order.order_items))
+                                       .where(Order.client_id==client_id, Order.restaurant_id==restaurant_id)
+                                       .order_by(Order.created_at.desc()))
         return result.scalars().all()
 
     async def get_user_history_orders(self, client_id : UUID):
@@ -214,9 +229,9 @@ class OrderRepository:
                                  .order_by(Order.created_at.desc()).limit(1))
         return result.scalar_one_or_none()
 
-    async def change_order_status(self, status : OrderStatus, email : str | None, order_number : UUID):
+    async def change_order_status(self, status : OrderStatus, email : str | None, order_number : UUID, restaurant_id : UUID):
         async with self.db.begin():
-            order = await self.get_order_by_order_number(order_number)
+            order = await self.get_order_by_order_number(order_number, restaurant_id)
             order.status = status
             if email is not None:
                 await self.create_outbox_change_status_event(email, order)
@@ -256,11 +271,11 @@ class OrderRepository:
         event.published_at = datetime.now(timezone.utc)
         await self.db.flush()
 
-    async def merge_orders(self, data: MergeOrdersDTO):
+    async def merge_orders(self, data: MergeOrdersDTO, restaurant_id : UUID):
         async with self.db.begin():
             orders = []
             for order_id in data.order_ids:
-                order = await self.get_order_by_id(order_id)
+                order = await self.get_order_by_id(order_id, restaurant_id)
                 if order is None:
                     raise ValueError(f"Заказ {order_id} не найден")
                 orders.append(order)
@@ -269,6 +284,7 @@ class OrderRepository:
                 status=OrderStatus.INTERNAL_ORDER,
                 table_number=data.table_number,
                 sum=0,
+                restaurant_id=restaurant_id
             )
             self.db.add(merged_order)
             await self.db.flush()
@@ -281,6 +297,7 @@ class OrderRepository:
                         dish_name=item.dish_name,
                         quantity=item.quantity,
                         price=item.price,
+                        restaurant_id=restaurant_id
                     )
                     self.db.add(new_item)
             await self.db.flush()
@@ -290,7 +307,7 @@ class OrderRepository:
         await self.db.refresh(merged_order)
         return merged_order
 
-    async def split_order(self, data : SplitOrderDTO):
+    async def split_order(self, data : SplitOrderDTO, restaurant_id : UUID):
         async with self.db.begin():
             for order_guest_dto in data.list_order_guest_dto:
                 total_sum = 0
@@ -300,7 +317,8 @@ class OrderRepository:
                     client_id=order_guest_dto.client_id,
                     sum=total_sum,
                     status=OrderStatus.INTERNAL_ORDER,
-                    table_number=data.table_number
+                    table_number=data.table_number,
+                    restaurant_id=restaurant_id
                 )
                 self.db.add(new_order)
                 await self.db.flush()
@@ -311,10 +329,11 @@ class OrderRepository:
                         dish_id=order_item.dish_id,
                         dish_name=order_item.dish_name,
                         quantity=order_item.quantity,
-                        price=order_item.price
+                        price=order_item.price,
+                        restaurant_id=restaurant_id
                     )
                     self.db.add(new_order_item)
-            old_order = await self.get_order_by_id(data.old_order_id)
+            old_order = await self.get_order_by_id(data.old_order_id, restaurant_id)
             if old_order is None:
                 raise ValueError("Исходный заказ не найден")
             await self.db.delete(old_order)

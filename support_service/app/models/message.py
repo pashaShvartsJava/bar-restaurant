@@ -13,6 +13,7 @@ class SenderRole(str, Enum):
     ADMIN = "admin"
     MODERATOR = "moderator"
     USER = "user"
+    OWNER = "owner"
 
 class Message(Base):
 

@@ -12,7 +12,7 @@ from starlette.templating import Jinja2Templates
 from ..schema.admin import AdminUpdateDTO, AdminRegistrationDTO, IdentityEdit, AdminRegistrationForm, AddAdminRequest
 from typing import Annotated
 
-from ..dependencies.dependencies import get_service_dependency, get_httpx_async_connection
+from ..dependencies.dependencies import get_service_dependency, get_httpx_async_connection, get_restaurant_dependency
 from ..security.internal_security import verify_internal_token
 from ..security.role.role import IdentityRole
 from ..service.admin_service import AdminService
@@ -72,8 +72,11 @@ def logout(request : Request):
 async def show_admin_panel(request: Request):
     payload = get_payload(request)
     required_roles(IdentityRole.OWNER,IdentityRole.ADMIN, IdentityRole.MODERATOR, payload=payload)
+    restaurant_id = payload.get("restaurant_id")
     async with httpx.AsyncClient() as client:
-        response = await client.get("http://support-service:8006/support/unread/count", headers={"internal_token" : INTERNAL_TOKEN})
+        response = await client.get("http://support-service:8006/support/unread/count",
+                                    headers={"internal_token" : INTERNAL_TOKEN},
+                                    params={"restaurant_id" : restaurant_id})
     support_data = response.json()
     unread_support_count = support_data["count"]
     return templates.TemplateResponse("admin_panel.html", {"request" : request, "unread_support_count" : unread_support_count})
@@ -82,7 +85,8 @@ async def show_admin_panel(request: Request):
 async def show_all_admins(request: Request, admin_service : AdminService = Depends(get_service_dependency)):
     payload = get_payload(request)
     required_roles(IdentityRole.OWNER,IdentityRole.MODERATOR, payload=payload)
-    admins = await admin_service.find_all_admins()
+    restaurant_id = payload.get("restaurant_id")
+    admins = await admin_service.find_all_admins(restaurant_id)
     return templates.TemplateResponse('all_admins.html', {"request" : request, "admins" : admins})
 
 @router.get("/admin_panel/all_admins/add_admin")
@@ -135,9 +139,10 @@ async def add_admin(request : Request,
 @router.post("/admin_panel/delete_admin/{admin_id}")
 async def delete_admin(request : Request, admin_id : int, admin_service : AdminService = Depends(get_service_dependency)):
     payload = get_payload(request)
-    required_roles(IdentityRole.OWNER,IdentityRole.MODERATOR, payload=payload)
+    required_roles(IdentityRole.OWNER, payload=payload)
     await verify_csrf(request)
-    admin = await admin_service.find_by_id(admin_id)
+    restaurant_id = payload.get("restaurant_id")
+    admin = await admin_service.find_by_id(admin_id, restaurant_id)
     async with httpx.AsyncClient() as client:
         response = await client.delete(url="http://authentication-service:8000/delete_identity",
                                        params={"identity_id" : admin.identity_id},
@@ -147,7 +152,7 @@ async def delete_admin(request : Request, admin_id : int, admin_service : AdminS
         detail = response.json().get("detail", "Ошибка удаления")
         raise HTTPException(status_code=response.status_code,detail=detail)
     try:
-        await admin_service.delete_admin(admin_id)
+        await admin_service.delete_admin(admin_id, restaurant_id)
     except HTTPException:
         raise HTTPException(status_code=500, detail="Ошибка удаления данных")
     return RedirectResponse(url="/admin_panel/all_admins", status_code=303)
@@ -156,7 +161,8 @@ async def delete_admin(request : Request, admin_id : int, admin_service : AdminS
 async def show_edit_page(request : Request, admin_id : int, service : AdminService = Depends(get_service_dependency)):
     payload = get_payload(request)
     required_roles(IdentityRole.OWNER, IdentityRole.ADMIN, IdentityRole.MODERATOR, payload=payload)
-    admin = await service.find_by_id(admin_id)
+    restaurant_id = payload.get("restaurant_id")
+    admin = await service.find_by_id(admin_id, restaurant_id)
     return templates.TemplateResponse("edit_admin.html", {"request" : request, "admin" : admin})
 
 @router.patch("/admin_panel/edit/{admin_id}")
@@ -171,13 +177,14 @@ async def edit_admin(request : Request, admin_id : int, service : AdminService =
     payload = get_payload(request)
     required_roles(IdentityRole.OWNER, IdentityRole.ADMIN, IdentityRole.MODERATOR, payload=payload)
     await verify_csrf(request)
+    restaurant_id = payload.get("restaurant_id")
     updated_admin = AdminUpdateDTO(name = name,
                                    surname = surname,
                                    phone=phone,
                                    birthday=birthday,
                                    email=email,
                                    role = role)
-    admin = await service.find_by_id(admin_id)
+    admin = await service.find_by_id(admin_id, restaurant_id)
     data = IdentityEdit(identity_id=admin.identity_id, role=role, email=email)
     async with httpx.AsyncClient() as client:
         try:
@@ -190,7 +197,7 @@ async def edit_admin(request : Request, admin_id : int, service : AdminService =
                 raise HTTPException(status_code=409, detail=[{"loc": ["body", "email"], "msg": "Этот логин уже занят"}])
 
     try:
-        await service.update_admin(admin_id, updated_admin)
+        await service.update_admin(admin_id, updated_admin, restaurant_id)
     except HTTPException:
         raise HTTPException(detail="Ошибка сохранения данных", status_code=500)
     return RedirectResponse(url="/admin_panel/all_admins", status_code=303)
@@ -215,7 +222,8 @@ async def add_admin(data : AdminRegistrationDTO,
 async def edit_password_page(request : Request, id : int, service : AdminService = Depends(get_service_dependency)):
     payload = get_payload(request)
     required_roles(IdentityRole.OWNER, IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
-    admin = await service.find_by_identity(payload["sub"])
+    restaurant_id = payload.get("restaurant_id")
+    admin = await service.find_by_identity(payload["sub"], restaurant_id)
     if admin.id != id:
         raise HTTPException(status_code=403, detail="Доступ запрещен")
     return templates.TemplateResponse("edit_password.html", {"request" : request, "admin" : admin})
@@ -228,7 +236,8 @@ async def edit_password(request: Request, service: AdminService = Depends(get_se
     payload = get_payload(request)
     required_roles(IdentityRole.OWNER, IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
     await verify_csrf(request)
-    admin = await service.find_by_identity(payload["sub"])
+    restaurant_id = payload.get("restaurant_id")
+    admin = await service.find_by_identity(payload["sub"], restaurant_id)
 
     if new_password != confirmed_password:
         raise HTTPException(status_code=400,detail="Пароли не совпадают")
@@ -267,28 +276,6 @@ async def show_all_customers(request : Request):
         user["status"] = statuses_by_id.get(str(user["identity_id"]))
 
     return templates.TemplateResponse("all_users.html", {"request" : request, "users" : users})
-
-@router.patch("/admin_panel/all_customers/{identity_id}/block")
-async def block_customer(request : Request, identity_id: UUID):
-    payload = get_payload(request)
-    required_roles(IdentityRole.OWNER, IdentityRole.MODERATOR, payload=payload)
-    await verify_csrf(request)
-    async with httpx.AsyncClient() as client:
-        response = await client.patch("http://authentication-service:8000/edit_status",
-                                      params={"identity_id" : str(identity_id), "status" : Status.BLOCKED.value},
-                                      headers={"internal_token" : INTERNAL_TOKEN})
-        response.raise_for_status()
-
-@router.patch("/admin_panel/all_customers/{identity_id}/unblock")
-async def unblock_customer(request : Request, identity_id: UUID):
-    payload = get_payload(request)
-    required_roles(IdentityRole.OWNER, IdentityRole.MODERATOR, payload=payload)
-    await verify_csrf(request)
-    async with httpx.AsyncClient() as client:
-        response = await client.patch("http://authentication-service:8000/edit_status",
-                                      params={"identity_id" : str(identity_id), "status" : Status.ACTIVE.value},
-                                      headers={"internal_token" : INTERNAL_TOKEN})
-        response.raise_for_status()
 
 @router.get("/admin_panel/all_customers/found_customer")
 async def search_customer(request : Request, client_id : UUID):

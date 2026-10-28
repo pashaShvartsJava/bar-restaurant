@@ -19,5 +19,6 @@ class Reservation(Base):
     table_id = Column(Integer, ForeignKey("tables.id"), nullable=False)
     reservation_start = Column(DateTime(timezone=True), nullable=False)
     reservation_end = Column(DateTime(timezone=True), nullable=False)
+    restaurant_id = Column(UUID(as_uuid=True), nullable=False)
 
     table = relationship("Table", back_populates="reservations")

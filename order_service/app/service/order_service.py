@@ -21,52 +21,52 @@ class OrderService:
         self.order_repository=order_repository
         self.guest_repository = guest_repository
 
-    async def get_order_by_id(self, order_id: int) -> Order:
-        return await self.order_repository.get_order_by_id(order_id)
+    async def get_order_by_id(self, order_id: int, restaurant_id : UUID) -> Order:
+        return await self.order_repository.get_order_by_id(order_id, restaurant_id)
 
     async def get_customer_by_client_id(self, client_id: UUID) -> GuestCustomer:
         return await self.guest_repository.get_customer_by_client_id(client_id)
 
-    async def get_order_by_order_number(self, order_number: UUID) -> Order:
-        return await self.order_repository.get_order_by_order_number(order_number)
+    async def get_order_by_order_number(self, order_number: UUID, restaurant_id : UUID) -> Order:
+        return await self.order_repository.get_order_by_order_number(order_number, restaurant_id)
 
-    async def get_all_orders_history(self):
-        return await self.order_repository.get_all_orders_history()
+    async def get_all_orders_history(self, restaurant_id : UUID):
+        return await self.order_repository.get_all_orders_history(restaurant_id)
 
-    async def get_pending_by_client_id(self, client_id : UUID):
-        return await self.order_repository.get_pending_by_client_id(client_id)
+    async def get_pending_by_client_id(self, client_id : UUID, restaurant_id : UUID):
+        return await self.order_repository.get_pending_by_client_id(client_id, restaurant_id)
 
-    async def get_all_orders(self):
-        return await self.order_repository.get_all_orders()
+    async def get_all_orders(self, restaurant_id : UUID):
+        return await self.order_repository.get_all_orders(restaurant_id)
 
-    async def create_guest_order(self, data : GuestCustomerDTO, client_id : UUID):
-        return await self.guest_repository.create_guest_order(data, client_id)
+    async def create_guest_order(self, data : GuestCustomerDTO, client_id : UUID, restaurant_id : UUID):
+        return await self.guest_repository.create_guest_order(data, client_id, restaurant_id)
 
-    async def create_order(self, data : ListOrderDTO, client_id : UUID | None) -> Order:
-        pending_order = await self.get_pending_by_client_id(client_id)
+    async def create_order(self, data : ListOrderDTO, client_id : UUID | None, restaurant_id : UUID) -> Order:
+        pending_order = await self.get_pending_by_client_id(client_id, restaurant_id)
         if pending_order is not None:
             pending_order.status = OrderStatus.CANCELLED_BEFORE
         total_sum = 0
         for order_item in data.order_items:
             total_sum += order_item.price * order_item.quantity
         await self.order_repository.db.rollback()
-        return await self.order_repository.create_order(data , client_id, total_sum)
+        return await self.order_repository.create_order(data , client_id, total_sum, restaurant_id)
 
-    async def create_order_for_guest(self, data : ListOrderGuestDTO, status : str, table_number : int | None):
+    async def create_order_for_guest(self, data : ListOrderGuestDTO, status : str, table_number : int | None, restaurant_id : UUID):
         total_sum = 0
         for order_item in data.order_items:
             total_sum += order_item.price * order_item.quantity
         await self.order_repository.db.rollback()
-        return await self.order_repository.create_order_for_guest(data , total_sum, status, table_number)
+        return await self.order_repository.create_order_for_guest(data , total_sum, status, table_number, restaurant_id)
 
     async def mark_order_as_paid(self, order_id: int, status: OrderStatus) -> Order:
         return await self.order_repository.mark_order_as_paid(order_id, status)
 
-    async def cancel_order_before_payment(self, client_id : UUID):
-        return await self.order_repository.cancel_order_before_payment(client_id)
+    async def cancel_order_before_payment(self, client_id : UUID, restaurant_id : UUID):
+        return await self.order_repository.cancel_order_before_payment(client_id, restaurant_id)
 
-    async def update_order_status(self, client_id : UUID, status : OrderStatus) -> Order:
-        return await self.order_repository.update_order_status(client_id, status)
+    async def update_order_status(self, client_id : UUID, status : OrderStatus, restaurant_id : UUID) -> Order:
+        return await self.order_repository.update_order_status(client_id, status, restaurant_id)
 
     async def create_order_address(self, order_id : int, delivery_data : DeliveryAddressDTO):
         return await self.order_repository.create_order_address(order_id, delivery_data)
@@ -80,11 +80,12 @@ class OrderService:
                                     date_to: date,
                                     sum_from: Decimal,
                                     sum_to: Decimal,
-                                    sort: str):
-        return await self.order_repository.search_or_sort_orders(search, status, date_from, date_to, sum_from, sum_to, sort)
+                                    sort: str,
+                                    restaurant_id : UUID):
+        return await self.order_repository.search_or_sort_orders(search, status, date_from, date_to, sum_from, sum_to, sort, restaurant_id)
 
-    async def find_orders_by_client_id(self, client_id: UUID):
-        return await self.order_repository.find_orders_by_client_id(client_id)
+    async def find_orders_by_client_id(self, client_id: UUID, restaurant_id : UUID):
+        return await self.order_repository.find_orders_by_client_id(client_id, restaurant_id)
 
     async def get_user_history_orders(self, client_id : UUID):
         return await self.order_repository.get_user_history_orders(client_id)
@@ -95,9 +96,9 @@ class OrderService:
     async def get_user_last_completed_order(self, client_id: UUID):
         return await self.order_repository.get_user_last_completed_order(client_id)
 
-    async def change_order_status(self, status: OrderStatus, email : str | None, order_number : UUID):
+    async def change_order_status(self, status: OrderStatus, email : str | None, order_number : UUID, restaurant_id : UUID):
         await self.order_repository.db.rollback()
-        return await self.order_repository.change_order_status(status, email, order_number)
+        return await self.order_repository.change_order_status(status, email, order_number, restaurant_id)
 
     async def get_customer_email(self, client_id: UUID) -> str:
         customer = await self.get_customer_by_client_id(client_id)
@@ -113,11 +114,11 @@ class OrderService:
             response.raise_for_status()
         return response.json()
 
-    async def merge_orders(self, data: MergeOrdersDTO):
-        return await self.order_repository.merge_orders(data)
+    async def merge_orders(self, data: MergeOrdersDTO, restaurant_id : UUID):
+        return await self.order_repository.merge_orders(data, restaurant_id)
 
-    async def split_order(self, data : SplitOrderDTO):
-        return await self.order_repository.split_order(data)
+    async def split_order(self, data : SplitOrderDTO, restaurant_id : UUID):
+        return await self.order_repository.split_order(data, restaurant_id)
 
 
     async def get_analytics(self, date_from : date | None, date_to : date | None):

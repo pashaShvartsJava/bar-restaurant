@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#1b1518">
-    <title>Бронирование столика | {{ restaurant.name if restaurant else 'Restaurant' }}</title>
+    <title>Бронирование столика | {{ restaurant.restaurant_name if restaurant else 'Restaurant' }}</title>
 
     <style>
         * {
@@ -15,6 +15,16 @@
 
         body {
             min-height: 100vh;
+            {% if restaurant and restaurant.photo_url %}
+            background:
+                linear-gradient(
+                    180deg,
+                    rgba(13, 13, 15, 0.55) 0%,
+                    rgba(13, 13, 15, 0.82) 55%,
+                    rgba(13, 13, 15, 0.97) 100%
+                ),
+                url("{{ restaurant.photo_url }}") center / cover fixed no-repeat;
+            {% else %}
             background:
                 radial-gradient(
                     ellipse at 50% 0%,
@@ -29,6 +39,7 @@
                     #251d22 48%,
                     #101012 100%
                 );
+            {% endif %}
             color: #eee5df;
             font-family: Arial, sans-serif;
             position: relative;
@@ -94,6 +105,7 @@
             color: #777174;
             font-size: 9px;
             letter-spacing: 1.8px;
+            text-transform: uppercase;
         }
 
         .side-card h3 {
@@ -190,6 +202,15 @@
             font-size: 11px;
             line-height: 1.6;
             text-align: center;
+        }
+
+        .subtitle-city {
+            display: block;
+            margin-top: 6px;
+            color: #6f696d;
+            font-size: 10px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
         }
 
         .field-row {
@@ -432,7 +453,7 @@
 
     <aside class="side">
         <div class="side-card">
-            <span class="side-label">{{ restaurant.name if restaurant else 'Заведение' }}</span>
+            <span class="side-label">{{ restaurant.restaurant_name if restaurant else 'Заведение' }}</span>
             <h3>Бронирование</h3>
             <p>
                 Выберите количество гостей и удобное
@@ -452,15 +473,30 @@
 
     <main class="auth-card">
 
-        <div class="logo">{{ restaurant.name if restaurant else 'RESTAURANT' }}</div>
+        <div class="logo">
+            {{ restaurant.restaurant_name if restaurant else 'RESTAURANT' }}
+        </div>
 
         <h1>Забронировать столик</h1>
 
         <div class="subtitle">
-            Укажите количество гостей и желаемое время
+            {% if restaurant and restaurant.slogan %}
+                {{ restaurant.slogan }}
+            {% else %}
+                Укажите количество гостей и желаемое время
+            {% endif %}
+            {% if restaurant and restaurant.city %}
+                <span class="subtitle-city">{{ restaurant.city }}</span>
+            {% endif %}
         </div>
 
         <div id="message" class="message" role="status" aria-live="polite"></div>
+
+        {% if restaurant and not restaurant.accepts_reservations %}
+        <div class="message error" style="display:block;">
+            Заведение временно не принимает бронирования. Попробуйте позже.
+        </div>
+        {% else %}
 
         <form
             id="availabilityForm"
@@ -602,8 +638,10 @@
             перейти к подтверждению бронирования.
         </div>
 
+        {% endif %}
+
         <a href="/r/{{ slug }}" class="back-link">
-            ← Вернуться в {{ restaurant.name if restaurant else 'заведение' }}
+            ← Вернуться в {{ restaurant.restaurant_name if restaurant else 'заведение' }}
         </a>
 
     </main>
@@ -618,7 +656,7 @@
 
                 <div>
                     <div class="reservation-name">
-                        Столик в {{ restaurant.name if restaurant else 'заведении' }}
+                        Столик в {{ restaurant.restaurant_name if restaurant else 'заведении' }}
                     </div>
 
                     <div class="reservation-description">
@@ -644,9 +682,9 @@
 </div>
 
 <script>
-    // slug и название заведения из шаблона
     const SLUG = "{{ slug }}";
     const CONFIRM_URL = `/r/${SLUG}/tables/confirm_reservation`;
+    const RESTAURANT_TIMEZONE = "{{ restaurant.timezone if restaurant and restaurant.timezone else 'UTC' }}";
 
     const form = document.getElementById("availabilityForm");
     const message = document.getElementById("message");
@@ -660,13 +698,34 @@
     let searchInProgress = false;
     let confirmationInProgress = false;
 
+    if (requestedDatetime) {
+        try {
+            const now = new Date();
+            const formatter = new Intl.DateTimeFormat("sv-SE", {
+                timeZone: RESTAURANT_TIMEZONE,
+                year: "numeric",
+                month: "2-digit",
+                day: "2-digit",
+                hour: "2-digit",
+                minute: "2-digit",
+                hour12: false,
+            });
+            const minDate = formatter.format(now).replace(" ", "T");
+            requestedDatetime.min = minDate;
+        } catch (e) {
+            console.warn("Не удалось установить timezone для datetime-local:", e);
+        }
+    }
+
     function showMessage(type, content) {
+        if (!message) return;
         message.className = `message ${type}`;
         message.textContent = content;
         message.style.display = "block";
     }
 
     function showServerError(title, detail) {
+        if (!message) return;
         message.className = "message server-error";
         message.replaceChildren();
 
@@ -690,6 +749,7 @@
     }
 
     function hideContactFields() {
+        if (!contactFields) return;
         contactFields.style.display = "none";
         confirmedSearchValues = null;
     }
@@ -717,254 +777,257 @@
     function handleSearchInputChange() {
         if (searchValuesChanged()) {
             hideContactFields();
-            message.style.display = "none";
-            message.textContent = "";
+            if (message) {
+                message.style.display = "none";
+                message.textContent = "";
+            }
         }
     }
 
     function getErrorDetail(data, fallback) {
-        if (typeof data.detail === "string") {
+        if (data && typeof data.detail === "string") {
             return data.detail;
         }
-
         return fallback;
     }
 
-    peopleAmount.addEventListener("input", handleSearchInputChange);
-    requestedDatetime.addEventListener("input", handleSearchInputChange);
-    peopleAmount.addEventListener("change", handleSearchInputChange);
-    requestedDatetime.addEventListener("change", handleSearchInputChange);
+    if (form && peopleAmount && requestedDatetime) {
+        peopleAmount.addEventListener("input", handleSearchInputChange);
+        requestedDatetime.addEventListener("input", handleSearchInputChange);
+        peopleAmount.addEventListener("change", handleSearchInputChange);
+        requestedDatetime.addEventListener("change", handleSearchInputChange);
 
-    form.addEventListener("submit", async (event) => {
-        event.preventDefault();
+        form.addEventListener("submit", async (event) => {
+            event.preventDefault();
 
-        if (searchInProgress) {
-            return;
-        }
+            if (searchInProgress) {
+                return;
+            }
 
-        message.style.display = "none";
-        message.textContent = "";
-        hideContactFields();
+            message.style.display = "none";
+            message.textContent = "";
+            hideContactFields();
 
-        if (!form.reportValidity()) {
-            return;
-        }
+            if (!form.reportValidity()) {
+                return;
+            }
 
-        searchInProgress = true;
-        availabilityButton.disabled = true;
+            searchInProgress = true;
+            availabilityButton.disabled = true;
 
-        const submittedValues = getSearchValues();
-        const formData = new FormData(form);
+            const submittedValues = getSearchValues();
+            const formData = new FormData(form);
 
-        try {
-            const response = await fetch(form.action, {
-                method: "POST",
-                body: formData,
-                credentials: "same-origin"
-            });
+            try {
+                const response = await fetch(form.action, {
+                    method: "POST",
+                    body: formData,
+                    credentials: "same-origin"
+                });
 
-            const responseText = await response.text();
-            let data = {};
+                const responseText = await response.text();
+                let data = {};
 
-            if (responseText) {
-                try {
-                    data = JSON.parse(responseText);
-                } catch {
-                    showServerError(
-                        "Ошибка ответа сервера",
-                        "Сервер вернул некорректный ответ."
+                if (responseText) {
+                    try {
+                        data = JSON.parse(responseText);
+                    } catch {
+                        showServerError(
+                            "Ошибка ответа сервера",
+                            "Сервер вернул некорректный ответ."
+                        );
+                        return;
+                    }
+                }
+
+                if (response.status === 405) {
+                    showMessage(
+                        "error",
+                        data.detail || "Некорректные данные поиска. Повторите поиск столика."
                     );
+                    hideContactFields();
+                    return;
+                }
+
+                if (response.status === 406) {
+                    showMessage(
+                        "error",
+                        data.detail || "Срок действия бронирования истёк. Повторите поиск столика."
+                    );
+                    hideContactFields();
+                    return;
+                }
+
+                if (response.status === 409) {
+                    showMessage(
+                        "error",
+                        getErrorDetail(
+                            data,
+                            "К сожалению, все столики уже заняты. Попробуйте выбрать другое время."
+                        )
+                    );
+                    return;
+                }
+
+                if (response.status === 422) {
+                    showMessage(
+                        "error",
+                        getErrorDetail(
+                            data,
+                            "Проверьте количество гостей и выбранную дату."
+                        )
+                    );
+                    return;
+                }
+
+                if (response.status >= 500) {
+                    showServerError(
+                        "Ошибка сервера",
+                        getErrorDetail(
+                            data,
+                            "Попробуйте повторить операцию позже."
+                        )
+                    );
+                    return;
+                }
+
+                if (!response.ok) {
+                    showServerError(
+                        "Ошибка",
+                        getErrorDetail(
+                            data,
+                            "Не удалось проверить доступность столика."
+                        )
+                    );
+                    return;
+                }
+
+                if (
+                    peopleAmount.value !== submittedValues.people_amount ||
+                    requestedDatetime.value !== submittedValues.requested_datetime
+                ) {
+                    showMessage(
+                        "error",
+                        "Параметры поиска изменились. Повторите поиск свободных столиков."
+                    );
+                    return;
+                }
+
+                confirmedSearchValues = submittedValues;
+
+                showMessage(
+                    "success",
+                    data.message || "На данное время есть свободные столики."
+                );
+
+                contactFields.style.display = "block";
+
+            } catch (error) {
+                console.error("Ошибка запроса:", error);
+
+                showServerError(
+                    "Ошибка соединения",
+                    "Не удалось связаться с сервером. Попробуйте повторить операцию позже."
+                );
+
+            } finally {
+                searchInProgress = false;
+                availabilityButton.disabled = false;
+            }
+        });
+    }
+
+    if (confirmButton) {
+        confirmButton.addEventListener("click", async () => {
+            if (confirmationInProgress) {
+                return;
+            }
+
+            if (!confirmedSearchValues || searchValuesChanged()) {
+                hideContactFields();
+
+                showMessage(
+                    "error",
+                    "Параметры поиска изменились. Сначала повторите поиск свободных столиков."
+                );
+                return;
+            }
+
+            const requiredInputs = contactFields.querySelectorAll("input[required]");
+
+            for (const input of requiredInputs) {
+                if (!input.reportValidity()) {
                     return;
                 }
             }
 
-            if (response.status === 405) {
-                showMessage(
-                    "error",
-                    data.detail || "Некорректные данные поиска. Повторите поиск столика."
-                );
-                hideContactFields();
-                return;
-            }
+            confirmationInProgress = true;
+            confirmButton.disabled = true;
 
-            if (response.status === 406) {
-                showMessage(
-                    "error",
-                    data.detail || "Срок действия бронирования истёк. Повторите поиск столика."
-                );
-                hideContactFields();
-                return;
-            }
+            try {
+                const formData = new FormData();
 
-            if (response.status === 409) {
-                showMessage(
-                    "error",
-                    getErrorDetail(
-                        data,
-                        "К сожалению, все столики уже заняты. Попробуйте выбрать другое время."
-                    )
-                );
-                return;
-            }
+                formData.set("people_amount", confirmedSearchValues.people_amount);
+                formData.set("requested_datetime", confirmedSearchValues.requested_datetime);
 
-            if (response.status === 422) {
-                showMessage(
-                    "error",
-                    getErrorDetail(
-                        data,
-                        "Проверьте количество гостей и выбранную дату."
-                    )
-                );
-                return;
-            }
+                formData.set("name", document.getElementById("firstName").value.trim());
+                formData.set("surname", document.getElementById("lastName").value.trim());
+                formData.set("phone_number", document.getElementById("phone").value.trim());
+                formData.set("email", document.getElementById("email").value.trim());
 
-            if (response.status >= 500) {
-                showServerError(
-                    "Ошибка сервера",
-                    getErrorDetail(
-                        data,
-                        "Попробуйте повторить операцию позже."
-                    )
-                );
-                return;
-            }
+                const response = await fetch(CONFIRM_URL, {
+                    method: "POST",
+                    body: formData,
+                    credentials: "same-origin"
+                });
 
-            if (!response.ok) {
-                showServerError(
-                    "Ошибка",
-                    getErrorDetail(
-                        data,
-                        "Не удалось проверить доступность столика."
-                    )
-                );
-                return;
-            }
+                const responseText = await response.text();
+                let data = {};
 
-            if (
-                peopleAmount.value !== submittedValues.people_amount ||
-                requestedDatetime.value !== submittedValues.requested_datetime
-            ) {
-                showMessage(
-                    "error",
-                    "Параметры поиска изменились. Повторите поиск свободных столиков."
-                );
-                return;
-            }
+                if (responseText) {
+                    try {
+                        data = JSON.parse(responseText);
+                    } catch {
+                        showServerError(
+                            "Ошибка ответа сервера",
+                            "Сервер вернул некорректный ответ."
+                        );
+                        return;
+                    }
+                }
 
-            confirmedSearchValues = submittedValues;
-
-            showMessage(
-                "success",
-                data.message || "На данное время есть свободные столики."
-            );
-
-            contactFields.style.display = "block";
-
-        } catch (error) {
-            console.error("Ошибка запроса:", error);
-
-            showServerError(
-                "Ошибка соединения",
-                "Не удалось связаться с сервером. Попробуйте повторить операцию позже."
-            );
-
-        } finally {
-            searchInProgress = false;
-            availabilityButton.disabled = false;
-        }
-    });
-
-    confirmButton.addEventListener("click", async () => {
-        if (confirmationInProgress) {
-            return;
-        }
-
-        if (!confirmedSearchValues || searchValuesChanged()) {
-            hideContactFields();
-
-            showMessage(
-                "error",
-                "Параметры поиска изменились. Сначала повторите поиск свободных столиков."
-            );
-            return;
-        }
-
-        const requiredInputs = contactFields.querySelectorAll("input[required]");
-
-        for (const input of requiredInputs) {
-            if (!input.reportValidity()) {
-                return;
-            }
-        }
-
-        confirmationInProgress = true;
-        confirmButton.disabled = true;
-
-        try {
-            const formData = new FormData();
-
-            // Параметры поиска, которые уже подтверждены
-            formData.set("people_amount", confirmedSearchValues.people_amount);
-            formData.set("requested_datetime", confirmedSearchValues.requested_datetime);
-
-            // Контактные данные
-            formData.set("name", document.getElementById("firstName").value.trim());
-            formData.set("surname", document.getElementById("lastName").value.trim());
-            formData.set("phone_number", document.getElementById("phone").value.trim());
-            formData.set("email", document.getElementById("email").value.trim());
-
-            const response = await fetch(CONFIRM_URL, {
-                method: "POST",
-                body: formData,
-                credentials: "same-origin"
-            });
-
-            const responseText = await response.text();
-            let data = {};
-
-            if (responseText) {
-                try {
-                    data = JSON.parse(responseText);
-                } catch {
+                if (!response.ok) {
                     showServerError(
-                        "Ошибка ответа сервера",
-                        "Сервер вернул некорректный ответ."
+                        "Не удалось подтвердить бронирование",
+                        getErrorDetail(
+                            data,
+                            "Попробуйте повторить операцию."
+                        )
                     );
                     return;
                 }
-            }
 
-            if (!response.ok) {
-                showServerError(
-                    "Не удалось подтвердить бронирование",
-                    getErrorDetail(
-                        data,
-                        "Попробуйте повторить операцию."
-                    )
+                showMessage(
+                    "success",
+                    data.message || "Бронирование успешно подтверждено."
                 );
-                return;
+
+                hideContactFields();
+
+            } catch (error) {
+                console.error("Ошибка подтверждения:", error);
+
+                showServerError(
+                    "Ошибка соединения",
+                    "Не удалось связаться с сервером. Попробуйте повторить операцию позже."
+                );
+
+            } finally {
+                confirmationInProgress = false;
+                confirmButton.disabled = false;
             }
-
-            showMessage(
-                "success",
-                data.message || "Бронирование успешно подтверждено."
-            );
-
-            hideContactFields();
-
-        } catch (error) {
-            console.error("Ошибка подтверждения:", error);
-
-            showServerError(
-                "Ошибка соединения",
-                "Не удалось связаться с сервером. Попробуйте повторить операцию позже."
-            );
-
-        } finally {
-            confirmationInProgress = false;
-            confirmButton.disabled = false;
-        }
-    });
+        });
+    }
 </script>
 
 </body>

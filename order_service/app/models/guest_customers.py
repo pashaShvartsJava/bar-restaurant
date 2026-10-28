@@ -23,3 +23,4 @@ class GuestCustomer(Base):
     birthday = Column(Date, nullable=False, index=True)
     phone = Column(String, nullable=False)
     created_at = Column(DateTime(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now())
+    restaurant_id = Column(UUID, nullable=False)

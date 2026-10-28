@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Меню</title>
+    <title>Меню — {{ restaurant.restaurant_name if restaurant else 'Restaurant' }}</title>
 <style>
 * {
     margin: 0;
@@ -666,7 +666,12 @@ body {
     <header class="header">
         <div class="header-info">
             <h1 class="title">Меню</h1>
-            <div class="subtitle">Выберите блюда и добавьте их в корзину</div>
+            <div class="subtitle">
+                Выберите блюда и добавьте их в корзину
+                {% if restaurant and restaurant.restaurant_name %}
+                    — {{ restaurant.restaurant_name }}
+                {% endif %}
+            </div>
         </div>
         <div class="header-actions">
             <a href="/user/my_profile" class="btn">Вернуться в аккаунт</a>
@@ -739,7 +744,9 @@ body {
         {% endif %}
     </main>
 
-    <footer class="footer">BAR. MENU</footer>
+    <footer class="footer">
+        {{ restaurant.restaurant_name if restaurant else 'BAR' }} · MENU
+    </footer>
 </div>
 
 <aside class="cart-sidebar" id="cartSidebar">
@@ -765,7 +772,9 @@ body {
 
 <script src="/static/api.js"></script>
 <script>
-const CART_STORAGE_KEY = "restaurant_cart";
+const SLUG = "{{ slug }}";
+const CART_STORAGE_KEY = `restaurant_cart_${SLUG}`;
+
 const cartSidebar = document.getElementById("cartSidebar");
 const cartButton = document.getElementById("cartButton");
 const cartClose = document.getElementById("cartClose");
@@ -1078,7 +1087,7 @@ checkoutButton.addEventListener("click", async () => {
     checkoutButton.disabled = true;
 
     try {
-        const response = await apiFetch("/orders/create", {
+        const response = await apiFetch(`/r/${SLUG}/menu_page/orders/create`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -1107,7 +1116,7 @@ checkoutButton.addEventListener("click", async () => {
             return;
         }
 
-        window.location.href = "/users/confirm_address";
+        window.location.href = `/r/${SLUG}/menu_page/orders/confirm_address`;
     } catch (error) {
         console.error("ORDER ERROR:", error);
         showFormError("Не удалось подключиться к серверу.");

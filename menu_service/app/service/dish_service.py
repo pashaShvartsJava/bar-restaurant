@@ -14,23 +14,23 @@ class MenuService:
     async def get_all_dishes(self) -> List[Menu]:
         return await self.menu_repository.get_all_dishes()
 
-    async def get_all_available_dishes(self):
-        return await self.menu_repository.get_all_available_dishes()
+    async def get_all_available_dishes(self, restaurant_id : UUID):
+        return await self.menu_repository.get_all_available_dishes(restaurant_id)
 
-    async def get_dish_by_id(self, id : int) -> Menu:
-        return await self.menu_repository.get_dish_by_id(id)
+    async def get_dish_by_id(self, id : int, restaurant_id : UUID) -> Menu:
+        return await self.menu_repository.get_dish_by_id(id, restaurant_id)
 
     async def get_dish_by_name(self, dish_name : str) -> Menu:
         return await self.menu_repository.get_dish_by_name(dish_name)
 
-    async def create_dish(self, dish_name : str, price : Decimal, description : str, category_id : UUID, image_url : str) -> Menu:
-        return await self.menu_repository.create_dish(dish_name, price, description, category_id, image_url)
+    async def create_dish(self, dish_name : str, price : Decimal, description : str, category_id : UUID, image_url : str ,restaurant_id : UUID) -> Menu:
+        return await self.menu_repository.create_dish(dish_name, price, description, category_id, image_url, restaurant_id)
 
-    async def update_dish(self, id : int, dish_name : str,  description : str, price : Decimal, image_url : str) -> Menu:
-        return await self.menu_repository.update_dish(id, dish_name, description, price, image_url)
+    async def update_dish(self, id : int, dish_name : str,  description : str, price : Decimal, image_url : str, restaurant_id : UUID) -> Menu:
+        return await self.menu_repository.update_dish(id, dish_name, description, price, image_url, restaurant_id)
 
-    async def update_dish_status(self, id : int):
-        return await self.menu_repository.update_dish_status(id)
+    async def update_dish_status(self, id : int, restaurant_id : UUID):
+        return await self.menu_repository.update_dish_status(id, restaurant_id)
 
     async def delete_dish(self, id : int) -> Menu:
         return await self.menu_repository.delete_dish(id)

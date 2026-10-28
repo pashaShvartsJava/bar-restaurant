@@ -53,7 +53,7 @@ async def admin_login(data : Annotated[AdminLogin, Form()],
         }
     ])
     key = await service.verify_authentication_key(data.authentication_key, data.email)
-    key_dto = KeyDTO(restaurant_id=key.restaurant_id, identity_id=key.identity_id)
+    key_dto = KeyDTO(restaurant_id=key.restaurant_id, identity_id=identity.id)
     async with httpx.AsyncClient() as client:
         response = await client.post("http://restaurant-service:8010/restaurants/get_restaurant_status",
                                     headers={"internal_token": INTERNAL_TOKEN},

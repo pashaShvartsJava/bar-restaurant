@@ -9,4 +9,5 @@ class PaymentDTO(BaseModel):
     order_id : int = Field(...)
     order_number : UUID = Field(...)
     sum : Decimal = Field(...)
+    restaurant_id : UUID = Field(...)
 

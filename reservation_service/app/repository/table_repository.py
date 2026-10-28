@@ -16,19 +16,20 @@ class TableRepository:
     def __init__(self, db : AsyncSession):
         self.db = db
 
-    async def get_table_by_id(self, table_id : int):
+    async def get_table_by_id(self, table_id : int, restaurant_id : UUID):
         now = datetime.now(timezone.utc)
         result = await self.db.execute(
             select(Table).options(selectinload(Table.reservations),
-                                  with_loader_criteria(Reservation, Reservation.reservation_start >= now)).where(Table.id == table_id))
+                                  with_loader_criteria(Reservation, Reservation.reservation_start >= now)).where(Table.id == table_id,
+                                                                                                                 Table.restaurant_id==restaurant_id))
         return result.scalar_one_or_none()
 
-    async def get_all_tables(self):
-        result = await self.db.execute(select(Table).order_by(Table.table_number.asc()))
+    async def get_all_tables(self, restaurant_id : UUID):
+        result = await self.db.execute(select(Table).order_by(Table.table_number.asc()).where(Table.restaurant_id==restaurant_id))
         return result.scalars().all()
 
-    async def create_table(self, table_number: int, capacity: int):
-        new_table = Table(table_number=table_number, capacity=capacity)
+    async def create_table(self, table_number: int, capacity: int, restaurant_id : UUID):
+        new_table = Table(table_number=table_number, capacity=capacity, restaurant_id=restaurant_id)
         self.db.add(new_table)
         await self.db.commit()
         await self.db.refresh(new_table)
@@ -56,6 +57,7 @@ class TableRepository:
                 data[table] = int((next_reservation - requested_datetime).total_seconds() / 60)
         return dict(sorted(data.items(), key=lambda item: item[1] if item[1] is not None else float("inf"), reverse=True)[:1])
 
-    async def find_all_available_tables(self):
-        result = await self.db.execute(select(Table).order_by(Table.table_number.asc()).where(Table.status==TableStatus.UNTAKEN))
+    async def find_all_available_tables(self, restaurant_id : UUID):
+        result = await self.db.execute(select(Table).order_by(Table.table_number.asc())
+                                       .where(Table.status==TableStatus.UNTAKEN, Table.restaurant_id==restaurant_id))
         return result.scalars().all()
