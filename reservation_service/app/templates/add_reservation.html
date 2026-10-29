@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Новое бронирование — {{ restaurant.restaurant_name if restaurant else 'Restaurant' }}</title>
+    <title>Новое бронирование</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -37,7 +37,6 @@
         .header { margin-bottom: 35px; }
         .title { color: #ffffff; font-family: Georgia, serif; font-size: 42px; font-weight: normal; letter-spacing: 3px; }
         .subtitle { margin-top: 12px; color: #77777d; font-size: 13px; }
-        .subtitle strong { color: #a99c98; font-weight: normal; }
         .content { display: grid; grid-template-columns: 1fr 1.35fr; gap: 25px; align-items: start; }
         .card {
             width: 100%;
@@ -177,18 +176,13 @@
 </head>
 <body>
 <div class="page">
-    <a href="/r/{{ slug }}/tables" class="back">
+    <a href="/tables" class="back">
         <span class="back-arrow">←</span>
         Назад к столикам
     </a>
     <header class="header">
         <h1 class="title">Новое бронирование</h1>
-        <p class="subtitle">
-            Создание нового бронирования для выбранного столика.
-            {% if restaurant and restaurant.restaurant_name %}
-                <strong>— {{ restaurant.restaurant_name }}</strong>
-            {% endif %}
-        </p>
+        <p class="subtitle">Создание нового бронирования для выбранного столика.</p>
     </header>
     <main class="content">
         <section class="card">
@@ -218,7 +212,7 @@
                     <div class="table-number">Столик №{{ table.table_number }}</div>
                     <div class="table-capacity">Вместимость: до {{ table.capacity }} гостей</div>
                 </div>
-                <form id="reservationForm" action="/r/{{ slug }}/tables/create_reservation" method="post">
+                <form id="reservationForm" action="/tables/create_reservation" method="post">
                     <input type="hidden" name="table_id" value="{{ table.id }}">
                     <div class="field">
                         <label for="name">Имя</label>
@@ -241,7 +235,7 @@
                         <input type="datetime-local" id="reservation_end" name="reservation_end" required>
                     </div>
                     <div class="form-actions">
-                        <a href="/r/{{ slug }}/tables" class="button cancel">Отмена</a>
+                        <a href="/tables" class="button cancel">Отмена</a>
                         <button type="submit" class="button save">Забронировать</button>
                     </div>
                 </form>
@@ -283,13 +277,11 @@
         </section>
     </main>
     <div class="footer">
-        {{ restaurant.restaurant_name if restaurant else 'RESERVATION' }} · RESERVATION MANAGEMENT
+        RESERVATION MANAGEMENT
     </div>
 </div>
 <script src="/static/api.js"></script>
 <script>
-    const SLUG = "{{ slug }}";
-
     const reservationForm = document.getElementById("reservationForm");
     const submitButton = reservationForm.querySelector(".button.save");
     const formError = document.getElementById("formError");
@@ -380,7 +372,7 @@
             });
 
             if (await handleResponse(response)) {
-                window.location.href = `/r/${SLUG}/tables`;
+                window.location.href = "/tables";
             }
         } catch {
             showError("Не удалось подключиться к серверу. Проверьте соединение.");

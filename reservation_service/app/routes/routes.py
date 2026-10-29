@@ -34,69 +34,60 @@ async def verify_csrf(request: Request):
     if not cookie_token or cookie_token != header_token:
         raise HTTPException(status_code=403)
 
-@router.get("/r/{slug}/tables")
-async def show_tables_page(request : Request, slug : str, table_service : TableService = Depends(get_table_service_dependency)):
+@router.get("/tables")
+async def show_tables_page(request : Request, table_service : TableService = Depends(get_table_service_dependency)):
     payload = get_payload(request)
     required_roles(IdentityRole.OWNER, IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
-    restaurant = await get_restaurant_dependency(slug)
-    tables = await table_service.find_all_tables(restaurant.id)
-    return templates.TemplateResponse("all_tables.html", {"request" : request,
-                                                          "tables" : tables,
-                                                          "restaurant" : restaurant,
-                                                          "slug" : slug})
+    restaurant_id = payload.get("restaurant_id")
+    tables = await table_service.find_all_tables(restaurant_id)
+    return templates.TemplateResponse("all_tables.html", {"request" : request, "tables" : tables})
 
-@router.get("/r/{slug}/tables/add_table")
-async def add_table_page(request : Request, slug : str):
+@router.get("/tables/add_table")
+async def add_table_page(request : Request):
     payload = get_payload(request)
     required_roles(IdentityRole.OWNER, IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
-    restaurant = await get_restaurant_dependency(slug)
-    return templates.TemplateResponse("add_table.html", {"request" : request, "restaurant" : restaurant, "slug" : slug})
+    return templates.TemplateResponse("add_table.html", {"request" : request})
 
-@router.post("/r/{slug}/tables/add_table")
+@router.post("/tables/add_table")
 async def add_table(request : Request,
-                    slug : str,
                     table_number : int = Form(..., min=1),
                     capacity : int = Form(..., min=1),
                     table_service : TableService = Depends(get_table_service_dependency)):
     payload = get_payload(request)
     required_roles(IdentityRole.OWNER, IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
     await verify_csrf(request)
-    restaurant = await get_restaurant_dependency(slug)
-    await table_service.create_table(table_number, capacity, restaurant.id)
-    return RedirectResponse(url=f"/r/{slug}/tables", status_code=303)
+    restaurant_id = payload.get("restaurant_id")
+    await table_service.create_table(table_number, capacity, restaurant_id)
+    return RedirectResponse(url="/tables", status_code=303)
 
-@router.post("/r/{slug}/tables/start_session/{table_id}")
-async def take_table(request : Request, slug : str, table_id : int,  service : TableSessionService = Depends(get_table_session_service_dependency)):
+@router.post("/tables/start_session/{table_id}")
+async def take_table(request : Request, table_id : int,  service : TableSessionService = Depends(get_table_session_service_dependency)):
     payload = get_payload(request)
     required_roles(IdentityRole.OWNER, IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
     await verify_csrf(request)
-    restaurant = await get_restaurant_dependency(slug)
-    await service.start_session(table_id, restaurant.id)
-    return RedirectResponse(url=f"/r/{slug}/tables", status_code=303)
+    restaurant_id = payload.get("restaurant_id")
+    await service.start_session(table_id, restaurant_id)
+    return RedirectResponse(url="/tables", status_code=303)
 
-@router.post("/r/{slug}/tables/end_session/{table_id}")
-async def take_table(request : Request, slug : str, table_id : int,  service : TableSessionService = Depends(get_table_session_service_dependency)):
+@router.post("/tables/end_session/{table_id}")
+async def take_table(request : Request, table_id : int,  service : TableSessionService = Depends(get_table_session_service_dependency)):
     payload = get_payload(request)
     required_roles(IdentityRole.OWNER, IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
     await verify_csrf(request)
-    restaurant = await get_restaurant_dependency(slug)
-    await service.end_session(table_id, restaurant.id)
-    return RedirectResponse(url=f"/r/{slug}/tables", status_code=303)
+    restaurant_id = payload.get("restaurant_id")
+    await service.end_session(table_id, restaurant_id)
+    return RedirectResponse(url="/tables", status_code=303)
 
-@router.get("/r/{slug}/tables/create_reservation")
-async def create_reservation_page(request : Request, slug : str, table_id : int, table_service : TableService = Depends(get_table_service_dependency)):
+@router.get("/tables/create_reservation")
+async def create_reservation_page(request : Request, table_id : int, table_service : TableService = Depends(get_table_service_dependency)):
     payload = get_payload(request)
     required_roles(IdentityRole.OWNER, IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
-    restaurant = await get_restaurant_dependency(slug)
-    table = await table_service.get_table_by_id(table_id, restaurant.id)
-    return templates.TemplateResponse("add_reservation.html", {"request" : request,
-                                                               "table" : table,
-                                                               "slug" : slug,
-                                                               "restaurant" : restaurant})
+    restaurant_id = payload.get("restaurant_id")
+    table = await table_service.get_table_by_id(table_id, restaurant_id)
+    return templates.TemplateResponse("add_reservation.html", {"request" : request, "table" : table})
 
-@router.post("/r/{slug}/tables/create_reservation")
+@router.post("/tables/create_reservation")
 async def create_reservation(request : Request,
-                             slug : str,
                              table_id : int = Form(...),
                              name : str = Form(..., min_length=2),
                              surname : str = Form(..., min_length=2),
@@ -108,79 +99,69 @@ async def create_reservation(request : Request,
     payload = get_payload(request)
     required_roles(IdentityRole.OWNER, IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
     await verify_csrf(request)
-    restaurant = await get_restaurant_dependency(slug)
+    restaurant_id = payload.get("restaurant_id")
     reservation_start = reservation_start.replace(tzinfo=timezone.utc)
     reservation_end = reservation_end.replace(tzinfo=timezone.utc)
     now = datetime.now(timezone.utc)
     if reservation_start.date() != reservation_end.date() or reservation_start>=reservation_end\
             or reservation_start <= now:
-        table = await table_service.get_table_by_id(table_id, restaurant.id)
+        table = await table_service.get_table_by_id(table_id, restaurant_id)
         return templates.TemplateResponse( "add_reservation.html",
                                            { "request": request,
                                              "table": table,
-                                             "slug" : slug,
-                                             "restaurant" : restaurant,
                                              "error": "Даты указаны некорректно. Бронирование должно быть в будущем и начинаться раньше окончания." },
                                              status_code=400 )
-    await reservation_service.create_reservation(table_id, name, surname, phone, reservation_start, reservation_end, None, restaurant.id)
-    return RedirectResponse(url=f"/r/{slug}/tables", status_code=303)
+    await reservation_service.create_reservation(table_id, name, surname, phone, reservation_start, reservation_end, None, restaurant_id)
+    return RedirectResponse(url="/tables", status_code=303)
 
-@router.get("/r/{slug}/tables/reservations/history")
-async def reservations_page(request : Request, slug : str, reservation_service : ReservationService = Depends(get_reservation_service_dependency)):
+@router.get("/tables/reservations/history")
+async def reservations_page(request : Request, reservation_service : ReservationService = Depends(get_reservation_service_dependency)):
     payload = get_payload(request)
     required_roles(IdentityRole.OWNER, IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
-    restaurant = await get_restaurant_dependency(slug)
-    reservations = await reservation_service.get_all_reservations(restaurant.id)
+    restaurant_id = payload.get("restaurant_id")
+    reservations = await reservation_service.get_all_reservations(restaurant_id)
     return templates.TemplateResponse("all_reservations.html", {"request" : request,
                                                                 "reservations" : reservations,
-                                                                "now": datetime.now(timezone.utc),
-                                                                "slug" : slug,
-                                                                "restaurant" : restaurant})
+                                                                "now": datetime.now(timezone.utc)})
 
-@router.post("/r/{slug}/tables/reservations/cancel/{reservation_id}")
-async def cancel_reservation(request : Request, slug : str, reservation_id : int, reservation_service : ReservationService = Depends(get_reservation_service_dependency)):
+@router.post("/tables/reservations/cancel/{reservation_id}")
+async def cancel_reservation(request : Request, reservation_id : int, reservation_service : ReservationService = Depends(get_reservation_service_dependency)):
     payload = get_payload(request)
     required_roles(IdentityRole.OWNER, IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
     await verify_csrf(request)
-    restaurant = await get_restaurant_dependency(slug)
-    await reservation_service.cancel_reservation(reservation_id, restaurant.id)
-    return RedirectResponse(url=f"/r/{slug}/tables/reservations/history", status_code=303)
+    restaurant_id = payload.get("restaurant_id")
+    await reservation_service.cancel_reservation(reservation_id, restaurant_id)
+    return RedirectResponse(url="/tables/reservations/history", status_code=303)
 
-@router.get("/r/{slug}/tables/reservations/history/search")
+@router.get("/tables/reservations/history/search")
 async def show_reservation(request : Request,
-                           slug : str,
                            reservation_number : str | None = None,
                            name : str | None = None,
                            surname : str | None = None,
                            reservation_service : ReservationService = Depends(get_reservation_service_dependency)):
     payload = get_payload(request)
     required_roles(IdentityRole.OWNER, IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
-    restaurant = await get_restaurant_dependency(slug)
+    restaurant_id = payload.get("restaurant_id")
     reservation_uuid = None
     if reservation_number:
         reservation_uuid = UUID(reservation_number)
-    reservations = await reservation_service.get_reservation_by_search(reservation_uuid, name, surname, restaurant.id)
+    reservations = await reservation_service.get_reservation_by_search(reservation_uuid, name, surname, restaurant_id)
     return templates.TemplateResponse("all_reservations.html", {"request": request,
                                                                 "reservations": reservations,
-                                                                "now": datetime.now(timezone.utc),
-                                                                "slug" : slug,
-                                                                "restaurant" : restaurant})
-@router.get("/r/{slug}/tables/reservations/filtered_history")
+                                                                "now": datetime.now(timezone.utc)})
+@router.get("/tables/reservations/filtered_history")
 async def filter_reservations(request : Request,
-                              slug : str,
                               date : date | None = None,
                               status : str | None = None,
                               table_number : int | None = None,
                               reservation_service : ReservationService = Depends(get_reservation_service_dependency)):
     payload = get_payload(request)
     required_roles(IdentityRole.OWNER, IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
-    restaurant = await get_restaurant_dependency(slug)
-    reservations = await reservation_service.filter_reservations(date, status, table_number, restaurant.id)
+    restaurant_id = payload.get("restaurant_id")
+    reservations = await reservation_service.filter_reservations(date, status, table_number, restaurant_id)
     return templates.TemplateResponse("all_reservations.html", {"request": request,
                                                                 "reservations": reservations,
-                                                                "now": datetime.now(timezone.utc),
-                                                                "slug" : slug,
-                                                                "restaurant" : restaurant})
+                                                                "now": datetime.now(timezone.utc)})
 
 @router.get("/r/{slug}/tables/get_free_table")
 async def find_free_table(request : Request, slug : str):

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Добавить блюдо — {{ restaurant.restaurant_name if restaurant else 'Restaurant' }}</title>
+    <title>Добавить блюдо</title>
     <style>
         * {
             box-sizing: border-box;
@@ -70,10 +70,6 @@
             color: #77777d;
             font-size: 11px;
             line-height: 1.6;
-        }
-        .subtitle strong {
-            color: #a99c98;
-            font-weight: normal;
         }
         .card {
             padding: 30px;
@@ -274,19 +270,14 @@
 </head>
 <body>
 <div class="page">
-    <a href="/r/{{ slug }}/menu_page" class="back">
+    <a href="/menu_page" class="back">
         <span class="back-arrow">←</span>
         <span>Вернуться к меню</span>
     </a>
 
     <div class="header">
         <h1 class="title">Добавить блюдо</h1>
-        <p class="subtitle">
-            Заполните информацию о блюде и назначьте ему категорию.
-            {% if restaurant and restaurant.restaurant_name %}
-                <strong>— {{ restaurant.restaurant_name }}</strong>
-            {% endif %}
-        </p>
+        <p class="subtitle">Заполните информацию о блюде и назначьте ему категорию.</p>
     </div>
 
     <div class="card">
@@ -294,7 +285,7 @@
 
         <form
             id="dishForm"
-            action="/r/{{ slug }}/menu_page/add_dish"
+            action="/menu_page/add_dish"
             method="POST"
             enctype="multipart/form-data"
         >
@@ -360,7 +351,7 @@
             </div>
 
             <div class="form-actions">
-                <a href="/r/{{ slug }}/menu_page" class="button cancel">Отмена</a>
+                <a href="/menu_page" class="button cancel">Отмена</a>
                 <button type="submit" class="button save">Добавить блюдо</button>
             </div>
         </form>
@@ -369,8 +360,6 @@
 
 <script src="/static/api.js"></script>
 <script>
-const SLUG = "{{ slug }}";
-
 const form = document.getElementById("dishForm");
 const formError = document.getElementById("formError");
 const imageInput = document.getElementById("image");
@@ -422,13 +411,13 @@ form.addEventListener("submit", async function(event) {
     const formData = new FormData(form);
 
     try {
-        const response = await apiFetch(`/r/${SLUG}/menu_page/add_dish`, {
+        const response = await apiFetch("/menu_page/add_dish", {
             method: "POST",
             body: formData
         });
 
         if (response.ok) {
-            window.location.href = `/r/${SLUG}/menu_page`;
+            window.location.href = "/menu_page";
             return;
         }
 

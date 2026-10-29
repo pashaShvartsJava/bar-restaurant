@@ -16,50 +16,56 @@ class ConversationRepository:
     def __init__(self, db : AsyncSession):
         self.db = db
 
-    async def get_conversation_by_id(self, conversation_id : int) -> Conversation:
-        result = await self.db.execute(select(Conversation).where(Conversation.id==conversation_id))
+    async def get_conversation_by_id(self, conversation_id : int, restaurant_id : UUID) -> Conversation:
+        result = await self.db.execute(select(Conversation)
+                                       .where(Conversation.id==conversation_id, Conversation.restaurant_id==restaurant_id))
         return result.scalar_one_or_none()
 
-    async def get_conversation_by_identity_id(self, identity_id) -> Conversation | None:
-        result = await self.db.execute(select(Conversation).options(selectinload(Conversation.messages)).
-                                       where(or_(Conversation.user_id==identity_id, Conversation.admin_id==identity_id)))
+    async def get_conversation_by_identity_id(self, identity_id, restaurant_id : UUID) -> Conversation | None:
+        result = await self.db.execute(select(Conversation).options(selectinload(Conversation.messages))
+                                       .where(Conversation.restaurant_id==restaurant_id)
+                                       .where(or_(Conversation.user_id==identity_id, Conversation.admin_id==identity_id)))
         return result.scalar_one_or_none()
 
-    async def create_conversation(self, identity_id):
+    async def create_conversation(self, identity_id : UUID, restaurant_id : UUID):
         now = datetime.now(timezone.utc)
         new_conversation = Conversation(
             user_id=identity_id,
-            created_at=now
+            created_at=now,
+            restaurant_id=restaurant_id
         )
         self.db.add(new_conversation)
         await self.db.commit()
         await self.db.refresh(new_conversation)
 
-    async def create_admin_conversation(self, identity_id, admin_id):
+    async def create_admin_conversation(self, identity_id, admin_id, restaurant_id):
         now = datetime.now(timezone.utc)
         new_conversation = Conversation(
             user_id=identity_id,
             admin_id=admin_id,
-            created_at=now
+            created_at=now,
+            restaurant_id=restaurant_id
         )
         self.db.add(new_conversation)
         await self.db.commit()
         await self.db.refresh(new_conversation)
 
-    async def get_unread_conversations(self):
+    async def get_unread_conversations(self, restaurant_id : UUID):
         result = await self.db.execute(select(Conversation)
+                                        .where(Conversation.restaurant_id==restaurant_id)
                                         .join(Conversation.messages)
                                         .group_by(Conversation.id)
                                         .having(Conversation.last_read_message_by_admin_id < func.max(Message.id)))
         return result.scalars().all()
 
-    async def take_conversation_by_admin(self, admin_id : UUID, conversation : Conversation):
+    async def take_conversation_by_admin(self, admin_id : UUID, conversation : Conversation, restaurant_id : UUID):
         conversation.admin_id = admin_id
+        conversation.restaurant_id = restaurant_id
         await self.db.commit()
         await self.db.refresh(conversation)
 
-    async def free_conversation(self, conversation_id : int):
-        conversation = await self.get_conversation_by_id(conversation_id)
+    async def free_conversation(self, conversation_id : int, restaurant_id : UUID):
+        conversation = await self.get_conversation_by_id(conversation_id, restaurant_id)
         conversation.admin_id = None
         await self.db.commit()
         await self.db.refresh(conversation)

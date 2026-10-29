@@ -1,5 +1,4 @@
 from fastapi import HTTPException
-from redis.asyncio import Redis
 
 from ..redis.redis_client import redis
 
@@ -9,7 +8,7 @@ async def check_login_rate_limit(email: str):
     attempts = await redis.incr(key)
     if attempts == 1:
         await redis.expire(key, 60)
-    if attempts > 5:
+    if attempts > 10:
         raise HTTPException(status_code=429, detail="Слишком много попыток входа. Попробуйте позже.")
 
 async def reset_login_rate_limit(email: str):

@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Управление столиками — {{ restaurant.restaurant_name if restaurant else 'Restaurant' }}</title>
+    <title>Управление столиками</title>
     <style>
         * {
             margin: 0;
@@ -91,10 +91,6 @@
             margin-top: 12px;
             color: #77777d;
             font-size: 13px;
-        }
-        .subtitle strong {
-            color: #a99c98;
-            font-weight: normal;
         }
         .header-actions {
             display: flex;
@@ -422,16 +418,11 @@
     <header class="header">
         <div class="header-info">
             <h1 class="title">Столики</h1>
-            <p class="subtitle">
-                Управление столиками и их текущим состоянием.
-                {% if restaurant and restaurant.restaurant_name %}
-                    <strong>— {{ restaurant.restaurant_name }}</strong>
-                {% endif %}
-            </p>
+            <p class="subtitle">Управление столиками и их текущим состоянием.</p>
         </div>
         <div class="header-actions">
-            <a href="/r/{{ slug }}/tables/reservations/history" class="btn">История бронирований</a>
-            <a href="/r/{{ slug }}/tables/add_table" class="btn add">+ Добавить столик</a>
+            <a href="/tables/reservations/history" class="btn">История бронирований</a>
+            <a href="/tables/add_table" class="btn add">+ Добавить столик</a>
         </div>
     </header>
     <section class="tables-card">
@@ -457,15 +448,15 @@
                     </div>
                     <div class="table-actions">
                         {% if table.status.value == "taken" %}
-                            <form class="table-action-form" action="/r/{{ slug }}/tables/end_session/{{ table.id }}" method="post">
+                            <form class="table-action-form" action="/tables/end_session/{{ table.id }}" method="post">
                                 <button type="submit" class="action release">Освободить</button>
                             </form>
                         {% else %}
-                            <form class="table-action-form" action="/r/{{ slug }}/tables/start_session/{{ table.id }}" method="post">
+                            <form class="table-action-form" action="/tables/start_session/{{ table.id }}" method="post">
                                 <button type="submit" class="action take">Занять</button>
                             </form>
                         {% endif %}
-                        <a href="/r/{{ slug }}/tables/create_reservation?table_id={{ table.id }}" class="action reserve">Зарезервировать</a>
+                        <a href="/tables/create_reservation?table_id={{ table.id }}" class="action reserve">Зарезервировать</a>
                     </div>
                 </div>
             {% endfor %}
@@ -477,13 +468,11 @@
         {% endif %}
     </section>
     <div class="footer">
-        {{ restaurant.restaurant_name if restaurant else 'RESTAURANT' }} · TABLE MANAGEMENT
+        RESTAURANT · TABLE MANAGEMENT
     </div>
 </div>
 <script src="/static/api.js"></script>
 <script>
-    const SLUG = "{{ slug }}";
-
     const formError = document.getElementById("formError");
 
     function showError(message) {

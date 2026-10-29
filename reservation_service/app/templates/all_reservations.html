@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Бронирования — {{ restaurant.restaurant_name if restaurant else 'Restaurant' }}</title>
+    <title>Бронирования</title>
     <style>
         * { box-sizing: border-box; }
         body {
@@ -27,7 +27,6 @@
             color: #f1eee9;
         }
         .subtitle { margin: 0; color: #aaa4a0; font-size: 15px; }
-        .subtitle strong { color: #d5a65b; font-weight: normal; }
         .card {
             width: 100%;
             background: rgba(27, 25, 27, 0.96);
@@ -325,12 +324,7 @@
 <div class="page">
     <div class="header">
         <h1 class="title">Бронирования</h1>
-        <p class="subtitle">
-            История бронирований столиков
-            {% if restaurant and restaurant.restaurant_name %}
-                <strong>— {{ restaurant.restaurant_name }}</strong>
-            {% endif %}
-        </p>
+        <p class="subtitle">История бронирований столиков</p>
     </div>
     <section class="card">
         <div class="card-header">
@@ -353,34 +347,34 @@
                 <label for="sort-toggle" class="sort-close">×</label>
             </div>
             <div class="sort-content">
-                <form action="/r/{{ slug }}/tables/reservations/filtered_history" method="get" class="sort-form">
+                <form action="/tables/reservations/filtered_history" method="get" class="sort-form">
                     <label for="sort-date">По дате</label>
                     <input type="date" id="sort-date" name="date" required>
                     <button type="submit">Показать</button>
                 </form>
-                <form action="/r/{{ slug }}/tables/reservations/filtered_history" method="get" class="sort-form">
+                <form action="/tables/reservations/filtered_history" method="get" class="sort-form">
                     <input type="hidden" name="status" value="finished">
                     <button type="submit">Завершённые брони</button>
                 </form>
-                <form action="/r/{{ slug }}/tables/reservations/filtered_history" method="get" class="sort-form">
+                <form action="/tables/reservations/filtered_history" method="get" class="sort-form">
                     <input type="hidden" name="status" value="active">
                     <button type="submit">Активные брони</button>
                 </form>
-                <form action="/r/{{ slug }}/tables/reservations/filtered_history" method="get" class="sort-form">
+                <form action="/tables/reservations/filtered_history" method="get" class="sort-form">
                     <label for="sort-table">По номеру столика</label>
                     <input type="number" id="sort-table" name="table_number" min="1" required>
                     <button type="submit">Показать</button>
                 </form>
-                <a href="/r/{{ slug }}/tables/reservations/filtered_history" class="sort-reset">Сбросить фильтры</a>
+                <a href="/tables/reservations/filtered_history" class="sort-reset">Сбросить фильтры</a>
             </div>
         </aside>
         <div class="search-section">
-            <form action="/r/{{ slug }}/tables/reservations/history/search" method="get" class="search-form">
+            <form action="/tables/reservations/history/search" method="get" class="search-form">
                 <input type="text" name="reservation_number" placeholder="Поиск по номеру брони">
                 <input type="text" name="name" placeholder="Поиск по имени">
                 <input type="text" name="surname" placeholder="Поиск по фамилии">
                 <button type="submit">Найти</button>
-                <a href="/r/{{ slug }}/tables/reservations/history" class="search-reset">Сбросить</a>
+                <a href="/tables/reservations/history" class="search-reset">Сбросить</a>
             </form>
         </div>
         <div id="formError" class="form-error"></div>
@@ -434,7 +428,7 @@
                         </td>
                         <td>
                             {% if reservation.reservation_end >= now %}
-                                <form class="cancel-form" action="/r/{{ slug }}/tables/reservations/cancel/{{ reservation.id }}" method="post">
+                                <form class="cancel-form" action="/tables/reservations/cancel/{{ reservation.id }}" method="post">
                                     <button type="submit" class="cancel-button">Отменить бронь</button>
                                 </form>
                             {% else %}
@@ -454,13 +448,11 @@
         {% endif %}
     </section>
     <div class="bottom-actions">
-        <a href="/r/{{ slug }}/tables" class="back-button">← Вернуться к столикам</a>
+        <a href="/tables" class="back-button">← Вернуться к столикам</a>
     </div>
 </div>
 <script src="/static/api.js"></script>
 <script>
-    const SLUG = "{{ slug }}";
-
     const formError = document.getElementById("formError");
 
     function showError(message) {

@@ -20,7 +20,8 @@ class PaymentRepository:
             order_id=data.order_id,
             order_number=data.order_number,
             sum=data.sum,
-            client_id=client_id
+            client_id=client_id,
+            restaurant_id=data.restaurant_id
         )
         self.db.add(new_payment)
         await self.db.flush()

@@ -24,60 +24,47 @@ async def verify_csrf(request: Request):
     if not cookie_token or cookie_token != header_token:
         raise HTTPException(status_code=403)
 
-@router.get("/r/{slug}/menu_page", response_class=HTMLResponse)
+@router.get("/menu_page", response_class=HTMLResponse)
 async def get_menu_page(request: Request,
-                        slug : str,
                         category_service : CategoryService = Depends(get_category_service_dependency)):
     payload = get_payload(request)
     required_roles(IdentityRole.OWNER, IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
-    restaurant = await get_restaurant_dependency(slug)
-    categories = await category_service.get_all_categories(restaurant.id)
-    return templates.TemplateResponse("menu.html", {"request":request,
-                                                    "categories" : categories,
-                                                    "slug" : slug,
-                                                    "restaurant" : restaurant})
+    restaurant_id = payload.get("restaurant_id")
+    categories = await category_service.get_all_categories(restaurant_id)
+    return templates.TemplateResponse("menu.html", {"request" : request, "categories" : categories})
 
-@router.get("/r/{slug}/menu_page/add_category", response_class=HTMLResponse)
+@router.get("/menu_page/add_category", response_class=HTMLResponse)
 async def get_categories_page(request: Request,
-                              slug : str,
                               category_service : CategoryService = Depends(get_category_service_dependency)):
     payload = get_payload(request)
     required_roles(IdentityRole.OWNER, IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
-    restaurant = await get_restaurant_dependency(slug)
-    categories = await category_service.get_all_categories(restaurant.id)
+    restaurant_id = payload.get("restaurant_id")
+    categories = await category_service.get_all_categories(restaurant_id)
     return templates.TemplateResponse("add_category.html", {"request":request,
-                                                            "categories" : categories,
-                                                            "slug" : slug,
-                                                            "restaurant" : restaurant})
+                                                            "categories" : categories})
 
-@router.post("/r/{slug}/menu_page/add_category", response_class=HTMLResponse)
+@router.post("/menu_page/add_category", response_class=HTMLResponse)
 async def create_category(request : Request,
-                          slug : str,
                           category_name : str = Form(),
                           category_service : CategoryService = Depends(get_category_service_dependency)):
     payload = get_payload(request)
     required_roles(IdentityRole.OWNER, IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
     await verify_csrf(request)
-    restaurant = await get_restaurant_dependency(slug)
-    await category_service.create_category(category_name, restaurant.id)
-    return RedirectResponse(url=f"/r/{slug}/menu_page/add_category", status_code=303)
+    restaurant_id = payload.get("restaurant_id")
+    await category_service.create_category(category_name, restaurant_id)
+    return RedirectResponse(url="/menu_page/add_category", status_code=303)
 
-@router.get("/r/{slug}/menu_page/add_dish", response_class=HTMLResponse)
+@router.get("/menu_page/add_dish", response_class=HTMLResponse)
 async def add_dish_page(request: Request,
-                        slug : str,
                         category_service : CategoryService = Depends(get_category_service_dependency)):
     payload = get_payload(request)
     required_roles(IdentityRole.OWNER, IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
-    restaurant = await get_restaurant_dependency(slug)
-    categories = await category_service.get_all_categories(restaurant.id)
-    return templates.TemplateResponse("add_dish.html", {"request":request,
-                                                        "categories" : categories,
-                                                        "slug" : slug,
-                                                        "restaurant" : restaurant})
+    restaurant_id = payload.get("restaurant_id")
+    categories = await category_service.get_all_categories(restaurant_id)
+    return templates.TemplateResponse("add_dish.html", {"request":request, "categories" : categories})
 
-@router.post("/r/{slug}/menu_page/add_dish", response_class=HTMLResponse)
+@router.post("/menu_page/add_dish", response_class=HTMLResponse)
 async def create_dish(request : Request,
-                      slug : str,
                       dish_name : str = Form(...,),
                                price : Decimal = Form(...,),
                                description : str = Form(...,),
@@ -87,37 +74,36 @@ async def create_dish(request : Request,
     payload = get_payload(request)
     required_roles(IdentityRole.OWNER, IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
     await verify_csrf(request)
-    restaurant = await get_restaurant_dependency(slug)
+    restaurant_id = payload.get("restaurant_id")
     image_url = None
     if image:
-        upload_dir = "app/templates_menu/media/dishes"
+        upload_dir = f"app/templates_menu/media/dishes/r/{restaurant_id}"
         file_path = f"{upload_dir}/{image.filename}"
         with open(file_path, "wb") as file:
             file.write(await image.read())
         image_url = f"/media/dishes/{image.filename}"
-    await menu_service.create_dish(dish_name, price, description, category_id, image_url, restaurant.id)
-    return RedirectResponse(url=f"/r/{slug}/menu_page", status_code=303)
+    await menu_service.create_dish(dish_name, price, description, category_id, image_url, restaurant_id)
+    return RedirectResponse(url="/menu_page", status_code=303)
 
-@router.patch("/r/{slug}/menu_page/change_dish_status/{id}")
-async def take_away_dish_from_menu(request : Request, slug : str, id : int, menu_service : MenuService = Depends(get_menu_service_dependency)):
+@router.patch("/menu_page/change_dish_status/{id}")
+async def take_away_dish_from_menu(request : Request, id : int, menu_service : MenuService = Depends(get_menu_service_dependency)):
     payload = get_payload(request)
     required_roles(IdentityRole.OWNER, IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
     await verify_csrf(request)
-    restaurant = await get_restaurant_dependency(slug)
-    await menu_service.update_dish_status(id, restaurant.id)
+    restaurant_id = payload.get("restaurant_id")
+    await menu_service.update_dish_status(id, restaurant_id)
 
-@router.get("/r/{slug}/menu_page/edit_dish/{id}")
-async def show_edit_dish_page(request : Request, slug : str, id : int, menu_service : MenuService = Depends(get_menu_service_dependency)):
+@router.get("/menu_page/edit_dish/{id}")
+async def show_edit_dish_page(request : Request, id : int, menu_service : MenuService = Depends(get_menu_service_dependency)):
     payload = get_payload(request)
     required_roles(IdentityRole.OWNER, IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
-    restaurant = await get_restaurant_dependency(slug)
-    dish = await menu_service.get_dish_by_id(id, restaurant.id)
-    return templates.TemplateResponse("edit_dish.html", {"request":request, "dish" : dish, "restaurant" : restaurant, "slug" : slug})
+    restaurant_id = payload.get("restaurant_id")
+    dish = await menu_service.get_dish_by_id(id, restaurant_id)
+    return templates.TemplateResponse("edit_dish.html", {"request":request, "dish" : dish})
 
-@router.post("/r/{slug}/menu_page/edit_dish/{id}")
+@router.post("/menu_page/edit_dish/{id}")
 async def edit_dish(request : Request,
                     id : int,
-                    slug : str,
                     dish_name: str | None = Form(None),
                     description : str | None= Form(None),
                     price : Decimal | None = Form(None),
@@ -126,16 +112,16 @@ async def edit_dish(request : Request,
     payload = get_payload(request)
     required_roles(IdentityRole.OWNER, IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
     await verify_csrf(request)
-    restaurant = await get_restaurant_dependency(slug)
+    restaurant_id = payload.get("restaurant_id")
     image_url = None
     if image is not None and image.filename:
-        upload_dir = "app/templates_menu/media/dishes"
+        upload_dir = f"app/templates_menu/media/dishes/r/{restaurant_id}"
         file_path = f"{upload_dir}/{image.filename}"
         with open(file_path, "wb") as file:
             file.write(await image.read())
         image_url = f"/media/dishes/{image.filename}"
-    await menu_service.update_dish(id, dish_name, description, price, image_url, restaurant.id)
-    return RedirectResponse(url=f"/r/{slug}/menu_page", status_code=303)
+    await menu_service.update_dish(id, dish_name, description, price, image_url, restaurant_id)
+    return RedirectResponse(url="/menu_page", status_code=303)
 
 @router.get("/r/{slug}/menu_page/orders/users")
 async def menu_page_for_users(request : Request,

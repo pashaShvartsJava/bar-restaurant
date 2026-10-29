@@ -81,3 +81,11 @@ class RestaurantConstructorDTO(BaseModel):
     accepts_orders_on_site: bool = True
     created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None
+
+
+class RestaurantForUserProfileDTO(BaseModel):
+    slug: str
+    restaurant_name: str
+    city: Optional[str] = None
+    short_description: Optional[str] = None
+    photo_url: Optional[str] = None

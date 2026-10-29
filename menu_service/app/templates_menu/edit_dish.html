@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Изменение блюда — {{ restaurant.restaurant_name if restaurant else 'Restaurant' }}</title>
+    <title>Изменение блюда</title>
     <style>
         * {
             margin: 0;
@@ -65,10 +65,6 @@
             margin-top: 10px;
             color: #77777d;
             font-size: 12px;
-        }
-        .subtitle strong {
-            color: #a99c98;
-            font-weight: normal;
         }
         .form-card {
             padding: 30px;
@@ -256,25 +252,20 @@
 </head>
 <body>
 <div class="page">
-    <a href="/r/{{ slug }}/menu_page" class="back">
+    <a href="/menu_page" class="back">
         <span class="back-arrow">←</span>
         <span>Вернуться в меню</span>
     </a>
 
     <header class="header">
         <h1 class="title">Изменение блюда</h1>
-        <div class="subtitle">
-            Изменение информации о блюде
-            {% if restaurant and restaurant.restaurant_name %}
-                <strong>— {{ restaurant.restaurant_name }}</strong>
-            {% endif %}
-        </div>
+        <div class="subtitle">Изменение информации о блюде</div>
     </header>
 
     <form
         id="dishForm"
         class="form-card"
-        action="/r/{{ slug }}/menu_page/edit_dish/{{ dish.id }}"
+        action="/menu_page/edit_dish/{{ dish.id }}"
         method="post"
         enctype="multipart/form-data">
         <div id="formError" class="form-error"></div>
@@ -341,7 +332,7 @@
         </div>
 
         <div class="form-actions">
-            <a href="/r/{{ slug }}/menu_page" class="btn cancel">Отмена</a>
+            <a href="/menu_page" class="btn cancel">Отмена</a>
             <button type="submit" class="btn save">Сохранить изменения</button>
         </div>
     </form>
@@ -349,8 +340,6 @@
 
 <script src="/static/api.js"></script>
 <script>
-const SLUG = "{{ slug }}";
-
 const form = document.getElementById("dishForm");
 const formError = document.getElementById("formError");
 
@@ -376,7 +365,7 @@ form.addEventListener("submit", async function(event) {
         });
 
         if (response.ok) {
-            window.location.href = `/r/${SLUG}/menu_page`;
+            window.location.href = "/menu_page";
             return;
         }
 

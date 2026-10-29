@@ -25,3 +25,4 @@ class Payment(Base):
     updated_status = Column(DateTime(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now())
     stripe_session_id = Column(String, nullable=True, unique=True)
     stripe_payment_intent_id = Column(String, nullable=True, unique=True)
+    restaurant_id = Column(UUID, nullable=False)

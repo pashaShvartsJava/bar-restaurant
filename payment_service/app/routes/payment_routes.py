@@ -11,7 +11,6 @@ from ..security.jwt.jwt import get_payload
 from ..dependencies.dependencies import get_payment_service_dependency, get_subscription_service_dependency
 from ..service.payment_service import PaymentService
 from ..config.config import settings
-from ..service.subscription_service import SubscriptionService
 
 router = APIRouter()
 templates = Jinja2Templates(directory="app/templates")

@@ -136,10 +136,6 @@ class AuthenticationRepository:
         await self.db.delete(identity)
         await self.db.commit()
 
-    async def verify_registration_key(self, key : str) -> str | None:
-        result = await self.db.execute(select(Key).where(Key.registration_key==key))
-        return result.scalar_one_or_none()
-
     async def verify_authentication_key(self, key : str, email : EmailStr) -> Key | None:
         identity = await self.get_by_email(email)
         identity_key : Key | None = identity.key

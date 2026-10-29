@@ -30,8 +30,9 @@ async def show_admin_chat(request : Request,
                     identity_id : UUID,
                     conversation_service : ConversationService = Depends(get_conversation_service_dependency)):
     payload  = get_payload(request)
-    required_roles(IdentityRole.ADMIN, IdentityRole.MODERATOR, payload=payload)
-    conversation = await conversation_service.get_or_create_admin_conversation(identity_id, UUID(payload["sub"]))
+    required_roles(IdentityRole.OWNER, IdentityRole.ADMIN, IdentityRole.MODERATOR, payload=payload)
+    restaurant_id = payload.get("restaurant_id")
+    conversation = await conversation_service.get_or_create_admin_conversation(identity_id, UUID(payload["sub"]), restaurant_id)
     return templates.TemplateResponse("admin_chat_page.html", {"request" : request, "conversation" : conversation})
 
 @router.post("/support/admin/{conversation_id}/free_conversation")
@@ -39,16 +40,18 @@ async def free_conversation(request : Request,
                             conversation_id : int,
                             conversation_service : ConversationService = Depends(get_conversation_service_dependency)):
     payload = get_payload(request)
-    required_roles(IdentityRole.ADMIN, IdentityRole.MODERATOR, payload=payload)
+    required_roles(IdentityRole.OWNER, IdentityRole.ADMIN, IdentityRole.MODERATOR, payload=payload)
     await verify_csrf(request)
-    await conversation_service.free_conversation(conversation_id)
+    restaurant_id = payload.get("restaurant_id")
+    await conversation_service.free_conversation(conversation_id, restaurant_id)
     return RedirectResponse(url="/admin_panel/all_customers", status_code=303)
 
 @router.get("/support/general_support")
 async def general_support(request : Request, conversation_service : ConversationService = Depends(get_conversation_service_dependency)):
     payload = get_payload(request)
-    required_roles(IdentityRole.ADMIN, IdentityRole.MODERATOR, payload=payload)
-    conversations = await conversation_service.get_unread_conversations()
+    required_roles(IdentityRole.OWNER, IdentityRole.ADMIN, IdentityRole.MODERATOR, payload=payload)
+    restaurant_id = payload.get("restaurant_id")
+    conversations = await conversation_service.get_unread_conversations(restaurant_id)
     return templates.TemplateResponse("general_support.html", {"request" : request, "conversations" : conversations})
 
 @router.get("/support/unread/count")

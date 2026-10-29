@@ -38,6 +38,12 @@ async def get_user_profile(request : Request, service : UserService = Depends(ge
     required_roles(IdentityRole.USER, payload=payload)
     user = await service.find_by_identity_id(payload["sub"])
     async with httpx.AsyncClient() as client:
+        r_response = await client.get("http://restaurant-service:8010/restaurants/get_restaurants_for_user_profile",
+                                    cookies={"access_token": request.cookies.get("access_token")},
+                                    headers={"internal_token" : INTERNAL_TOKEN})
+        r_response.raise_for_status()
+    restaurants = r_response.json()
+    async with httpx.AsyncClient() as client:
         response = await client.get("http://order-service:8007/orders/get_user_active_orders",
                                     cookies={"access_token": request.cookies.get("access_token")},
                                     headers={"internal_token" : INTERNAL_TOKEN})
@@ -53,7 +59,8 @@ async def get_user_profile(request : Request, service : UserService = Depends(ge
                                                                     "user": user,
                                                                     "address": user.address,
                                                                     "active_orders" : active_orders,
-                                                                    "last_order" : last_order})
+                                                                    "last_order" : last_order,
+                                                                    "restaurants" : restaurants})
 
 @router.post("/users/add_user")
 async def register_user(data : RegisterRequest,

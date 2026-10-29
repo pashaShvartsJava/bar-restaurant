@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Добавить категорию — {{ restaurant.restaurant_name if restaurant else 'Restaurant' }}</title>
+    <title>Добавить категорию</title>
     <style>
         * {
             margin: 0;
@@ -269,11 +269,11 @@
 <body>
 <div class="container">
     <div class="top">
-        <a href="/r/{{ slug }}/menu_page" class="back">
+        <a href="/menu_page" class="back">
             <span class="back-arrow">←</span>
             <span>Вернуться к меню</span>
         </a>
-        <div class="brand">{{ restaurant.restaurant_name if restaurant else 'BAR' }}</div>
+        <div class="brand">BAR</div>
     </div>
 
     <header class="header">
@@ -333,8 +333,6 @@
 
 <script src="/static/api.js"></script>
 <script>
-const SLUG = "{{ slug }}";
-
 const form = document.getElementById("categoryForm");
 const formError = document.getElementById("form-error");
 const input = document.getElementById("category_name");
@@ -356,13 +354,13 @@ form.addEventListener("submit", async function(event) {
     clearError();
 
     try {
-        const response = await apiFetch(`/r/${SLUG}/menu_page/add_category`, {
+        const response = await apiFetch("/menu_page/add_category", {
             method: "POST",
             body: new FormData(form)
         });
 
         if (response.ok) {
-            window.location.href = `/r/${SLUG}/menu_page/add_category`;
+            window.location.href = "/menu_page/add_category";
             return;
         }
 

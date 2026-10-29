@@ -111,9 +111,6 @@ class AuthenticationService:
         await self.authentication_repository.db.rollback()
         return await self.authentication_repository.create_admin_identity(email, hash_password(password), role, restaurant_id, identity_id)
 
-    async def verify_registration_key(self, key : str) -> str | None:
-        return await self.authentication_repository.verify_registration_key(key)
-
     async def verify_authentication_key(self, key : str, email : EmailStr) -> Key | None:
         return await self.authentication_repository.verify_authentication_key(key, email)
 

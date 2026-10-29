@@ -7,8 +7,12 @@ from uuid import UUID
 from starlette.responses import HTMLResponse
 from starlette.templating import Jinja2Templates
 
-from ..schema.restaurant_schema import RestaurantCreationDTO, KeyDTO, RestaurantConstructorDTO
+from ..security.authorization.authorization import required_role
+from ..security.jwt.jwt import get_payload
+from ..schema.restaurant_schema import RestaurantCreationDTO, KeyDTO, RestaurantConstructorDTO, \
+    RestaurantForUserProfileDTO
 from ..security.internal_security import verify_internal_token
+from ..security.role.role import IdentityRole
 from ..services.restaurant_service import RestaurantService
 from ..dependencies.dependency import get_restaurant_dependency
 
@@ -28,6 +32,22 @@ async def restaurant_page(request: Request,
 async def all_restaurants(request : Request, service : RestaurantService = Depends(get_restaurant_dependency)):
     restaurants = await service.get_all_restaurants()
     return templates.TemplateResponse("all_restaurants.html", {"request" : request, "restaurants" : restaurants})
+
+@router.get("/restaurants/get_restaurants_for_user_profile")
+async def all_restaurants(request : Request,
+                          internal_token : str = Header(..., alias="internal_token"),
+                          service : RestaurantService = Depends(get_restaurant_dependency)):
+    payload = get_payload(request)
+    required_role(IdentityRole.USER, payload)
+    await verify_internal_token(internal_token)
+    restaurants = await service.get_all_restaurants()
+    return [
+        RestaurantForUserProfileDTO(
+            slug=r.slug,
+            restaurant_name=r.restaurant_name,
+            city=r.city,
+            short_description=r.short_description,
+            photo_url=r.photo_url) for r in restaurants]
 
 @router.post("/restaurants/add_restaurant")
 async def create_restaurant(data : RestaurantCreationDTO,

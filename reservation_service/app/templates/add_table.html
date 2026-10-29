@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Добавление столика — {{ restaurant.restaurant_name if restaurant else 'Restaurant' }}</title>
+    <title>Добавление столика</title>
 <style>
     * {
         box-sizing: border-box;
@@ -85,10 +85,6 @@
         color: #77777d;
         font-size: 11px;
         line-height: 1.6;
-    }
-    .subtitle strong {
-        color: #a99c98;
-        font-weight: normal;
     }
     .card {
         padding: 30px;
@@ -226,22 +222,17 @@
 </head>
 <body>
 <div class="page">
-<a href="/r/{{ slug }}/tables" class="back">
+<a href="/tables" class="back">
     <span class="back-arrow">←</span>
     Назад к столикам
 </a>
 <header class="header">
     <h1 class="title">Добавление столика</h1>
-    <p class="subtitle">
-        Укажите номер столика и максимальное количество гостей.
-        {% if restaurant and restaurant.restaurant_name %}
-            <strong>— {{ restaurant.restaurant_name }}</strong>
-        {% endif %}
-    </p>
+    <p class="subtitle">Укажите номер столика и максимальное количество гостей.</p>
 </header>
 <div class="card">
     <div id="formError" class="form-error"></div>
-    <form id="addTableForm" action="/r/{{ slug }}/tables/add_table" method="post">
+    <form id="addTableForm" action="/tables/add_table" method="post">
         <div class="field">
             <label for="table_number">НОМЕР СТОЛИКА</label>
             <input type="number" id="table_number" name="table_number" min="1" required placeholder="Например, 12">
@@ -253,7 +244,7 @@
             <div class="hint">Максимальное количество гостей за столиком.</div>
         </div>
         <div class="form-actions">
-            <a href="/r/{{ slug }}/tables" class="button cancel">Отмена</a>
+            <a href="/tables" class="button cancel">Отмена</a>
             <button type="submit" class="button save">Добавить столик</button>
         </div>
     </form>
@@ -261,8 +252,6 @@
 </div>
 <script src="/static/api.js"></script>
 <script>
-    const SLUG = "{{ slug }}";
-
     const addTableForm = document.getElementById("addTableForm");
     const formError = document.getElementById("formError");
     const submitButton = addTableForm.querySelector(".save");
@@ -341,7 +330,7 @@
             });
 
             if (await handleResponse(response)) {
-                window.location.href = `/r/${SLUG}/tables`;
+                window.location.href = "/tables";
             }
         } catch {
             showError("Не удалось подключиться к серверу. Проверьте соединение.");

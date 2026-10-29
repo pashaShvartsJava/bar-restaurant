@@ -14,7 +14,8 @@ router = APIRouter()
 
 
 @router.websocket("/ws/support/admin/{conversation_id}")
-async def admin_support_websocket(websocket: WebSocket, conversation_id: int,
+async def admin_support_websocket(websocket: WebSocket,
+                                  conversation_id: int,
                                   message_service : MessageService = Depends(get_message_service_dependency),
                                   conversation_service : ConversationService = Depends(get_conversation_service_dependency)):
     token = websocket.cookies.get("access_token")
@@ -22,15 +23,13 @@ async def admin_support_websocket(websocket: WebSocket, conversation_id: int,
         await websocket.close(code=1008)
         return
     payload = decode_access_token(token)
-    required_roles(IdentityRole.ADMIN, IdentityRole.MODERATOR, payload=payload)
+    required_roles(IdentityRole.OWNER, IdentityRole.ADMIN, IdentityRole.MODERATOR, payload=payload)
     sender_id = payload["sub"]
     sender_role = payload["role"]
     await chat_manager.connect(conversation_id=conversation_id, websocket=websocket)
-
     try:
         while True:
             text = await websocket.receive_text()
-
             try:
                 event = json.loads(text)
             except json.JSONDecodeError:
