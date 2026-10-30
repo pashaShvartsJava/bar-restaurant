@@ -69,3 +69,4 @@ class SubscriptionCheckoutDTO(BaseModel):
     price: Decimal
     order_commission_percent: Decimal = Decimal("0")
     currency: str = "EUR"
+    key: str

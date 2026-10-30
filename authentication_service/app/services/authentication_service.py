@@ -66,6 +66,12 @@ class AuthenticationService:
         identity = await self.authentication_repository.get_by_email(email)
         return identity
 
+    async def get_key_by_restaurant_id(self, restaurant_id : str):
+        return await self.authentication_repository.get_key_by_restaurant_id(restaurant_id)
+
+    async def edit_authentication_key(self, restaurant_id: str) -> str:
+        return await self.authentication_repository.edit_authentication_key(restaurant_id)
+
     async def find_change_password_verification_token(self, token: str) -> UpdatePasswordEmailToken | None:
         hashed_token = hashlib.sha256(token.encode("utf-8")).hexdigest()
         return await self.authentication_repository.find_change_password_verification_token(hashed_token)
@@ -107,7 +113,7 @@ class AuthenticationService:
                                     password : str,
                                     role : IdentityRole | None,
                                     restaurant_id : UUID | None,
-                                    identity_id : UUID | None):
+                                    identity_id : UUID | None) -> tuple[Identity, str]:
         await self.authentication_repository.db.rollback()
         return await self.authentication_repository.create_admin_identity(email, hash_password(password), role, restaurant_id, identity_id)
 

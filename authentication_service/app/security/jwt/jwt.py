@@ -1,8 +1,7 @@
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from uuid import UUID
-
-from pydantic.v1 import UUID1
+from fastapi import Request, HTTPException
 
 from ...config.config import settings
 from ...model.identity_model import IdentityRole, Status
@@ -49,3 +48,9 @@ def decode_access_token(token : str) -> dict:
     public_key = Path(PUBLIC_KEY_PATH).read_text()
     payload = jwt.decode(token, public_key, [ALGORITHM])
     return payload
+
+def get_payload(request : Request):
+    token = request.cookies.get("access_token")
+    if token is None:
+        raise HTTPException(status_code=403, detail="Authorization required")
+    return decode_access_token(token)

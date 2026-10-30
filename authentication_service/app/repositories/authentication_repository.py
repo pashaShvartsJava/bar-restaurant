@@ -74,7 +74,7 @@ class AuthenticationRepository:
                                     hashed_password : str,
                                     role : IdentityRole | None,
                                     restaurant_id : UUID | None,
-                                    identity_id : UUID | None) -> Identity:
+                                    identity_id : UUID | None) -> tuple[Identity, str]:
         identity_role = IdentityRole.ADMIN
         if role==IdentityRole.OWNER:
             identity_role = role
@@ -102,7 +102,7 @@ class AuthenticationRepository:
             await self.db.flush()
             await self.create_verification_token(new_identity.id, hashed_token)
             await self.create_outbox_event_email_verification(str(uuid.uuid4()), new_identity.email, token)
-        return new_identity
+        return new_identity, new_key.authentication_key
 
     async def get_by_identity(self, identity_id : UUID) -> Identity:
         result = await self.db.execute(select(Identity).where(Identity.id == identity_id))
@@ -111,6 +111,14 @@ class AuthenticationRepository:
     async def get_key_by_restaurant_id(self, restaurant_id : str) -> Key:
         result = await self.db.execute(select(Key).options(selectinload(Key.identities)).where(Key.restaurant_id==restaurant_id))
         return result.scalar_one_or_none()
+
+    async def edit_authentication_key(self, restaurant_id : str) -> str:
+        old_key = await self.get_key_by_restaurant_id(restaurant_id)
+        new_auth_key = secrets.token_urlsafe(32)
+        old_key.authentication_key = new_auth_key
+        await self.db.commit()
+        await self.db.refresh(old_key)
+        return new_auth_key
 
     async def update_password(self, identity_id : UUID, new_password : str):
         identity = await self.get_by_identity(identity_id)

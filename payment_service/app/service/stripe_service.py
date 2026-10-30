@@ -41,7 +41,7 @@ class StripeService:
     def construct_webhook_event(self, payload: bytes, signature: str):
         return stripe.Webhook.construct_event(payload, signature, settings.stripe_webhook_secret)
 
-    async def create_checkout_subscription_session(self, subscription: Subscription):
+    async def create_checkout_subscription_session(self, subscription: Subscription, key : str):
         session = await self.subscription_client.v1.checkout.sessions.create_async(
             params={
                 "mode": "subscription",
@@ -73,7 +73,7 @@ class StripeService:
                         "owner_id": str(subscription.owner_id),
                     },
                 },
-                "success_url": f"https://localhost:8443/payment/subscription/success?subscription_number={subscription.subscription_number}",
+                "success_url": f"https://localhost:8443/payment/subscription/success?subscription_number={subscription.subscription_number}&key={key}",
                 "cancel_url": "https://localhost:8443/payment/subscription/cancel",
             },
             options={"idempotency_key": f"subscription:{subscription.sub_idempotency_key}"},

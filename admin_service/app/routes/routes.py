@@ -13,7 +13,7 @@ from ..schema.admin import AdminUpdateDTO, AdminRegistrationDTO, IdentityEdit, A
 from typing import Annotated
 
 from ..dependencies.dependencies import get_service_dependency, get_httpx_async_connection, get_restaurant_dependency, \
-    get_restaurant_dependency_by_id
+    get_restaurant_dependency_by_id, get_authentication_key, get_new_key
 from ..security.internal_security import verify_internal_token
 from ..security.role.role import IdentityRole
 from ..service.admin_service import AdminService
@@ -91,7 +91,30 @@ async def show_all_admins(request: Request, admin_service : AdminService = Depen
     required_roles(IdentityRole.OWNER,IdentityRole.MODERATOR, payload=payload)
     restaurant_id = payload.get("restaurant_id")
     admins = await admin_service.find_all_admins(restaurant_id)
-    return templates.TemplateResponse('all_admins.html', {"request" : request, "admins" : admins})
+    token = request.cookies.get("access_token")
+    if payload.get("role") == IdentityRole.OWNER.value:
+        key = await get_authentication_key(restaurant_id, token)
+    else:
+        key = ""
+    return templates.TemplateResponse('all_admins.html', {"request" : request,
+                                                          "admins" : admins,
+                                                          "masked_key" : key,
+                                                          "can_manage_key": payload.get("role") == IdentityRole.OWNER.value,
+                                                          "restaurant_id" : restaurant_id})
+
+@router.post("/admin_panel/generate_key")
+async def generate_auth_key(request: Request):
+    payload = get_payload(request)
+    required_roles(IdentityRole.OWNER, payload=payload)
+    try:
+        new_key = await get_new_key(payload.get("restaurant_id"), request.cookies.get("access_token"))
+    except httpx.HTTPStatusError as e:
+        logger.warning("Failed to generate auth key: %s", e)
+        raise HTTPException(status_code=502, detail="Failed to generate key in authentication service")
+    if not new_key:
+        raise HTTPException(status_code=502, detail="Empty key returned")
+    return {"key" : new_key}
+
 
 @router.get("/admin_panel/all_admins/add_admin")
 def show_page_add_admin(request : Request):

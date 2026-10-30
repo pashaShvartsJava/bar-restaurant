@@ -134,7 +134,7 @@ async def create_restaurant_and_subscription_checkout(data : Annotated[Restauran
     sub_idempotency_key = uuid.uuid4()
     try:
         created_restaurant = True
-        created_owner = await service.create_admin_identity(data.email, data.password, IdentityRole.OWNER,
+        created_owner, authentication_key = await service.create_admin_identity(data.email, data.password, IdentityRole.OWNER,
                                                             restaurant_id, identity_id)
         created_owner_dto = AdminRegistrationDTO(identity_id=created_owner.id, name=data.name,
                                                  surname=data.surname, phone=data.phone,
@@ -174,7 +174,8 @@ async def create_restaurant_and_subscription_checkout(data : Annotated[Restauran
             trial_days=server_trial,
             price=server_price,
             order_commission_percent=server_order_percent_commission,
-            currency=server_currency.value
+            currency=server_currency.value,
+            key=authentication_key
         )
         checkout_response = await client.post("http://payment-service:8008/payment/subscription",
                                               headers={"internal_token": INTERNAL_TOKEN},

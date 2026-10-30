@@ -20,6 +20,9 @@
             --text: #f4f0e9;
             --muted: #a9a3b3;
             --green: #9bc8a5;
+            --warning: #d8c8a0;
+            --warning-soft: rgba(199,165,106,.06);
+            --warning-border: rgba(199,165,106,.3);
         }
 
         body {
@@ -36,7 +39,7 @@
         }
 
         .card {
-            width: min(100%, 520px);
+            width: min(100%, 560px);
             padding: 44px 38px;
             border: 1px solid var(--accent-border);
             border-radius: 20px;
@@ -87,6 +90,89 @@
             letter-spacing: 1.5px;
         }
 
+        /* Блок с ключом доступа */
+
+        .access-key-block {
+            margin-bottom: 28px;
+            padding: 22px;
+            border: 1px solid var(--warning-border);
+            border-radius: 12px;
+            background: var(--warning-soft);
+            text-align: left;
+        }
+
+        .access-key-label {
+            margin-bottom: 10px;
+            color: var(--warning);
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+
+        .access-key-value {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .access-key-code {
+            flex: 1;
+            min-width: 0;
+            padding: 14px 16px;
+            border: 1px solid var(--warning-border);
+            border-radius: 8px;
+            background: rgba(0,0,0,.35);
+            color: #f0e2b8;
+            font-family: "Courier New", monospace;
+            font-size: 15px;
+            font-weight: 600;
+            letter-spacing: 1.5px;
+            text-align: center;
+            overflow-wrap: anywhere;
+            user-select: all;
+            cursor: text;
+        }
+
+        .copy-key-btn {
+            flex-shrink: 0;
+            min-height: 46px;
+            padding: 0 16px;
+            border: 1px solid var(--warning-border);
+            border-radius: 8px;
+            background: rgba(199,165,106,.1);
+            color: #e0c88a;
+            font-family: inherit;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background .2s ease, color .2s ease, border-color .2s ease;
+        }
+
+        .copy-key-btn:hover {
+            background: rgba(199,165,106,.22);
+            border-color: rgba(199,165,106,.5);
+            color: #f0e2b8;
+        }
+
+        .copy-key-btn.copied {
+            background: rgba(155,200,165,.16);
+            border-color: rgba(155,200,165,.45);
+            color: var(--green);
+        }
+
+        .access-key-warning {
+            color: var(--warning);
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+        .access-key-warning strong {
+            color: #f0e2b8;
+            font-weight: 600;
+        }
+
         .steps {
             display: flex;
             flex-direction: column;
@@ -130,10 +216,10 @@
         .step.warning {
             padding: 12px;
             margin: 0 -4px;
-            border: 1px solid rgba(199,165,106,.25);
+            border: 1px solid var(--warning-border);
             border-radius: 8px;
-            background: rgba(199,165,106,.06);
-            color: #d8c8a0;
+            background: var(--warning-soft);
+            color: var(--warning);
         }
 
         .step.warning .step-num {
@@ -193,6 +279,8 @@
         @media (max-width: 480px) {
             .card { padding: 32px 24px; }
             h1 { font-size: 24px; }
+            .access-key-value { flex-direction: column; align-items: stretch; }
+            .copy-key-btn { min-height: 42px; }
         }
 
         @media (prefers-reduced-motion: reduce) {
@@ -220,6 +308,26 @@
         </div>
         {% endif %}
 
+        {% if key %}
+        <div class="access-key-block">
+            <div class="access-key-label">Ключ доступа к аккаунту</div>
+
+            <div class="access-key-value">
+                <code class="access-key-code" id="accessKey">{{ key }}</code>
+                <button type="button" class="copy-key-btn" id="copyKeyButton">
+                    Скопировать
+                </button>
+            </div>
+
+            <p class="access-key-warning">
+                <strong>Обязательно сохраните этот ключ.</strong>
+                Он понадобится для входа в аккаунт. Без него войти невозможно.
+                При желании(настоятельно рекомендуется) вы сможете сгенерировать новый ключ уже в личном кабинете разделе управление администраторами.
+                Ни с кем не делитесь этим ключом, сохраняйте данные в полной конфиденциальности.
+            </p>
+        </div>
+        {% endif %}
+
         <div class="steps">
             <div class="step warning">
                 <span class="step-num">!</span>
@@ -234,19 +342,26 @@
             <div class="step">
                 <span class="step-num">1</span>
                 <span>
-                    Проверьте почту (включая папку «Спам») и подтвердите email.
+                    Скопируйте и сохраните ключ доступа — он понадобится при входе.
                 </span>
             </div>
 
             <div class="step">
                 <span class="step-num">2</span>
                 <span>
-                    Войдите в панель управления заведением через страницу входа.
+                    Проверьте почту (включая папку «Спам») и подтвердите email.
                 </span>
             </div>
 
             <div class="step">
                 <span class="step-num">3</span>
+                <span>
+                    Войдите в панель управления заведением через страницу входа.
+                </span>
+            </div>
+
+            <div class="step">
+                <span class="step-num">4</span>
                 <span>
                     Настройте меню, столики и принимайте первые заказы.
                 </span>
@@ -257,5 +372,49 @@
             Перейти ко входу →
         </a>
     </main>
+
+    {% if key %}
+    <script>
+        (function () {
+            const button = document.getElementById("copyKeyButton");
+            const code = document.getElementById("accessKey");
+
+            if (!button || !code) return;
+
+            button.addEventListener("click", async () => {
+                const text = code.textContent.trim();
+
+                try {
+                    if (navigator.clipboard && window.isSecureContext) {
+                        await navigator.clipboard.writeText(text);
+                    } else {
+                        const range = document.createRange();
+                        range.selectNodeContents(code);
+                        const selection = window.getSelection();
+                        selection.removeAllRanges();
+                        selection.addRange(range);
+                        document.execCommand("copy");
+                        selection.removeAllRanges();
+                    }
+
+                    const original = button.textContent;
+                    button.textContent = "Скопировано";
+                    button.classList.add("copied");
+
+                    setTimeout(() => {
+                        button.textContent = original;
+                        button.classList.remove("copied");
+                    }, 2000);
+                } catch (error) {
+                    console.error("COPY KEY ERROR:", error);
+                    button.textContent = "Выделено";
+                    setTimeout(() => {
+                        button.textContent = "Скопировать";
+                    }, 1500);
+                }
+            });
+        })();
+    </script>
+    {% endif %}
 </body>
 </html>

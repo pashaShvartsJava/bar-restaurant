@@ -7,10 +7,12 @@ from pydantic import EmailStr, TypeAdapter
 from starlette.responses import HTMLResponse, RedirectResponse
 from starlette.templating import Jinja2Templates
 
+from ..security.authorization.authorization import required_roles
+from ..security.jwt.jwt import get_payload
 from .owner_routes import logger
 from ..exceptions.exceptions import InvalidCredentialsError
 from ..model.identity_model import Status, IdentityRole
-from ..schemas.admin_schema import AdminRegistration, AdminRegistrationDTO, AdminLogin
+from ..schemas.admin_schema import AdminLogin
 from ..schemas.restaurant_schema import KeyDTO, RestaurantStatus
 from ..schemas.schema import LoginSchema
 from ..dependencies.dependency import get_service_dependency, get_httpx_async_connection
@@ -78,4 +80,26 @@ async def edit_status(status : Status, str_email : str, service : Authentication
     email = TypeAdapter(EmailStr).validate_python(str_email)
     existing_identity = await service.find_by_email(email)
     await service.update_status_identity(existing_identity, status)
+
+@router.get("/get_auth_key")
+async def get_auth_key(request : Request,
+                       restaurant_id : str,
+                       internal_token : str = Header(..., alias="internal_token"),
+                       service : AuthenticationService = Depends(get_service_dependency)):
+    payload = get_payload(request)
+    required_roles(IdentityRole.OWNER, payload=payload)
+    await verify_internal_token(internal_token)
+    key = await service.get_key_by_restaurant_id(restaurant_id)
+    return key.authentication_key
+
+@router.post("/generate_auth_key")
+async def generate_key(request : Request,
+                       restaurant_id : str,
+                       internal_token: str = Header(..., alias="internal_token"),
+                       service: AuthenticationService = Depends(get_service_dependency)):
+    payload = get_payload(request)
+    required_roles(IdentityRole.OWNER, payload=payload)
+    await verify_internal_token(internal_token)
+    new_key = await service.edit_authentication_key(restaurant_id)
+    return new_key
 

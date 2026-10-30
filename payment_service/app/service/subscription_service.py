@@ -36,7 +36,7 @@ class SubscriptionService:
 
     async def create_subscription(self, data : SubscriptionCheckoutDTO):
         subscription = await self.subscription_repository.create_subscription(data)
-        session = await self.stripe_service.create_checkout_subscription_session(subscription)
+        session = await self.stripe_service.create_checkout_subscription_session(subscription, data.key)
         subscription.stripe_checkout_session_id = session.id
         await self.subscription_repository.save_subscription(subscription)
         return subscription, session.url

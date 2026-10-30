@@ -30,3 +30,23 @@ async def get_restaurant_dependency_by_id(restaurant_id : str):
                                     params={"restaurant_id" : restaurant_id})
         response.raise_for_status()
     return RestaurantConstructorDTO(**response.json())
+
+async def get_authentication_key(restaurant_id : str, token : str):
+    async with httpx.AsyncClient() as client:
+        response = await client.get(url="http://authentication-service:8000/get_auth_key",
+                                    headers={"internal_token" : INTERNAL_TOKEN},
+                                    params={"restaurant_id" : restaurant_id},
+                                    cookies={"access_token": token})
+        response.raise_for_status()
+    key = response.json()
+    return key
+
+async def get_new_key(restaurant_id : str, token : str):
+    async with httpx.AsyncClient() as client:
+        response = await client.post(url="http://authentication-service:8000/generate_auth_key",
+                                     headers={"internal_token": INTERNAL_TOKEN},
+                                     params={"restaurant_id": restaurant_id},
+                                     cookies={"access_token": token})
+        response.raise_for_status()
+    new_key = response.json()
+    return new_key

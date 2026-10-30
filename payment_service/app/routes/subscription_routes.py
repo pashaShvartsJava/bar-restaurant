@@ -51,7 +51,10 @@ async def delete_saga_subscription(sub_idempotency_key : str,
 @router.get("/payment/subscription/success")
 async def subscription_success_page(request : Request):
     subscription_number = request.query_params.get("subscription_number")
-    return templates.TemplateResponse("subscription_success_page.html", {"request" : request, "subscription_number" : subscription_number})
+    key = request.query_params.get("key")
+    return templates.TemplateResponse("subscription_success_page.html", {"request" : request,
+                                                                         "subscription_number" : subscription_number,
+                                                                         "key" : key})
 
 @router.get("/payment/subscription/cancel")
 async def subscription_success_page(request : Request):
