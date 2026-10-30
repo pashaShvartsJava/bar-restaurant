@@ -95,6 +95,14 @@ async def get_restaurant_by_slug(slug : str,
     restaurant = await service.get_restaurant_by_slug(slug)
     return RestaurantConstructorDTO.model_validate(restaurant, from_attributes=True)
 
+@router.get("/restaurants/get_restaurant_by_id")
+async def get_restaurant_by_slug(restaurant_id : str,
+                         internal_token: str = Header(..., alias="internal_token"),
+                         service: RestaurantService = Depends(get_restaurant_dependency)):
+    await verify_internal_token(internal_token)
+    restaurant = await service.get_restaurant_by_id(uuid.UUID(restaurant_id))
+    return RestaurantConstructorDTO.model_validate(restaurant, from_attributes=True)
+
 @router.post("/restaurants/add_membership")
 async def add_membership(identity_id : str,
                          restaurant_id : str,

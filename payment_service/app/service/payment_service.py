@@ -26,6 +26,9 @@ class PaymentService:
         self.rabbitmq = rabbitmq
         self.outbox_repository = outbox_repository
 
+    async def get_all_payments(self, restaurant_id: UUID):
+        return await self.payment_repository.get_all_payments(restaurant_id)
+
     async def create_payment(self, data : PaymentDTO, client_id : UUID):
         payment = await self.payment_repository.create_payment(data, client_id)
         session = await self.stripe_service.create_checkout_session(payment)

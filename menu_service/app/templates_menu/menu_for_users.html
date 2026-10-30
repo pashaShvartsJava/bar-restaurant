@@ -720,7 +720,7 @@ body {
                                     </div>
                                     <div class="dish-price">
                                         {{ "%.2f"|format(dish.price) }}
-                                        <span class="currency">€</span>
+                                        <span class="currency">{{ currency_symbol }}</span>
                                     </div>
                                     <div class="dish-actions">
                                         {% if dish.dish_status.value == "available" %}
@@ -763,7 +763,7 @@ body {
     <footer class="cart-footer">
         <div class="cart-total">
             <span class="cart-total-label">Итого</span>
-            <span class="cart-total-price" id="cartTotalPrice">0.00 €</span>
+            <span class="cart-total-price" id="cartTotalPrice">0.00 {{ currency_symbol }}</span>
         </div>
         <button type="button" class="checkout-button" id="checkoutButton">Оформить заказ</button>
         <button type="button" class="clear-cart-button" id="clearCartButton">Очистить корзину</button>
@@ -773,6 +773,7 @@ body {
 <script src="/static/api.js"></script>
 <script>
 const SLUG = "{{ slug }}";
+const CURRENCY_SYMBOL = "{{ currency_symbol }}";
 const CART_STORAGE_KEY = `restaurant_cart_${SLUG}`;
 
 const cartSidebar = document.getElementById("cartSidebar");
@@ -968,8 +969,8 @@ function renderCart() {
             <div class="cart-item-info">
                 <div class="cart-item-name">${escapeHTML(dish.name)}</div>
                 <div class="cart-item-price">
-                    ${quantity} × <strong>${dish.price.toFixed(2)} €</strong><br>
-                    ${itemTotal.toFixed(2)} €
+                    ${quantity} × <strong>${dish.price.toFixed(2)} ${CURRENCY_SYMBOL}</strong><br>
+                    ${itemTotal.toFixed(2)} ${CURRENCY_SYMBOL}
                 </div>
             </div>
             <div class="cart-item-controls">
@@ -1010,7 +1011,7 @@ function updateInterface() {
     updateDishQuantities();
     updateCartHeader();
     renderCart();
-    cartTotalPrice.textContent = `${getTotalPrice().toFixed(2)} €`;
+    cartTotalPrice.textContent = `${getTotalPrice().toFixed(2)} ${CURRENCY_SYMBOL}`;
 }
 
 function openCart() {

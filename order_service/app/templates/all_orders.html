@@ -1237,6 +1237,34 @@
                 flex: 1;
             }
         }
+        .history-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 38px;
+    padding: 10px 16px;
+    border-radius: 7px;
+    font-size: 10px;
+    text-decoration: none;
+    cursor: pointer;
+    background: rgba(42, 40, 42, .95);
+    border: 1px solid rgba(255, 255, 255, .08);
+    color: #aaa9ae;
+    transition: .2s ease;
+    margin-right: auto;
+}
+
+.history-link:link,
+.history-link:visited {
+    color: #aaa9ae;
+    text-decoration: none;
+}
+
+.history-link:hover {
+    background: rgba(52, 49, 52, .98);
+    border-color: #d5a65b;
+    color: #d5a65b;
+}
     </style>
 </head>
 
@@ -1264,6 +1292,9 @@
     </div>
 
     <div class="orders-toolbar">
+        <button type="button" class="history-link" onclick="window.location.href='/orders/history'">
+            История заказов
+        </button>
         <a href="/orders/create_order_manually" class="toolbar-button create-order-button">
             + Создать заказ вручную
         </a>

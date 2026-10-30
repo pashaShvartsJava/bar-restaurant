@@ -819,8 +819,6 @@
             <div class="hero-label">
                 {% if restaurant and restaurant.city %}
                     {{ restaurant.city }} • {{ restaurant.restaurant_name }}
-                {% else %}
-                    {{ restaurant.restaurant_name if restaurant else 'MARANI' }}
                 {% endif %}
             </div>
 
@@ -882,7 +880,7 @@
 
                                             <div class="dish-price">
                                                 {{ "%.2f"|format(dish.price) }}
-                                                <span>€</span>
+                                                <span>{{ currency_symbol }}</span>
                                             </div>
 
                                             <div class="dish-actions">
@@ -952,7 +950,7 @@
                         <span class="total-label">Итого</span>
 
                         <span class="total-price" id="cartTotal">
-                            0.00 €
+                            0.00 {{ currency_symbol }}
                         </span>
                     </div>
 
@@ -994,6 +992,7 @@
     <script>
         const SLUG = "{{ slug }}";
         const RESTAURANT_ID = "{{ restaurant.id if restaurant else '' }}";
+        const CURRENCY_SYMBOL = "{{ currency_symbol }}";
         const CART_STORAGE_KEY = `restaurant_cart_${SLUG}`;
 
         const cartContent =
@@ -1212,7 +1211,7 @@
                 getRussianItemText(quantity);
 
             cartTotal.textContent =
-                `${total.toFixed(2)} €`;
+                `${total.toFixed(2)} ${CURRENCY_SYMBOL}`;
 
             if (cart.length === 0) {
                 cartContent.innerHTML = `
@@ -1276,14 +1275,14 @@
                             ${quantity}
                             ×
                             <strong>
-                                ${price.toFixed(2)} €
+                                ${price.toFixed(2)} ${CURRENCY_SYMBOL}
                             </strong>
 
                             <br>
 
                             Всего:
                             <strong>
-                                ${itemTotal.toFixed(2)} €
+                                ${itemTotal.toFixed(2)} ${CURRENCY_SYMBOL}
                             </strong>
                         </div>
                     </div>
@@ -1364,7 +1363,7 @@
                 });
         }
 
-        function updateInterface() {
+                        function updateInterface() {
             updateDishQuantities();
             renderCart();
         }

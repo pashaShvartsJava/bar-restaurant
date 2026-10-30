@@ -22,3 +22,11 @@ async def get_restaurant_dependency(slug : str):
                                     params={"slug" : slug})
         response.raise_for_status()
     return RestaurantConstructorDTO(**response.json())
+
+async def get_restaurant_dependency_by_id(restaurant_id : str):
+    async with httpx.AsyncClient() as client:
+        response = await client.get(url="http://restaurant-service:8010/restaurants/get_restaurant_by_id",
+                                    headers={"internal_token" : INTERNAL_TOKEN},
+                                    params={"restaurant_id" : restaurant_id})
+        response.raise_for_status()
+    return RestaurantConstructorDTO(**response.json())

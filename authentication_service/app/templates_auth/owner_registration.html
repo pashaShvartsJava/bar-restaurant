@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#151114">
-    <title>Регистрация владельца — Restaurant Platform</title>
+    <title>Регистрация владельца — FDCPlatform</title>
     <style>
         :root{--gold:#d5a65b;--gold-light:#e6c58f;--bg:#0c0b0e;--panel:#171316;--text:#eee5df;--muted:#91898a;--border:rgba(255,255,255,.09);--green:#9bc8a5;--red:#e58c8c}
         *{margin:0;padding:0;box-sizing:border-box}
@@ -134,7 +134,7 @@
 <main class="page">
     <aside class="sidebar" aria-label="Преимущества платформы">
         <section class="side-box">
-            <span class="side-label">RESTAURANT PLATFORM</span>
+            <span class="side-label">FDCPlatform</span>
             <h2>Ваше заведение.<br>Ваши правила.</h2>
             <p>Создайте аккаунт владельца, чтобы управлять рестораном в одном удобном пространстве.</p>
             <div class="benefit-list">
@@ -156,7 +156,7 @@
     </aside>
     <section class="card">
         <header>
-            <div class="logo">RESTAURANT PLATFORM</div>
+            <div class="logo">FDCPlatform</div>
             <h1 id="pageTitle">Регистрация владельца</h1>
             <p class="subtitle" id="pageSubtitle">Несколько простых шагов — и вы сможете настроить пространство своего заведения.</p>
         </header>
@@ -168,7 +168,6 @@
         </div>
         <div class="form-error" id="formError" role="alert" aria-live="assertive"></div>
         <form id="registrationForm" action="/restaurant/register" method="post" enctype="multipart/form-data" novalidate onsubmit="return false;">
-            <!-- Скрытые поля подписки. plan_id/billing_period/trial_days/price/currency/order_commission_percent — из SubscriptionDTO -->
             <input type="hidden" name="plan_id" id="plan_id" value="">
             <input type="hidden" name="billing_period" id="billing_period" value="">
             <input type="hidden" name="trial_days" id="trial_days" value="">

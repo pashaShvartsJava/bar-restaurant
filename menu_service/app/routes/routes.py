@@ -1,3 +1,5 @@
+import uuid
+from pathlib import Path
 from uuid import UUID
 
 from fastapi import APIRouter, Request, Depends, Form, UploadFile, File, HTTPException, Header
@@ -9,7 +11,7 @@ from ..security.role.role import IdentityRole
 from ..service.dish_service import MenuService
 from ..service.category_service import CategoryService
 from ..dependencies.dependencies import get_menu_service_dependency, get_category_service_dependency, \
-    get_restaurant_dependency
+    get_restaurant_dependency, get_restaurant_dependency_by_id, get_currency_symbol
 from decimal import Decimal
 from ..security.jwt.jwt import get_payload
 from ..security.authorization.authorization import required_roles
@@ -30,8 +32,10 @@ async def get_menu_page(request: Request,
     payload = get_payload(request)
     required_roles(IdentityRole.OWNER, IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
     restaurant_id = payload.get("restaurant_id")
+    restaurant = await get_restaurant_dependency_by_id(restaurant_id)
+    currency_symbol = get_currency_symbol(restaurant.currency)
     categories = await category_service.get_all_categories(restaurant_id)
-    return templates.TemplateResponse("menu.html", {"request" : request, "categories" : categories})
+    return templates.TemplateResponse("menu.html", {"request" : request, "categories" : categories, "currency_symbol" : currency_symbol})
 
 @router.get("/menu_page/add_category", response_class=HTMLResponse)
 async def get_categories_page(request: Request,
@@ -76,12 +80,14 @@ async def create_dish(request : Request,
     await verify_csrf(request)
     restaurant_id = payload.get("restaurant_id")
     image_url = None
-    if image:
-        upload_dir = f"app/templates_menu/media/dishes/r/{restaurant_id}"
-        file_path = f"{upload_dir}/{image.filename}"
-        with open(file_path, "wb") as file:
-            file.write(await image.read())
-        image_url = f"/media/dishes/{image.filename}"
+    if image and image.filename:
+        upload_dir = Path(f"app/templates_menu/media/dishes/{restaurant_id}")
+        upload_dir.mkdir(parents=True, exist_ok=True)
+        safe_filename = f"{uuid.uuid4().hex}{Path(image.filename).suffix.lower()}"
+        file_path = upload_dir / safe_filename
+        file_path.write_bytes(await image.read())
+
+        image_url = f"/media/dishes/{restaurant_id}/{safe_filename}"
     await menu_service.create_dish(dish_name, price, description, category_id, image_url, restaurant_id)
     return RedirectResponse(url="/menu_page", status_code=303)
 
@@ -131,10 +137,12 @@ async def menu_page_for_users(request : Request,
     required_roles(IdentityRole.USER, payload=payload)
     restaurant = await get_restaurant_dependency(slug)
     categories = await category_service.get_all_categories_for_users(restaurant.id)
+    currency_symbol = get_currency_symbol(restaurant.currency)
     return templates.TemplateResponse("menu_for_users.html", {"request" : request,
                                                               "categories" : categories,
                                                               "slug" : slug,
-                                                              "restaurant" : restaurant})
+                                                              "restaurant" : restaurant,
+                                                              "currency_symbol" : currency_symbol})
 
 
 @router.get("/r/{slug}/delivery")
@@ -143,10 +151,12 @@ async def create_order_for_guest(request: Request,
                                  category_service : CategoryService = Depends(get_category_service_dependency)):
     restaurant = await get_restaurant_dependency(slug)
     categories = await category_service.get_all_categories_for_users(restaurant.id)
+    currency_symbol = get_currency_symbol(restaurant.currency)
     return templates.TemplateResponse("order_for_guest.html", {"request": request,
                                                                "categories" : categories,
                                                                "slug" : slug,
-                                                               "restaurant" : restaurant})
+                                                               "restaurant" : restaurant,
+                                                               "currency_symbol" : currency_symbol})
 
 @router.get("/r/[slug}/menu_page/qr_code_menu")
 async def qr_code_menu(request : Request,

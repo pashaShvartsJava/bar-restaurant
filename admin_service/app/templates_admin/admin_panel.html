@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Panel__bar_name</title>
+    <title>Admin Panel {{ restaurant_name }}</title>
 
 <style>
     * {
@@ -290,7 +290,7 @@
     </h1>
 
     <p>
-        Панель управления заведением
+        Панель управления {{ restaurant_name }}
     </p>
 </header>
 
@@ -418,17 +418,17 @@
             </p>
         </a>
 
-        <a href="/orders/history" class="button">
+        <a href="/payment/history" class="button">
             <div class="icon">
-                ↺
+                💳
             </div>
 
             <h3>
-                История заказов
+                История онлайн оплат
             </h3>
 
             <p>
-                Архив выполненных заказов
+                Архив транзакций
             </p>
         </a>
                 <a href="/analytics" class="button">

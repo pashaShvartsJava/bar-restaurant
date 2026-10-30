@@ -1,3 +1,4 @@
+from locale import currency
 from uuid import UUID
 
 import stripe
@@ -6,9 +7,12 @@ from fastapi.params import Header
 from starlette.templating import Jinja2Templates
 
 from ..schemas.payment_schema import PaymentDTO
+from ..security.authorization.authorization import required_role, required_roles
 from ..security.internal_security import verify_internal_token
 from ..security.jwt.jwt import get_payload
-from ..dependencies.dependencies import get_payment_service_dependency, get_subscription_service_dependency
+from ..dependencies.dependencies import get_payment_service_dependency, get_subscription_service_dependency, \
+    get_restaurant_dependency_by_id, get_currency_symbol
+from ..security.role.role import IdentityRole
 from ..service.payment_service import PaymentService
 from ..config.config import settings
 
@@ -66,6 +70,18 @@ async def success_page(request : Request):
 @router.get("/payment/cancel")
 async def success_page(request : Request):
     return templates.TemplateResponse("cancel_page.html", {"request" : request})
+
+@router.get("/payment/history")
+async def payments_history(request : Request, service: PaymentService = Depends(get_payment_service_dependency)):
+    payload = get_payload(request)
+    required_roles(IdentityRole.OWNER, IdentityRole.MODERATOR, payload=payload)
+    restaurant_id = payload.get("restaurant_id")
+    payments = await service.get_all_payments(restaurant_id)
+    restaurant = await get_restaurant_dependency_by_id(restaurant_id)
+    currency_symbol = get_currency_symbol(restaurant.currency)
+    return templates.TemplateResponse("all_payments.html", {"request" : request,
+                                                            "payments" : payments,
+                                                            "currency_symbol" : currency_symbol})
 
 
 

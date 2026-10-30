@@ -15,6 +15,10 @@ class PaymentRepository:
         result = await self.db.execute(select(Payment).where(Payment.id == payment_id))
         return result.scalar_one()
 
+    async def get_all_payments(self, restaurant_id : UUID):
+        result = await self.db.execute(select(Payment).where(Payment.restaurant_id==restaurant_id))
+        return result.scalars().all()
+
     async def create_payment(self, data : PaymentDTO, client_id : UUID) -> Payment:
         new_payment = Payment(
             order_id=data.order_id,

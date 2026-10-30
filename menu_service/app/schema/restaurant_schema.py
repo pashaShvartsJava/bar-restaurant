@@ -3,6 +3,19 @@ from typing import Optional, Any
 from uuid import UUID
 from pydantic import BaseModel
 
+CURRENCY_SYMBOLS = {
+    "EUR": "€",
+    "USD": "$",
+    "GBP": "£",
+    "RUB": "₽",
+    "KZT": "₸",
+    "UAH": "₴",
+    "TRY": "₺",
+    "CHF": "₣",
+    "PLN": "zł",
+    "GEL": "₾",
+}
+
 
 class RestaurantConstructorDTO(BaseModel):
     id: UUID
