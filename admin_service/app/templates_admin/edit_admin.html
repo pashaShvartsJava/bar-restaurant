@@ -13,110 +13,149 @@
         box-sizing: border-box;
     }
 
+    :root {
+        color-scheme: dark;
+        --gold: #d5a65b;
+        --purple: #a78bfa;
+        --purple-light: #c4b5fd;
+        --muted: #929096;
+        --muted-soft: #77777d;
+        --panel: rgba(27, 25, 27, .96);
+        --panel-soft: rgba(30, 29, 31, .97);
+        --line: rgba(213, 166, 91, .16);
+        --line-soft: rgba(255, 255, 255, .07);
+        --text-main: #f5f5f5;
+        --text-soft: #c7c2bc;
+    }
+
+    html {
+        min-width: 320px;
+    }
+
     body {
         min-height: 100vh;
         background:
-            radial-gradient(
-                ellipse at 50% 0%,
-                rgba(190, 135, 75, 0.32) 0%,
-                rgba(115, 75, 45, 0.38) 40%,
-                rgba(18, 18, 21, 0.97) 80%
-            ),
-            linear-gradient(
-                180deg,
-                #3a2b24 0%,
-                #211a18 50%,
-                #101012 100%
-            );
-        color: #f0b38a;
+            radial-gradient(ellipse at 50% 0%, rgba(145, 85, 75, .20) 0%, rgba(55, 35, 40, .22) 38%, rgba(9, 9, 11, 1) 78%),
+            linear-gradient(180deg, #211a1c 0%, #121214 50%, #09090b 100%);
+        color: #ffffff;
         font-family: Arial, sans-serif;
+        overflow-x: hidden;
+    }
+
+    button, input, select {
+        font: inherit;
+    }
+
+    a:focus-visible,
+    button:focus-visible,
+    input:focus-visible,
+    select:focus-visible {
+        outline: 2px solid var(--purple);
+        outline-offset: 3px;
     }
 
     .container {
+        width: 100%;
         max-width: 650px;
-        margin: auto;
-        padding: 40px 25px;
+        margin: 0 auto;
+        padding: 40px 25px 60px;
     }
 
     .top {
         display: flex;
         justify-content: space-between;
+        align-items: center;
         margin-bottom: 40px;
     }
 
     .back {
-        color: #b98b82;
+        color: var(--muted-soft);
+        font-size: 11px;
         text-decoration: none;
-        font-size: 12px;
-        transition: color 0.2s;
+        transition: color .2s;
     }
 
     .back:hover {
-        color: #e8b76f;
+        color: var(--gold);
     }
 
     .brand {
-        color: #8f7065;
-        font-size: 10px;
-        letter-spacing: 2px;
+        color: var(--gold);
+        font-family: Georgia, serif;
+        font-size: 11px;
+        letter-spacing: 3px;
     }
 
     h1 {
-        margin-bottom: 20px;
+        margin-bottom: 22px;
+        padding-bottom: 18px;
         text-align: center;
-        color: #f0b38a;
+        color: var(--text-main);
         font-family: Georgia, serif;
+        font-size: 32px;
         font-weight: normal;
+        letter-spacing: 1px;
+        line-height: 1.25;
+        border-bottom: 1px solid var(--line);
     }
+
+    /* Блок текущего пользователя */
 
     .current {
         display: flex;
         align-items: center;
-        gap: 12px;
-        margin-bottom: 15px;
-        padding: 15px;
-        background: rgba(30, 22, 20, 0.90);
-        border: 1px solid rgba(180, 125, 70, 0.35);
-        border-radius: 10px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.20);
+        gap: 14px;
+        margin-bottom: 18px;
+        padding: 16px 18px;
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, .14);
     }
 
     .avatar {
-        width: 40px;
-        height: 40px;
+        width: 46px;
+        height: 46px;
         display: flex;
         align-items: center;
         justify-content: center;
-        border-radius: 50%;
-        background: rgba(70, 45, 32, 0.85);
-        color: #e8b76f;
-        border: 1px solid rgba(200, 140, 75, 0.30);
+        flex-shrink: 0;
+        background: #252427;
+        border: 1px solid rgba(255, 255, 255, .08);
+        border-radius: 10px;
+        color: var(--gold);
+        font-family: "Inter", "Segoe UI", Arial, sans-serif;
+        font-size: 13px;
+        font-weight: 600;
     }
 
     .current-name {
+        color: var(--text-main);
+        font-family: "Inter", "Segoe UI", Arial, sans-serif;
         font-size: 13px;
-        font-weight: bold;
-        color: #f0c09d;
+        font-weight: 600;
     }
 
     .current-info {
-        margin-top: 4px;
-        color: #a98678;
+        margin-top: 5px;
+        color: var(--muted-soft);
         font-size: 10px;
     }
 
+    /* Форма */
+
     form {
-        padding: 25px;
-        background: rgba(30, 22, 20, 0.90);
-        border: 1px solid rgba(180, 125, 70, 0.35);
-        border-radius: 10px;
-        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.25);
+        padding: 24px 22px;
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        box-shadow: 0 12px 35px rgba(0, 0, 0, .14);
     }
 
     .row {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 15px;
+        gap: 14px;
     }
 
     .field {
@@ -125,117 +164,142 @@
 
     label {
         display: block;
-        margin-bottom: 6px;
-        color: #c5a69a;
-        font-size: 10px;
+        margin-bottom: 7px;
+        color: var(--muted);
+        font-size: 9px;
+        font-weight: 500;
+        letter-spacing: .8px;
+        text-transform: uppercase;
     }
 
     input,
     select {
         width: 100%;
-        padding: 10px;
-        background: rgba(45, 30, 26, 0.90);
-        border: 1px solid rgba(180, 100, 75, 0.40);
+        min-height: 38px;
+        padding: 9px 11px;
+        background: #2a282a;
+        border: 1px solid rgba(255, 255, 255, .09);
         border-radius: 6px;
-        color: #f0b38a;
+        color: var(--text-main);
+        font-family: "Inter", "Segoe UI", Arial, sans-serif;
+        font-size: 12px;
         outline: none;
-        transition:
-            background 0.2s,
-            border-color 0.2s;
+        transition: background .2s, border-color .2s;
     }
 
     input:hover,
     select:hover {
-        background: rgba(55, 34, 30, 0.95);
-        border-color: rgba(200, 120, 85, 0.55);
+        border-color: rgba(167, 139, 250, .35);
     }
 
     input:focus,
     select:focus {
-        background: rgba(55, 34, 30, 0.95);
-        border-color: rgba(210, 145, 75, 0.70);
+        background: #302e30;
+        border-color: var(--purple);
     }
 
     input::placeholder {
-        color: #806761;
+        color: var(--muted-soft);
     }
 
     select {
         cursor: pointer;
+        color-scheme: dark;
     }
 
     select option {
-        background: #281d1a;
-        color: #f0b38a;
+        background: #1b191b;
+        color: var(--text-main);
     }
 
     .field-error {
         margin-top: 5px;
-        color: #e89a8f;
+        color: #d98282;
         font-size: 11px;
+        line-height: 1.5;
     }
+
+    /* Кнопки */
 
     .buttons {
         display: flex;
         justify-content: flex-end;
+        flex-wrap: wrap;
         gap: 8px;
         margin-top: 10px;
         padding-top: 20px;
-        border-top: 1px solid rgba(180, 110, 70, 0.25);
+        border-top: 1px solid var(--line);
     }
 
     .button {
-        padding: 10px 16px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 36px;
+        padding: 9px 15px;
         border-radius: 6px;
+        font-family: Arial, sans-serif;
         font-size: 10px;
+        font-weight: 600;
         text-decoration: none;
         cursor: pointer;
-        transition:
-            background 0.2s,
-            border-color 0.2s,
-            color 0.2s;
+        transition: background .2s, border-color .2s, color .2s;
     }
 
     .cancel {
-        color: #b99c91;
-        background: rgba(45, 30, 26, 0.85);
-        border: 1px solid rgba(180, 100, 75, 0.40);
+        color: #aaa9ae;
+        background: rgba(42, 40, 42, .95);
+        border: 1px solid rgba(255, 255, 255, .08);
     }
 
     .cancel:hover {
-        color: #f0c09d;
-        background: rgba(60, 35, 32, 0.90);
-        border-color: rgba(205, 120, 90, 0.60);
+        background: rgba(52, 49, 52, .98);
+        border-color: var(--gold);
+        color: #ffffff;
     }
 
     .save {
-        background: #d5a65b;
-        color: #211714;
-        border: none;
-        font-weight: bold;
+        background: rgba(213, 166, 91, .13);
+        border: 1px solid rgba(213, 166, 91, .4);
+        color: var(--gold);
+        font-weight: 600;
     }
 
     .save:hover {
-        background: #e4b971;
+        background: rgba(213, 166, 91, .22);
+        border-color: var(--gold);
+        color: #e4b971;
     }
 
     .password {
-        background: rgba(105, 45, 50, 0.85);
-        color: #b88f8f;
-        border: 1px solid rgba(180, 75, 85, 0.45);
-        font-weight: bold;
+        background: rgba(139, 92, 246, .12);
+        border: 1px solid rgba(167, 139, 250, .35);
+        color: var(--purple-light);
+        font-weight: 600;
     }
 
     .password:hover {
-        background: rgba(125, 50, 55, 0.9);
-        color: #c8a0a0;
-        border-color: rgba(205, 90, 100, 0.65);
+        background: rgba(139, 92, 246, .22);
+        border-color: var(--purple);
+        color: #d4c6ff;
     }
 
     @media (max-width: 600px) {
+        .container {
+            padding: 30px 15px 45px;
+        }
+
         .row {
             grid-template-columns: 1fr;
             gap: 0;
+        }
+
+        .buttons {
+            flex-direction: column;
+        }
+
+        .button {
+            width: 100%;
         }
     }
 </style>

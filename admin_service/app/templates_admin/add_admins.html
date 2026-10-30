@@ -6,24 +6,58 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Добавить администратора — BAR</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    :root {
+        color-scheme: dark;
+        --gold: #d5a65b;
+        --purple: #a78bfa;
+        --purple-light: #c4b5fd;
+        --muted: #929096;
+        --muted-soft: #77777d;
+        --panel: rgba(27, 25, 27, .96);
+        --panel-soft: rgba(30, 29, 31, .97);
+        --line: rgba(213, 166, 91, .16);
+        --line-soft: rgba(255, 255, 255, .07);
+        --text-main: #f5f5f5;
+        --text-soft: #c7c2bc;
+    }
+
+    html {
+        min-width: 320px;
+    }
 
     body {
         min-height: 100vh;
         background:
-            radial-gradient(circle at 50% 0%, #29231a 0%, #111113 45%, #0c0c0e 100%);
-        color: #fff;
+            radial-gradient(ellipse at 50% 0%, rgba(145, 85, 75, .20) 0%, rgba(55, 35, 40, .22) 38%, rgba(9, 9, 11, 1) 78%),
+            linear-gradient(180deg, #211a1c 0%, #121214 50%, #09090b 100%);
+        color: #ffffff;
         font-family: Arial, sans-serif;
+        overflow-x: hidden;
+    }
+
+    button, input, select {
+        font: inherit;
+    }
+
+    a:focus-visible,
+    button:focus-visible,
+    input:focus-visible,
+    select:focus-visible {
+        outline: 2px solid var(--purple);
+        outline-offset: 3px;
     }
 
     .container {
+        width: 100%;
         max-width: 700px;
-        margin: auto;
-        padding: 40px 30px;
+        margin: 0 auto;
+        padding: 40px 30px 60px;
     }
 
     .top {
@@ -34,20 +68,24 @@
     }
 
     .back {
-        color: #77777d;
+        color: var(--muted-soft);
+        font-size: 11px;
         text-decoration: none;
-        font-size: 12px;
+        transition: color .2s;
     }
 
     .back:hover {
-        color: #d5a65b;
+        color: var(--gold);
     }
 
     .brand {
-        color: #55555a;
-        font-size: 10px;
-        letter-spacing: 2px;
+        color: var(--gold);
+        font-family: Georgia, serif;
+        font-size: 11px;
+        letter-spacing: 3px;
     }
+
+    /* Заголовок */
 
     .header {
         text-align: center;
@@ -55,35 +93,43 @@
     }
 
     .header span {
-        color: #d5a65b;
+        color: var(--gold);
         font-size: 9px;
         letter-spacing: 3px;
+        text-transform: uppercase;
     }
 
     .header h1 {
-        margin-top: 8px;
+        margin-top: 10px;
+        color: var(--text-main);
         font-family: Georgia, serif;
-        font-size: 34px;
+        font-size: clamp(28px, 3.2vw, 34px);
         font-weight: normal;
+        letter-spacing: 1px;
+        line-height: 1.25;
     }
 
     .header p {
-        margin-top: 8px;
-        color: #77777d;
-        font-size: 11px;
+        margin-top: 10px;
+        color: var(--muted-soft);
+        font-size: 12px;
+        line-height: 1.5;
     }
 
+    /* Форма */
+
     .form {
-        padding: 25px;
-        background: #18181b;
-        border: 1px solid #29292d;
+        padding: 24px 22px;
+        background: var(--panel);
+        border: 1px solid var(--line);
         border-radius: 12px;
+        box-shadow: 0 12px 35px rgba(0, 0, 0, .14);
     }
 
     .row {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 15px;
+        gap: 14px;
     }
 
     .field {
@@ -93,84 +139,124 @@
     label {
         display: block;
         margin-bottom: 7px;
-        color: #aaa9ae;
-        font-size: 10px;
+        color: var(--muted);
+        font-size: 9px;
+        font-weight: 500;
+        letter-spacing: .8px;
+        text-transform: uppercase;
     }
 
     input,
     select {
         width: 100%;
-        padding: 11px 12px;
-        background: #222225;
-        border: 1px solid #333338;
-        border-radius: 7px;
-        color: #fff;
-        font-family: Arial, sans-serif;
-        font-size: 11px;
+        min-height: 38px;
+        padding: 9px 11px;
+        background: #2a282a;
+        border: 1px solid rgba(255, 255, 255, .09);
+        border-radius: 6px;
+        color: var(--text-main);
+        font-family: "Inter", "Segoe UI", Arial, sans-serif;
+        font-size: 12px;
         outline: none;
+        transition: background .2s, border-color .2s;
+    }
+
+    input:hover,
+    select:hover {
+        border-color: rgba(167, 139, 250, .35);
     }
 
     input:focus,
     select:focus {
-        border-color: #d5a65b;
+        background: #302e30;
+        border-color: var(--purple);
+    }
+
+    input::placeholder {
+        color: var(--muted-soft);
     }
 
     select {
         cursor: pointer;
+        color-scheme: dark;
+    }
+
+    select option {
+        background: #1b191b;
+        color: var(--text-main);
     }
 
     .field-error {
         margin-top: 5px;
         color: #d98282;
         font-size: 11px;
+        line-height: 1.5;
     }
 
     #form-error {
         margin-top: 0;
-        margin-bottom: 5px;
+        margin-bottom: 8px;
+        padding: 11px 13px;
+        background: rgba(150, 55, 65, .16);
+        border: 1px solid rgba(210, 85, 90, .32);
+        border-radius: 7px;
     }
+
+    /* Кнопки */
 
     .buttons {
         display: flex;
         justify-content: flex-end;
+        flex-wrap: wrap;
         gap: 8px;
         margin-top: 10px;
         padding-top: 20px;
-        border-top: 1px solid #29292d;
+        border-top: 1px solid var(--line);
     }
 
     .button {
-        padding: 10px 17px;
-        border-radius: 7px;
-        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 36px;
+        padding: 9px 16px;
+        border-radius: 6px;
+        font-family: Arial, sans-serif;
         font-size: 10px;
+        font-weight: 600;
+        text-decoration: none;
         cursor: pointer;
+        transition: background .2s, border-color .2s, color .2s;
     }
 
     .cancel {
-        color: #99999f;
-        background: #222225;
-        border: 1px solid #333338;
+        color: #aaa9ae;
+        background: rgba(42, 40, 42, .95);
+        border: 1px solid rgba(255, 255, 255, .08);
     }
 
     .cancel:hover {
-        color: #fff;
+        background: rgba(52, 49, 52, .98);
+        border-color: var(--gold);
+        color: #ffffff;
     }
 
     .save {
-        border: none;
-        background: #d5a65b;
-        color: #111;
-        font-weight: bold;
+        background: rgba(213, 166, 91, .13);
+        border: 1px solid rgba(213, 166, 91, .4);
+        color: var(--gold);
+        font-weight: 600;
     }
 
     .save:hover {
-        background: #e4b971;
+        background: rgba(213, 166, 91, .22);
+        border-color: var(--gold);
+        color: #e4b971;
     }
 
     @media (max-width: 600px) {
         .container {
-            padding: 25px 15px;
+            padding: 30px 15px 45px;
         }
 
         .row {
@@ -187,6 +273,7 @@
         }
 
         .button {
+            width: 100%;
             text-align: center;
         }
     }

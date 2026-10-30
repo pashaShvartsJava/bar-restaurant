@@ -1,6 +1,8 @@
+import asyncio
 import uuid
 from datetime import timezone, datetime
 
+import stripe
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from .stripe_service import StripeService
@@ -10,6 +12,8 @@ from ..repository.outbox_repository import OutboxPaymentEventsRepository
 from ..repository.subscription_repository import SubscriptionRepository
 from uuid import UUID
 from ..schemas.subscription_schema import SubscriptionCheckoutDTO
+import logging
+logger = logging.getLogger(__name__)
 
 
 class SubscriptionService:
@@ -27,6 +31,9 @@ class SubscriptionService:
         self.rabbitmq = rabbitmq
         self.outbox_repository = outbox_repository
 
+    async def get_subscription_by_owner_id(self, customer_id: UUID, restaurant_id: UUID) -> Subscription:
+        return await self.subscription_repository.get_subscription_by_owner_id(customer_id, restaurant_id)
+
     async def create_subscription(self, data : SubscriptionCheckoutDTO):
         subscription = await self.subscription_repository.create_subscription(data)
         session = await self.stripe_service.create_checkout_subscription_session(subscription)
@@ -39,20 +46,49 @@ class SubscriptionService:
 
     async def handle_subscription_webhook(self, event) -> Subscription | None:
         session = event["data"]["object"].to_dict()
+        print(f"WH: payment_status={session.get('payment_status')}", flush=True)
         if session.get("payment_status") not in ("paid", "no_payment_required"):
+            print("WH: EXIT at payment_status", flush=True)
             return None
         sub_idempotency_key = session.get("metadata", {}).get("sub_idempotency_key")
+        print(f"WH: idempotency_key={sub_idempotency_key!r}", flush=True)
         if not sub_idempotency_key:
+            print("WH: EXIT at idempotency_key", flush=True)
+            return None
+        session_id = session.get("id")
+        print(f"WH: session_id={session_id!r}", flush=True)
+        if not session_id:
+            print("WH: EXIT at session_id", flush=True)
+            return None
+        customer_id = session.get("customer")
+        subscription_id = session.get("subscription")
+        print(f"WH: raw customer={customer_id!r} sub={subscription_id!r}", flush=True)
+        if not customer_id or not subscription_id:
+            try:
+                fresh_session = await asyncio.to_thread(
+                    stripe.checkout.Session.retrieve, session_id)
+                customer_id = customer_id or fresh_session.customer
+                subscription_id = subscription_id or fresh_session.subscription
+                print(f"WH: after retrieve customer={customer_id!r} sub={subscription_id!r}", flush=True)
+            except stripe.error.StripeError as e:
+                print(f"WH: EXIT at retrieve error: {e}", flush=True)
+                return None
+        if not customer_id or not subscription_id:
+            print("WH: EXIT at still empty after retrieve", flush=True)
             return None
         async with self.db.begin():
             subscription = await self.subscription_repository.get_by_idempotency_key(uuid.UUID(sub_idempotency_key))
             if subscription is None:
+                print(f"WH: EXIT at subscription not found for key={sub_idempotency_key}", flush=True)
                 return None
-            if subscription.stripe_subscription_id == session.get("subscription"):
-                return subscription
-            subscription.stripe_customer_id = session.get("customer")
-            subscription.stripe_subscription_id = session.get("subscription")
-            subscription.stripe_checkout_session_id = session.get("id")
+            print(f"WH: BEFORE assign id={subscription.id} "
+                 f"customer={subscription.stripe_customer_id!r} "
+                 f"sub={subscription.stripe_subscription_id!r}", flush=True)
+            subscription.stripe_customer_id = customer_id
+            subscription.stripe_subscription_id = subscription_id
+            subscription.stripe_checkout_session_id = session_id
+            print(f"WH: AFTER assign customer={subscription.stripe_customer_id!r} "
+                 f"sub={subscription.stripe_subscription_id!r}", flush=True)
         return subscription
 
     async def handle_subscription_updated(self, event):

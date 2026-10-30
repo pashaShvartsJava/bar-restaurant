@@ -60,6 +60,11 @@ class StripeService:
                         "quantity": 1,
                     }
                 ],
+                "metadata": {
+                    "sub_idempotency_key": str(subscription.sub_idempotency_key),
+                    "restaurant_id": str(subscription.restaurant_id),
+                    "owner_id": str(subscription.owner_id),
+                },
                 "subscription_data": {
                     "trial_period_days": subscription.trial_days,
                     "metadata": {

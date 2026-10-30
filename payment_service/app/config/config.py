@@ -1,3 +1,4 @@
+import stripe
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -25,3 +26,4 @@ class Settings(BaseSettings):
 
 
 settings = Settings()
+stripe.api_key = settings.stripe_secret_key_subscriptions

@@ -22,6 +22,12 @@ class SubscriptionRepository:
     def __init__(self, db : AsyncSession):
         self.db = db
 
+    async def get_subscription_by_owner_id(self, customer_id : UUID, restaurant_id : UUID) -> Subscription:
+        result = await self.db.execute(select(Subscription)
+                                       .where(Subscription.owner_id==customer_id,
+                                              Subscription.restaurant_id==restaurant_id))
+        return result.scalar_one_or_none()
+
     async def create_subscription(self, data : SubscriptionCheckoutDTO) -> Subscription:
         subscription_number = generate_subscription_number()
         plan_name = PLANS.get(PlanId(data.plan_id))

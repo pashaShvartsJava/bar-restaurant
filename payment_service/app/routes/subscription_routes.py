@@ -57,9 +57,18 @@ async def subscription_success_page(request : Request):
 async def subscription_success_page(request : Request):
     return templates.TemplateResponse("subscription_cancel_page.html", {"request" : request})
 
-@router.post("/subscription/portal")
-async def create_portal_session(request :Request, stripe_customer_id: str):
+@router.get("/subscription/portal")
+async def create_portal_session(request :Request, sub_service : SubscriptionService = Depends(get_subscription_service_dependency)):
     payload = get_payload(request)
     required_roles(IdentityRole.OWNER, payload=payload)
-    session = stripe.billing_portal.Session.create(customer=stripe_customer_id, return_url="https://localhost:8443/admin_panel")
+    customer_id = payload.get("sub")
+    restaurant_id = payload.get("restaurant_id")
+    subscription = await sub_service.get_subscription_by_owner_id(customer_id ,restaurant_id)
+    if not subscription or not subscription.stripe_customer_id:
+        raise HTTPException(status_code=404, detail="No active subscription or currently subscription has a trialing period")
+    try:
+        session = stripe.billing_portal.Session.create(customer=subscription.stripe_customer_id,
+                                                       return_url="http://localhost:8443/admin_panel")
+    except stripe.error.StripeError as e:
+        raise HTTPException(status_code=400, detail=str(e))
     return {"url": session.url}
