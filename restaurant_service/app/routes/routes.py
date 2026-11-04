@@ -1,12 +1,16 @@
-import uuid
 
+import uuid
+from decimal import Decimal
+
+import httpx
 from fastapi import APIRouter, Request, HTTPException
 from fastapi.params import Header, Depends
-from uuid import UUID
 
 from starlette.responses import HTMLResponse
 from starlette.templating import Jinja2Templates
 
+from ..models.restaurant_model import RestaurantStatus
+from ..schema.subscription_schema import SubscriptionCheckoutDTO
 from ..security.authorization.authorization import required_role
 from ..security.jwt.jwt import get_payload
 from ..schema.restaurant_schema import RestaurantCreationDTO, KeyDTO, RestaurantConstructorDTO, \
@@ -15,6 +19,9 @@ from ..security.internal_security import verify_internal_token
 from ..security.role.role import IdentityRole
 from ..services.restaurant_service import RestaurantService
 from ..dependencies.dependency import get_restaurant_dependency
+from ..config.config import settings
+
+INTERNAL_TOKEN = settings.internal_token
 
 router = APIRouter()
 templates = Jinja2Templates(directory="app/templates")
@@ -111,3 +118,51 @@ async def add_membership(identity_id : str,
                          service: RestaurantService = Depends(get_restaurant_dependency)):
     await verify_internal_token(internal_token)
     await service.create_membership(uuid.UUID(identity_id), uuid.UUID(restaurant_id), role)
+
+@router.get("/restaurants/find_by_name")
+async def get_res_by_name_and_renew_subscription(name: str,
+                                                 plan_id: str,
+                                                 billing_period: str,
+                                                 price: Decimal,
+                                                 order_commission_percent: Decimal,
+                                                 service: RestaurantService = Depends(get_restaurant_dependency)):
+    restaurant = await service.get_restaurant_by_name(name)
+    if not restaurant:
+        raise HTTPException(status_code=404, detail="Ресторан не найден.")
+    if restaurant.status in (RestaurantStatus.ACTIVE, RestaurantStatus.PENDING, RestaurantStatus.CLOSED):
+        return {"error": "Подписка данного заведения либо всё ещё активна, "
+                     "либо заведение полностью закрыто. "
+                     "На данный момент продление подписки невозможно.",
+            "status": restaurant.status.value}
+    async with httpx.AsyncClient() as client:
+        key_response = await client.get( url="http://authentication-service:8000/get_auth_key",
+                                         params={"restaurant_id": restaurant.id},
+                                         headers={"internal_token": INTERNAL_TOKEN})
+    if key_response.is_error:
+        return {"error": "Ошибка сервера. Повторите операцию позже.",
+                "status": restaurant.status.value}
+    key = key_response.json()
+    subscription_checkout_dto = SubscriptionCheckoutDTO(
+        user_id=restaurant.memberships.identity_id,
+        restaurant_id=restaurant.id,
+        sub_idempotency_key=uuid.uuid4(),
+        email=restaurant.email,
+        plan_id=plan_id,
+        billing_period=billing_period,
+        trial_days=0,
+        price=price,
+        order_commission_percent=order_commission_percent,
+        currency="EUR",
+        key=key)
+    async with httpx.AsyncClient() as client:
+        response = await client.post(url="http://payment-service:8008/payment/subscription",
+                                     headers={"internal_token": INTERNAL_TOKEN},
+                                     json=subscription_checkout_dto.model_dump(mode="json"))
+    if response.is_error:
+        return { "error": "Не удалось создать подписку. Попробуйте ещё раз.", "status": restaurant.status.value}
+    data = response.json()
+    checkout_url = data.get("checkout_url") or data.get("url")
+    if not checkout_url:
+        return { "error": "Сервер не вернул ссылку на оплату.", "status": restaurant.status.value,}
+    return { "checkout_url": checkout_url, "status": restaurant.status.value}
+

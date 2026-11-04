@@ -338,7 +338,7 @@ class OrderRepository:
                 raise ValueError("Исходный заказ не найден")
             await self.db.delete(old_order)
 
-    async def get_revenue(self, date_from: date | None, date_to: date | None):
+    async def get_revenue(self, date_from: date | None, date_to: date | None, restaurant_id : UUID):
         revenue = 0
         if date_from is None and date_to is None:
             today = date.today()
@@ -347,7 +347,9 @@ class OrderRepository:
                 next_month = today.replace(year=today.year + 1, month=1, day=1)
             else:
                 next_month = today.replace(month=today.month + 1, day=1)
-            stmt = (select(Order).where(Order.created_at >= start_date, Order.created_at < next_month,
+            stmt = (select(Order)
+                    .where(Order.restaurant_id==restaurant_id)
+                    .where(Order.created_at >= start_date, Order.created_at < next_month,
                                         or_(
                                             and_(Order.status == OrderStatus.COMPLETED, Order.table_number.is_(None)),
                                             and_(Order.table_number.is_not(None), Order.status == OrderStatus.PAID))))
@@ -380,7 +382,7 @@ class OrderRepository:
             return revenue
         return None
 
-    async def get_order_count(self, date_from: date | None, date_to: date | None):
+    async def get_order_count(self, date_from: date | None, date_to: date | None, restaurant_id : UUID):
         if date_from is None and date_to is None:
             today = date.today()
             start_date = today.replace(day=1)
@@ -391,7 +393,9 @@ class OrderRepository:
                     next_month = today.replace(year=today.year + 1, month=1, day=1)
                 else:
                     next_month = today.replace(month=today.month + 1, day=1)
-            stmt = (select(Order).where(Order.created_at>=start_date, Order.created_at < next_month,
+            stmt = (select(Order)
+            .where(Order.restaurant_id==restaurant_id)
+                    .where(Order.created_at>=start_date, Order.created_at < next_month,
                            or_(
                                and_(Order.status==OrderStatus.COMPLETED, Order.table_number.is_(None)),
                                and_(Order.table_number.is_not(None), Order.status==OrderStatus.PAID))))
@@ -418,13 +422,15 @@ class OrderRepository:
             return len(orders)
         return None
 
-    async def get_revenue_for_previous_period(self, date_from: date | None, date_to: date | None):
+    async def get_revenue_for_previous_period(self, date_from: date | None, date_to: date | None, restaurant_id : UUID):
         revenue = 0
         today = date.today()
         end_date = today.replace(day=1)
         start_date = (end_date - timedelta(days=1)).replace(day=1)
         if date_from is None and date_to is None:
-            stmt = (select(Order).where(Order.created_at >= start_date, Order.created_at < end_date,
+            stmt = (select(Order)
+                    .where(Order.restaurant_id==restaurant_id)
+                    .where(Order.created_at >= start_date, Order.created_at < end_date,
                 or_(
                     and_(Order.table_number.is_not(None), Order.status == OrderStatus.PAID),
                     and_(Order.table_number.is_(None), Order.status == OrderStatus.COMPLETED))))
@@ -461,7 +467,7 @@ class OrderRepository:
             return revenue
         return None
 
-    async def get_top_dishes(self, date_from: date | None, date_to: date | None) -> list[dict]:
+    async def get_top_dishes(self, date_from: date | None, date_to: date | None, restaurant_id : UUID) -> list[dict]:
         today = date.today()
         if date_from is None:
             date_from = today.replace(day=1)
@@ -474,7 +480,9 @@ class OrderRepository:
             date_to += timedelta(days=1)
         start_datetime = datetime.combine(date_from, time.min)
         end_datetime = datetime.combine(date_to, time.min)
-        stmt = (select(Order).options(selectinload(Order.order_items)).where(
+        stmt = (select(Order).options(selectinload(Order.order_items))
+        .where(Order.restaurant_id==restaurant_id)
+        .where(
                 Order.created_at >= start_datetime,
                 Order.created_at < end_datetime,
                 or_(
@@ -504,7 +512,7 @@ class OrderRepository:
                 "revenue": float(dish["revenue"] or 0)}
             for dish in sorted(dishes.values(), key=lambda dish: dish["quantity"], reverse=True)]
 
-    async def get_monthly_sales(self, date_from: date | None = None, date_to: date | None = None,) -> list[dict]:
+    async def get_monthly_sales(self, restaurant_id : UUID, date_from: date | None = None, date_to: date | None = None) -> list[dict]:
         today = date.today()
         if date_from is None:
             date_from = today.replace(day=1)
@@ -521,6 +529,7 @@ class OrderRepository:
                 func.coalesce(func.sum(Order.sum), 0).label("revenue"),
                 func.count(Order.id).label("order_count"),
             )
+        .where(Order.restaurant_id==restaurant_id)
             .where(
                 Order.created_at >= start_datetime,
                 Order.created_at < end_datetime,

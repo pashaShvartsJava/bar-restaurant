@@ -121,14 +121,14 @@ class OrderService:
         return await self.order_repository.split_order(data, restaurant_id)
 
 
-    async def get_analytics(self, date_from : date | None, date_to : date | None):
-        revenue = await self.get_revenue(date_from, date_to)
-        order_count = await self.get_order_count(date_from, date_to)
+    async def get_analytics(self, date_from : date | None, date_to : date | None, restaurant_id : UUID):
+        revenue = await self.get_revenue(date_from, date_to, restaurant_id)
+        order_count = await self.get_order_count(date_from, date_to, restaurant_id)
         average_check = revenue/order_count if order_count > 0 else None
-        previous_revenue = await self.get_revenue_for_previous_period(date_from, date_to)
+        previous_revenue = await self.get_revenue_for_previous_period(date_from, date_to, restaurant_id)
         revenue_change_percent = (revenue/previous_revenue)*100 - 100 if previous_revenue > 0 else None
-        top_dishes = await self.get_top_dishes(date_from, date_to)
-        monthly_sales = await self.get_monthly_sales(date_from, date_to)
+        top_dishes = await self.get_top_dishes(date_from, date_to, restaurant_id)
+        monthly_sales = await self.get_monthly_sales(date_from, date_to, restaurant_id)
         return {
             "revenue" : revenue,
             "order_count" : order_count,
@@ -139,17 +139,17 @@ class OrderService:
             "monthly_sales" : monthly_sales
         }
 
-    async def get_revenue(self, date_from: date | None, date_to: date | None):
-        return await self.order_repository.get_revenue(date_from, date_to)
+    async def get_revenue(self, date_from: date | None, date_to: date | None, restaurant_id : UUID):
+        return await self.order_repository.get_revenue(date_from, date_to, restaurant_id)
 
-    async def get_order_count(self, date_from: date | None, date_to: date | None):
-        return await self.order_repository.get_order_count(date_from, date_to)
+    async def get_order_count(self, date_from: date | None, date_to: date | None, restaurant_id : UUID):
+        return await self.order_repository.get_order_count(date_from, date_to, restaurant_id)
 
-    async def get_revenue_for_previous_period(self, date_from: date | None, date_to: date | None):
-        return await self.order_repository.get_revenue_for_previous_period(date_from, date_to)
+    async def get_revenue_for_previous_period(self, date_from: date | None, date_to: date | None, restaurant_id : UUID):
+        return await self.order_repository.get_revenue_for_previous_period(date_from, date_to, restaurant_id)
 
-    async def get_top_dishes(self, date_from: date | None, date_to: date | None):
-        return await self.order_repository.get_top_dishes(date_from, date_to)
+    async def get_top_dishes(self, date_from: date | None, date_to: date | None, restaurant_id : UUID):
+        return await self.order_repository.get_top_dishes(date_from, date_to, restaurant_id)
 
-    async def get_monthly_sales(self, date_from: date | None, date_to: date | None):
-        return await self.order_repository.get_monthly_sales(date_from, date_to)
+    async def get_monthly_sales(self, date_from: date | None, date_to: date | None, restaurant_id : UUID):
+        return await self.order_repository.get_monthly_sales(date_from, date_to, restaurant_id)

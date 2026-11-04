@@ -2,7 +2,7 @@ import uuid
 from typing import Annotated
 
 from fastapi import Request, APIRouter, HTTPException, Form
-from fastapi.params import Depends
+from fastapi.params import Depends, Query
 from sqlalchemy.exc import SQLAlchemyError
 from starlette.responses import  RedirectResponse
 from starlette.templating import Jinja2Templates
@@ -230,6 +230,6 @@ async def create_restaurant_and_subscription_checkout(data : Annotated[Restauran
     return checkout_response.json()
 
 @router.get("/choose_subscription")
-async def choose_subscription(request : Request):
-    return templates.TemplateResponse("choose_subscription.html", {"request" : request})
+async def choose_subscription(request : Request, mode : str | None = Query(default=None)):
+    return templates.TemplateResponse("choose_subscription.html", {"request" : request, "mode" : mode})
 

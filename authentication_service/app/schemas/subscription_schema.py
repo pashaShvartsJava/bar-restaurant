@@ -30,7 +30,7 @@ PLANS = {
         "yearly": Decimal("419.99"),
         "trial_days": 3,
         "currency": Currency.EUR,
-        "order_commission_percent": 1,
+        "order_commission_percent": 9,
     },
     PlanId.ADVANCED: {
         "name": "Advanced",
@@ -38,7 +38,7 @@ PLANS = {
         "yearly": Decimal("1259.99"),
         "trial_days": 7,
         "currency": Currency.EUR,
-        "order_commission_percent": 0,
+        "order_commission_percent": 5,
     },
     PlanId.PROFESSIONAL: {
         "name": "Professional Business",

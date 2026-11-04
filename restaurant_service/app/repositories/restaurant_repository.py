@@ -19,6 +19,11 @@ class RestaurantRepository:
     def __init__ (self, db : AsyncSession):
         self.db = db
 
+    async def get_restaurant_by_name(self, name : str) -> Restaurant:
+        result = await self.db.execute(
+            select(Restaurant).options(selectinload(Restaurant.memberships)).where(Restaurant.restaurant_name == name))
+        return result.scalar_one_or_none()
+
     async def get_restaurant_by_id(self, restaurant_id : UUID) -> Restaurant:
         result = await self.db.execute(select(Restaurant).options(selectinload(Restaurant.memberships)).where(Restaurant.id==restaurant_id))
         return result.scalar_one_or_none()

@@ -22,6 +22,9 @@
             --muted: #929096;
             --border: rgba(213, 166, 91, .18);
             --purple: #b59aff;
+            --violet: #a78bfa;
+            --violet-light: #c4b5fd;
+            --violet-border: rgba(167, 139, 250, .35);
         }
 
         html {
@@ -242,6 +245,56 @@
             color: #9ac49d;
             font-size: 9px;
             letter-spacing: .3px;
+        }
+
+        .renew-banner {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            max-width: 850px;
+            margin: 0 auto 35px;
+            padding: 19px 23px;
+            border: 1px solid var(--violet-border);
+            border-radius: 10px;
+            background:
+                linear-gradient(
+                    110deg,
+                    rgba(139, 92, 246, .10),
+                    rgba(139, 92, 246, .025)
+                );
+            animation: fadeUp .8s .16s ease both;
+        }
+
+        .renew-banner-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex: 0 0 42px;
+            width: 42px;
+            height: 42px;
+            border: 1px solid var(--violet-border);
+            border-radius: 50%;
+            color: var(--violet-light);
+            font-size: 21px;
+        }
+
+        .renew-banner-content {
+            flex: 1;
+        }
+
+        .renew-banner-content strong {
+            display: block;
+            margin-bottom: 5px;
+            color: var(--violet-light);
+            font-size: 12px;
+            font-weight: normal;
+        }
+
+        .renew-banner-content span {
+            display: block;
+            color: #b3a5c9;
+            font-size: 11px;
+            line-height: 1.7;
         }
 
         .trial-banner {
@@ -818,41 +871,158 @@
             color: var(--gold);
         }
 
-        .toast {
+        .restaurant-modal-overlay {
             position: fixed;
-            right: 22px;
-            bottom: 22px;
-            z-index: 100;
-            width: min(380px, calc(100vw - 32px));
-            padding: 18px 20px;
-            border: 1px solid rgba(213, 166, 91, .3);
-            border-radius: 10px;
-            background: #211d1e;
-            box-shadow: 0 18px 55px rgba(0, 0, 0, .45);
-            opacity: 0;
-            pointer-events: none;
-            transform: translateY(15px);
-            transition: opacity .3s ease, transform .3s ease;
+            inset: 0;
+            z-index: 2000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background: rgba(0, 0, 0, .78);
+            backdrop-filter: blur(5px);
         }
 
-        .toast.visible {
-            opacity: 1;
-            transform: translateY(0);
+        .restaurant-modal-overlay.active {
+            display: flex;
         }
 
-        .toast strong {
-            display: block;
-            margin-bottom: 7px;
-            color: var(--gold-light);
+        .restaurant-modal {
+            width: 100%;
+            max-width: 460px;
+            background: rgba(29, 27, 29, .98);
+            border: 1px solid var(--violet-border);
+            border-radius: 14px;
+            box-shadow: 0 25px 80px rgba(0, 0, 0, .65);
+        }
+
+        .restaurant-modal-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 16px;
+            padding: 20px 22px;
+            border-bottom: 1px solid rgba(255, 255, 255, .07);
+        }
+
+        .restaurant-modal-title {
             font-family: Georgia, serif;
-            font-size: 15px;
+            font-size: 20px;
             font-weight: normal;
+            color: #f0e4dc;
         }
 
-        .toast p {
-            color: #aaa7ae;
+        .restaurant-modal-close {
+            flex-shrink: 0;
+            width: 30px;
+            height: 30px;
+            background: rgba(255, 255, 255, .04);
+            border: 1px solid rgba(255, 255, 255, .1);
+            border-radius: 6px;
+            color: #aaa9ae;
+            font-size: 18px;
+            line-height: 1;
+            cursor: pointer;
+        }
+
+        .restaurant-modal-close:hover {
+            color: var(--violet-light);
+            border-color: var(--violet);
+        }
+
+        .restaurant-modal-body {
+            padding: 20px 22px;
+        }
+
+        .restaurant-modal-text {
+            margin-bottom: 14px;
+            color: #b3a5c9;
             font-size: 11px;
             line-height: 1.7;
+        }
+
+        .restaurant-input {
+            width: 100%;
+            min-height: 42px;
+            padding: 10px 12px;
+            background: #2a282a;
+            border: 1px solid rgba(255, 255, 255, .09);
+            border-radius: 8px;
+            color: #fff;
+            font-size: 12px;
+            outline: none;
+        }
+
+        .restaurant-input:focus {
+            border-color: var(--violet);
+        }
+
+        .restaurant-modal-error {
+            display: none;
+            margin-top: 10px;
+            padding: 10px 12px;
+            border: 1px solid rgba(217, 130, 130, .35);
+            border-radius: 7px;
+            background: rgba(217, 130, 130, .08);
+            color: #d98282;
+            font-size: 11px;
+            line-height: 1.5;
+        }
+
+        .restaurant-modal-error.active {
+            display: block;
+        }
+
+        .restaurant-modal-error.is-warning {
+            border-color: rgba(213, 166, 91, .4);
+            background: rgba(213, 166, 91, .08);
+            color: #e0c88a;
+        }
+
+        .restaurant-modal-error.is-danger {
+            border-color: rgba(217, 130, 130, .4);
+            background: rgba(217, 130, 130, .08);
+            color: #d98282;
+        }
+
+        .restaurant-modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+            padding: 16px 22px;
+            border-top: 1px solid rgba(255, 255, 255, .07);
+        }
+
+        .restaurant-cancel-btn,
+        .restaurant-confirm-btn {
+            min-height: 38px;
+            padding: 9px 16px;
+            border-radius: 7px;
+            font-size: 10px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .restaurant-cancel-btn {
+            background: rgba(42, 40, 42, .95);
+            border: 1px solid rgba(255, 255, 255, .08);
+            color: #aaa9ae;
+        }
+
+        .restaurant-confirm-btn {
+            background: linear-gradient(135deg, rgba(139, 92, 246, .18), rgba(91, 62, 145, .28));
+            border: 1px solid var(--violet-border);
+            color: var(--violet-light);
+        }
+
+        .restaurant-confirm-btn:hover:not(:disabled) {
+            background: linear-gradient(135deg, rgba(167, 139, 250, .35), rgba(109, 76, 165, .45));
+            color: #e0d4ff;
+        }
+
+        .restaurant-confirm-btn:disabled {
+            opacity: .5;
+            cursor: not-allowed;
         }
 
         @keyframes fadeUp {
@@ -981,26 +1151,30 @@
                 font-size: 8px;
             }
 
-            .trial-banner {
+            .trial-banner,
+            .renew-banner {
                 align-items: flex-start;
                 gap: 12px;
                 margin-bottom: 27px;
                 padding: 16px;
             }
 
-            .trial-icon {
+            .trial-icon,
+            .renew-banner-icon {
                 flex-basis: 34px;
                 width: 34px;
                 height: 34px;
                 font-size: 18px;
             }
 
-            .trial-content strong {
+            .trial-content strong,
+            .renew-banner-content strong {
                 font-size: 11px;
                 line-height: 1.6;
             }
 
-            .trial-content span {
+            .trial-content span,
+            .renew-banner-content span {
                 font-size: 10px;
             }
 
@@ -1112,17 +1286,34 @@
         </nav>
 
         <header class="header">
-            <div class="eyebrow">Выберите свой план</div>
+            <div class="eyebrow">
+                {% if mode == 'renew' %}
+                    Продление подписки
+                {% else %}
+                    Выберите свой план
+                {% endif %}
+            </div>
 
             <h1>
-                Больше возможностей<br>
-                для <span>вашего ресторана</span>
+                {% if mode == 'renew' %}
+                    Новая подписка<br>
+                    для <span>вашего ресторана</span>
+                {% else %}
+                    Больше возможностей<br>
+                    для <span>вашего ресторана</span>
+                {% endif %}
             </h1>
 
             <p class="subtitle">
-                Всё необходимое для управления заведением,
-                приёма заказов и роста бизнеса — в одном месте.
-                Выберите тариф, который подходит именно вам.
+                {% if mode == 'renew' %}
+                    Выберите тариф, чтобы оформить новую подписку
+                    для уже существующего ресторана. Все данные ресторана,
+                    меню и заказов сохранятся.
+                {% else %}
+                    Всё необходимое для управления заведением,
+                    приёма заказов и роста бизнеса — в одном месте.
+                    Выберите тариф, который подходит именно вам.
+                {% endif %}
             </p>
 
             <div class="billing">
@@ -1151,6 +1342,21 @@
             </div>
         </header>
 
+        {% if mode == 'renew' %}
+        <section class="renew-banner" aria-label="Продление подписки">
+            <div class="renew-banner-icon" aria-hidden="true">↻</div>
+
+            <div class="renew-banner-content">
+                <strong>Оформление новой подписки</strong>
+                <span>
+                    Пробный период для продления недоступен.
+                    Оплата начнётся сразу после оформления подписки.
+                    Перед оплатой мы попросим указать название вашего ресторана,
+                    чтобы привязать подписку к существующему заведению.
+                </span>
+            </div>
+        </section>
+        {% else %}
         <section class="trial-banner" aria-label="Пробный период">
             <div class="trial-icon" aria-hidden="true">✦</div>
 
@@ -1167,6 +1373,7 @@
 
             <div class="trial-badge">3 / 7 / 14 DAYS</div>
         </section>
+        {% endif %}
 
         <section class="plans" aria-label="Тарифные планы">
             <article class="plan">
@@ -1186,11 +1393,17 @@
                         <span class="period">/ месяц</span>
                     </div>
                     <p class="price-note">
-                        <strong>3 дня бесплатно</strong>
-                        <br>
-                        Затем 39,99 € в месяц
-                        <br>
-                        Комиссия 1% с каждого онлайн-заказа
+                        {% if mode == 'renew' %}
+                            Затем 39,99 € в месяц
+                            <br>
+                            Комиссия 9% с каждого онлайн-заказа
+                        {% else %}
+                            <strong>3 дня бесплатно</strong>
+                            <br>
+                            Затем 39,99 € в месяц
+                            <br>
+                            Комиссия 9% с каждого онлайн-заказа
+                        {% endif %}
                     </p>
                 </div>
 
@@ -1227,8 +1440,12 @@
                         <span class="arrow">→</span>
                     </button>
                     <p class="plan-footnote">
-                        После 3-дневного пробного периода взимается
-                        ежемесячная плата и комиссия за онлайн-заказы.
+                        {% if mode == 'renew' %}
+                            Оплата сразу после оформления подписки.
+                        {% else %}
+                            После 3-дневного пробного периода взимается
+                            ежемесячная плата и комиссия за онлайн-заказы.
+                        {% endif %}
                     </p>
                 </div>
             </article>
@@ -1250,11 +1467,17 @@
                         <span class="period">/ месяц</span>
                     </div>
                     <p class="price-note">
-                        <strong>7 дней бесплатно</strong>
-                        <br>
-                        Затем 119,99 € в месяц
-                        <br>
-                        Без комиссии платформы с заказов
+                        {% if mode == 'renew' %}
+                            Затем 119,99 € в месяц
+                            <br>
+                            Комиссия 5% с каждого онлайн-заказа
+                        {% else %}
+                            <strong>7 дней бесплатно</strong>
+                            <br>
+                            Затем 119,99 € в месяц
+                            <br>
+                            Комиссия 5% с каждого онлайн-заказа
+                        {% endif %}
                     </p>
                 </div>
 
@@ -1291,8 +1514,12 @@
                         <span class="arrow">→</span>
                     </button>
                     <p class="plan-footnote">
-                        После 7-дневного пробного периода — 119,99 € в месяц.
-                        Без комиссии платформы.
+                        {% if mode == 'renew' %}
+                            Оплата сразу после оформления подписки.
+                        {% else %}
+                            После 7-дневного пробного периода — 119,99 € в месяц.
+                            Комиссия 5% с онлайн-заказов.
+                        {% endif %}
                     </p>
                 </div>
             </article>
@@ -1315,12 +1542,20 @@
                         <span class="price" id="proPrice">199,99</span>
                         <span class="period" id="proPeriod">/ месяц</span>
                     </div>
-                    <p class="price-note" id="proPriceNote">
-                        <strong>14 дней бесплатно</strong>
-                        <br>
-                        Затем 199,99 € в месяц
-                        <br>
-                        Без комиссии платформы с заказов
+                    <p class="price-note" id="proPriceNote"
+                       data-monthly-normal="{% if mode == 'renew' %}Затем 199,99 € в месяц<br>Без комиссии платформы с заказов{% else %}<strong>14 дней бесплатно</strong><br>Затем 199,99 € в месяц<br>Без комиссии платформы с заказов{% endif %}"
+                       data-yearly-normal="{% if mode == 'renew' %}Затем 2 099,99 € за год<br>Экономия 299,89 € в год{% else %}<strong>14 дней бесплатно</strong><br>Затем 2 099,99 € за год<br>Экономия 299,89 € в год{% endif %}">
+                        {% if mode == 'renew' %}
+                            Затем 199,99 € в месяц
+                            <br>
+                            Без комиссии платформы с заказов
+                        {% else %}
+                            <strong>14 дней бесплатно</strong>
+                            <br>
+                            Затем 199,99 € в месяц
+                            <br>
+                            Без комиссии платформы с заказов
+                        {% endif %}
                     </p>
                 </div>
 
@@ -1363,7 +1598,11 @@
                         <span class="arrow">→</span>
                     </button>
                     <p class="plan-footnote" id="proFootnote">
-                        Оплата после 14-дневного пробного периода.
+                        {% if mode == 'renew' %}
+                            Оплата сразу после оформления подписки.
+                        {% else %}
+                            Оплата после 14-дневного пробного периода.
+                        {% endif %}
                     </p>
                 </div>
             </article>
@@ -1431,16 +1670,25 @@
                         </tr>
                         <tr>
                             <td>Комиссия платформы с онлайн-заказов</td>
-                            <td>1%</td>
-                            <td class="yes">0%</td>
+                            <td>9%</td>
+                            <td>5%</td>
                             <td class="yes">0%</td>
                         </tr>
+                        {% if mode != 'renew' %}
                         <tr>
                             <td>Бесплатный пробный период</td>
                             <td class="yes">3 дня</td>
                             <td class="yes">7 дней</td>
                             <td class="yes">14 дней</td>
                         </tr>
+                        {% else %}
+                        <tr>
+                            <td>Оплата после оформления</td>
+                            <td class="yes">Сразу</td>
+                            <td class="yes">Сразу</td>
+                            <td class="yes">Сразу</td>
+                        </tr>
+                        {% endif %}
                     </tbody>
                 </table>
             </div>
@@ -1448,12 +1696,13 @@
             <div class="commission-note">
                 <span class="note-icon" aria-hidden="true">ⓘ</span>
                 <p>
-                    <strong>О комиссии Starter.</strong>
-                    К стоимости подписки добавляется комиссия 1% с каждого
-                    онлайн-заказа. Условия расчёта комиссии, возвратов и
-                    платёжных сборов указываются отдельно в условиях тарифа.
-                    Комиссия платформы не взимается на тарифах Advanced
-                    и Professional Business.
+                    <strong>О комиссии тарифов.</strong>
+                    К стоимости подписки добавляется комиссия с каждого
+                    онлайн-заказа: 9% на Starter, 5% на Advanced.
+                    Условия расчёта комиссии, возвратов и платёжных сборов
+                    указываются отдельно в условиях тарифа.
+                    Комиссия платформы не взимается только на тарифе
+                    Professional Business.
                 </p>
             </div>
         </section>
@@ -1512,10 +1761,9 @@
                     <div class="faq-answer">
                         <div>
                             <p>
-                                В Starter взимается дополнительная комиссия
-                                1% с онлайн-заказов, соответствующих условиям
-                                тарифа. На тарифах Advanced и Professional
-                                Business комиссия платформы составляет 0%.
+                                На Starter взимается комиссия 9% с онлайн-заказов,
+                                на Advanced — 5%. На тарифе Professional Business
+                                комиссия платформы составляет 0%.
                                 Условия расчёта, возвраты и платёжные сборы
                                 определяются отдельно.
                             </p>
@@ -1574,169 +1822,311 @@
         </footer>
     </main>
 
-    <script>
-        /*
-         * ВАЖНО: цены и длительности пробного периода продублированы здесь,
-         * чтобы их можно было отправить в payment-сервис вместе с формой
-         * регистрации. Сервер ОБЯЗАТЕЛЬНО должен перепроверять сумму
-         * по plan_id, а не доверять присланной цене.
-         *
-         * orderCommissionPercent — процент комиссии платформы с каждого
-         * онлайн-заказа. Если комиссии нет — 0.
-         */
-        const PLANS = {
-            starter: {
-                name: "Starter",
-                monthlyPrice: 39.99,
-                yearlyPrice: 419.99,
-                trialDays: 3,
-                orderCommissionPercent: 1
-            },
-            advanced: {
-                name: "Advanced",
-                monthlyPrice: 119.99,
-                yearlyPrice: 1259.99,
-                trialDays: 7,
-                orderCommissionPercent: 0
-            },
-            professional: {
-                name: "Professional Business",
-                monthlyPrice: 199.99,
-                yearlyPrice: 2099.99,
-                trialDays: 14,
-                orderCommissionPercent: 0
+    <div class="restaurant-modal-overlay" id="restaurantModal">
+        <div class="restaurant-modal">
+            <div class="restaurant-modal-header">
+                <h2 class="restaurant-modal-title">Найдите свой ресторан</h2>
+                <button type="button" class="restaurant-modal-close" id="restaurantModalClose" aria-label="Закрыть">&times;</button>
+            </div>
+
+            <div class="restaurant-modal-body">
+                <p class="restaurant-modal-text">
+                    Введите название ресторана, для которого хотите оформить новую подписку.
+                    Мы проверим, можно ли привязать новую подписку к этому ресторану.
+                </p>
+
+                <input
+                    type="text"
+                    class="restaurant-input"
+                    id="restaurantNameInput"
+                    placeholder="Название ресторана"
+                    autocomplete="off"
+                >
+
+                <div class="restaurant-modal-error" id="restaurantModalError"></div>
+            </div>
+
+            <div class="restaurant-modal-footer">
+                <button type="button" class="restaurant-cancel-btn" id="restaurantModalCancel">
+                    Отмена
+                </button>
+                <button type="button" class="restaurant-confirm-btn" id="restaurantModalConfirm">
+                    Найти и перейти к оплате
+                </button>
+            </div>
+        </div>
+    </div>
+<script src="/static/api.js"></script>
+<script>
+    const PLANS = {
+        starter: {
+            name: "Starter",
+            monthlyPrice: 39.99,
+            yearlyPrice: 419.99,
+            trialDays: 3,
+            orderCommissionPercent: 9
+        },
+        advanced: {
+            name: "Advanced",
+            monthlyPrice: 119.99,
+            yearlyPrice: 1259.99,
+            trialDays: 7,
+            orderCommissionPercent: 5
+        },
+        professional: {
+            name: "Professional Business",
+            monthlyPrice: 199.99,
+            yearlyPrice: 2099.99,
+            trialDays: 14,
+            orderCommissionPercent: 0
+        }
+    };
+
+    const REGISTER_URL = "/restaurant/register";
+    const IS_RENEW = "{{ 'true' if mode == 'renew' else 'false' }}" === "true";
+
+    const billingToggle = document.getElementById("billingToggle");
+    const monthlyLabel = document.getElementById("monthlyLabel");
+    const yearlyLabel = document.getElementById("yearlyLabel");
+    const proPrice = document.getElementById("proPrice");
+    const proPeriod = document.getElementById("proPeriod");
+    const proPriceNote = document.getElementById("proPriceNote");
+    const proFootnote = document.getElementById("proFootnote");
+
+    let yearly = false;
+
+    function updateBilling(isYearly) {
+        yearly = isYearly;
+
+        billingToggle.setAttribute("aria-checked", String(yearly));
+        monthlyLabel.classList.toggle("active", !yearly);
+        yearlyLabel.classList.toggle("active", yearly);
+
+        proPrice.style.opacity = "0";
+        proPrice.style.transform = "translateY(5px)";
+
+        window.setTimeout(() => {
+            if (yearly) {
+                proPrice.textContent = "2 099,99";
+                proPeriod.textContent = "/ год";
+                proPriceNote.innerHTML = proPriceNote.dataset.yearlyNormal;
+                proFootnote.textContent = IS_RENEW
+                    ? "Годовая оплата сразу после оформления подписки."
+                    : "Годовая оплата после 14-дневного пробного периода.";
+            } else {
+                proPrice.textContent = "199,99";
+                proPeriod.textContent = "/ месяц";
+                proPriceNote.innerHTML = proPriceNote.dataset.monthlyNormal;
+                proFootnote.textContent = IS_RENEW
+                    ? "Оплата сразу после оформления подписки."
+                    : "Ежемесячная оплата после 14-дневного пробного периода.";
             }
-        };
 
-        const REGISTER_URL = "/restaurant/register";
+            proPrice.style.opacity = "1";
+            proPrice.style.transform = "translateY(0)";
+        }, 150);
+    }
 
-        const billingToggle = document.getElementById("billingToggle");
-        const monthlyLabel = document.getElementById("monthlyLabel");
-        const yearlyLabel = document.getElementById("yearlyLabel");
-        const proPrice = document.getElementById("proPrice");
-        const proPeriod = document.getElementById("proPeriod");
-        const proPriceNote = document.getElementById("proPriceNote");
-        const proFootnote = document.getElementById("proFootnote");
+    billingToggle.addEventListener("click", () => {
+        updateBilling(!yearly);
+    });
 
-        let yearly = false;
+    const restaurantModal = document.getElementById("restaurantModal");
+    const restaurantModalClose = document.getElementById("restaurantModalClose");
+    const restaurantModalCancel = document.getElementById("restaurantModalCancel");
+    const restaurantModalConfirm = document.getElementById("restaurantModalConfirm");
+    const restaurantNameInput = document.getElementById("restaurantNameInput");
+    const restaurantModalError = document.getElementById("restaurantModalError");
 
-        function updateBilling(isYearly) {
-            yearly = isYearly;
+    let pendingPlanId = null;
+    let pendingPlan = null;
+    let pendingBillingPeriod = null;
+    let pendingPrice = null;
 
-            billingToggle.setAttribute("aria-checked", String(yearly));
-            monthlyLabel.classList.toggle("active", !yearly);
-            yearlyLabel.classList.toggle("active", yearly);
+    function showModalError(message, kind) {
+        restaurantModalError.textContent = message;
+        restaurantModalError.classList.remove("is-warning", "is-danger");
+        restaurantModalError.classList.add("active");
 
-            proPrice.style.opacity = "0";
-            proPrice.style.transform = "translateY(5px)";
+        if (kind === "warning") {
+            restaurantModalError.classList.add("is-warning");
+        } else if (kind === "danger") {
+            restaurantModalError.classList.add("is-danger");
+        }
+    }
 
-            window.setTimeout(() => {
-                if (yearly) {
-                    proPrice.textContent = "2 099,99";
-                    proPeriod.textContent = "/ год";
+    function clearModalError() {
+        restaurantModalError.textContent = "";
+        restaurantModalError.classList.remove("active", "is-warning", "is-danger");
+    }
 
-                    proPriceNote.innerHTML =
-                        "<strong>14 дней бесплатно</strong><br>" +
-                        "Затем 2 099,99 € за год<br>" +
-                        "Экономия 299,89 € в год";
+    function openRestaurantModal(planId, plan, billingPeriod, price) {
+        pendingPlanId = planId;
+        pendingPlan = plan;
+        pendingBillingPeriod = billingPeriod;
+        pendingPrice = price;
 
-                    proFootnote.textContent =
-                        "Годовая оплата после 14-дневного пробного периода.";
-                } else {
-                    proPrice.textContent = "199,99";
-                    proPeriod.textContent = "/ месяц";
+        restaurantNameInput.value = "";
+        clearModalError();
+        restaurantModal.classList.add("active");
+        document.body.style.overflow = "hidden";
+        setTimeout(() => restaurantNameInput.focus(), 50);
+    }
 
-                    proPriceNote.innerHTML =
-                        "<strong>14 дней бесплатно</strong><br>" +
-                        "Затем 199,99 € в месяц<br>" +
-                        "Без комиссии платформы с заказов";
+    function closeRestaurantModal() {
+        restaurantModal.classList.remove("active");
+        document.body.style.overflow = "";
+        pendingPlanId = null;
+        pendingPlan = null;
+        pendingBillingPeriod = null;
+        pendingPrice = null;
+    }
 
-                    proFootnote.textContent =
-                        "Ежемесячная оплата после 14-дневного пробного периода.";
-                }
+    restaurantModalClose.addEventListener("click", closeRestaurantModal);
+    restaurantModalCancel.addEventListener("click", closeRestaurantModal);
 
-                proPrice.style.opacity = "1";
-                proPrice.style.transform = "translateY(0)";
-            }, 150);
+    restaurantModal.addEventListener("click", (event) => {
+        if (event.target === restaurantModal) {
+            closeRestaurantModal();
+        }
+    });
+
+    document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape" && restaurantModal.classList.contains("active")) {
+            closeRestaurantModal();
+        }
+    });
+
+    restaurantNameInput.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") {
+            event.preventDefault();
+            restaurantModalConfirm.click();
+        }
+    });
+
+    restaurantModalConfirm.addEventListener("click", async () => {
+        const name = restaurantNameInput.value.trim();
+
+        clearModalError();
+
+        if (!name) {
+            showModalError("Введите название ресторана.", "warning");
+            restaurantNameInput.focus();
+            return;
         }
 
-        billingToggle.addEventListener("click", () => {
-            updateBilling(!yearly);
-        });
+        restaurantModalConfirm.disabled = true;
+        restaurantModalConfirm.textContent = "Обработка...";
 
-        /*
-         * При выборе тарифа:
-         *  - определяем billingPeriod (monthly / yearly);
-         *  - собираем данные подписки, включая процент комиссии
-         *    с заказов (order_commission_percent);
-         *  - перенаправляем на /restaurant/register с query-параметрами.
-         *
-         * Страница регистрации должна прочитать эти параметры
-         * и отправить их вместе с остальными данными в payment-сервис
-         * в виде DTO, например:
-         *
-         * {
-         *     user: { ...данные формы... },
-         *     subscription: {
-         *         plan_id: "professional",
-         *         plan_name: "Professional Business",
-         *         billing_period: "monthly",
-         *         price: 199.99,
-         *         currency: "EUR",
-         *         trial_days: 14,
-         *         order_commission_percent: 0
-         *     }
-         * }
-         */
-        document.querySelectorAll(".select-plan").forEach((button) => {
-            button.addEventListener("click", () => {
-                const planId = button.dataset.plan;
-                const plan = PLANS[planId];
-                if (!plan) return;
-
-                // Годовой период сейчас доступен только для Professional,
-                // остальные тарифы — помесячно.
-                const billingPeriod =
-                    planId === "professional" && yearly
-                        ? "yearly"
-                        : "monthly";
-
-                const price =
-                    billingPeriod === "yearly"
-                        ? plan.yearlyPrice
-                        : plan.monthlyPrice;
-
-                const params = new URLSearchParams({
-                    plan_id: planId,
-                    plan_name: plan.name,
-                    billing_period: billingPeriod,
-                    price: String(price),
-                    currency: "EUR",
-                    trial_days: String(plan.trialDays),
-                    order_commission_percent: String(plan.orderCommissionPercent ?? 0)
-                });
-
-                window.location.href = REGISTER_URL + "?" + params.toString();
+        try {
+            const params = new URLSearchParams({
+                name: name,
+                plan_id: pendingPlanId,
+                billing_period: pendingBillingPeriod,
+                price: String(pendingPrice),
+                order_commission_percent: String(pendingPlan?.orderCommissionPercent ?? 0)
             });
-        });
 
-        document.querySelectorAll(".faq-question").forEach((button) => {
-            button.addEventListener("click", () => {
-                const item = button.closest(".faq-item");
-                const isOpen = item.classList.contains("open");
+            const response = await apiFetch(
+                `/restaurants/find_by_name?${params.toString()}`,
+                { method: "GET" }
+            );
 
-                document.querySelectorAll(".faq-item").forEach((other) => {
-                    other.classList.remove("open");
-                    other.querySelector(".faq-question")
-                        .setAttribute("aria-expanded", "false");
-                });
+            if (!response.ok) {
+                let data = null;
+                try { data = await response.json(); } catch {}
 
-                if (!isOpen) {
-                    item.classList.add("open");
-                    button.setAttribute("aria-expanded", "true");
-                }
+                showModalError(
+                    data?.detail ||
+                    data?.message ||
+                    "Ресторан с таким названием не найден.",
+                    "danger"
+                );
+                return;
+            }
+
+            const data = await response.json();
+
+            if (data?.error) {
+                showModalError(data.error, "warning");
+                return;
+            }
+
+            const checkoutUrl = data?.checkout_url;
+
+            if (!checkoutUrl) {
+                showModalError(
+                    "Сервер не вернул ссылку на оплату.",
+                    "danger"
+                );
+                return;
+            }
+
+            window.location.href = checkoutUrl;
+        } catch (error) {
+            console.error("RENEW SUBSCRIPTION ERROR:", error);
+            showModalError(
+                "Не удалось подключиться к серверу.",
+                "danger"
+            );
+        } finally {
+            restaurantModalConfirm.disabled = false;
+            restaurantModalConfirm.textContent = "Найти и перейти к оплате";
+        }
+    });
+
+    document.querySelectorAll(".select-plan").forEach((button) => {
+        button.addEventListener("click", () => {
+            const planId = button.dataset.plan;
+            const plan = PLANS[planId];
+            if (!plan) return;
+
+            const billingPeriod =
+                planId === "professional" && yearly
+                    ? "yearly"
+                    : "monthly";
+
+            const price =
+                billingPeriod === "yearly"
+                    ? plan.yearlyPrice
+                    : plan.monthlyPrice;
+
+            if (IS_RENEW) {
+                openRestaurantModal(planId, plan, billingPeriod, price);
+                return;
+            }
+
+            const params = new URLSearchParams({
+                plan_id: planId,
+                plan_name: plan.name,
+                billing_period: billingPeriod,
+                price: String(price),
+                currency: "EUR",
+                trial_days: String(plan.trialDays),
+                order_commission_percent: String(plan.orderCommissionPercent ?? 0)
             });
+
+            window.location.href = REGISTER_URL + "?" + params.toString();
         });
-    </script>
+    });
+
+    document.querySelectorAll(".faq-question").forEach((button) => {
+        button.addEventListener("click", () => {
+            const item = button.closest(".faq-item");
+            const isOpen = item.classList.contains("open");
+
+            document.querySelectorAll(".faq-item").forEach((other) => {
+                other.classList.remove("open");
+                other.querySelector(".faq-question")
+                    .setAttribute("aria-expanded", "false");
+            });
+
+            if (!isOpen) {
+                item.classList.add("open");
+                button.setAttribute("aria-expanded", "true");
+            }
+        });
+    });
+</script>
 </body>
 </html>

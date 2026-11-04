@@ -12,6 +12,9 @@ class RestaurantService:
     def __init__(self, restaurant_repository : RestaurantRepository):
         self.restaurant_repository = restaurant_repository
 
+    async def get_restaurant_by_name(self, name: str) -> Restaurant:
+        return await self.restaurant_repository.get_restaurant_by_name(name)
+
     async def get_restaurant_by_id(self, restaurant_id: UUID) -> Restaurant:
         return await self.restaurant_repository.get_restaurant_by_id(restaurant_id)
 

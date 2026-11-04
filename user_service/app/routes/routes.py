@@ -132,6 +132,8 @@ async def delete_user(request : Request, service : UserService = Depends(get_ser
                                        params={"identity_id" : user.identity_id},
                                        headers={"internal_token" : INTERNAL_TOKEN})
         response.raise_for_status()
+    redirect = RedirectResponse(url="/login", status_code=303)
+    redirect.delete_cookie("access_token")
     return RedirectResponse(url="/bar_name", status_code=303)
 
 @router.get("/user/password")
