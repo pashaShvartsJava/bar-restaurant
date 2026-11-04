@@ -1,21 +1,23 @@
-
+import json
 import uuid
 from decimal import Decimal
+from typing import Annotated, Optional
 
 import httpx
-from fastapi import APIRouter, Request, HTTPException
-from fastapi.params import Header, Depends
+from fastapi import APIRouter, Request, HTTPException, UploadFile
+from fastapi.params import Header, Depends, Form, File
 
-from starlette.responses import HTMLResponse
+from starlette.responses import HTMLResponse, RedirectResponse
 from starlette.templating import Jinja2Templates
 
 from ..models.restaurant_model import RestaurantStatus
+from ..schema.constructor_schema import UpdateRestaurantDTO
 from ..schema.subscription_schema import SubscriptionCheckoutDTO
-from ..security.authorization.authorization import required_role
+from ..security.authorization.authorization import required_role, required_roles
 from ..security.jwt.jwt import get_payload
 from ..schema.restaurant_schema import RestaurantCreationDTO, KeyDTO, RestaurantConstructorDTO, \
     RestaurantForUserProfileDTO
-from ..security.internal_security import verify_internal_token
+from ..security.internal_security import verify_internal_token, verify_csrf
 from ..security.role.role import IdentityRole
 from ..services.restaurant_service import RestaurantService
 from ..dependencies.dependency import get_restaurant_dependency
@@ -120,12 +122,12 @@ async def add_membership(identity_id : str,
     await service.create_membership(uuid.UUID(identity_id), uuid.UUID(restaurant_id), role)
 
 @router.get("/restaurants/find_by_name")
-async def get_res_by_name_and_renew_subscription(name: str,
-                                                 plan_id: str,
-                                                 billing_period: str,
-                                                 price: Decimal,
-                                                 order_commission_percent: Decimal,
-                                                 service: RestaurantService = Depends(get_restaurant_dependency)):
+async def get_res_by_name_and_renew_subscription(name : str,
+                                                 plan_id : str,
+                                                 billing_period : str,
+                                                 price : Decimal,
+                                                 order_commission_percent : Decimal,
+                                                 service : RestaurantService = Depends(get_restaurant_dependency)):
     restaurant = await service.get_restaurant_by_name(name)
     if not restaurant:
         raise HTTPException(status_code=404, detail="Ресторан не найден.")
@@ -166,3 +168,68 @@ async def get_res_by_name_and_renew_subscription(name: str,
         return { "error": "Сервер не вернул ссылку на оплату.", "status": restaurant.status.value,}
     return { "checkout_url": checkout_url, "status": restaurant.status.value}
 
+@router.get("/restaurants/constructor")
+async def get_constructor_page(request : Request, service : RestaurantService = Depends(get_restaurant_dependency)):
+    payload = get_payload(request)
+    required_roles(IdentityRole.OWNER, IdentityRole.MODERATOR, payload=payload)
+    restaurant_id = payload.get("restaurant_id")
+    restaurant = await service.get_restaurant_by_id(restaurant_id)
+    return templates.TemplateResponse("constructor.html", {"request" : request, "restaurant" : restaurant})
+
+@router.patch("/restaurants/constructor")
+async def get_constructor_page(request : Request,
+                               country: Annotated[str, Form(...)],
+                               city: Annotated[str, Form(...)],
+                               address: Annotated[str, Form(...)],
+                               timezone: Annotated[str, Form(...)],
+                               restaurant_name: Annotated[str, Form(...)],
+                               slug: Annotated[str, Form(...)],
+                               slogan: Annotated[Optional[str], Form()] = None,
+                               tagline: Annotated[Optional[str], Form()] = None,
+                               short_description: Annotated[Optional[str], Form()] = None,
+                               description: Annotated[Optional[str], Form()] = None,
+                               about_title: Annotated[Optional[str], Form()] = None,
+                               currency: Annotated[str, Form()] = "EUR",
+                               phone: Annotated[Optional[str], Form()] = None,
+                               email: Annotated[Optional[str], Form()] = None,
+                               instagram_url: Annotated[Optional[str], Form()] = None,
+                               working_hours: Annotated[Optional[str], Form()] = None,
+                               accepts_reservations: Annotated[bool, Form()] = True,
+                               accepts_delivery: Annotated[bool, Form()] = True,
+                               accepts_orders_on_site: Annotated[bool, Form()] = True,
+                               remove_photo: Annotated[bool, Form()] = False,
+                               photo: Annotated[Optional[UploadFile], File()] = None,
+                               service : RestaurantService = Depends(get_restaurant_dependency)):
+    payload = get_payload(request)
+    required_roles(IdentityRole.OWNER, IdentityRole.MODERATOR, payload=payload)
+    await verify_csrf(request)
+    restaurant_id = payload.get("restaurant_id")
+    parsed_working_hours = None
+    if working_hours:
+        try:
+            parsed_working_hours = json.loads(working_hours)
+        except json.JSONDecodeError:
+            raise HTTPException(status_code=400, detail="Invalid working_hours format")
+    data = UpdateRestaurantDTO(
+        restaurant_name=restaurant_name,
+        slug=slug,
+        slogan=slogan,
+        tagline=tagline,
+        short_description=short_description,
+        description=description,
+        about_title=about_title,
+        country=country,
+        city=city,
+        address=address,
+        timezone=timezone,
+        currency=currency,
+        phone=phone,
+        email=email,
+        instagram_url=instagram_url,
+        working_hours=parsed_working_hours,
+        accepts_reservations=accepts_reservations,
+        accepts_delivery=accepts_delivery,
+        accepts_orders_on_site=accepts_orders_on_site,
+        remove_photo=remove_photo)
+    updated_restaurant = await service.update_restaurant(restaurant_id, data, photo)
+    return {"photo_url": updated_restaurant.photo_url, "success": True}

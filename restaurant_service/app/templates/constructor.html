@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Конструктор сайта — {{ restaurant.restaurant_name }}</title>
+
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        min-height: 100vh;
+        background:
+            radial-gradient(ellipse at 50% 0%, rgba(145, 85, 75, 0.20) 0%, rgba(55, 35, 40, 0.22) 38%, rgba(9, 9, 11, 1) 78%),
+            linear-gradient(180deg, #211a1c 0%, #121214 50%, #09090b 100%);
+        color: #ffffff;
+        font-family: Arial, sans-serif;
+    }
+
+    .container {
+        width: 100%;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 60px 35px;
+    }
+
+    .top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 45px;
+    }
+
+    .back {
+        color: #77777d;
+        font-size: 11px;
+        text-decoration: none;
+        transition: color 0.2s;
+    }
+
+    .back:hover {
+        color: #d5a65b;
+    }
+
+    .brand {
+        color: #d5a65b;
+        font-family: Georgia, serif;
+        font-size: 11px;
+        letter-spacing: 3px;
+    }
+
+    .header {
+        text-align: center;
+        margin-bottom: 35px;
+    }
+
+    .header-label {
+        margin-bottom: 10px;
+        color: #d5a65b;
+        font-size: 9px;
+        letter-spacing: 3px;
+    }
+
+    .header h1 {
+        font-family: Georgia, serif;
+        font-size: 42px;
+        font-weight: normal;
+        letter-spacing: 3px;
+    }
+
+    .description {
+        margin-top: 12px;
+        color: #77777d;
+        font-size: 13px;
+    }
+
+    .error {
+        display: none;
+        margin-bottom: 18px;
+        padding: 12px 15px;
+        background: rgba(100, 35, 45, 0.35);
+        border: 1px solid rgba(210, 85, 90, 0.45);
+        border-radius: 8px;
+        color: #d98282;
+        font-size: 11px;
+        text-align: center;
+    }
+
+    .error.show {
+        display: block;
+    }
+
+    .success {
+        display: none;
+        margin-bottom: 18px;
+        padding: 12px 15px;
+        background: rgba(70, 110, 70, 0.25);
+        border: 1px solid rgba(120, 170, 120, 0.4);
+        border-radius: 8px;
+        color: #a8c9a8;
+        font-size: 11px;
+        text-align: center;
+    }
+
+    .success.show {
+        display: block;
+    }
+
+    .form {
+        width: 100%;
+        background: rgba(27, 25, 27, 0.96);
+        border: 1px solid rgba(213, 166, 91, 0.16);
+        border-radius: 14px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+        overflow: hidden;
+    }
+
+    .form-section {
+        padding: 24px 26px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .form-section:last-child {
+        border-bottom: none;
+    }
+
+    .form-section-title {
+        margin-bottom: 18px;
+        color: #d5a65b;
+        font-family: Georgia, serif;
+        font-size: 15px;
+        font-weight: normal;
+        letter-spacing: 1px;
+    }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 16px;
+    }
+
+    .form-grid.single {
+        grid-template-columns: 1fr;
+    }
+
+    .form-grid.triple {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .field {
+        display: flex;
+        flex-direction: column;
+        gap: 7px;
+        min-width: 0;
+    }
+
+    .field label {
+        color: #aaa9ae;
+        font-size: 10px;
+        letter-spacing: 0.5px;
+    }
+
+    .field input,
+    .field select,
+    .field textarea {
+        width: 100%;
+        min-height: 38px;
+        padding: 9px 12px;
+        background: rgba(42, 40, 42, 0.95);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 7px;
+        outline: none;
+        color: #ffffff;
+        font-family: Arial, sans-serif;
+        font-size: 11px;
+        transition: border-color 0.2s;
+    }
+
+    .field input::placeholder,
+    .field textarea::placeholder {
+        color: #77777d;
+    }
+
+    .field input:focus,
+    .field select:focus,
+    .field textarea:focus {
+        border-color: rgba(139, 92, 246, 0.55);
+    }
+
+    .field textarea {
+        min-height: 80px;
+        resize: vertical;
+        line-height: 1.6;
+    }
+
+    .field-hint {
+        color: #77777d;
+        font-size: 9px;
+        line-height: 1.5;
+    }
+
+    .photo-block {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+    }
+
+    .photo-preview {
+        flex-shrink: 0;
+        width: 130px;
+        height: 130px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #252427;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 12px;
+        overflow: hidden;
+        color: #77777d;
+        font-size: 11px;
+        text-align: center;
+    }
+
+    .photo-preview img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .photo-actions {
+        flex: 1;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .photo-input {
+        display: none;
+    }
+
+    .photo-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        min-height: 38px;
+        padding: 9px 14px;
+        background: rgba(42, 40, 42, 0.95);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 7px;
+        color: #d9ceca;
+        font-family: Arial, sans-serif;
+        font-size: 10px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.2s, border-color 0.2s, color 0.2s;
+        width: fit-content;
+    }
+
+    .photo-button:hover {
+        background: rgba(52, 49, 52, 0.98);
+        border-color: #d5a65b;
+        color: #ffffff;
+    }
+
+    .photo-remove {
+        display: none;
+        min-height: 32px;
+        padding: 7px 12px;
+        background: rgba(100, 35, 45, 0.35);
+        border: 1px solid rgba(210, 85, 90, 0.35);
+        border-radius: 7px;
+        color: #d98282;
+        font-family: Arial, sans-serif;
+        font-size: 10px;
+        cursor: pointer;
+        width: fit-content;
+        transition: background 0.2s, border-color 0.2s;
+    }
+
+    .photo-remove.show {
+        display: inline-flex;
+    }
+
+    .photo-remove:hover {
+        background: rgba(120, 45, 55, 0.5);
+        border-color: rgba(210, 85, 90, 0.55);
+    }
+
+    .photo-filename {
+        color: #77777d;
+        font-size: 10px;
+        overflow-wrap: anywhere;
+    }
+
+    .checkbox-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 18px;
+    }
+
+    .checkbox {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: #d7cfd6;
+        font-size: 11px;
+        cursor: pointer;
+        user-select: none;
+    }
+
+    .checkbox input {
+        width: 16px;
+        height: 16px;
+        accent-color: #d5a65b;
+        cursor: pointer;
+    }
+
+    .working-hours {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .working-row {
+        display: grid;
+        grid-template-columns: 100px 1fr 1fr;
+        gap: 12px;
+        align-items: center;
+    }
+
+    .working-day {
+        color: #d7cfd6;
+        font-size: 11px;
+        font-weight: 600;
+    }
+
+    .working-row input {
+        width: 100%;
+        min-height: 34px;
+        padding: 7px 10px;
+        background: rgba(42, 40, 42, 0.95);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 6px;
+        outline: none;
+        color: #ffffff;
+        font-family: Arial, sans-serif;
+        font-size: 11px;
+        transition: border-color 0.2s;
+    }
+
+    .working-row input:focus {
+        border-color: rgba(139, 92, 246, 0.55);
+    }
+
+    .form-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        padding: 22px 26px;
+        background: rgba(22, 20, 22, 0.6);
+        border-top: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 42px;
+        padding: 11px 22px;
+        border-radius: 8px;
+        font-family: Arial, sans-serif;
+        font-size: 11px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.2s, border-color 0.2s, color 0.2s;
+    }
+
+    .btn-cancel {
+        background: rgba(42, 40, 42, 0.95);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        color: #aaa9ae;
+        text-decoration: none;
+    }
+
+    .btn-cancel:hover {
+        background: rgba(52, 49, 52, 0.98);
+        border-color: #77777d;
+        color: #ffffff;
+    }
+
+    .btn-save {
+        background: rgba(213, 166, 91, 0.15);
+        border: 1px solid rgba(213, 166, 91, 0.45);
+        color: #d5a65b;
+    }
+
+    .btn-save:hover {
+        background: rgba(213, 166, 91, 0.25);
+        border-color: #d5a65b;
+        color: #f0cc86;
+    }
+
+    .btn-save:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    .footer {
+        padding-top: 35px;
+        text-align: center;
+        color: #4f4f54;
+        font-size: 9px;
+        letter-spacing: 1px;
+    }
+
+    @media (max-width: 900px) {
+        .form-grid,
+        .form-grid.triple {
+            grid-template-columns: 1fr;
+        }
+
+        .working-row {
+            grid-template-columns: 90px 1fr 1fr;
+        }
+    }
+
+    @media (max-width: 600px) {
+        .container {
+            padding: 35px 18px;
+        }
+
+        .top {
+            margin-bottom: 35px;
+        }
+
+        .header {
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 34px;
+        }
+
+        .form-section {
+            padding: 18px 16px;
+        }
+
+        .form-actions {
+            flex-direction: column-reverse;
+            padding: 18px 16px;
+        }
+
+        .btn {
+            width: 100%;
+        }
+
+        .photo-block {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .photo-preview {
+            width: 100%;
+            height: 180px;
+        }
+
+        .working-row {
+            grid-template-columns: 1fr;
+            gap: 6px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+    }
+</style>
+</head>
+
+<body>
+<div class="container">
+
+    <div class="top">
+        <a href="/admin_panel" class="back">← Назад в панель</a>
+        <div class="brand">FDCPlatform</div>
+    </div>
+
+    <div class="header">
+        <div class="header-label">CONSTRUCTOR</div>
+        <h1>Конструктор сайта</h1>
+        <p class="description">
+            Настройте, как ваш ресторан выглядит для посетителей
+        </p>
+    </div>
+
+    <div id="formSuccess" class="success"></div>
+    <div id="formError" class="error"></div>
+
+    <form class="form" id="constructorForm" enctype="multipart/form-data" novalidate>
+
+        <div class="form-section">
+            <h2 class="form-section-title">Основная информация</h2>
+
+            <div class="form-grid">
+                <div class="field">
+                    <label for="restaurant_name">Название ресторана</label>
+                    <input type="text" id="restaurant_name" name="restaurant_name"
+                           value="{{ restaurant.restaurant_name or '' }}" required>
+                </div>
+
+                <div class="field">
+                    <label for="slug">Slug (URL-адрес)</label>
+                    <input type="text" id="slug" name="slug"
+                           value="{{ restaurant.slug or '' }}" required>
+                    <span class="field-hint">Используется в адресе страницы ресторана</span>
+                </div>
+
+                <div class="field">
+                    <label for="slogan">Слоган</label>
+                    <input type="text" id="slogan" name="slogan" maxlength="120"
+                           value="{{ restaurant.slogan or '' }}" placeholder="Короткий слоган">
+                </div>
+
+                <div class="field">
+                    <label for="tagline">Тэглайн</label>
+                    <input type="text" id="tagline" name="tagline" maxlength="160"
+                           value="{{ restaurant.tagline or '' }}" placeholder="Подзаголовок">
+                </div>
+
+                <div class="field" style="grid-column: 1 / -1;">
+                    <label for="short_description">Краткое описание</label>
+                    <textarea id="short_description" name="short_description" maxlength="300"
+                              placeholder="Короткое описание ресторана для карточки на платформе">{{ restaurant.short_description or '' }}</textarea>
+                </div>
+
+                <div class="field" style="grid-column: 1 / -1;">
+                    <label for="about_title">Заголовок блока «О нас»</label>
+                    <input type="text" id="about_title" name="about_title" maxlength="120"
+                           value="{{ restaurant.about_title or '' }}" placeholder="Например: Наша история">
+                </div>
+
+                <div class="field" style="grid-column: 1 / -1;">
+                    <label for="description">Полное описание</label>
+                    <textarea id="description" name="description"
+                              placeholder="Подробное описание ресторана, кухни, атмосферы">{{ restaurant.description or '' }}</textarea>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-section">
+            <h2 class="form-section-title">Главное фото</h2>
+
+            <div class="photo-block">
+                <div class="photo-preview" id="photoPreview">
+                    {% if restaurant.photo_url %}
+                        <img src="{{ restaurant.photo_url }}" alt="Фото ресторана">
+                    {% else %}
+                        Нет фото
+                    {% endif %}
+                </div>
+
+                <div class="photo-actions">
+                    <input type="file" id="photoInput" name="photo" accept="image/*" class="photo-input">
+                    <button type="button" class="photo-button" id="photoButton">
+                        📷 Выбрать фото
+                    </button>
+                    <button type="button" class="photo-remove{% if restaurant.photo_url %} show{% endif %}" id="photoRemove">
+                        Удалить фото
+                    </button>
+                    <div class="photo-filename" id="photoFilename"></div>
+                    <span class="field-hint">Рекомендуемый размер: 800×800 px, JPG или PNG</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-section">
+            <h2 class="form-section-title">Местоположение</h2>
+
+            <div class="form-grid triple">
+                <div class="field">
+                    <label for="country">Страна</label>
+                    <input type="text" id="country" name="country"
+                           value="{{ restaurant.country or '' }}" required>
+                </div>
+
+                <div class="field">
+                    <label for="city">Город</label>
+                    <input type="text" id="city" name="city"
+                           value="{{ restaurant.city or '' }}" required>
+                </div>
+
+                <div class="field">
+                    <label for="timezone">Часовой пояс</label>
+                    <input type="text" id="timezone" name="timezone"
+                           value="{{ restaurant.timezone or '' }}" placeholder="Europe/Moscow" required>
+                </div>
+
+                <div class="field" style="grid-column: 1 / -1;">
+                    <label for="address">Адрес</label>
+                    <input type="text" id="address" name="address"
+                           value="{{ restaurant.address or '' }}" required>
+                </div>
+
+                <div class="field">
+                    <label for="currency">Валюта</label>
+                    <select id="currency" name="currency">
+                        {% set currencies = [("EUR", "€"), ("USD", "$"), ("RUB", "₽"), ("KZT", "₸"), ("GEL", "₾"), ("UAH", "₴"), ("TRY", "₺"), ("GBP", "£")] %}
+                        {% for code, symbol in currencies %}
+                            <option value="{{ code }}" {% if restaurant.currency == code %}selected{% endif %}>{{ code }} — {{ symbol }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-section">
+            <h2 class="form-section-title">Контакты</h2>
+
+            <div class="form-grid">
+                <div class="field">
+                    <label for="phone">Телефон</label>
+                    <input type="tel" id="phone" name="phone"
+                           value="{{ restaurant.phone or '' }}" placeholder="+7 (999) 000-00-00">
+                </div>
+
+                <div class="field">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email"
+                           value="{{ restaurant.email or '' }}" placeholder="info@restaurant.com">
+                </div>
+
+                <div class="field" style="grid-column: 1 / -1;">
+                    <label for="instagram_url">Instagram</label>
+                    <input type="url" id="instagram_url" name="instagram_url"
+                           value="{{ restaurant.instagram_url or '' }}" placeholder="https://instagram.com/yourrestaurant">
+                </div>
+            </div>
+        </div>
+
+        <div class="form-section">
+            <h2 class="form-section-title">Режим работы</h2>
+
+            <div class="working-hours" id="workingHours">
+                {% set days = [
+                    ("monday", "Понедельник"),
+                    ("tuesday", "Вторник"),
+                    ("wednesday", "Среда"),
+                    ("thursday", "Четверг"),
+                    ("friday", "Пятница"),
+                    ("saturday", "Суббота"),
+                    ("sunday", "Воскресенье")
+                ] %}
+                {% for day_key, day_label in days %}
+                    {% set hours = (restaurant.working_hours or {}).get(day_key, {}) %}
+                    <div class="working-row" data-day="{{ day_key }}">
+                        <span class="working-day">{{ day_label }}</span>
+                        <input type="text" name="working_hours[{{ day_key }}][from]"
+                               placeholder="Открыто с (10:00)"
+                               value="{{ hours.get('from', '') if hours else '' }}">
+                        <input type="text" name="working_hours[{{ day_key }}][to]"
+                               placeholder="Закрыто в (22:00)"
+                               value="{{ hours.get('to', '') if hours else '' }}">
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="form-section">
+            <h2 class="form-section-title">Возможности заведения</h2>
+
+            <div class="checkbox-row">
+                <label class="checkbox">
+                    <input type="checkbox" id="accepts_reservations" name="accepts_reservations"
+                           {% if restaurant.accepts_reservations %}checked{% endif %}>
+                    Принимает бронирования
+                </label>
+                <label class="checkbox">
+                    <input type="checkbox" id="accepts_delivery" name="accepts_delivery"
+                           {% if restaurant.accepts_delivery %}checked{% endif %}>
+                    Принимает доставку
+                </label>
+                <label class="checkbox">
+                    <input type="checkbox" id="accepts_orders_on_site" name="accepts_orders_on_site"
+                           {% if restaurant.accepts_orders_on_site %}checked{% endif %}>
+                    Принимает заказы в заведении
+                </label>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <a href="/admin_panel" class="btn btn-cancel">Отмена</a>
+            <button type="submit" class="btn btn-save" id="saveButton">Сохранить изменения</button>
+        </div>
+    </form>
+
+    <div class="footer">FDCPlatform · Конструктор сайта</div>
+</div>
+
+<script src="/static/api.js"></script>
+
+<script>
+    const RESTAURANT_ID = "{{ restaurant.id }}";
+    const form = document.getElementById("constructorForm");
+    const formError = document.getElementById("formError");
+    const formSuccess = document.getElementById("formSuccess");
+    const saveButton = document.getElementById("saveButton");
+
+    const photoInput = document.getElementById("photoInput");
+    const photoButton = document.getElementById("photoButton");
+    const photoPreview = document.getElementById("photoPreview");
+    const photoRemove = document.getElementById("photoRemove");
+    const photoFilename = document.getElementById("photoFilename");
+
+    let currentPhotoUrl = {{ (restaurant.photo_url or '')|tojson }};
+    let removeExistingPhoto = false;
+
+    function showError(message) {
+        formError.textContent = message;
+        formError.classList.add("show");
+        formSuccess.classList.remove("show");
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function showSuccess(message) {
+        formSuccess.textContent = message;
+        formSuccess.classList.add("show");
+        formError.classList.remove("show");
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function clearMessages() {
+        formError.textContent = "";
+        formError.classList.remove("show");
+        formSuccess.textContent = "";
+        formSuccess.classList.remove("show");
+    }
+
+    function renderPhoto(url) {
+        if (url) {
+            photoPreview.innerHTML = `<img src="${url}" alt="Фото ресторана">`;
+            photoRemove.classList.add("show");
+            currentPhotoUrl = url;
+        } else {
+            photoPreview.innerHTML = "Нет фото";
+            photoRemove.classList.remove("show");
+            currentPhotoUrl = null;
+        }
+    }
+
+    if (currentPhotoUrl) {
+        photoRemove.classList.add("show");
+    }
+
+    photoButton.addEventListener("click", () => {
+        photoInput.click();
+    });
+
+    photoInput.addEventListener("change", () => {
+        const file = photoInput.files && photoInput.files[0];
+        if (!file) return;
+
+        photoFilename.textContent = file.name;
+        removeExistingPhoto = false;
+
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            renderPhoto(event.target.result);
+        };
+        reader.readAsDataURL(file);
+    });
+
+    photoRemove.addEventListener("click", () => {
+        photoInput.value = "";
+        photoFilename.textContent = "";
+        removeExistingPhoto = true;
+        renderPhoto(null);
+    });
+
+    function collectWorkingHours() {
+        const result = {};
+
+        document.querySelectorAll(".working-row").forEach((row) => {
+            const day = row.dataset.day;
+            const fromInput = row.querySelector(`input[name="working_hours[${day}][from]"]`);
+            const toInput = row.querySelector(`input[name="working_hours[${day}][to]"]`);
+
+            const from = fromInput?.value.trim() || "";
+            const to = toInput?.value.trim() || "";
+
+            if (from || to) {
+                result[day] = { from, to };
+            }
+        });
+
+        return result;
+    }
+
+    form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        clearMessages();
+
+        const nameValue = document.getElementById("restaurant_name").value.trim();
+        const slugValue = document.getElementById("slug").value.trim();
+        const countryValue = document.getElementById("country").value.trim();
+        const cityValue = document.getElementById("city").value.trim();
+        const addressValue = document.getElementById("address").value.trim();
+        const timezoneValue = document.getElementById("timezone").value.trim();
+
+        if (!nameValue || !slugValue || !countryValue || !cityValue || !addressValue || !timezoneValue) {
+            showError("Заполните обязательные поля: название, slug, страна, город, адрес, часовой пояс.");
+            return;
+        }
+
+        saveButton.disabled = true;
+        saveButton.textContent = "Сохранение...";
+
+        try {
+            const formData = new FormData();
+
+            const textFields = [
+                "restaurant_name", "slug", "slogan", "tagline",
+                "short_description", "about_title", "description",
+                "country", "city", "address", "timezone",
+                "currency", "phone", "email", "instagram_url"
+            ];
+
+            textFields.forEach((field) => {
+                const el = document.getElementById(field);
+                if (el) {
+                    formData.append(field, el.value.trim());
+                }
+            });
+
+            formData.append("accepts_reservations", document.getElementById("accepts_reservations").checked ? "true" : "false");
+            formData.append("accepts_delivery", document.getElementById("accepts_delivery").checked ? "true" : "false");
+            formData.append("accepts_orders_on_site", document.getElementById("accepts_orders_on_site").checked ? "true" : "false");
+
+            formData.append("working_hours", JSON.stringify(collectWorkingHours()));
+
+            if (removeExistingPhoto) {
+                formData.append("remove_photo", "true");
+            }
+
+            if (photoInput.files && photoInput.files[0]) {
+                formData.append("photo", photoInput.files[0]);
+            }
+
+            const response = await apiFetch(`/restaurants/constructor`, {
+                method: "PATCH",
+                body: formData
+            });
+
+            if (!response.ok) {
+                let data = null;
+                try { data = await response.json(); } catch {}
+
+                showError(
+                    data?.detail ||
+                    data?.message ||
+                    "Не удалось сохранить изменения."
+                );
+                return;
+            }
+
+            const data = await response.json();
+
+            if (data.photo_url) {
+                renderPhoto(data.photo_url);
+                removeExistingPhoto = false;
+                photoInput.value = "";
+                photoFilename.textContent = "";
+            }
+
+            showSuccess("Изменения сохранены.");
+        } catch (error) {
+            console.error("SAVE RESTAURANT ERROR:", error);
+            showError("Не удалось подключиться к серверу.");
+        } finally {
+            saveButton.disabled = false;
+            saveButton.textContent = "Сохранить изменения";
+        }
+    });
+</script>
+
+</body>
+</html>

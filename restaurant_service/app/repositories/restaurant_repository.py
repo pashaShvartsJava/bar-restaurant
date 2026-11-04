@@ -1,17 +1,54 @@
+import os
+import uuid
+from pathlib import Path
 from uuid import UUID
 
+from fastapi import UploadFile
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
-from ..models.restaurant_membership_model import RestaurantMembership, MembershipStatus, MembershipRole
+from ..models.restaurant_membership_model import RestaurantMembership, MembershipRole
 from ..models.restaurant_model import Restaurant, RestaurantStatus
+from ..schema.constructor_schema import UpdateRestaurantDTO
 from ..schema.restaurant_schema import RestaurantCreationDTO, KeyDTO
 import logging
 
-from ..security.role.role import IdentityRole
-
 logger = logging.getLogger(__name__)
+
+UPLOAD_DIR = Path("/app/templates/media")
+RESTAURANTS_DIR = UPLOAD_DIR / "restaurants"
+ALLOWED_TYPES = {"image/jpeg", "image/png", "image/webp"}
+MAX_SIZE = 5 * 1024 * 1024
+
+
+async def delete_photo_file(photo_url: str | None) -> None:
+    if not photo_url:
+        return
+    filename = photo_url.rsplit("/", 1)[-1]
+    file_path = RESTAURANTS_DIR / filename
+    if file_path.exists():
+        try:
+            file_path.unlink()
+        except OSError:
+            pass
+
+
+async def save_photo_file(photo: UploadFile, restaurant_id: UUID) -> str:
+    if photo.content_type not in ALLOWED_TYPES:
+        raise ValueError(f"Неподдерживаемый формат файла: {photo.content_type}. "
+                         f"Разрешены: JPEG, PNG, WEBP.")
+    contents = await photo.read()
+    if len(contents) > MAX_SIZE:
+        raise ValueError(f"Файл слишком большой ({len(contents) / 1024 / 1024:.1f} MB). "
+                         f"Максимум {MAX_SIZE / 1024 / 1024:.0f} MB.")
+    extension = os.path.splitext(photo.filename)[1].lower() or ".jpg"
+    filename = f"{restaurant_id}_{uuid.uuid4().hex}{extension}"
+    RESTAURANTS_DIR.mkdir(parents=True, exist_ok=True)
+    file_path = RESTAURANTS_DIR / filename
+    with open(file_path, "wb") as f:
+        f.write(contents)
+    return f"/media/restaurants/{filename}"
 
 
 class RestaurantRepository:
@@ -60,6 +97,48 @@ class RestaurantRepository:
             self.db.add(new_membership)
         await self.db.refresh(new_restaurant)
         return new_restaurant
+
+    async def update_restaurant( self, restaurant_id: UUID, data: UpdateRestaurantDTO, photo: UploadFile | None = None) -> Restaurant:
+        found_restaurant = await self.get_restaurant_by_id(restaurant_id)
+        if not found_restaurant:
+            raise ValueError("Restaurant not found")
+        found_restaurant.restaurant_name = data.restaurant_name
+        found_restaurant.email = data.email
+        found_restaurant.slug = data.slug
+        found_restaurant.currency = data.currency
+        found_restaurant.timezone = data.timezone
+        found_restaurant.address = data.address
+        found_restaurant.country = data.country
+        found_restaurant.city = data.city
+        found_restaurant.phone = data.phone
+        found_restaurant.description = data.description
+        found_restaurant.about_title = data.about_title
+        found_restaurant.accepts_delivery = data.accepts_delivery
+        found_restaurant.accepts_orders_on_site = data.accepts_orders_on_site
+        found_restaurant.accepts_reservations = data.accepts_reservations
+        found_restaurant.instagram_url = data.instagram_url
+        found_restaurant.short_description = data.short_description
+        found_restaurant.slogan = data.slogan
+        found_restaurant.tagline = data.tagline
+
+        found_restaurant.working_hours = (
+            {
+                day: hours.model_dump() if hasattr(hours, "model_dump") else hours
+                for day, hours in data.working_hours.items()
+            }
+            if data.working_hours
+            else None
+        )
+        if data.remove_photo:
+            await delete_photo_file(found_restaurant.photo_url)
+            found_restaurant.photo_url = None
+        if photo is not None and photo.filename:
+            new_url = await save_photo_file(photo, restaurant_id)
+            await delete_photo_file(found_restaurant.photo_url)
+            found_restaurant.photo_url = new_url
+        await self.db.commit()
+        await self.db.refresh(found_restaurant)
+        return found_restaurant
 
     async def delete_saga_restaurant(self, restaurant_id : UUID):
         restaurant = await self.get_restaurant_by_id(restaurant_id)

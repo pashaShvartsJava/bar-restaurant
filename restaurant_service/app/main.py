@@ -2,6 +2,7 @@ import asyncio
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
+from starlette.staticfiles import StaticFiles
 
 from .broker.consumers import SubscriptionStatusChangedConsumer
 from .broker.instance import rabbitmq
@@ -23,3 +24,5 @@ async def lifespan(app: FastAPI):
         await rabbitmq.close()
 app = FastAPI(lifespan=lifespan)
 app.include_router(router)
+
+app.mount("/media", StaticFiles(directory="/app/templates/media"), name="media")

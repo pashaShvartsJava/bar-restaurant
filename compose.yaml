@@ -216,6 +216,7 @@ services:
       - ./restaurant_service/.env
     volumes:
       - ./restaurant_service:/restaurant_service
+      - ./restaurant_service:/app/templates/media:/restaurant_service/app/templates/media
     command:
       - uvicorn
       - app.main:app

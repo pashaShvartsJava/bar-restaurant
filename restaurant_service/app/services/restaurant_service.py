@@ -1,8 +1,11 @@
 from uuid import UUID
 
+from fastapi import UploadFile
+
 from ..models.restaurant_membership_model import RestaurantMembership
 from ..models.restaurant_model import Restaurant, RestaurantStatus
 from ..repositories.restaurant_repository import RestaurantRepository
+from ..schema.constructor_schema import UpdateRestaurantDTO
 from ..schema.restaurant_schema import RestaurantCreationDTO, KeyDTO
 from ..security.role.role import IdentityRole
 
@@ -41,3 +44,6 @@ class RestaurantService:
 
     async def create_membership(self, identity_id: UUID, restaurant_id: UUID, role: str):
         return await self.restaurant_repository.create_membership(identity_id, restaurant_id, role)
+
+    async def update_restaurant(self, restaurant_id: UUID, data: UpdateRestaurantDTO, photo : UploadFile) -> Restaurant:
+        return await self.restaurant_repository.update_restaurant(restaurant_id, data, photo)
