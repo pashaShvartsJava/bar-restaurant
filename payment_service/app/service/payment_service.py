@@ -6,9 +6,12 @@ from .stripe_service import StripeService
 from ..broker.rabbitmq import RabbitMQ
 from ..models.payments import PaymentStatus, Payment
 from ..repository.outbox_repository import OutboxPaymentEventsRepository
+from ..repository.subscription_repository import SubscriptionRepository
 from ..schemas.payment_schema import PaymentDTO
 from ..repository.payment_repository import PaymentRepository
 from uuid import UUID
+
+from ..schemas.restaurant_schema import RestaurantConstructorDTO
 
 
 class PaymentService:
@@ -18,20 +21,23 @@ class PaymentService:
                  payment_repository : PaymentRepository,
                  stripe_service : StripeService,
                  rabbitmq : RabbitMQ,
-                 outbox_repository : OutboxPaymentEventsRepository):
+                 outbox_repository : OutboxPaymentEventsRepository,
+                 subscription_repository : SubscriptionRepository):
 
         self.db = db
         self.stripe_service = stripe_service
         self.payment_repository = payment_repository
         self.rabbitmq = rabbitmq
         self.outbox_repository = outbox_repository
+        self.subscription_repository = subscription_repository
 
     async def get_all_payments(self, restaurant_id: UUID):
         return await self.payment_repository.get_all_payments(restaurant_id)
 
-    async def create_payment(self, data : PaymentDTO, client_id : UUID):
+    async def create_payment(self, data : PaymentDTO, client_id : UUID, restaurant : RestaurantConstructorDTO):
         payment = await self.payment_repository.create_payment(data, client_id)
-        session = await self.stripe_service.create_checkout_session(payment)
+        subscription = await self.subscription_repository.get_subscription_by_restaurant_id(restaurant.id)
+        session = await self.stripe_service.create_checkout_session(payment, restaurant.stripe_account_id, subscription.order_commission_percent)
         payment.stripe_session_id = session.id
         payment.stripe_payment_intent_id = session.payment_intent
         await self.payment_repository.save(payment)

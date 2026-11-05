@@ -2,12 +2,12 @@ import secrets
 import string
 import uuid
 
-from sqlalchemy import select
+from sqlalchemy import select, or_
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from uuid import UUID
 
-from ..models.subscriptions import Subscription
+from ..models.subscriptions import Subscription, SubscriptionStatus
 from ..schemas.subscription_schema import SubscriptionCheckoutDTO, PLANS, PlanId
 
 
@@ -26,6 +26,13 @@ class SubscriptionRepository:
         result = await self.db.execute(select(Subscription)
                                        .where(Subscription.owner_id==customer_id,
                                               Subscription.restaurant_id==restaurant_id))
+        return result.scalar_one_or_none()
+
+    async def get_subscription_by_restaurant_id(self, restaurant_id: UUID) -> Subscription:
+        result = await self.db.execute(select(Subscription)
+                                       .where(Subscription.restaurant_id == restaurant_id)
+                                       .where(or_(Subscription.status==SubscriptionStatus.ACTIVE,
+                                                  Subscription.status==SubscriptionStatus.TRIALING)))
         return result.scalar_one_or_none()
 
     async def create_subscription(self, data : SubscriptionCheckoutDTO) -> Subscription:

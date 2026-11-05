@@ -48,7 +48,8 @@ async def create_payment(request : Request,
             raise HTTPException(status_code=400, detail="Invalid guest client ID")
     if data.client_id != client_id:
         raise HTTPException(detail="invalid customer id", status_code=403)
-    payment, checkout_url = await service.create_payment(data, client_id)
+    restaurant = await get_restaurant_dependency_by_id(str(data.restaurant_id))
+    payment, checkout_url = await service.create_payment(data, client_id, restaurant)
     return {"payment_id": payment.id,  "checkout_url": checkout_url}
 
 @router.post("/payment/webhook")

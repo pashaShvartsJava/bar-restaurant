@@ -1,4 +1,4 @@
-from decimal import Decimal
+from decimal import Decimal, ROUND_HALF_UP
 
 import stripe
 
@@ -12,7 +12,9 @@ class StripeService:
         self.client = stripe.StripeClient(settings.stripe_secret_key)
         self.subscription_client = stripe.StripeClient(settings.stripe_secret_key_subscriptions)
 
-    async def create_checkout_session(self, payment : Payment):
+    async def create_checkout_session(self, payment : Payment, stripe_account_id : str, order_commission_percent : int):
+        application_fee = int((payment.sum * (Decimal(order_commission_percent) / Decimal("100"))
+                               + (payment.sum + Decimal("0.25")) / Decimal("0.985") - payment.sum) * Decimal("100").quantize(Decimal("1"), rounding=ROUND_HALF_UP))
         session = await self.client.v1.checkout.sessions.create_async(
             params={
                 "mode": "payment",
@@ -31,6 +33,13 @@ class StripeService:
                 "metadata": {
                     "payment_id": str(payment.id),
                     "order_id": str(payment.order_id)
+                },
+                "payment_intent_data": {
+                    "application_fee_amount": application_fee,
+                    "transfer_data": {
+                        "destination": stripe_account_id
+                    },
+                    "on_behalf_of": stripe_account_id
                 },
                 "success_url": f"https://10.157.173.192:8443/payment/success?order_number={payment.order_number}",
                 "cancel_url": "https://10.157.173.192:8443/payment/cancel"
