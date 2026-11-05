@@ -69,6 +69,11 @@ class RestaurantRepository:
         result = await self.db.execute(select(Restaurant).where(Restaurant.slug==slug))
         return result.scalar_one_or_none()
 
+    async def get_restaurant_by_stripe_account_id(self, stripe_account_id) -> Restaurant:
+        result = await self.db.execute(
+            select(Restaurant).options(selectinload(Restaurant.memberships)).where(Restaurant.stripe_account_id == stripe_account_id))
+        return result.scalar_one_or_none()
+
     async def get_all_restaurants(self):
         result = await self.db.execute(select(Restaurant))
         return result.scalars().all()
@@ -76,6 +81,10 @@ class RestaurantRepository:
     async def get_membership_by_identity_id(self, identity_id : UUID) -> RestaurantMembership:
         result = await self.db.execute(select(RestaurantMembership).where(RestaurantMembership.identity_id == identity_id))
         return result.scalar_one_or_none()
+
+    async def save(self, restaurant : Restaurant):
+        await self.db.commit()
+        await self.db.refresh(restaurant)
 
     async def create_restaurant(self, data : RestaurantCreationDTO) -> Restaurant:
         async with self.db.begin():

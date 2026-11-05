@@ -83,7 +83,8 @@ async def show_admin_panel(request: Request):
     unread_support_count = support_data["count"]
     return templates.TemplateResponse("admin_panel.html", {"request" : request,
                                                            "unread_support_count" : unread_support_count,
-                                                           "restaurant_name" : restaurant.restaurant_name})
+                                                           "restaurant_name" : restaurant.restaurant_name,
+                                                           "restaurant" : restaurant})
 
 @router.get("/admin_panel/all_admins")
 async def show_all_admins(request: Request, admin_service : AdminService = Depends(get_service_dependency)):

@@ -1,8 +1,10 @@
+from ..config.config import settings
+import stripe
 import json
 import uuid
 from decimal import Decimal
 from typing import Annotated, Optional
-
+from uuid import UUID
 import httpx
 from fastapi import APIRouter, Request, HTTPException, UploadFile
 from fastapi.params import Header, Depends, Form, File
@@ -10,7 +12,7 @@ from fastapi.params import Header, Depends, Form, File
 from starlette.responses import HTMLResponse, RedirectResponse
 from starlette.templating import Jinja2Templates
 
-from ..models.restaurant_model import RestaurantStatus
+from ..models.restaurant_model import RestaurantStatus, Restaurant
 from ..schema.constructor_schema import UpdateRestaurantDTO
 from ..schema.subscription_schema import SubscriptionCheckoutDTO
 from ..security.authorization.authorization import required_role, required_roles
@@ -21,10 +23,8 @@ from ..security.internal_security import verify_internal_token, verify_csrf
 from ..security.role.role import IdentityRole
 from ..services.restaurant_service import RestaurantService
 from ..dependencies.dependency import get_restaurant_dependency
-from ..config.config import settings
 
 INTERNAL_TOKEN = settings.internal_token
-
 router = APIRouter()
 templates = Jinja2Templates(directory="app/templates")
 
@@ -111,6 +111,15 @@ async def get_restaurant_by_slug(restaurant_id : str,
     await verify_internal_token(internal_token)
     restaurant = await service.get_restaurant_by_id(uuid.UUID(restaurant_id))
     return RestaurantConstructorDTO.model_validate(restaurant, from_attributes=True)
+
+@router.get("/restaurants/get_restaurant_by_stripe_account_id")
+async def get_restaurant_by_stripe_account_id(stripe_account_id : str,
+                                              internal_token: str = Header(..., alias="internal_token"),
+                                              service: RestaurantService = Depends(get_restaurant_dependency)):
+    await verify_internal_token(internal_token)
+    restaurant = await service.get_restaurant_by_stripe_account_id(uuid.UUID(stripe_account_id))
+    return RestaurantConstructorDTO.model_validate(restaurant, from_attributes=True)
+
 
 @router.post("/restaurants/add_membership")
 async def add_membership(identity_id : str,
@@ -233,3 +242,87 @@ async def get_constructor_page(request : Request,
         remove_photo=remove_photo)
     updated_restaurant = await service.update_restaurant(restaurant_id, data, photo)
     return {"photo_url": updated_restaurant.photo_url, "success": True}
+
+
+@router.get("/restaurants/connect/onboarding")
+async def start_connect_onboarding(request: Request, service: RestaurantService = Depends(get_restaurant_dependency)):
+    payload = get_payload(request)
+    required_roles(IdentityRole.OWNER, payload=payload)
+    restaurant_id = payload.get("restaurant_id")
+    restaurant = await service.get_restaurant_by_id(restaurant_id)
+    if not restaurant.stripe_account_id:
+        account = stripe.Account.create(
+            type="express",
+            email=restaurant.email,
+            capabilities={"transfers": {"requested": True}},
+            business_profile={"name": restaurant.restaurant_name},
+            metadata={"restaurant_id": str(restaurant.id)})
+        restaurant.stripe_account_id = account.id
+        await service.save(restaurant)
+    link = stripe.AccountLink.create(
+        account=restaurant.stripe_account_id,
+        refresh_url=f"{settings.BASE_URL}/restaurants/connect/refresh?restaurant_id={restaurant.id}",
+        return_url=f"{settings.BASE_URL}/restaurants/connect/return?restaurant_id={restaurant.id}",
+        type="account_onboarding")
+    return RedirectResponse(link.url)
+
+@router.get("/restaurants/connect/refresh")
+async def refresh_connect_onboarding(restaurant_id: str, service: RestaurantService = Depends(get_restaurant_dependency)):
+    try:
+        restaurant_uuid = uuid.UUID(restaurant_id)
+    except (ValueError, TypeError):
+        raise HTTPException(status_code=400, detail="Invalid restaurant_id")
+    restaurant = await service.get_restaurant_by_id(restaurant_uuid)
+    if not restaurant.stripe_account_id:
+        return RedirectResponse("/restaurants/connect/onboarding")
+    link = stripe.AccountLink.create(
+        account=restaurant.stripe_account_id,
+        refresh_url=f"{settings.BASE_URL}/restaurants/connect/refresh?restaurant_id={restaurant.id}",
+        return_url=f"{settings.BASE_URL}/restaurants/connect/return?restaurant_id={restaurant.id}",
+        type="account_onboarding")
+    return RedirectResponse(link.url)
+
+@router.get("/restaurants/connect/return")
+async def return_from_connect_onboarding(restaurant_id: str, service: RestaurantService = Depends(get_restaurant_dependency)):
+    try:
+        restaurant_uuid = uuid.UUID(restaurant_id)
+    except (ValueError, TypeError):
+        raise HTTPException(status_code=400, detail="Invalid restaurant_id")
+    restaurant = await service.get_restaurant_by_id(restaurant_uuid)
+    if not restaurant:
+        raise HTTPException(status_code=404, detail="Restaurant not found")
+    if restaurant.stripe_account_id:
+        account = stripe.Account.retrieve(restaurant.stripe_account_id)
+        restaurant.stripe_charges_enabled = account.charges_enabled
+        restaurant.stripe_payouts_enabled = account.payouts_enabled
+        await service.save(restaurant)
+    return RedirectResponse("/restaurants/add_bank_acc/success")
+
+@router.get("/restaurants/add_bank_acc/success")
+async def add_bank_acc_success_page(request : Request):
+    return templates.TemplateResponse("add_bank_acc_success.html", {"request" : request})
+
+@router.get("/restaurants/connect/dashboard")
+async def connect_dashboard(request: Request, service: RestaurantService = Depends(get_restaurant_dependency)):
+    payload = get_payload(request)
+    required_roles(IdentityRole.OWNER, payload=payload)
+    restaurant_id = payload.get("restaurant_id")
+    restaurant = await service.get_restaurant_by_id(restaurant_id)
+    if not restaurant.stripe_account_id:
+        raise HTTPException(status_code=400, detail="Stripe account not created")
+    login_link = stripe.Account.create_login_link(restaurant.stripe_account_id)
+    return RedirectResponse(login_link.url)
+
+@router.patch("/restaurants/save_restaurant_webhook")
+async def save_restaurant_webhook(restaurant_id : UUID,
+                                  stripe_payouts_enabled : bool,
+                                  stripe_charges_enabled : bool,
+                                  internal_token: str = Header(..., alias="internal_token"),
+                                  service: RestaurantService = Depends(get_restaurant_dependency)):
+    await verify_internal_token(internal_token)
+    restaurant = await service.get_restaurant_by_id(restaurant_id)
+    if not restaurant:
+        raise HTTPException(status_code=404, detail="Restaurant not found")
+    restaurant.stripe_charges_enabled = stripe_charges_enabled
+    restaurant.stripe_payouts_enabled = stripe_payouts_enabled
+    await service.save(restaurant)

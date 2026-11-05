@@ -36,3 +36,20 @@ def get_currency_symbol(code: str | None) -> str:
         return ""
     key = code.strip().upper()
     return CURRENCY_SYMBOLS.get(key, key)
+
+async def save_restaurant_dependency(data : RestaurantConstructorDTO):
+    async with httpx.AsyncClient() as client:
+        response = await client.patch(url="http://restaurant-service:8010/restaurants/save_restaurant_webhook",
+                                      headers={"internal_token" : INTERNAL_TOKEN},
+                                      params={"stripe_charges_enabled" : data.stripe_charges_enabled,
+                                              "stripe_payouts_enabled" : data.stripe_payouts_enabled,
+                                              "restaurant_id" : data.id})
+        response.raise_for_status()
+
+async def get_restaurant_dependency_by_stripe_account_id(stripe_account_id : str):
+    async with httpx.AsyncClient() as client:
+        response = await client.get(url="http://restaurant-service:8010/restaurants/get_restaurant_by_stripe_account_id",
+                                    headers={"internal_token" : INTERNAL_TOKEN},
+                                    params={"stripe_account_id" : stripe_account_id})
+        response.raise_for_status()
+    return RestaurantConstructorDTO(**response.json())

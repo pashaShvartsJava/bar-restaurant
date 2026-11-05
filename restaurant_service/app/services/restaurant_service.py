@@ -27,6 +27,12 @@ class RestaurantService:
     async def get_restaurant_by_slug(self, slug: str) -> Restaurant:
         return await self.restaurant_repository.get_restaurant_by_slug(slug)
 
+    async def get_restaurant_by_stripe_account_id(self, stripe_account_id) -> Restaurant:
+        return await self.restaurant_repository.get_restaurant_by_stripe_account_id(stripe_account_id)
+
+    async def save(self, restaurant: Restaurant):
+        return await self.restaurant_repository.save(restaurant)
+
     async def create_restaurant(self, data: RestaurantCreationDTO) -> Restaurant:
         return await self.restaurant_repository.create_restaurant(data)
 

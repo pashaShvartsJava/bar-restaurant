@@ -42,3 +42,6 @@ class RestaurantConstructorDTO(BaseModel):
     accepts_orders_on_site: bool = True
     created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None
+    stripe_account_id: Optional[str] = None
+    stripe_charges_enabled: Optional[bool] = False
+    stripe_payouts_enabled: Optional[bool] = False

@@ -14,6 +14,8 @@ class Settings(BaseSettings):
     stripe_secret_key_subscriptions: str
     stripe_webhook_secret_subscriptions: str
 
+    STRIPE_CONNECT_WEBHOOK_SECRET: str
+
     RABBITMQ_HOST: str
     RABBITMQ_PORT: int
     RABBITMQ_USER: str

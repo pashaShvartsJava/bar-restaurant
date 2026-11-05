@@ -48,5 +48,8 @@ class Restaurant(Base):
 
     created_at = Column(DateTime(timezone=True), nullable=False, server_default=func.now())
     updated_at = Column(DateTime(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now())
+    stripe_account_id = Column(String(255), nullable=True, unique=True, index=True)
+    stripe_charges_enabled = Column(Boolean, nullable=False, default=False, server_default=text("false"))
+    stripe_payouts_enabled = Column(Boolean, nullable=False, default=False, server_default=text("false"))
 
     memberships = relationship("RestaurantMembership", back_populates="restaurant", cascade="all, delete-orphan")
