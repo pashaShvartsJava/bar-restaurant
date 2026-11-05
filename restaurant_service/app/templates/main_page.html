@@ -6,672 +6,689 @@
     <meta name="theme-color" content="#1b1518">
     <link rel="manifest" href="/static/manifest.json">
 
-    <title>{{ restaurant.name }} — Restaurant Platform</title>
+    <title>{{ restaurant.restaurant_name }} — Restaurant Platform</title>
 
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
 
-        html {
-            scroll-behavior: smooth;
-        }
+    html {
+        scroll-behavior: smooth;
+    }
 
-        body {
-            min-height: 100vh;
-            {% if restaurant.background_photo_url %}
-            background:
-                linear-gradient(
-                    180deg,
-                    rgba(13, 13, 15, 0.55) 0%,
-                    rgba(13, 13, 15, 0.82) 55%,
-                    rgba(13, 13, 15, 0.97) 100%
-                ),
-                url("{{ restaurant.background_photo_url }}") center / cover fixed no-repeat;
-            {% else %}
-            background:
-                radial-gradient(
-                    ellipse at 50% 0%,
-                    rgba(137, 76, 82, 0.42) 0%,
-                    rgba(78, 49, 59, 0.48) 38%,
-                    rgba(27, 24, 29, 0.94) 72%,
-                    rgba(13, 13, 15, 0.99) 100%
-                ),
-                linear-gradient(
-                    180deg,
-                    #39262b 0%,
-                    #251d22 48%,
-                    #101012 100%
-                );
-            {% endif %}
-            color: #eee5df;
-            font-family: Arial, sans-serif;
-            position: relative;
-        }
+    body {
+        min-height: 100vh;
+        {% if restaurant.photo_url %}
+        background:
+            linear-gradient(
+                180deg,
+                rgba(13, 13, 15, 0.55) 0%,
+                rgba(13, 13, 15, 0.82) 55%,
+                rgba(13, 13, 15, 0.97) 100%
+            ),
+            url("{{ restaurant.photo_url }}") center / cover fixed no-repeat;
+        {% else %}
+        background:
+            radial-gradient(
+                ellipse at 50% -8%,
+                rgba(157, 69, 76, 0.32) 0%,
+                rgba(89, 39, 49, 0.26) 28%,
+                rgba(35, 24, 30, 0.72) 54%,
+                rgba(15, 14, 17, 0.98) 82%
+            ),
+            linear-gradient(
+                180deg,
+                #301b22 0%,
+                #1d171c 34%,
+                #121114 70%,
+                #0c0c0e 100%
+            );
+        {% endif %}
+        background-attachment: fixed;
+        color: #eee5df;
+        font-family: Arial, sans-serif;
+        position: relative;
+    }
 
-        body::before {
-            content: "";
-            position: fixed;
-            inset: 0;
-            pointer-events: none;
-            background:
-                radial-gradient(
-                    circle at 18% 15%,
-                    rgba(191, 105, 82, 0.07),
-                    transparent 32%
-                ),
-                radial-gradient(
-                    circle at 82% 24%,
-                    rgba(207, 165, 91, 0.055),
-                    transparent 30%
-                );
-            z-index: 0;
-        }
+    body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        background:
+            radial-gradient(
+                circle at 12% 20%,
+                rgba(183, 91, 78, 0.055),
+                transparent 30%
+            ),
+            radial-gradient(
+                circle at 88% 34%,
+                rgba(213, 166, 91, 0.035),
+                transparent 28%
+            );
+        z-index: 0;
+    }
 
-        a {
-            -webkit-tap-highlight-color: transparent;
-        }
+    a {
+        -webkit-tap-highlight-color: transparent;
+    }
 
-        .container {
-            position: relative;
-            z-index: 1;
-            width: 100%;
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 105px 30px 45px;
-        }
+    .container {
+        position: relative;
+        z-index: 1;
+        width: 100%;
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 105px 30px 45px;
+    }
 
-        .header {
-            text-align: center;
-            margin-bottom: 48px;
-        }
+    .header {
+        text-align: center;
+        margin-bottom: 48px;
+    }
 
-        .header-top {
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+    .header-top {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
 
-        .header h1 {
-            font-family: Georgia, serif;
-            font-size: 52px;
-            font-weight: normal;
-            letter-spacing: 7px;
-            color: #f0e4dc;
-            text-shadow: 0 5px 30px rgba(0, 0, 0, 0.45);
-        }
+    .header h1 {
+        font-family: Georgia, serif;
+        font-size: 52px;
+        font-weight: normal;
+        letter-spacing: 7px;
+        color: #f0e4dc;
+        text-shadow: 0 5px 30px rgba(0, 0, 0, 0.45);
+    }
 
-        .header h1 span {
-            color: #d1a15d;
-        }
+    .header h1 span {
+        color: #d1a15d;
+    }
 
-        .header p {
-            margin-top: 14px;
-            color: #aaa0a0;
-            font-size: 12px;
-            letter-spacing: 2px;
-        }
+    .header p {
+        margin-top: 14px;
+        color: #aaa0a0;
+        font-size: 12px;
+        letter-spacing: 2px;
+    }
 
-        .header .city {
-            display: inline-block;
-            margin-top: 10px;
-            padding: 5px 11px;
-            border: 1px solid rgba(213, 166, 91, 0.3);
-            border-radius: 20px;
-            background: rgba(213, 166, 91, 0.08);
-            color: #e6c58f;
-            font-size: 10px;
-            letter-spacing: 1.5px;
-            text-transform: uppercase;
-        }
+    .header .city {
+        display: inline-block;
+        margin-top: 10px;
+        padding: 5px 11px;
+        border: 1px solid rgba(213, 166, 91, 0.3);
+        border-radius: 20px;
+        background: rgba(213, 166, 91, 0.08);
+        color: #e6c58f;
+        font-size: 10px;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+    }
 
+    .header .instagram {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        margin-top: 10px;
+        padding: 5px 11px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
+        background: rgba(255, 255, 255, 0.03);
+        color: #c9bfc0;
+        font-size: 10px;
+        text-decoration: none;
+        transition: color 0.2s, border-color 0.2s;
+    }
+
+    .header .instagram:hover {
+        color: #e6c58f;
+        border-color: rgba(213, 166, 91, 0.45);
+    }
+
+    .quick-menu {
+        position: fixed;
+        top: 18px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        padding: 7px;
+        border: 1px solid rgba(255, 255, 255, 0.09);
+        border-radius: 14px;
+        background: rgba(24, 21, 24, 0.91);
+        box-shadow:
+            0 12px 35px rgba(0, 0, 0, 0.28),
+            inset 0 1px rgba(255, 255, 255, 0.04);
+        backdrop-filter: blur(14px);
+    }
+
+    .quick-button {
+        min-width: 105px;
+        height: 38px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0 15px;
+        border: 1px solid rgba(255, 255, 255, 0.07);
+        border-radius: 9px;
+        background: rgba(255, 255, 255, 0.035);
+        color: #ddd4d0;
+        font-size: 11px;
+        font-weight: 600;
+        text-decoration: none;
+        white-space: nowrap;
+        transition:
+            background 0.2s,
+            border-color 0.2s,
+            color 0.2s,
+            transform 0.2s;
+    }
+
+    .quick-button:hover {
+        transform: translateY(-1px);
+        background: rgba(255, 255, 255, 0.065);
+        border-color: rgba(213, 166, 91, 0.45);
+        color: #e6c58f;
+    }
+
+    .quick-button.login {
+        border-color: rgba(213, 166, 91, 0.3);
+        color: #e6c58f;
+    }
+
+    .quick-button.registration {
+        background: rgba(91, 54, 46, 0.35);
+        border-color: rgba(180, 105, 82, 0.32);
+        color: #d6a997;
+    }
+
+    .quick-button.about {
+        min-width: 90px;
+        background:
+            linear-gradient(
+                135deg,
+                rgba(55, 38, 43, 0.9),
+                rgba(31, 25, 29, 0.95)
+            );
+        border-color: rgba(255, 255, 255, 0.12);
+        color: #aaa0a0;
+    }
+
+    .quick-button.about:hover {
+        border-color: rgba(255, 255, 255, 0.25);
+        color: #e2d8d3;
+    }
+
+    .back-to-list {
+        position: fixed;
+        top: 18px;
+        left: 18px;
+        z-index: 1001;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        height: 38px;
+        padding: 0 14px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 9px;
+        background: rgba(24, 21, 24, 0.91);
+        color: #c9bfc0;
+        font-size: 11px;
+        font-weight: 600;
+        text-decoration: none;
+        white-space: nowrap;
+        backdrop-filter: blur(14px);
+        box-shadow:
+            0 12px 35px rgba(0, 0, 0, 0.28),
+            inset 0 1px rgba(255, 255, 255, 0.04);
+        transition:
+            background 0.2s,
+            border-color 0.2s,
+            color 0.2s,
+            transform 0.2s;
+    }
+
+    .back-to-list:hover {
+        transform: translateY(-1px);
+        background: rgba(39, 30, 31, 0.95);
+        border-color: rgba(213, 166, 91, 0.45);
+        color: #e6c58f;
+    }
+
+    .back-to-list .arrow {
+        font-size: 14px;
+        line-height: 1;
+        transition: transform 0.2s;
+    }
+
+    .back-to-list:hover .arrow {
+        transform: translateX(-3px);
+    }
+
+    .hero {
+        margin-bottom: 48px;
+        text-align: center;
+    }
+
+    .hero-title {
+        font-family: Georgia, serif;
+        color: #eee4dd;
+        font-size: 28px;
+        font-weight: normal;
+        line-height: 1.25;
+    }
+
+    .hero-text {
+        max-width: 480px;
+        margin: 12px auto 0;
+        color: #91898a;
+        font-size: 12px;
+        line-height: 1.7;
+    }
+
+    .section {
+        margin-bottom: 42px;
+    }
+
+    .section-title {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        margin-bottom: 16px;
+    }
+
+    .section-title h2 {
+        color: #a59c9b;
+        font-size: 10px;
+        font-weight: 600;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+    }
+
+    .section-line {
+        height: 1px;
+        flex: 1;
+        background: rgba(255, 255, 255, 0.08);
+    }
+
+    .buttons {
+        display: grid;
+        gap: 12px;
+    }
+
+    .buttons-main {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .button {
+        min-height: 125px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 22px;
+        border: 1px solid rgba(213, 166, 91, 0.55);
+        border-radius: 13px;
+        background:
+            linear-gradient(
+                145deg,
+                rgba(30, 25, 27, 0.92),
+                rgba(18, 17, 20, 0.92)
+            );
+        color: #eee8e3;
+        text-align: center;
+        text-decoration: none;
+        box-shadow: 0 12px 35px rgba(0, 0, 0, 0.18);
+        backdrop-filter: blur(12px);
+        transition:
+            transform 0.2s,
+            border-color 0.2s,
+            background 0.2s;
+        cursor: pointer;
+    }
+
+    .button:hover {
+        transform: translateY(-3px);
+        border-color: #d5a65b;
+        background:
+            linear-gradient(
+                145deg,
+                rgba(39, 30, 31, 0.95),
+                rgba(21, 19, 21, 0.96)
+            );
+    }
+
+    .booking-card,
+    .delivery-button {
+        border-color: rgba(213, 166, 91, 0.55);
+        background:
+            linear-gradient(
+                145deg,
+                rgba(30, 25, 27, 0.92),
+                rgba(18, 17, 20, 0.92)
+            );
+        color: #eee8e3;
+        box-shadow: 0 12px 35px rgba(0, 0, 0, 0.18);
+    }
+
+    .booking-card:hover,
+    .delivery-button:hover {
+        border-color: #d5a65b;
+        background:
+            linear-gradient(
+                145deg,
+                rgba(39, 30, 31, 0.95),
+                rgba(21, 19, 21, 0.96)
+            );
+    }
+
+    .icon {
+        width: 44px;
+        height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 12px;
+        border: 1px solid rgba(213, 166, 91, 0.3);
+        border-radius: 10px;
+        background: rgba(213, 166, 91, 0.1);
+        color: #e6c58f;
+        font-size: 19px;
+        transition: 0.2s;
+    }
+
+    .button:hover .icon {
+        background: rgba(213, 166, 91, 0.16);
+        border-color: rgba(213, 166, 91, 0.5);
+    }
+
+    .button h3 {
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    .button p {
+        margin-top: 6px;
+        color: #777276;
+        font-size: 10px;
+    }
+
+    .button-large {
+        min-height: 125px;
+    }
+
+    .about-section {
+        scroll-margin-top: 90px;
+    }
+
+    .about-box {
+        padding: 34px;
+        border: 1px solid rgba(255, 255, 255, 0.075);
+        border-radius: 15px;
+        background:
+            linear-gradient(
+                145deg,
+                rgba(30, 25, 27, 0.9),
+                rgba(17, 16, 18, 0.94)
+            );
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+        backdrop-filter: blur(12px);
+    }
+
+    .about-box h2 {
+        font-family: Georgia, serif;
+        font-size: 25px;
+        font-weight: normal;
+        color: #eee3dc;
+        margin-bottom: 12px;
+    }
+
+    .about-box > p {
+        max-width: 680px;
+        color: #938b8c;
+        font-size: 12px;
+        line-height: 1.75;
+        white-space: pre-line;
+    }
+
+    .advantages {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+        margin-top: 25px;
+    }
+
+    .advantage {
+        padding: 18px;
+        border: 1px solid rgba(255, 255, 255, 0.055);
+        border-radius: 11px;
+        background: rgba(255, 255, 255, 0.025);
+    }
+
+    .advantage-icon {
+        color: #d5a65b;
+        font-size: 17px;
+        margin-bottom: 12px;
+    }
+
+    .advantage h3 {
+        color: #e5ddda;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .advantage p {
+        margin-top: 7px;
+        color: #777174;
+        font-size: 10px;
+        line-height: 1.55;
+    }
+
+    .contacts {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+    }
+
+    .contact {
+        padding: 22px 18px;
+        border: 1px solid rgba(255, 255, 255, 0.065);
+        border-radius: 12px;
+        background: rgba(23, 21, 23, 0.88);
+        color: #e6dfdc;
+    }
+
+    .contact-label {
+        display: block;
+        color: #777174;
+        font-size: 9px;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        margin-bottom: 8px;
+    }
+
+    .contact-value {
+        font-size: 12px;
+        line-height: 1.5;
+    }
+
+    .contact-value a {
+        color: inherit;
+        text-decoration: none;
+        transition: color 0.2s;
+    }
+
+    .contact-value a:hover {
+        color: #d5a65b;
+    }
+
+    .working-hours-box {
+        margin-top: 12px;
+        padding: 22px 24px;
+        border: 1px solid rgba(255, 255, 255, 0.065);
+        border-radius: 12px;
+        background: rgba(23, 21, 23, 0.88);
+    }
+
+    .working-hours-list {
+        display: grid;
+        gap: 8px;
+    }
+
+    .working-hours-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        padding: 7px 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+        font-size: 11px;
+    }
+
+    .working-hours-row:last-child {
+        border-bottom: none;
+    }
+
+    .working-day {
+        color: #c9bfc0;
+    }
+
+    .working-time {
+        color: #d5a65b;
+        font-family: "Courier New", monospace;
+        font-size: 11px;
+    }
+
+    .features-badges {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 16px;
+    }
+
+    .feature-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 11px;
+        border: 1px solid rgba(213, 166, 91, 0.25);
+        border-radius: 6px;
+        background: rgba(213, 166, 91, 0.06);
+        color: #e6c58f;
+        font-size: 10px;
+    }
+
+    .feature-badge::before {
+        content: "✓";
+        font-size: 10px;
+        color: #d5a65b;
+    }
+
+    .footer {
+        padding-top: 25px;
+        text-align: center;
+        color: #575256;
+        font-size: 9px;
+        letter-spacing: 1px;
+    }
+
+    @media (max-width: 800px) {
         .quick-menu {
-            position: fixed;
-            top: 18px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 1000;
-            display: flex;
-            align-items: center;
-            gap: 7px;
-            padding: 7px;
-            border: 1px solid rgba(255, 255, 255, 0.09);
-            border-radius: 14px;
-            background: rgba(24, 21, 24, 0.91);
-            box-shadow:
-                0 12px 35px rgba(0, 0, 0, 0.28),
-                inset 0 1px rgba(255, 255, 255, 0.04);
-            backdrop-filter: blur(14px);
+            top: 12px;
+            width: calc(100% - 24px);
+            justify-content: center;
         }
 
         .quick-button {
-            min-width: 105px;
-            height: 38px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            padding: 0 15px;
-            border: 1px solid rgba(255, 255, 255, 0.07);
-            border-radius: 9px;
-            background: rgba(255, 255, 255, 0.035);
-            color: #ddd4d0;
-            font-size: 11px;
-            font-weight: 600;
-            text-decoration: none;
-            white-space: nowrap;
-            transition:
-                background 0.2s,
-                border-color 0.2s,
-                color 0.2s,
-                transform 0.2s;
-        }
-
-        .quick-button:hover {
-            transform: translateY(-1px);
-            background: rgba(255, 255, 255, 0.065);
-            border-color: rgba(213, 166, 91, 0.45);
-            color: #e6c58f;
-        }
-
-        .quick-button.login {
-            border-color: rgba(213, 166, 91, 0.3);
-            color: #e6c58f;
-        }
-
-        .quick-button.registration {
-            background: rgba(91, 54, 46, 0.35);
-            border-color: rgba(180, 105, 82, 0.32);
-            color: #d6a997;
-        }
-
-        .quick-button.about {
-            min-width: 90px;
-            background:
-                linear-gradient(
-                    135deg,
-                    rgba(55, 38, 43, 0.9),
-                    rgba(31, 25, 29, 0.95)
-                );
-            border-color: rgba(255, 255, 255, 0.12);
-            color: #aaa0a0;
-        }
-
-        .quick-button.about:hover {
-            border-color: rgba(255, 255, 255, 0.25);
-            color: #e2d8d3;
+            flex: 1;
+            min-width: 0;
+            padding: 0 9px;
+            font-size: 10px;
         }
 
         .back-to-list {
-            position: fixed;
-            top: 18px;
-            left: 18px;
-            z-index: 1001;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            height: 38px;
-            padding: 0 14px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 9px;
-            background: rgba(24, 21, 24, 0.91);
-            color: #c9bfc0;
-            font-size: 11px;
-            font-weight: 600;
-            text-decoration: none;
-            white-space: nowrap;
-            backdrop-filter: blur(14px);
-            box-shadow:
-                0 12px 35px rgba(0, 0, 0, 0.28),
-                inset 0 1px rgba(255, 255, 255, 0.04);
-            transition:
-                background 0.2s,
-                border-color 0.2s,
-                color 0.2s,
-                transform 0.2s;
+            top: 62px;
+            left: 12px;
+            right: 12px;
+            justify-content: center;
+            width: auto;
+            height: 36px;
+            font-size: 10px;
         }
 
-        .back-to-list:hover {
-            transform: translateY(-1px);
-            background: rgba(39, 30, 31, 0.95);
-            border-color: rgba(213, 166, 91, 0.45);
-            color: #e6c58f;
+        .container {
+            padding: 115px 25px 45px;
         }
 
-        .back-to-list .arrow {
-            font-size: 14px;
-            line-height: 1;
-            transition: transform 0.2s;
+        .header {
+            margin-bottom: 45px;
         }
 
-        .back-to-list:hover .arrow {
-            transform: translateX(-3px);
+        .header h1 {
+            font-size: 40px;
         }
 
-        .hero {
-            margin-bottom: 48px;
-            text-align: center;
+        .buttons-main,
+        .advantages,
+        .contacts {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 500px) {
+        .quick-menu {
+            gap: 5px;
+            padding: 6px;
+        }
+
+        .quick-button {
+            height: 35px;
+            padding: 0 6px;
+            font-size: 9px;
+        }
+
+        .back-to-list {
+            top: 60px;
+            height: 34px;
+            font-size: 9px;
+        }
+
+        .container {
+            padding: 110px 18px 35px;
+        }
+
+        .header h1 {
+            font-size: 34px;
+            letter-spacing: 5px;
         }
 
         .hero-title {
-            font-family: Georgia, serif;
-            color: #eee4dd;
-            font-size: 28px;
-            font-weight: normal;
-            line-height: 1.25;
-        }
-
-        .hero-text {
-            max-width: 480px;
-            margin: 12px auto 0;
-            color: #91898a;
-            font-size: 12px;
-            line-height: 1.7;
-        }
-
-        .section {
-            margin-bottom: 42px;
-        }
-
-        .section-title {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            margin-bottom: 16px;
-        }
-
-        .section-title h2 {
-            color: #a59c9b;
-            font-size: 10px;
-            font-weight: 600;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-        }
-
-        .section-line {
-            height: 1px;
-            flex: 1;
-            background: rgba(255, 255, 255, 0.08);
-        }
-
-        .buttons {
-            display: grid;
-            gap: 12px;
-        }
-
-        .buttons-main {
-            grid-template-columns: repeat(2, 1fr);
+            font-size: 24px;
         }
 
         .button {
-            min-height: 125px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 22px;
-            border: 1px solid rgba(213, 166, 91, 0.55);
-            border-radius: 13px;
-            background:
-                linear-gradient(
-                    145deg,
-                    rgba(30, 25, 27, 0.92),
-                    rgba(18, 17, 20, 0.92)
-                );
-            color: #eee8e3;
-            text-align: center;
-            text-decoration: none;
-            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.18);
-            backdrop-filter: blur(12px);
-            transition:
-                transform 0.2s,
-                border-color 0.2s,
-                background 0.2s;
-            cursor: pointer;
-        }
-
-        .button:hover {
-            transform: translateY(-3px);
-            border-color: #d5a65b;
-            background:
-                linear-gradient(
-                    145deg,
-                    rgba(39, 30, 31, 0.95),
-                    rgba(21, 19, 21, 0.96)
-                );
-        }
-
-        .booking-card {
-            border-color: rgba(213, 166, 91, 0.55);
-            background:
-                linear-gradient(
-                    145deg,
-                    rgba(30, 25, 27, 0.92),
-                    rgba(18, 17, 20, 0.92)
-                );
-            color: #eee8e3;
-            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.18);
-        }
-
-        .booking-card:hover {
-            border-color: #d5a65b;
-            background:
-                linear-gradient(
-                    145deg,
-                    rgba(39, 30, 31, 0.95),
-                    rgba(21, 19, 21, 0.96)
-                );
-        }
-
-        .icon {
-            width: 44px;
-            height: 44px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 12px;
-            border: 1px solid rgba(213, 166, 91, 0.3);
-            border-radius: 10px;
-            background: rgba(213, 166, 91, 0.1);
-            color: #e6c58f;
-            font-size: 19px;
-            transition: 0.2s;
-        }
-
-        .button:hover .icon {
-            background: rgba(213, 166, 91, 0.16);
-            border-color: rgba(213, 166, 91, 0.5);
-        }
-
-        .booking-card .icon {
-            border-color: rgba(213, 166, 91, 0.3);
-            background: rgba(213, 166, 91, 0.1);
-            color: #e6c58f;
-        }
-
-        .booking-card:hover .icon {
-            background: rgba(213, 166, 91, 0.16);
-            border-color: rgba(213, 166, 91, 0.5);
-        }
-
-        .button h3 {
-            font-size: 13px;
-            font-weight: 600;
-        }
-
-        .booking-card h3 {
-            color: #eee8e3;
-            font-size: 13px;
-        }
-
-        .button p {
-            margin-top: 6px;
-            color: #777276;
-            font-size: 10px;
-        }
-
-        .booking-card p {
-            color: #777276;
-        }
-
-        .delivery-button {
-            border-color: rgba(213, 166, 91, 0.55);
-            background:
-                linear-gradient(
-                    145deg,
-                    rgba(30, 25, 27, 0.92),
-                    rgba(18, 17, 20, 0.92)
-                );
-            color: #eee8e3;
-            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.18);
-        }
-
-        .delivery-button:hover {
-            border-color: #d5a65b;
-            background:
-                linear-gradient(
-                    145deg,
-                    rgba(39, 30, 31, 0.95),
-                    rgba(21, 19, 21, 0.96)
-                );
-        }
-
-        .delivery-button .icon {
-            border-color: rgba(213, 166, 91, 0.3);
-            background: rgba(213, 166, 91, 0.1);
-            color: #e6c58f;
-        }
-
-        .delivery-button:hover .icon {
-            background: rgba(213, 166, 91, 0.16);
-            border-color: rgba(213, 166, 91, 0.5);
-        }
-
-        .delivery-button h3 {
-            color: #eee8e3;
-            font-size: 13px;
-        }
-
-        .delivery-button p {
-            color: #777276;
-        }
-
-        .button-large {
-            min-height: 125px;
-        }
-
-        .button-large .icon {
-            width: 44px;
-            height: 44px;
-            font-size: 19px;
-        }
-
-        .button-large h3 {
-            font-size: 13px;
-        }
-
-        .about-section {
-            scroll-margin-top: 90px;
+            min-height: 110px;
         }
 
         .about-box {
-            padding: 34px;
-            border: 1px solid rgba(255, 255, 255, 0.075);
-            border-radius: 15px;
-            background:
-                linear-gradient(
-                    145deg,
-                    rgba(30, 25, 27, 0.9),
-                    rgba(17, 16, 18, 0.94)
-                );
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
-            backdrop-filter: blur(12px);
+            padding: 25px 20px;
         }
+    }
 
-        .about-box h2 {
-            font-family: Georgia, serif;
-            font-size: 25px;
-            font-weight: normal;
-            color: #eee3dc;
-            margin-bottom: 12px;
+    @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after {
+            transition-duration: 0.01ms !important;
+            animation-duration: 0.01ms !important;
         }
-
-        .about-box > p {
-            max-width: 680px;
-            color: #938b8c;
-            font-size: 12px;
-            line-height: 1.75;
-            white-space: pre-line;
-        }
-
-        .advantages {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 12px;
-            margin-top: 25px;
-        }
-
-        .advantage {
-            padding: 18px;
-            border: 1px solid rgba(255, 255, 255, 0.055);
-            border-radius: 11px;
-            background: rgba(255, 255, 255, 0.025);
-        }
-
-        .advantage-icon {
-            color: #d5a65b;
-            font-size: 17px;
-            margin-bottom: 12px;
-        }
-
-        .advantage h3 {
-            color: #e5ddda;
-            font-size: 12px;
-            font-weight: 600;
-        }
-
-        .advantage p {
-            margin-top: 7px;
-            color: #777174;
-            font-size: 10px;
-            line-height: 1.55;
-        }
-
-        .contacts {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 12px;
-        }
-
-        .contact {
-            padding: 22px 18px;
-            border: 1px solid rgba(255, 255, 255, 0.065);
-            border-radius: 12px;
-            background: rgba(23, 21, 23, 0.88);
-            color: #e6dfdc;
-        }
-
-        .contact-label {
-            display: block;
-            color: #777174;
-            font-size: 9px;
-            letter-spacing: 1.5px;
-            text-transform: uppercase;
-            margin-bottom: 8px;
-        }
-
-        .contact-value {
-            font-size: 12px;
-            line-height: 1.5;
-        }
-
-        .contact-value a {
-            color: inherit;
-            text-decoration: none;
-            transition: color 0.2s;
-        }
-
-        .contact-value a:hover {
-            color: #d5a65b;
-        }
-
-        .footer {
-            padding-top: 25px;
-            text-align: center;
-            color: #575256;
-            font-size: 9px;
-            letter-spacing: 1px;
-        }
-
-        @media (max-width: 800px) {
-            .quick-menu {
-                top: 12px;
-                width: calc(100% - 24px);
-                justify-content: center;
-            }
-
-            .quick-button {
-                flex: 1;
-                min-width: 0;
-                padding: 0 9px;
-                font-size: 10px;
-            }
-
-            .back-to-list {
-                top: 62px;
-                left: 12px;
-                right: 12px;
-                justify-content: center;
-                width: auto;
-                height: 36px;
-                font-size: 10px;
-            }
-
-            .container {
-                padding: 115px 25px 45px;
-            }
-
-            .header {
-                margin-bottom: 45px;
-            }
-
-            .header h1 {
-                font-size: 40px;
-            }
-
-            .buttons-main,
-            .advantages,
-            .contacts {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        @media (max-width: 500px) {
-            .quick-menu {
-                gap: 5px;
-                padding: 6px;
-            }
-
-            .quick-button {
-                height: 35px;
-                padding: 0 6px;
-                font-size: 9px;
-            }
-
-            .back-to-list {
-                top: 60px;
-                height: 34px;
-                font-size: 9px;
-            }
-
-            .container {
-                padding: 110px 18px 35px;
-            }
-
-            .header h1 {
-                font-size: 34px;
-                letter-spacing: 5px;
-            }
-
-            .hero-title {
-                font-size: 24px;
-            }
-
-            .button {
-                min-height: 110px;
-            }
-
-            .button-large {
-                min-height: 125px;
-            }
-
-            .about-box {
-                padding: 25px 20px;
-            }
-        }
-    </style>
+    }
+</style>
 </head>
 
 <body>
@@ -700,7 +717,7 @@
         <header class="header">
             <div class="header-top">
                 <h1>
-                    {{ restaurant.name }}
+                    {{ restaurant.restaurant_name }}
                 </h1>
             </div>
 
@@ -712,6 +729,17 @@
 
             {% if restaurant.city %}
             <span class="city">{{ restaurant.city }}</span>
+            {% endif %}
+
+            {% if restaurant.instagram_url %}
+            <a
+                href="{{ restaurant.instagram_url }}"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="instagram"
+            >
+                Instagram →
+            </a>
             {% endif %}
         </header>
 
@@ -774,6 +802,20 @@
                 </a>
 
             </div>
+
+            {% if restaurant.accepts_reservations or restaurant.accepts_delivery or restaurant.accepts_orders_on_site %}
+            <div class="features-badges">
+                {% if restaurant.accepts_reservations %}
+                    <span class="feature-badge">Принимает бронирования</span>
+                {% endif %}
+                {% if restaurant.accepts_delivery %}
+                    <span class="feature-badge">Принимает доставку</span>
+                {% endif %}
+                {% if restaurant.accepts_orders_on_site %}
+                    <span class="feature-badge">Принимает заказы в зале</span>
+                {% endif %}
+            </div>
+            {% endif %}
 
         </section>
 
@@ -860,6 +902,50 @@
 
         </section>
 
+        {% if restaurant.working_hours %}
+        <section class="section">
+
+            <div class="section-title">
+                <h2>Режим работы</h2>
+                <div class="section-line"></div>
+            </div>
+
+            <div class="working-hours-box">
+                <div class="working-hours-list">
+                    {% set days = [
+                        ("monday", "Понедельник"),
+                        ("tuesday", "Вторник"),
+                        ("wednesday", "Среда"),
+                        ("thursday", "Четверг"),
+                        ("friday", "Пятница"),
+                        ("saturday", "Суббота"),
+                        ("sunday", "Воскресенье")
+                    ] %}
+                    {% for day_key, day_label in days %}
+                        {% set hours = restaurant.working_hours.get(day_key, {}) if restaurant.working_hours else {} %}
+                        {% if hours and (hours.get('from') or hours.get('to')) %}
+                        <div class="working-hours-row">
+                            <span class="working-day">{{ day_label }}</span>
+                            <span class="working-time">
+                                {% if hours.get('from') and hours.get('to') %}
+                                    {{ hours.get('from') }} — {{ hours.get('to') }}
+                                {% elif hours.get('from') %}
+                                    с {{ hours.get('from') }}
+                                {% elif hours.get('to') %}
+                                    до {{ hours.get('to') }}
+                                {% else %}
+                                    —
+                                {% endif %}
+                            </span>
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+
+        </section>
+        {% endif %}
+
         <section class="section">
 
             <div class="section-title">
@@ -918,7 +1004,7 @@
         </section>
 
         <footer class="footer">
-            {{ restaurant.name }}
+            {{ restaurant.restaurant_name }}
         </footer>
 
     </div>
