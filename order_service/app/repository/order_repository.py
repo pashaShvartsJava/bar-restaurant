@@ -165,8 +165,8 @@ class OrderRepository:
         await self.db.refresh(old_order)
         return old_order
 
-    async def mark_order_as_paid(self, order_id : int, status : OrderStatus) -> Order:
-        old_order = await self.get_order_by_id(order_id)
+    async def mark_order_as_paid(self, order_id : int, status : OrderStatus, restaurant_id : UUID) -> Order:
+        old_order = await self.get_order_by_id(order_id, restaurant_id)
         old_order.status = status
         await self.db.flush()
         return old_order

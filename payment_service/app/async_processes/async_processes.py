@@ -17,9 +17,10 @@ async def outbox_publisher():
                 try:
                     if event.event_type == "PaymentPaid":
                         await publish_payment_paid(payment_id=event.payload["payment_id"],
-                                                            client_id=event.payload["client_id"],
-                                                            event_id=event.id,
-                                                            order_id=event.payload["order_id"])
+                                                   client_id=event.payload["client_id"],
+                                                   event_id=event.id,
+                                                   order_id=event.payload["order_id"],
+                                                   restaurant_id=event.payload["restaurant_id"])
                     if event.event_type == "SubscriptionStatusChanged":
                         await publish_subscription_event(subscription_id=event.payload["subscription_id"],
                                                                   restaurant_id=event.payload["restaurant_id"],

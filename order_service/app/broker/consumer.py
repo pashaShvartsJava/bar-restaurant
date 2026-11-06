@@ -1,4 +1,5 @@
 import json
+import uuid
 from uuid import UUID
 
 from .rabbitmq import RabbitMQ
@@ -32,12 +33,12 @@ class OrderPaidConsumer:
                                 if event is None:
                                     print(f"PAYMENT EVENT: {data}", flush=True)
 
-                                    order = await order_service.get_order_by_id(int(data["order_id"]))
+                                    order = await order_service.get_order_by_id(int(data["order_id"]), uuid.UUID(data["restaurant_id"]))
                                     print(
                                         f"ORDER BEFORE: {order.id if order else None}, STATUS: {order.status if order else None}",
                                         flush=True)
 
-                                    await order_service.mark_order_as_paid(order.id, OrderStatus.PAID)
+                                    await order_service.mark_order_as_paid(order.id, OrderStatus.PAID, order.restaurant_id)
                                     print("ORDER STATUS SET TO PAID", flush=True)
 
                                     await event_repository.create_event(event_id)

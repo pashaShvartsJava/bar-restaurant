@@ -70,8 +70,8 @@ class OrderService:
         await self.order_repository.db.rollback()
         return await self.order_repository.create_order_for_guest(data , total_sum, status, table_number, restaurant_id, total_drink_sum, total_food_sum)
 
-    async def mark_order_as_paid(self, order_id: int, status: OrderStatus) -> Order:
-        return await self.order_repository.mark_order_as_paid(order_id, status)
+    async def mark_order_as_paid(self, order_id: int, status: OrderStatus, restaurant_id : UUID) -> Order:
+        return await self.order_repository.mark_order_as_paid(order_id, status, restaurant_id)
 
     async def cancel_order_before_payment(self, client_id : UUID, restaurant_id : UUID):
         return await self.order_repository.cancel_order_before_payment(client_id, restaurant_id)
