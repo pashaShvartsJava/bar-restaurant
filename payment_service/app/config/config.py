@@ -8,9 +8,6 @@ class Settings(BaseSettings):
     jwt_public_key_path: str
     internal_token: str
 
-    stripe_secret_key: str
-    stripe_webhook_secret: str
-
     stripe_secret_key_subscriptions: str
     stripe_webhook_secret_subscriptions: str
 

@@ -6,7 +6,7 @@ from ..config.config import settings
 from ..models.payments import Payment
 from ..models.subscriptions import Subscription
 
-async def create_line_items(total_food : Decimal, total_drink : Decimal) -> list[dict]:
+def create_line_items(total_food : Decimal, total_drink : Decimal) -> list[dict]:
     FOOD_TAX_RATE_ID = "txr_1UYpe6FE7tOPntmhGP9UI7is"
     DRINK_TAX_RATE_ID = "txr_1UYpeUFE7tOPntmhSEJu08AI"
     line_items = []
@@ -33,14 +33,16 @@ async def create_line_items(total_food : Decimal, total_drink : Decimal) -> list
 
 class StripeService:
     def __init__(self):
-        self.client = stripe.StripeClient(settings.stripe_secret_key)
-        self.subscription_client = stripe.StripeClient(settings.stripe_secret_key_subscriptions)
+        self.client = stripe.StripeClient(settings.stripe_secret_key_subscriptions)
 
     async def create_checkout_session(self, payment : Payment, stripe_account_id : str, order_commission_percent : int):
-        application_fee = int((payment.sum * (Decimal(order_commission_percent) / Decimal("100"))
-                               + (payment.sum + Decimal("0.25")) / Decimal("0.985") - payment.sum) * Decimal(
-            "100").quantize(Decimal("1"), rounding=ROUND_HALF_UP))
-        line_items = await create_line_items(payment.total_food, payment.total_drink)
+        application_fee_eur = (
+                payment.sum * (Decimal(order_commission_percent) / Decimal("100"))
+                + (payment.sum + Decimal("0.25")) / Decimal("0.985")
+                - payment.sum
+        )
+        application_fee = int((application_fee_eur * Decimal("100")).quantize(Decimal("1"), rounding=ROUND_HALF_UP))
+        line_items = create_line_items(payment.total_food, payment.total_drink)
         session = await self.client.v1.checkout.sessions.create_async(
             params={
                 "mode": "payment",
@@ -63,10 +65,10 @@ class StripeService:
         return session
 
     def construct_webhook_event(self, payload: bytes, signature: str):
-        return stripe.Webhook.construct_event(payload, signature, settings.stripe_webhook_secret)
+        return stripe.Webhook.construct_event(payload, signature, settings.stripe_webhook_secret_subscriptions)
 
     async def create_checkout_subscription_session(self, subscription: Subscription, key : str):
-        session = await self.subscription_client.v1.checkout.sessions.create_async(
+        session = await self.client.v1.checkout.sessions.create_async(
             params={
                 "mode": "subscription",
                 "line_items": [
