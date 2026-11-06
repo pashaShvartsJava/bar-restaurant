@@ -27,14 +27,15 @@ class MenuRepository:
         result = await self.db.execute(select(Menu).where(Menu.dish_name==dish_name))
         return result.scalar_one_or_none()
 
-    async def create_dish(self, dish_name : str, price : Decimal, description : str, category_id : UUID, image_url : str, restaurant_id : UUID) -> Menu:
+    async def create_dish(self, dish_name : str, price : Decimal, description : str, category_id : UUID, image_url : str, restaurant_id : UUID, is_drink : bool) -> Menu:
         new_dish = Menu(
             dish_name=dish_name,
             price=price,
             description=description,
             category_id=category_id,
             image_url=image_url,
-            restaurant_id=restaurant_id
+            restaurant_id=restaurant_id,
+            is_drink=is_drink
         )
         self.db.add(new_dish)
         await self.db.commit()

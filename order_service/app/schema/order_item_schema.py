@@ -9,6 +9,7 @@ class OrderItemDTO(BaseModel):
     dish_name: str = Field(...,)
     price: Decimal = Field(..., ge=1, le=20000)
     quantity: int = Field(...,)
+    is_drink: bool = Field(...)
 
 class ListOrderDTO(BaseModel):
     order_items : list[OrderItemDTO]

@@ -132,6 +132,42 @@
             background: #242123;
             color: #f0b38a;
         }
+        .checkbox-field {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 14px 16px;
+            background: rgba(40, 34, 35, 0.55);
+            border: 1px solid rgba(180, 100, 90, 0.2);
+            border-radius: 8px;
+        }
+        .checkbox-field input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            margin: 2px 0 0;
+            padding: 0;
+            flex-shrink: 0;
+            accent-color: #d5a65b;
+            cursor: pointer;
+        }
+        .checkbox-text {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            min-width: 0;
+            cursor: pointer;
+        }
+        .checkbox-label {
+            color: #f0c09d;
+            font-size: 12px;
+            font-weight: 600;
+            line-height: 1.3;
+        }
+        .checkbox-hint {
+            color: #77777d;
+            font-size: 10px;
+            line-height: 1.5;
+        }
         .photo-box {
             display: flex;
             align-items: center;
@@ -330,6 +366,24 @@
                         <option value="{{ category.id }}">{{ category.category_name }}</option>
                     {% endfor %}
                 </select>
+            </div>
+
+            <div class="field">
+                <label>Тип позиции</label>
+                <label class="checkbox-field" for="is_drink">
+                    <input
+                        type="checkbox"
+                        id="is_drink"
+                        name="is_drink"
+                        value="true">
+                    <span class="checkbox-text">
+                        <span class="checkbox-label">Это напиток</span>
+                        <span class="checkbox-hint">
+                            Отметьте, если позиция — напиток. В Германии к напиткам применяется
+                            НДС 19%, к еде — 7%.
+                        </span>
+                    </span>
+                </label>
             </div>
 
             <div class="field">

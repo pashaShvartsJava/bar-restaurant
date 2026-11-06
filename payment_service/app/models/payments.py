@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Integer, UUID, Enum as SQLEnum, DECIMAL, DateTime, func
+from sqlalchemy import Column, String, Integer, UUID, Enum as SQLEnum, DECIMAL, DateTime, func, Numeric
 from enum import Enum
 
 from ..database.database import Base
@@ -26,3 +26,5 @@ class Payment(Base):
     stripe_session_id = Column(String, nullable=True, unique=True)
     stripe_payment_intent_id = Column(String, nullable=True, unique=True)
     restaurant_id = Column(UUID, nullable=False)
+    food_total = Column(Numeric(10, 2), nullable=False, default=0)
+    drink_total = Column(Numeric(10, 2), nullable=False, default=0)

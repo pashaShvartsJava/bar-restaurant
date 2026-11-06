@@ -10,7 +10,7 @@ from starlette.templating import Jinja2Templates
 from ..dependencies.dependencies import get_order_service_dependency, get_restaurant_dependency
 from ..models.orders import OrderStatus
 from ..schema.delivery_address_schema import DeliveryAddressDTO, GuestDTO, GuestCustomerDTO
-from ..schema.order_item_schema import ListOrderDTO, ListOrderGuestDTO, OrderItemDTO, SplitOrderDTO
+from ..schema.order_item_schema import ListOrderDTO, ListOrderGuestDTO, SplitOrderDTO
 from ..schema.orders_schema import StatusDTO, MergeOrdersDTO
 from ..schema.payment_schema import PaymentDTO
 from ..security.internal_security import verify_internal_token
@@ -81,8 +81,15 @@ async def make_order(request : Request,
 @router.post("/r/{slug}/orders/create/guest")
 async def make_order_for_guest(data : ListOrderGuestDTO, slug : str, service : OrderService = Depends(get_order_service_dependency)):
     restaurant = await get_restaurant_dependency(slug)
-    await service.create_order_for_guest(data, "", None, restaurant.id)
-    return RedirectResponse(url=f"r/{slug}/orders/confirm_address/guest", status_code=303)
+    total_drink_sum = Decimal("0.00")
+    total_food_sum = Decimal("0.00")
+    for item in data.order_items:
+        if item.is_drink:
+            total_drink_sum += item.price * item.quantity
+        else:
+            total_food_sum += item.price * item.quantity
+    await service.create_order_for_guest(data, "", None, restaurant.id, total_drink_sum, total_food_sum)
+    return RedirectResponse(url=f"r/{slug}/orders/confirm_address/guest?total_drink_sum={total_drink_sum}&total_food_sum={total_food_sum}", status_code=303)
 
 @router.get("/r/{slug}/orders/confirm_address/guest")
 async def confirm_address(request : Request, slug : str):
@@ -119,7 +126,9 @@ async def create_delivering_address(request : Request,
         order_id=order.id,
         order_number=order.order_number,
         sum=order.sum,
-        restaurant_id=restaurant.id
+        restaurant_id=restaurant.id,
+        total_food=order.food_total,
+        total_drink=order.drink_total
     )
     if updated_order.status==OrderStatus.CONFIRMED_ADDRESS:
         async with httpx.AsyncClient() as client:
@@ -161,7 +170,9 @@ async def create_delivering_address(request : Request,
         order_id=order.id,
         order_number=order.order_number,
         sum=order.sum,
-        restaurant_id=restaurant.id
+        restaurant_id=restaurant.id,
+        total_drink=order.drink_total,
+        total_food=order.food_total
     )
     if updated_order.status==OrderStatus.CONFIRMED_ADDRESS:
         async with httpx.AsyncClient() as client:
@@ -239,17 +250,26 @@ async def make_internal_order(status : str,
                               table_number : int,
                               data : ListOrderGuestDTO, service : OrderService = Depends(get_order_service_dependency)):
     restaurant = await get_restaurant_dependency(slug)
+    total_drink_sum = Decimal("0.00")
+    total_food_sum = Decimal("0.00")
+    for item in data.order_items:
+        if item.is_drink:
+            total_drink_sum += item.price * item.quantity
+        else:
+            total_food_sum += item.price * item.quantity
     if status == OrderStatus.INTERNAL_ORDER.value:
-        await service.create_order_for_guest(data, status, table_number, restaurant.id)
+        await service.create_order_for_guest(data, status, table_number, restaurant.id, total_drink_sum, total_food_sum)
         return {"message": "Заказ успешно оформлен"}
     else:
-        order = await service.create_order_for_guest(data, OrderStatus.INTERNAL_ORDER.value, table_number, restaurant.id)
+        order = await service.create_order_for_guest(data, OrderStatus.INTERNAL_ORDER.value, table_number, restaurant.id, total_drink_sum, total_food_sum)
         payment_data = PaymentDTO(
             client_id=data.client_id,
             order_id=order.id,
             order_number=order.order_number,
             sum=order.sum,
-            restaurant_id=restaurant.id
+            restaurant_id=restaurant.id,
+            total_food=order.food_total,
+            total_drink=order.drink_total
         )
         async with httpx.AsyncClient() as client:
             response = await client.post(url="http://payment-service:8008/payment/create",
@@ -291,7 +311,14 @@ async def create_order_manually(request : Request,
     required_roles(IdentityRole.OWNER, IdentityRole.ADMIN, IdentityRole.MODERATOR, payload=payload)
     await verify_csrf(request)
     restaurant_id = payload.get("restaurant_id")
-    await service.create_order_for_guest(data,OrderStatus.INTERNAL_ORDER, table_number, restaurant_id)
+    total_drink_sum = Decimal("0.00")
+    total_food_sum = Decimal("0.00")
+    for item in data.order_items:
+        if item.is_drink:
+            total_drink_sum += item.price * item.quantity
+        else:
+            total_food_sum += item.price * item.quantity
+    await service.create_order_for_guest(data,OrderStatus.INTERNAL_ORDER, table_number, restaurant_id, total_drink_sum, total_food_sum)
 
 @router.post("/orders/merge")
 async def merge_orders(request : Request,

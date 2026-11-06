@@ -1,6 +1,6 @@
 from sqlalchemy.dialects.postgresql import UUID
 
-from sqlalchemy import Column, Integer, String, DECIMAL, Enum as SQLEnum, ForeignKey
+from sqlalchemy import Column, Integer, String, DECIMAL, Enum as SQLEnum, ForeignKey, Boolean
 from sqlalchemy.orm import relationship
 
 from ..database.database import Base
@@ -23,5 +23,6 @@ class Menu(Base):
     category_id = Column(UUID(as_uuid=True), ForeignKey("categories.id"), nullable=False)
     image_url = Column(String)
     restaurant_id = Column(UUID(as_uuid=True), nullable=False)
+    is_drink = Column(Boolean, nullable=False, default=False)
 
     category = relationship("Category", back_populates="dishes")

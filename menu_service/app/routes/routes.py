@@ -74,6 +74,7 @@ async def create_dish(request : Request,
                                description : str = Form(...,),
                                category_id : UUID = Form(...,),
                                image : UploadFile | None = File(None),
+                               is_drink: bool = Form(False),
                                menu_service : MenuService = Depends(get_menu_service_dependency)):
     payload = get_payload(request)
     required_roles(IdentityRole.OWNER, IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
@@ -86,9 +87,8 @@ async def create_dish(request : Request,
         safe_filename = f"{uuid.uuid4().hex}{Path(image.filename).suffix.lower()}"
         file_path = upload_dir / safe_filename
         file_path.write_bytes(await image.read())
-
         image_url = f"/media/dishes/{restaurant_id}/{safe_filename}"
-    await menu_service.create_dish(dish_name, price, description, category_id, image_url, restaurant_id)
+    await menu_service.create_dish(dish_name, price, description, category_id, image_url, restaurant_id, is_drink)
     return RedirectResponse(url="/menu_page", status_code=303)
 
 @router.patch("/menu_page/change_dish_status/{id}")

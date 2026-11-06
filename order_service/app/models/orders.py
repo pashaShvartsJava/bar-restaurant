@@ -3,7 +3,7 @@ from datetime import datetime, timezone
 
 from sqlalchemy.dialects.postgresql import UUID
 
-from sqlalchemy import Column, Integer, ForeignKey, DateTime, String, DECIMAL, Enum as SQLEnum, func
+from sqlalchemy import Column, Integer, ForeignKey, DateTime, String, DECIMAL, Enum as SQLEnum, func, Numeric
 from sqlalchemy.orm import relationship
 from enum import Enum
 
@@ -34,6 +34,8 @@ class Order(Base):
     sum = Column(DECIMAL(10, 2), nullable=False, index=True)
     table_number = Column(Integer, nullable=True)
     restaurant_id = Column(UUID, nullable=False)
+    food_total = Column(Numeric(10, 2), nullable=False, default=0)
+    drink_total = Column(Numeric(10, 2), nullable=False, default=0)
 
     order_items = relationship("OrderItem", back_populates="order", cascade="all, delete-orphan", passive_deletes=True)
     address = relationship("DeliveryAddress", back_populates="order", uselist=False)

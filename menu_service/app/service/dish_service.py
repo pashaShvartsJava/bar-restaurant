@@ -23,8 +23,8 @@ class MenuService:
     async def get_dish_by_name(self, dish_name : str) -> Menu:
         return await self.menu_repository.get_dish_by_name(dish_name)
 
-    async def create_dish(self, dish_name : str, price : Decimal, description : str, category_id : UUID, image_url : str ,restaurant_id : UUID) -> Menu:
-        return await self.menu_repository.create_dish(dish_name, price, description, category_id, image_url, restaurant_id)
+    async def create_dish(self, dish_name : str, price : Decimal, description : str, category_id : UUID, image_url : str ,restaurant_id : UUID, is_drink : bool) -> Menu:
+        return await self.menu_repository.create_dish(dish_name, price, description, category_id, image_url, restaurant_id, is_drink)
 
     async def update_dish(self, id : int, dish_name : str,  description : str, price : Decimal, image_url : str, restaurant_id : UUID) -> Menu:
         return await self.menu_repository.update_dish(id, dish_name, description, price, image_url, restaurant_id)

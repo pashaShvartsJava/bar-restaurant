@@ -6,6 +6,30 @@ from ..config.config import settings
 from ..models.payments import Payment
 from ..models.subscriptions import Subscription
 
+async def create_line_items(total_food : Decimal, total_drink : Decimal) -> list[dict]:
+    FOOD_TAX_RATE_ID = "txr_1UYpe6FE7tOPntmhGP9UI7is"
+    DRINK_TAX_RATE_ID = "txr_1UYpeUFE7tOPntmhSEJu08AI"
+    line_items = []
+    if total_food > 0:
+        line_items.append({
+            "price_data": {
+                "currency": "eur",
+                "product_data": {"name": "Food"},
+                "unit_amount": int(total_food * Decimal("100")),
+            },
+            "quantity": 1,
+            "tax_rates": [FOOD_TAX_RATE_ID]})
+    if total_drink > 0:
+        line_items.append({
+            "price_data": {
+                "currency": "eur",
+                "product_data": {"name": "Drinks"},
+                "unit_amount": int(total_drink * Decimal("100")),
+            },
+            "quantity": 1,
+            "tax_rates": [DRINK_TAX_RATE_ID]})
+    return line_items
+
 
 class StripeService:
     def __init__(self):
@@ -14,22 +38,13 @@ class StripeService:
 
     async def create_checkout_session(self, payment : Payment, stripe_account_id : str, order_commission_percent : int):
         application_fee = int((payment.sum * (Decimal(order_commission_percent) / Decimal("100"))
-                               + (payment.sum + Decimal("0.25")) / Decimal("0.985") - payment.sum) * Decimal("100").quantize(Decimal("1"), rounding=ROUND_HALF_UP))
+                               + (payment.sum + Decimal("0.25")) / Decimal("0.985") - payment.sum) * Decimal(
+            "100").quantize(Decimal("1"), rounding=ROUND_HALF_UP))
+        line_items = await create_line_items(payment.total_food, payment.total_drink)
         session = await self.client.v1.checkout.sessions.create_async(
             params={
                 "mode": "payment",
-                "line_items": [
-                    {
-                        "price_data": {
-                            "currency": "eur",
-                            "product_data": {
-                                "name": f"Order {payment.order_number}"
-                            },
-                            "unit_amount": int(payment.sum * Decimal("100"))
-                        },
-                        "quantity": 1
-                    }
-                ],
+                "line_items": line_items,
                 "metadata": {
                     "payment_id": str(payment.id),
                     "order_id": str(payment.order_id)

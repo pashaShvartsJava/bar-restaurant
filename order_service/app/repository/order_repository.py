@@ -102,7 +102,14 @@ class OrderRepository:
         await self.db.refresh(new_order)
         return new_order
 
-    async def create_order_for_guest(self, data : ListOrderGuestDTO, total_sum : Decimal, status : str, table_number : int | None, restaurant_id : UUID):
+    async def create_order_for_guest(self,
+                                     data : ListOrderGuestDTO,
+                                     total_sum : Decimal,
+                                     status : str,
+                                     table_number : int | None,
+                                     restaurant_id : UUID,
+                                     total_drink_sum : Decimal,
+                                     total_food_sum : Decimal):
         if status == "":
             order_status = OrderStatus.PENDING
         else:
@@ -117,7 +124,9 @@ class OrderRepository:
                 sum=total_sum,
                 status=order_status,
                 table_number=number,
-                restaurant_id=restaurant_id
+                restaurant_id=restaurant_id,
+                total_food_sum=total_food_sum,
+                total_drink_sum=total_drink_sum
             )
             self.db.add(new_order)
             await self.db.flush()
@@ -129,7 +138,9 @@ class OrderRepository:
                     dish_name=order_item.dish_name,
                     quantity=order_item.quantity,
                     price=order_item.price,
-                    restaurant_id=restaurant_id
+                    restaurant_id=restaurant_id,
+                    total_food_sum=total_food_sum,
+                    total_drink_sum=total_drink_sum
                 )
                 self.db.add(new_order_item)
         await self.db.refresh(new_order)
