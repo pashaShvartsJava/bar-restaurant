@@ -75,7 +75,14 @@ async def make_order(request : Request,
     await verify_csrf(request)
     restaurant = await get_restaurant_dependency(slug)
     client_id = UUID(payload["sub"])
-    await service.create_order(data, client_id, restaurant.id)
+    total_drink_sum = Decimal("0.00")
+    total_food_sum = Decimal("0.00")
+    for item in data.order_items:
+        if item.is_drink:
+            total_drink_sum += item.price * item.quantity
+        else:
+            total_food_sum += item.price * item.quantity
+    await service.create_order(data, client_id, restaurant.id, total_drink_sum, total_food_sum)
     return RedirectResponse(url=f"/r/{slug}/users/confirm_address", status_code=303)
 
 @router.post("/r/{slug}/orders/create/guest")
@@ -89,7 +96,7 @@ async def make_order_for_guest(data : ListOrderGuestDTO, slug : str, service : O
         else:
             total_food_sum += item.price * item.quantity
     await service.create_order_for_guest(data, "", None, restaurant.id, total_drink_sum, total_food_sum)
-    return RedirectResponse(url=f"r/{slug}/orders/confirm_address/guest?total_drink_sum={total_drink_sum}&total_food_sum={total_food_sum}", status_code=303)
+    return RedirectResponse(url=f"/r/{slug}/orders/confirm_address/guest", status_code=303)
 
 @router.get("/r/{slug}/orders/confirm_address/guest")
 async def confirm_address(request : Request, slug : str):

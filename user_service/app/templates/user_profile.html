@@ -1351,7 +1351,6 @@
     <div id="pageError" class="page-error"></div>
 
     <div class="layout">
-      <!-- ===== ПРОФИЛЬ ===== -->
       <section class="profile-card">
         <div class="profile-header">
           <div class="avatar">{{ user.name[0] }}</div>
@@ -1411,9 +1410,7 @@
         <a href="/user/edit" class="edit-profile">Изменить личные данные</a>
       </section>
 
-      <!-- ===== ПРАВАЯ КАРТОЧКА ===== -->
       <section class="actions-card">
-        <!-- ===== ПОИСК И ФИЛЬТР ===== -->
         <div class="search-section">
           <div class="search-row">
             <div class="search-input-wrap">
@@ -1437,7 +1434,6 @@
           </div>
         </div>
 
-        <!-- ===== СПИСОК РЕСТОРАНОВ ===== -->
         <div class="restaurants-section">
           <h3>Заведения</h3>
           <p>Выберите заведение, чтобы перейти в его меню</p>
@@ -1471,7 +1467,7 @@
                   </div>
 
                   <div class="restaurant-actions">
-                    <a href="/r/{{ slug }}/delivery" class="restaurant-btn menu-gold">
+                    <a href="/r/{{ slug }}/menu_page/orders/users" class="restaurant-btn menu-gold">
                       Перейти в меню →
                     </a>
                     <a href="/r/{{ slug }}/support/user" class="restaurant-btn support-purple">

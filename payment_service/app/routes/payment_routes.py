@@ -61,7 +61,7 @@ async def stripe_payment_webhook(request: Request, service: PaymentService = Dep
     except (ValueError, stripe.error.SignatureVerificationError):
         raise HTTPException(status_code=400, detail="Invalid webhook")
     if event["type"] == "checkout.session.completed":
-        session = event["data"]["object"]
+        session = event["data"]["object"].to_dict()
         if "payment_id" not in session.get("metadata", {}):
             return {"status": "ignored"}
         await service.handle_webhook(event)

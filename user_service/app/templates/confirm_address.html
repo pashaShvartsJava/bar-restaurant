@@ -3,279 +3,583 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Подтверждение адреса | Bar & Lounge</title>
+    <title>Подтверждение адреса — {{ restaurant.restaurant_name if restaurant else 'Restaurant' }}</title>
+
     <style>
-        * { box-sizing: border-box; }
-        body {
+        * {
             margin: 0;
-            min-height: 100vh;
-            font-family: "Segoe UI", sans-serif;
-            background:
-                radial-gradient(circle at 15% 15%, rgba(213,166,91,.2), transparent 30%),
-                radial-gradient(circle at 85% 85%, rgba(180,70,110,.16), transparent 30%),
-                linear-gradient(135deg, #24191f, #39252c, #21191e);
-            color: #fff;
-            padding: 40px 20px;
+            padding: 0;
+            box-sizing: border-box;
         }
-        .page { width: 650px; max-width: 100%; margin: auto; }
-        .top {
+
+        :root {
+            --bg: #100e11;
+            --bg-soft: #191418;
+            --panel: rgba(25, 21, 25, 0.94);
+            --panel-light: rgba(39, 29, 32, 0.92);
+            --text: #eee5df;
+            --muted: #93898d;
+            --muted-dark: #6f666c;
+            --gold: #d5a65b;
+            --gold-light: #e8c58e;
+            --violet: #a78bfa;
+            --violet-light: #c4b5fd;
+            --border: rgba(255, 255, 255, 0.08);
+            --gold-border: rgba(213, 166, 91, 0.38);
+            --cream: #eee5df;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            min-height: 100vh;
+            color: var(--cream);
+            font-family: Arial, sans-serif;
+            background:
+                radial-gradient(
+                    ellipse at 50% -8%,
+                    rgba(157, 69, 76, 0.32) 0%,
+                    rgba(89, 39, 49, 0.26) 28%,
+                    rgba(35, 24, 30, 0.72) 54%,
+                    rgba(15, 14, 17, 0.98) 82%
+                ),
+                linear-gradient(
+                    180deg,
+                    #301b22 0%,
+                    #1d171c 34%,
+                    #121114 70%,
+                    #0c0c0e 100%
+                );
+            background-attachment: fixed;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            background:
+                radial-gradient(
+                    circle at 12% 20%,
+                    rgba(183, 91, 78, 0.055),
+                    transparent 30%
+                ),
+                radial-gradient(
+                    circle at 88% 34%,
+                    rgba(213, 166, 91, 0.035),
+                    transparent 28%
+                );
+            z-index: 0;
+        }
+
+        a {
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .navbar {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            width: 100%;
+            padding: 18px 35px;
+            background: rgba(22, 18, 20, 0.9);
+            border-bottom: 1px solid rgba(213, 166, 91, 0.16);
+            backdrop-filter: blur(14px);
+        }
+
+        .nav-container {
+            width: min(900px, 100%);
+            margin: 0 auto;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 25px;
+            gap: 25px;
         }
-        .back { color: #aaa; text-decoration: none; font-size: 12px; }
-        .back:hover { color: #d5a65b; }
+
         .brand {
-            color: #d5a65b;
+            color: var(--gold);
+            text-decoration: none;
             font-family: Georgia, serif;
-            letter-spacing: 3px;
-            font-size: 11px;
-        }
-        .card {
-            background: rgba(39,32,38,.96);
-            border: 1px solid rgba(255,255,255,.1);
-            border-radius: 18px;
-            padding: 35px;
-            box-shadow: 0 25px 60px rgba(0,0,0,.4);
-        }
-        .header { margin-bottom: 30px; }
-        .header-label {
-            color: #d5a65b;
-            font-size: 9px;
-            letter-spacing: 3px;
-            margin-bottom: 7px;
-        }
-        h1 {
-            margin: 0;
-            font-family: Georgia, serif;
-            font-size: 30px;
+            font-size: 22px;
             font-weight: normal;
+            letter-spacing: 4px;
         }
-        .description {
-            color: #999;
-            font-size: 12px;
-            line-height: 1.6;
-            margin-top: 8px;
+
+        .brand span {
+            display: block;
+            margin-top: 3px;
+            color: rgba(238, 229, 223, 0.42);
+            font-family: Arial, sans-serif;
+            font-size: 8px;
+            font-weight: normal;
+            letter-spacing: 3px;
         }
+
+        .nav-link {
+            padding: 9px 15px;
+            color: #b9b0b2;
+            text-decoration: none;
+            border: 1px solid rgba(255, 255, 255, 0.09);
+            border-radius: 7px;
+            background: rgba(255, 255, 255, 0.025);
+            font-size: 11px;
+            transition:
+                transform 0.25s ease,
+                background 0.25s ease,
+                border-color 0.25s ease,
+                color 0.25s ease;
+        }
+
+        .nav-link:hover {
+            transform: translateY(-2px);
+            color: var(--cream);
+            background: rgba(213, 166, 91, 0.07);
+            border-color: rgba(213, 166, 91, 0.45);
+        }
+
+        .page {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 650px;
+            margin: 0 auto;
+            padding: 55px 25px 45px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            animation: fadeUp 0.7s ease forwards;
+        }
+
+        .header-label {
+            margin-bottom: 12px;
+            color: var(--gold);
+            font-size: 10px;
+            letter-spacing: 5px;
+            text-transform: uppercase;
+        }
+
+        .header h1 {
+            color: #f0e5de;
+            font-family: Georgia, serif;
+            font-size: clamp(30px, 5vw, 40px);
+            font-weight: normal;
+            letter-spacing: 1px;
+            text-shadow: 0 5px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .header p {
+            max-width: 480px;
+            margin: 12px auto 0;
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.7;
+        }
+
+        .card {
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(40, 31, 34, 0.96),
+                    rgba(17, 16, 18, 0.98)
+                );
+            border: 1px solid rgba(213, 166, 91, 0.16);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow:
+                0 25px 70px rgba(0, 0, 0, 0.4),
+                inset 0 1px rgba(255, 255, 255, 0.025);
+            backdrop-filter: blur(14px);
+        }
+
         .section {
-            background: rgba(255,255,255,.025);
-            border: 1px solid #40383e;
-            border-radius: 14px;
             padding: 22px;
+            background: rgba(255, 255, 255, 0.025);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 12px;
         }
+
         .section-title {
-            color: #d5a65b;
+            margin-bottom: 18px;
+            color: var(--gold);
             font-size: 10px;
             letter-spacing: 2px;
-            margin-bottom: 20px;
+            text-transform: uppercase;
         }
-        .field { margin-bottom: 15px; }
-        .field:last-child { margin-bottom: 0; }
+
+        .field {
+            margin-bottom: 15px;
+        }
+
+        .field:last-child {
+            margin-bottom: 0;
+        }
+
         .row {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 12px;
         }
+
         label {
             display: block;
             margin-bottom: 6px;
-            color: #ccc;
-            font-size: 11px;
+            color: var(--muted);
+            font-size: 10px;
+            letter-spacing: 0.5px;
         }
+
         input {
             width: 100%;
-            padding: 11px 12px;
-            background: #302a30;
-            border: 1px solid #51484e;
-            border-radius: 8px;
-            color: white;
-            font-size: 13px;
+            padding: 11px 13px;
+            background: rgba(42, 40, 42, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 7px;
+            color: var(--cream);
+            font-family: Arial, sans-serif;
+            font-size: 12px;
             outline: none;
-            transition: .2s;
+            transition: background 0.2s, border-color 0.2s;
         }
+
+        input:hover {
+            background: rgba(52, 49, 52, 0.98);
+        }
+
         input:focus {
-            border-color: #d5a65b;
-            box-shadow: 0 0 0 3px rgba(213,166,91,.07);
+            border-color: var(--gold);
+            background: rgba(52, 49, 52, 0.98);
         }
+
+        input::placeholder {
+            color: rgba(238, 229, 223, 0.3);
+        }
+
         .form-error {
             display: none;
             margin-bottom: 18px;
             padding: 11px 13px;
-            background: rgba(130,55,65,.14);
-            border: 1px solid #714449;
-            border-radius: 8px;
+            background: rgba(217, 130, 130, 0.06);
+            border: 1px solid rgba(217, 130, 130, 0.35);
+            border-radius: 7px;
             color: #d98282;
             font-size: 11px;
             line-height: 1.5;
         }
-        .form-error.visible { display: block; }
+
+        .form-error.visible {
+            display: block;
+        }
+
         .bottom {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            gap: 15px;
             margin-top: 25px;
             padding-top: 22px;
-            border-top: 1px solid #40383e;
+            border-top: 1px solid rgba(213, 166, 91, 0.12);
         }
-        .cancel { color: #999; text-decoration: none; font-size: 12px; }
-        .cancel:hover { color: white; }
+
+        .cancel {
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 11px;
+            transition: color 0.2s;
+        }
+
+        .cancel:hover {
+            color: var(--cream);
+        }
+
         .continue {
-            padding: 12px 20px;
-            border: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            min-height: 46px;
+            padding: 12px 22px;
+            border: 1px solid rgba(213, 166, 91, 0.65);
             border-radius: 8px;
-            background: #d5a65b;
+            background:
+                linear-gradient(
+                    135deg,
+                    #7b5931,
+                    #b98a48
+                );
             color: #211a15;
+            font-family: Arial, sans-serif;
             font-size: 12px;
-            font-weight: 600;
+            font-weight: bold;
             cursor: pointer;
-            transition: .2s;
+            transition:
+                transform 0.25s ease,
+                box-shadow 0.25s ease,
+                filter 0.25s ease;
         }
-        .continue:hover { background: #e5b970; }
-        .continue:disabled { opacity: .6; cursor: not-allowed; }
-        @media (max-width: 700px) {
-            body { padding: 25px 15px; }
-            .card { padding: 25px 18px; }
-            .row { grid-template-columns: 1fr; }
-            .bottom {
-                flex-direction: column;
-                align-items: stretch;
-                gap: 15px;
+
+        .continue:hover:not(:disabled) {
+            transform: translateY(-2px);
+            filter: brightness(1.08);
+            box-shadow: 0 10px 30px rgba(213, 166, 91, 0.18);
+        }
+
+        .continue:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .footer {
+            margin-top: 30px;
+            text-align: center;
+            color: rgba(238, 229, 223, 0.32);
+            font-size: 9px;
+            letter-spacing: 1px;
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
             }
-            .continue { width: 100%; }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .navbar {
+                padding: 15px 18px;
+            }
+
+            .nav-container {
+                flex-wrap: wrap;
+            }
+
+            .brand {
+                font-size: 18px;
+                letter-spacing: 3px;
+            }
+
+            .page {
+                padding: 40px 15px 35px;
+            }
+
+            .card {
+                padding: 22px 18px;
+            }
+
+            .section {
+                padding: 18px 16px;
+            }
+
+            .row {
+                grid-template-columns: 1fr;
+            }
+
+            .bottom {
+                flex-direction: column-reverse;
+                align-items: stretch;
+            }
+
+            .continue {
+                width: 100%;
+            }
+
+            .cancel {
+                text-align: center;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                transition-duration: 0.01ms !important;
+                animation-duration: 0.01ms !important;
+            }
         }
     </style>
 </head>
 <body>
-<div class="page">
-    <div class="top">
-        <a href="/user/my_profile" class="back">← Вернуться в профиль</a>
-        <div class="brand">BAR & LOUNGE</div>
-    </div>
-    <div class="card">
-        <div class="header">
-            <div class="header-label">DELIVERY ADDRESS</div>
-            <h1>Подтверждение адреса</h1>
-            <div class="description">Проверьте адрес доставки и подтвердите его перед переходом к оплате</div>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/user/my_profile" class="brand">
+                {{ restaurant.restaurant_name if restaurant else 'RESTAURANT' }}
+                <span>Подтверждение адреса</span>
+            </a>
+
+            <a href="/user/my_profile" class="nav-link">← Вернуться в профиль</a>
         </div>
-        <form id="addressForm" method="POST" action="/users/confirm_address">
-            <div id="formError" class="form-error"></div>
-            <div class="section">
-                <div class="section-title">АДРЕС ДОСТАВКИ</div>
-                <div class="field">
-                    <label for="city">Город</label>
-                    <input id="city" type="text" name="city" value="{{ user.address.city if user.address else '' }}" required>
-                </div>
-                <div class="field">
-                    <label for="postal_code">Почтовый индекс</label>
-                    <input id="postal_code" type="text" name="postal_code" value="{{ user.address.postal_code if user.address else '' }}" required>
-                </div>
-                <div class="field">
-                    <label for="street">Улица</label>
-                    <input id="street" type="text" name="street" value="{{ user.address.street if user.address else '' }}" required>
-                </div>
-                <div class="row">
+    </nav>
+
+    <div class="page">
+        <header class="header">
+            <div class="header-label">Доставка</div>
+            <h1>Подтвердите адрес</h1>
+            <p>Проверьте адрес доставки и подтвердите его перед переходом к оплате заказа.</p>
+        </header>
+
+        <div class="card">
+            <form id="addressForm" method="POST" action="/r/{{ slug }}/users/confirm_address">
+                <div id="formError" class="form-error"></div>
+
+                <div class="section">
+                    <div class="section-title">Адрес доставки</div>
+
                     <div class="field">
-                        <label for="house">Дом</label>
-                        <input id="house" type="text" name="house" value="{{ user.address.house if user.address else '' }}" required>
+                        <label for="city">Город</label>
+                        <input
+                            id="city"
+                            type="text"
+                            name="city"
+                            value="{{ user.address.city if user.address else '' }}"
+                            required>
                     </div>
+
                     <div class="field">
-                        <label for="apartment">Квартира</label>
-                        <input id="apartment" type="text" name="apartment" value="{{ user.address.apartment if user.address else '' }}">
+                        <label for="postal_code">Почтовый индекс</label>
+                        <input
+                            id="postal_code"
+                            type="text"
+                            name="postal_code"
+                            value="{{ user.address.postal_code if user.address else '' }}"
+                            required>
+                    </div>
+
+                    <div class="field">
+                        <label for="street">Улица</label>
+                        <input
+                            id="street"
+                            type="text"
+                            name="street"
+                            value="{{ user.address.street if user.address else '' }}"
+                            required>
+                    </div>
+
+                    <div class="row">
+                        <div class="field">
+                            <label for="house">Дом</label>
+                            <input
+                                id="house"
+                                type="text"
+                                name="house"
+                                value="{{ user.address.house if user.address else '' }}"
+                                required>
+                        </div>
+
+                        <div class="field">
+                            <label for="apartment">Квартира</label>
+                            <input
+                                id="apartment"
+                                type="text"
+                                name="apartment"
+                                value="{{ user.address.apartment if user.address else '' }}">
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="bottom">
-                <a href="/user/my_profile" class="cancel">Отмена</a>
-                <button type="submit" class="continue" id="continueButton">Перейти к оплате</button>
-            </div>
-        </form>
+
+                <div class="bottom">
+                    <a href="/user/my_profile" class="cancel">Отмена</a>
+                    <button type="submit" class="continue" id="continueButton">
+                        Перейти к оплате
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <div class="footer">
+            {{ restaurant.restaurant_name if restaurant else 'Restaurant' }} · Доставка
+        </div>
     </div>
-</div>
-<script src="/static/api.js"></script>
-<script>
-const addressForm = document.getElementById("addressForm");
-const formError = document.getElementById("formError");
-const continueButton = document.getElementById("continueButton");
 
-function showError(message) {
-    formError.textContent = message;
-    formError.classList.add("visible");
-}
+    <script src="/static/api.js"></script>
+    <script>
+        const addressForm = document.getElementById("addressForm");
+        const formError = document.getElementById("formError");
+        const continueButton = document.getElementById("continueButton");
 
-function clearError() {
-    formError.textContent = "";
-    formError.classList.remove("visible");
-}
-
-async function handleResponse(response) {
-    if (response.ok) return true;
-
-    if (response.status === 401) {
-        window.location.href = "/login";
-        return false;
-    }
-
-    if (response.status === 403) {
-        showError("У вас нет доступа к этому действию.");
-        return false;
-    }
-
-    if (response.status === 404) {
-        showError("Данные не найдены.");
-        return false;
-    }
-
-    if (response.status >= 500) {
-        showError("Ошибка сервера. Попробуйте позже.");
-        return false;
-    }
-
-    try {
-        const data = await response.json();
-
-        if (Array.isArray(data.detail)) {
-            const messages = data.detail.map(error => error.msg).filter(Boolean);
-            showError(messages.length ? messages.join(", ") : "Произошла ошибка.");
-        } else {
-            showError(data.detail || data.message || "Произошла ошибка.");
+        function showError(message) {
+            formError.textContent = message;
+            formError.classList.add("visible");
         }
-    } catch {
-        showError("Произошла ошибка.");
-    }
 
-    return false;
-}
+        function clearError() {
+            formError.textContent = "";
+            formError.classList.remove("visible");
+        }
 
-addressForm.addEventListener("submit", async function(event) {
-    event.preventDefault();
-    clearError();
-    continueButton.disabled = true;
-    continueButton.textContent = "Проверка...";
+        async function handleResponse(response) {
+            if (response.ok) return true;
 
-    try {
-        const response = await apiFetch("/users/confirm_address", {
-            method: "POST",
-            body: new FormData(addressForm)
+            if (response.status === 401) {
+                window.location.href = "/login";
+                return false;
+            }
+
+            if (response.status === 403) {
+                showError("У вас нет доступа к этому действию.");
+                return false;
+            }
+
+            if (response.status === 404) {
+                showError("Данные не найдены.");
+                return false;
+            }
+
+            if (response.status >= 500) {
+                showError("Ошибка сервера. Попробуйте позже.");
+                return false;
+            }
+
+            try {
+                const data = await response.json();
+
+                if (Array.isArray(data.detail)) {
+                    const messages = data.detail.map(error => error.msg).filter(Boolean);
+                    showError(messages.length ? messages.join(", ") : "Произошла ошибка.");
+                } else {
+                    showError(data.detail || data.message || "Произошла ошибка.");
+                }
+            } catch {
+                showError("Произошла ошибка.");
+            }
+
+            return false;
+        }
+
+        addressForm.addEventListener("submit", async function(event) {
+            event.preventDefault();
+            clearError();
+            continueButton.disabled = true;
+            continueButton.textContent = "Проверка...";
+
+            try {
+                const response = await apiFetch(addressForm.action, {
+                    method: "POST",
+                    body: new FormData(addressForm)
+                });
+
+                if (!await handleResponse(response)) return;
+
+                const data = await response.json();
+
+                if (!data.checkout_url) {
+                    showError("Не удалось получить ссылку на оплату.");
+                    return;
+                }
+
+                window.location.href = data.checkout_url;
+            } catch {
+                showError("Не удалось подключиться к серверу. Проверьте соединение.");
+            } finally {
+                continueButton.disabled = false;
+                continueButton.textContent = "Перейти к оплате";
+            }
         });
-
-        if (!await handleResponse(response)) return;
-
-        const data = await response.json();
-
-        if (!data.checkout_url) {
-            showError("Не удалось получить ссылку на оплату.");
-            return;
-        }
-
-        window.location.href = data.checkout_url;
-    } catch {
-        showError("Не удалось подключиться к серверу. Проверьте соединение.");
-    } finally {
-        continueButton.disabled = false;
-        continueButton.textContent = "Перейти к оплате";
-    }
-});
-</script>
+    </script>
 </body>
 </html>

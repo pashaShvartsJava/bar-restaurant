@@ -1,5 +1,3 @@
-from datetime import datetime, timezone
-
 from sqlalchemy import Column, Integer, UUID, DateTime, func
 
 from ..database.database import Base

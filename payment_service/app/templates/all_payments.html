@@ -394,12 +394,12 @@
         {% for payment in payments %}
             {% set st = payment.status.value if payment.status.value is defined else payment.status %}
             {% if st == "paid" %}
-                {% set total_paid.value = total_paid.value + (payment.amount | float) %}
+                {% set total_paid.value = total_paid.value + (payment.sum | float) %}
                 {% set count_paid.value = count_paid.value + 1 %}
             {% elif st == "refunded" %}
-                {% set total_refunded.value = total_refunded.value + (payment.amount | float) %}
+                {% set total_refunded.value = total_refunded.value + (payment.sum | float) %}
             {% elif st == "failed" %}
-                {% set total_failed.value = total_failed.value + (payment.amount | float) %}
+                {% set total_failed.value = total_failed.value + (payment.sum | float) %}
             {% endif %}
         {% endfor %}
     {% endif %}
@@ -447,7 +447,7 @@
                 {% endif %}
             </div>
             <div class="payment-client">{{ payment.client_id or "—" }}</div>
-            <div class="payment-amount">{{ "%.2f"|format(payment.amount | float) }} {{ currency_symbol }}</div>
+            <div class="sum">{{ "%.2f"|format(payment.sum | float) }} {{ currency_symbol }}</div>
             <div class="payment-method">
                 {% if payment.payment_method %}
                     {{ payment.payment_method }}

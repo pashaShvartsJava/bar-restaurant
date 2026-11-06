@@ -42,7 +42,12 @@ class OrderService:
     async def create_guest_order(self, data : GuestCustomerDTO, client_id : UUID, restaurant_id : UUID):
         return await self.guest_repository.create_guest_order(data, client_id, restaurant_id)
 
-    async def create_order(self, data : ListOrderDTO, client_id : UUID | None, restaurant_id : UUID) -> Order:
+    async def create_order(self,
+                           data : ListOrderDTO,
+                           client_id : UUID | None,
+                           restaurant_id : UUID,
+                           total_drink_sum  :Decimal,
+                           total_food_sum : Decimal) -> Order:
         pending_order = await self.get_pending_by_client_id(client_id, restaurant_id)
         if pending_order is not None:
             pending_order.status = OrderStatus.CANCELLED_BEFORE
@@ -50,7 +55,7 @@ class OrderService:
         for order_item in data.order_items:
             total_sum += order_item.price * order_item.quantity
         await self.order_repository.db.rollback()
-        return await self.order_repository.create_order(data , client_id, total_sum, restaurant_id)
+        return await self.order_repository.create_order(data , client_id, total_sum, restaurant_id, total_drink_sum, total_food_sum)
 
     async def create_order_for_guest(self,
                                      data : ListOrderGuestDTO,

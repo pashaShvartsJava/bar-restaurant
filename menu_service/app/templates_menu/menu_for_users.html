@@ -722,6 +722,7 @@ body::before {
                                     data-dish-name="{{ dish.dish_name }}"
                                     data-dish-price="{{ dish.price }}"
                                     data-dish-image="{{ dish.image_url or '' }}"
+                                    data-dish-is-drink="{{ 'true' if dish.is_drink else 'false' }}"
                                 >
                                     <div class="dish-image-wrapper">
                                         {% if dish.image_url %}
@@ -848,7 +849,8 @@ function getDishData(dishId) {
         id: Number(dish.dataset.dishId),
         name: dish.dataset.dishName,
         price: Number(dish.dataset.dishPrice),
-        image: dish.dataset.dishImage
+        image: dish.dataset.dishImage,
+        is_drink: dish.dataset.dishIsDrink === "true"
     };
 }
 
@@ -878,7 +880,8 @@ function setDishQuantity(dishId, quantity) {
             quantity,
             dish_name: dish.name,
             price: dish.price,
-            image: dish.image
+            image: dish.image,
+            is_drink: dish.is_drink
         });
     }
 
@@ -1101,14 +1104,15 @@ checkoutButton.addEventListener("click", async () => {
             dish_id: Number(item.dish_id),
             dish_name: item.dish_name,
             price: Number(item.price),
-            quantity: Number(item.quantity)
+            quantity: Number(item.quantity),
+            is_drink: Boolean(item.is_drink)
         }))
     };
 
     checkoutButton.disabled = true;
 
     try {
-        const response = await apiFetch(`/r/${SLUG}/menu_page/orders/create`, {
+        const response = await apiFetch(`/r/${SLUG}/orders/create`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -1137,7 +1141,7 @@ checkoutButton.addEventListener("click", async () => {
             return;
         }
 
-        window.location.href = `/r/${SLUG}/menu_page/orders/confirm_address`;
+        window.location.href = `/r/${SLUG}/users/confirm_address`;
     } catch (error) {
         console.error("ORDER ERROR:", error);
         showFormError("Не удалось подключиться к серверу.");

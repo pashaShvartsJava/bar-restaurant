@@ -254,8 +254,12 @@ async def start_connect_onboarding(request: Request, service: RestaurantService 
         account = stripe.Account.create(
             type="express",
             email=restaurant.email,
-            capabilities={"transfers": {"requested": True}},
+            capabilities={
+                "transfers": {"requested": True},
+                "card_payments": {"requested": True},
+            },
             business_profile={"name": restaurant.restaurant_name},
+            tos_acceptance={"service_agreement": "full"},
             metadata={"restaurant_id": str(restaurant.id)})
         restaurant.stripe_account_id = account.id
         await service.save(restaurant)

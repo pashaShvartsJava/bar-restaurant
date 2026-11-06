@@ -32,7 +32,7 @@ async def stripe_subscription_webhook(request: Request, sub_service : Subscripti
     except (ValueError, stripe.error.SignatureVerificationError):
         raise HTTPException(status_code=400, detail="Invalid webhook")
     if event["type"] == "checkout.session.completed":
-        session = event["data"]["object"]
+        session = event["data"]["object"].to_dict()
         if "sub_idempotency_key" not in session.get("metadata", {}):
             return {"status": "ignored"}
         await sub_service.handle_subscription_webhook(event)

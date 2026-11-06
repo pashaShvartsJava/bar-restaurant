@@ -26,8 +26,8 @@ class PaymentRepository:
             sum=data.sum,
             client_id=client_id,
             restaurant_id=data.restaurant_id,
-            total_food=data.total_food,
-            total_drink=data.total_drink
+            food_total=data.total_food,
+            drink_total=data.total_drink
         )
         self.db.add(new_payment)
         await self.db.flush()

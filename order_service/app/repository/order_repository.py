@@ -79,12 +79,20 @@ class OrderRepository:
         await self.db.refresh(new_delivery_address)
         return new_delivery_address
 
-    async def create_order(self, order_items : ListOrderDTO, client_id : UUID, total_sum : Decimal, restaurant_id : UUID) -> Order:
+    async def create_order(self,
+                           order_items : ListOrderDTO,
+                           client_id : UUID,
+                           total_sum : Decimal,
+                           restaurant_id : UUID,
+                           total_drink_sum  :Decimal,
+                           total_food_sum : Decimal) -> Order:
         async with self.db.begin():
             new_order = Order(
                 client_id=client_id,
                 sum=total_sum,
-                restaurant_id=restaurant_id
+                restaurant_id=restaurant_id,
+                food_total=total_food_sum,
+                drink_total=total_drink_sum
             )
             self.db.add(new_order)
             await self.db.flush()
@@ -125,8 +133,8 @@ class OrderRepository:
                 status=order_status,
                 table_number=number,
                 restaurant_id=restaurant_id,
-                total_food_sum=total_food_sum,
-                total_drink_sum=total_drink_sum
+                food_total=total_food_sum,
+                drink_total=total_drink_sum
             )
             self.db.add(new_order)
             await self.db.flush()
@@ -138,9 +146,7 @@ class OrderRepository:
                     dish_name=order_item.dish_name,
                     quantity=order_item.quantity,
                     price=order_item.price,
-                    restaurant_id=restaurant_id,
-                    total_food_sum=total_food_sum,
-                    total_drink_sum=total_drink_sum
+                    restaurant_id=restaurant_id
                 )
                 self.db.add(new_order_item)
         await self.db.refresh(new_order)

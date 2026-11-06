@@ -18,7 +18,7 @@ from ..config.config import settings
 INTERNAL_TOKEN=settings.internal_token
 
 def get_payment_service_dependency(db: AsyncSession = Depends(get_db)):
-    return PaymentService(db, PaymentRepository(db), StripeService(), rabbitmq, OutboxPaymentEventsRepository(db))
+    return PaymentService(db, PaymentRepository(db), StripeService(), rabbitmq, OutboxPaymentEventsRepository(db), SubscriptionRepository(db))
 
 def get_subscription_service_dependency(db: AsyncSession = Depends(get_db)):
     return SubscriptionService(db, SubscriptionRepository(db), StripeService(), rabbitmq, OutboxPaymentEventsRepository(db))

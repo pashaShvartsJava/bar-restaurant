@@ -1,3 +1,5 @@
+import hashlib
+import json
 from decimal import Decimal, ROUND_HALF_UP
 
 import stripe
@@ -7,8 +9,8 @@ from ..models.payments import Payment
 from ..models.subscriptions import Subscription
 
 def create_line_items(total_food : Decimal, total_drink : Decimal) -> list[dict]:
-    FOOD_TAX_RATE_ID = "txr_1UYpe6FE7tOPntmhGP9UI7is"
-    DRINK_TAX_RATE_ID = "txr_1UYpeUFE7tOPntmhSEJu08AI"
+    FOOD_TAX_RATE_ID = "txr_1UYsLHEBszTkRGCJ6l2dQU2p"
+    DRINK_TAX_RATE_ID = "txr_1UYsLWEBszTkRGCJwpsVY8nG"
     line_items = []
     if total_food > 0:
         line_items.append({
@@ -42,26 +44,24 @@ class StripeService:
                 - payment.sum
         )
         application_fee = int((application_fee_eur * Decimal("100")).quantize(Decimal("1"), rounding=ROUND_HALF_UP))
-        line_items = create_line_items(payment.total_food, payment.total_drink)
-        session = await self.client.v1.checkout.sessions.create_async(
-            params={
-                "mode": "payment",
-                "line_items": line_items,
-                "metadata": {
-                    "payment_id": str(payment.id),
-                    "order_id": str(payment.order_id)
-                },
-                "payment_intent_data": {
-                    "application_fee_amount": application_fee,
-                    "transfer_data": {
-                        "destination": stripe_account_id
-                    },
-                    "on_behalf_of": stripe_account_id
-                },
-                "success_url": f"https://10.157.173.192:8443/payment/success?order_number={payment.order_number}",
-                "cancel_url": "https://10.157.173.192:8443/payment/cancel"
-            }, options={"idempotency_key" : f"payment:{payment.id}"}
-        )
+        line_items = create_line_items(payment.food_total, payment.drink_total)
+        params = {
+            "mode": "payment",
+            "line_items": line_items,
+            "metadata": {
+                "payment_id": str(payment.id),
+                "order_id": str(payment.order_id),
+            },
+            "payment_intent_data": {
+                "application_fee_amount": application_fee,
+                "transfer_data": {"destination": stripe_account_id},
+                "on_behalf_of": stripe_account_id,
+            },
+            "success_url": f"https://localhost:8443/payment/success?order_number={payment.order_number}",
+            "cancel_url": "https://localhost:8443/payment/cancel"}
+        params_hash = hashlib.sha256(json.dumps(params, sort_keys=True, default=str).encode()).hexdigest()[:16]
+        session = await self.client.v1.checkout.sessions.create_async(params=params,
+                                                                      options={"idempotency_key": f"payment:{payment.id}:{params_hash}"})
         return session
 
     def construct_webhook_event(self, payload: bytes, signature: str):

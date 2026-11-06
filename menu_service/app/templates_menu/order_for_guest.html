@@ -938,6 +938,7 @@
                                             data-dish-name="{{ dish.dish_name }}"
                                             data-dish-price="{{ dish.price }}"
                                             data-dish-image="{{ dish.image_url or '' }}"
+                                            data-dish-is-drink="{{ 'true' if dish.is_drink else 'false' }}"
                                         >
                                             <div>
                                                 {% if dish.image_url %}
@@ -1235,7 +1236,10 @@
                             Number(dish.dataset.dishPrice),
 
                         image:
-                            dish.dataset.dishImage
+                            dish.dataset.dishImage,
+
+                        is_drink:
+                            dish.dataset.dishIsDrink === "true"
                     });
                 }
             }
@@ -1567,7 +1571,10 @@
                                 Number(item.price),
 
                             quantity:
-                                Number(item.quantity)
+                                Number(item.quantity),
+
+                            is_drink:
+                                Boolean(item.is_drink)
                         }))
                 };
 

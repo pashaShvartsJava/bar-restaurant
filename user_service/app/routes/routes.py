@@ -14,7 +14,7 @@ from ..security.internal_security import verify_internal_token
 from ..security.jwt.jwt import get_payload
 from ..security.authorization.authorization import required_roles, required_role
 from ..security.role.roles import IdentityRole
-from ..dependencies.dependency import get_service_dependency
+from ..dependencies.dependency import get_service_dependency, get_restaurant_dependency
 from ..services.user_service import UserService
 from ..schema.user_schema import RegisterRequest, EmailRequest, UserDto, UserInfo
 from ..schema.user_schema import UserEditSchema
@@ -201,22 +201,29 @@ async def get_user_address(request : Request,
         updated_at=user.updated_at
     ).model_dump(mode="json")
 
-@router.get("/users/confirm_address")
-async def confirm_address(request : Request,  service : UserService = Depends(get_service_dependency)):
+@router.get("/r/{slug}/users/confirm_address")
+async def confirm_address(request : Request,
+                          slug : str,
+                          service : UserService = Depends(get_service_dependency)):
     payload = get_payload(request)
     required_role(IdentityRole.USER, payload)
+    restaurant = await get_restaurant_dependency(slug)
     identity_id = UUID(payload["sub"])
     user = await service.find_by_identity_id(identity_id)
-    return templates.TemplateResponse("confirm_address.html", {"request" : request, "user" : user})
+    return templates.TemplateResponse("confirm_address.html", {"request" : request,
+                                                               "user" : user,
+                                                               "slug": slug,
+                                                               "restaurant": restaurant})
 
-@router.post("/users/confirm_address")
+@router.post("/r/{slug}/users/confirm_address")
 async def confirm_address(request : Request,
+                          slug : str,
                           data : Annotated[AddressEditSchema, Form()]):
     payload = get_payload(request)
     required_role(IdentityRole.USER, payload)
     await verify_csrf(request)
     async with httpx.AsyncClient() as client:
-        response = await client.post(url="http://order-service:8007/orders/confirm_address",
+        response = await client.post(url=f"http://order-service:8007/r/{slug}/orders/confirm_address",
                                      json=data.model_dump(mode="json"),
                                      cookies={"access_token": request.cookies.get("access_token")},
                                      headers={"internal_token" : INTERNAL_TOKEN})
