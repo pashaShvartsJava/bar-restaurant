@@ -47,13 +47,14 @@ class OrderService:
                            client_id : UUID | None,
                            restaurant_id : UUID,
                            total_drink_sum  :Decimal,
-                           total_food_sum : Decimal) -> Order:
+                           total_food_sum : Decimal,
+                           percentage : Decimal) -> Order:
         pending_order = await self.get_pending_by_client_id(client_id, restaurant_id)
         if pending_order is not None:
             pending_order.status = OrderStatus.CANCELLED_BEFORE
         total_sum = 0
         for order_item in data.order_items:
-            total_sum += order_item.price * order_item.quantity
+            total_sum += order_item.price * order_item.quantity * (Decimal(1) - Decimal(percentage)/Decimal(100))
         await self.order_repository.db.rollback()
         return await self.order_repository.create_order(data , client_id, total_sum, restaurant_id, total_drink_sum, total_food_sum)
 
@@ -63,10 +64,11 @@ class OrderService:
                                      table_number : int | None,
                                      restaurant_id : UUID,
                                      total_drink_sum : Decimal,
-                                     total_food_sum : Decimal):
+                                     total_food_sum : Decimal,
+                                     percentage : int):
         total_sum = 0
         for order_item in data.order_items:
-            total_sum += order_item.price * order_item.quantity
+            total_sum += order_item.price * order_item.quantity * int(Decimal(1) - Decimal(percentage)/Decimal(100))
         await self.order_repository.db.rollback()
         return await self.order_repository.create_order_for_guest(data , total_sum, status, table_number, restaurant_id, total_drink_sum, total_food_sum)
 
@@ -163,4 +165,4 @@ class OrderService:
         return await self.order_repository.get_top_dishes(date_from, date_to, restaurant_id)
 
     async def get_monthly_sales(self, date_from: date | None, date_to: date | None, restaurant_id : UUID):
-        return await self.order_repository.get_monthly_sales(date_from, date_to, restaurant_id)
+        return await self.order_repository.get_monthly_sales(restaurant_id, date_from, date_to)

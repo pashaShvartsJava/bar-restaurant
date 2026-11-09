@@ -1,7 +1,7 @@
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from ..models.payments import Payment
+from ..models.payments import Payment, PaymentStatus
 from ..schemas.payment_schema import PaymentDTO
 from uuid import UUID
 

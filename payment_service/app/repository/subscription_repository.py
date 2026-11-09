@@ -22,6 +22,13 @@ class SubscriptionRepository:
     def __init__(self, db : AsyncSession):
         self.db = db
 
+    async def get_restaurant_percentage_commission(self, restaurant_id : UUID) -> Subscription:
+        result = await self.db.execute(select(Subscription)
+                                       .where(Subscription.restaurant_id == restaurant_id)
+                                       .where(or_(Subscription.status==SubscriptionStatus.ACTIVE,
+                                                  Subscription.status==SubscriptionStatus.TRIALING)))
+        return result.scalar_one_or_none()
+
     async def get_subscription_by_owner_id(self, customer_id : UUID, restaurant_id : UUID) -> Subscription:
         result = await self.db.execute(select(Subscription)
                                        .where(Subscription.owner_id==customer_id,

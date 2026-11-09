@@ -1,3 +1,6 @@
+import uuid
+from uuid import UUID
+
 import stripe
 from fastapi import APIRouter, Request, Depends, HTTPException
 from fastapi.params import Header
@@ -78,3 +81,12 @@ async def create_portal_session(request :Request, sub_service : SubscriptionServ
     except stripe.error.StripeError as e:
         raise HTTPException(status_code=400, detail=str(e))
     return {"url": session.url}
+
+@router.get("/subscription/get_percentage_commission")
+async def get_restaurant_percentage_commission(restaurant_id : str,
+                                               internal_token : str = Header(..., alias="internal_token"),
+                                               sub_service : SubscriptionService = Depends(get_subscription_service_dependency)):
+    await verify_internal_token(internal_token)
+    active_subscription = await sub_service.get_restaurant_percentage_commission(uuid.UUID(restaurant_id))
+    return active_subscription.order_commission_percent
+

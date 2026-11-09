@@ -11,13 +11,22 @@ from ..config.config import settings
 
 INTERNAL_TOKEN = settings.internal_token
 
+client_connection: httpx.AsyncClient | None = None
+
+async def get_client() -> httpx.AsyncClient:
+    global client_connection
+    if client_connection is None:
+        client_connection = httpx.AsyncClient(
+            timeout=httpx.Timeout(5.0, connect=2.0),
+            headers={"internal_token": INTERNAL_TOKEN},
+        )
+    return client_connection
+
 def get_service_dependency(db : AsyncSession = Depends(get_db)):
     return UserService(UserRepository(db), AddressRepository(db))
 
 async def get_restaurant_dependency(slug : str):
-    async with httpx.AsyncClient() as client:
-        response = await client.get(url="http://restaurant-service:8010/restaurants/get_restaurant_by_slug",
-                                    headers={"internal_token" : INTERNAL_TOKEN},
+    client = await get_client()
+    response = await client.get(url="http://restaurant-service:8010/restaurants/get_restaurant_by_slug",
                                     params={"slug" : slug})
-        response.raise_for_status()
     return RestaurantConstructorDTO(**response.json())

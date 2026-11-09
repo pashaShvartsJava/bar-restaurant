@@ -31,6 +31,9 @@ class SubscriptionService:
         self.rabbitmq = rabbitmq
         self.outbox_repository = outbox_repository
 
+    async def get_restaurant_percentage_commission(self, restaurant_id: UUID) -> Subscription:
+        return await self.subscription_repository.get_restaurant_percentage_commission(restaurant_id)
+
     async def get_subscription_by_owner_id(self, customer_id: UUID, restaurant_id: UUID) -> Subscription:
         return await self.subscription_repository.get_subscription_by_owner_id(customer_id, restaurant_id)
 

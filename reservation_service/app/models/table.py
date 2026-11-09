@@ -15,7 +15,7 @@ class Table(Base):
     __tablename__ = "tables"
 
     id = Column(Integer, primary_key=True, index=True)
-    table_number = Column(Integer, nullable=False, index=True, unique=True)
+    table_number = Column(Integer, nullable=False, index=True)
     status  = Column(SQLEnum(TableStatus), nullable=False, default=TableStatus.UNTAKEN)
     capacity = Column(Integer, nullable=False, index=True)
     restaurant_id = Column(UUID(as_uuid=True), nullable=False)

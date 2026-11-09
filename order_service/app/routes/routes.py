@@ -7,7 +7,8 @@ from fastapi import APIRouter, Request, Depends, Header, HTTPException, Form
 from starlette.responses import RedirectResponse
 from starlette.templating import Jinja2Templates
 
-from ..dependencies.dependencies import get_order_service_dependency, get_restaurant_dependency
+from ..dependencies.dependencies import get_order_service_dependency, get_restaurant_dependency, \
+    get_restaurant_percentage_commission
 from ..models.orders import OrderStatus
 from ..schema.delivery_address_schema import DeliveryAddressDTO, GuestDTO, GuestCustomerDTO
 from ..schema.order_item_schema import ListOrderDTO, ListOrderGuestDTO, SplitOrderDTO
@@ -82,7 +83,8 @@ async def make_order(request : Request,
             total_drink_sum += item.price * item.quantity
         else:
             total_food_sum += item.price * item.quantity
-    await service.create_order(data, client_id, restaurant.id, total_drink_sum, total_food_sum)
+    percentage = await get_restaurant_percentage_commission(restaurant.id)
+    await service.create_order(data, client_id, restaurant.id, total_drink_sum, total_food_sum, percentage)
     return RedirectResponse(url=f"/r/{slug}/users/confirm_address", status_code=303)
 
 @router.post("/r/{slug}/orders/create/guest")
@@ -95,7 +97,8 @@ async def make_order_for_guest(data : ListOrderGuestDTO, slug : str, service : O
             total_drink_sum += item.price * item.quantity
         else:
             total_food_sum += item.price * item.quantity
-    await service.create_order_for_guest(data, "", None, restaurant.id, total_drink_sum, total_food_sum)
+    percentage = await get_restaurant_percentage_commission(restaurant.id)
+    await service.create_order_for_guest(data, "", None, restaurant.id, total_drink_sum, total_food_sum, percentage)
     return RedirectResponse(url=f"/r/{slug}/orders/confirm_address/guest", status_code=303)
 
 @router.get("/r/{slug}/orders/confirm_address/guest")
@@ -264,11 +267,12 @@ async def make_internal_order(status : str,
             total_drink_sum += item.price * item.quantity
         else:
             total_food_sum += item.price * item.quantity
+    percentage = await get_restaurant_percentage_commission(restaurant.id)
     if status == OrderStatus.INTERNAL_ORDER.value:
-        await service.create_order_for_guest(data, status, table_number, restaurant.id, total_drink_sum, total_food_sum)
+        await service.create_order_for_guest(data, status, table_number, restaurant.id, total_drink_sum, total_food_sum, percentage)
         return {"message": "Заказ успешно оформлен"}
     else:
-        order = await service.create_order_for_guest(data, OrderStatus.INTERNAL_ORDER.value, table_number, restaurant.id, total_drink_sum, total_food_sum)
+        order = await service.create_order_for_guest(data, OrderStatus.INTERNAL_ORDER.value, table_number, restaurant.id, total_drink_sum, total_food_sum, percentage)
         payment_data = PaymentDTO(
             client_id=data.client_id,
             order_id=order.id,
@@ -325,7 +329,7 @@ async def create_order_manually(request : Request,
             total_drink_sum += item.price * item.quantity
         else:
             total_food_sum += item.price * item.quantity
-    await service.create_order_for_guest(data,OrderStatus.INTERNAL_ORDER, table_number, restaurant_id, total_drink_sum, total_food_sum)
+    await service.create_order_for_guest(data,OrderStatus.INTERNAL_ORDER, table_number, restaurant_id, total_drink_sum, total_food_sum, 0)
 
 @router.post("/orders/merge")
 async def merge_orders(request : Request,

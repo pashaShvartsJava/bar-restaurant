@@ -1,3 +1,4 @@
+import uuid
 from datetime import date
 from fastapi import APIRouter, Request, Depends
 from starlette.templating import Jinja2Templates
@@ -21,6 +22,6 @@ async def show_analytics_page(request : Request,
                               service : OrderService = Depends(get_order_service_dependency)):
     payload = get_payload(request)
     required_roles(IdentityRole.OWNER, IdentityRole.MODERATOR, payload=payload)
-    restaurant_id = payload.get("restaurants_id")
-    analytics = await service.get_analytics(date_from, date_to, restaurant_id)
+    restaurant_id = payload.get("restaurant_id")
+    analytics = await service.get_analytics(date_from, date_to, uuid.UUID(restaurant_id))
     return templates.TemplateResponse("analytics.html", {"request" : request,"analytics" : analytics, **analytics})
