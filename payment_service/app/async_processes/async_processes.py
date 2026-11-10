@@ -8,6 +8,23 @@ from ..broker.producers import publish_subscription_event, publish_payment_paid,
 
 logger = logging.getLogger(__name__)
 
+VAT_CHECK_INTERVAL_SECONDS = 7 * 24 * 60 * 60
+
+
+async def vat_validity_scheduler(sub_service):
+    await asyncio.sleep(10)
+    while True:
+        try:
+            logger.info("Starting scheduled VAT validity check")
+            await sub_service.check_vat_validity()
+            logger.info("Scheduled VAT validity check finished")
+        except asyncio.CancelledError:
+            logger.info("VAT validity scheduler cancelled")
+            raise
+        except Exception:
+            logger.exception("Scheduled VAT validity check failed")
+        await asyncio.sleep(VAT_CHECK_INTERVAL_SECONDS)
+
 
 async def outbox_publisher():
     while True:
