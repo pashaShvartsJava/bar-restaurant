@@ -412,8 +412,6 @@
         cursor: not-allowed;
     }
 
-    /* ===== Кнопка привязки счёта ===== */
-
     .side-menu-item.connect-item--connected {
         background: rgba(100, 160, 100, 0.08);
         border-color: rgba(120, 180, 120, 0.3);
@@ -482,6 +480,143 @@
 
     .side-menu-error.show {
         display: block;
+    }
+
+    /* ===== VAT-карточка внутри сайдбара ===== */
+
+    .side-menu-vat {
+        margin: 8px 6px 0;
+        padding: 12px 12px 14px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 10px;
+        background: rgba(255, 255, 255, 0.03);
+        transition: opacity 0.2s ease;
+        overflow: hidden;
+    }
+
+    .side-menu.collapsed .side-menu-vat {
+        opacity: 0;
+        height: 0;
+        padding: 0;
+        margin: 0;
+        border: 0;
+        pointer-events: none;
+    }
+
+    .side-menu-vat--valid {
+        border-color: rgba(120, 180, 120, 0.35);
+        background: rgba(60, 100, 60, 0.10);
+    }
+
+    .side-menu-vat--invalid {
+        border-color: rgba(220, 110, 110, 0.4);
+        background: rgba(120, 50, 50, 0.12);
+    }
+
+    .side-menu-vat--unknown,
+    .side-menu-vat--none {
+        border-color: rgba(213, 166, 91, 0.35);
+        background: rgba(120, 95, 50, 0.10);
+    }
+
+    .side-menu-vat-label {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        margin-bottom: 7px;
+        font-size: 9px;
+        font-weight: 600;
+        letter-spacing: 1.2px;
+        text-transform: uppercase;
+        color: #8a8082;
+    }
+
+    .side-menu-vat-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #8a8082;
+        flex-shrink: 0;
+    }
+
+    .side-menu-vat--valid .side-menu-vat-dot {
+        background: #7fc47f;
+        box-shadow: 0 0 7px rgba(127, 196, 127, 0.6);
+    }
+
+    .side-menu-vat--invalid .side-menu-vat-dot {
+        background: #e07a7a;
+        box-shadow: 0 0 7px rgba(224, 122, 122, 0.6);
+    }
+
+    .side-menu-vat--unknown .side-menu-vat-dot,
+    .side-menu-vat--none .side-menu-vat-dot {
+        background: #e0b86a;
+        box-shadow: 0 0 7px rgba(224, 184, 106, 0.5);
+    }
+
+    .side-menu-vat-title {
+        color: #f0e7e0;
+        font-family: Georgia, serif;
+        font-size: 13px;
+        line-height: 1.35;
+        margin-bottom: 5px;
+    }
+
+    .side-menu-vat-desc {
+        color: #9a9093;
+        font-size: 10px;
+        line-height: 1.55;
+    }
+
+    .side-menu-vat-desc strong {
+        color: #e0d6d1;
+        font-weight: 600;
+    }
+
+    .side-menu-vat-desc .vat-warn {
+        color: #e39a9a;
+    }
+
+    .side-menu-vat-side {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        margin-top: 9px;
+    }
+
+    .side-menu-vat-country {
+        padding: 3px 8px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 6px;
+        background: rgba(255, 255, 255, 0.04);
+        color: #c8bfc0;
+        font-size: 9px;
+        letter-spacing: 1px;
+    }
+
+    .side-menu-vat-link {
+        padding: 5px 9px;
+        border: 1px solid rgba(213, 166, 91, 0.4);
+        border-radius: 6px;
+        background: rgba(213, 166, 91, 0.08);
+        color: #e6c58f;
+        font-size: 9px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.2s, border-color 0.2s, color 0.2s;
+    }
+
+    .side-menu-vat-link:hover {
+        background: rgba(213, 166, 91, 0.16);
+        border-color: rgba(213, 166, 91, 0.7);
+        color: #f0cc86;
+    }
+
+    .side-menu-vat-link:disabled {
+        opacity: 0.55;
+        cursor: wait;
     }
 
     @media (max-width: 800px) {
@@ -602,6 +737,53 @@
         <div id="logoutError" class="side-menu-error"></div>
 
         <form id="logoutForm" method="post" action="/admin/logout" style="display:none;"></form>
+
+        {# ===== Налоговый статус (VAT) ===== #}
+        {% set country = restaurant.country or "—" %}
+        {% set is_domestic = (country == "DE") %}
+
+        <div class="side-menu-vat side-menu-vat--{{ vat_status }}">
+            <div class="side-menu-vat-label">
+                <span class="side-menu-vat-dot"></span>
+                VAT ID
+            </div>
+
+            {% if vat_status == "valid" %}
+                <div class="side-menu-vat-title">VAT ID подтверждён</div>
+                {% if is_domestic %}
+                    <div class="side-menu-vat-desc">
+                        Заведение в <strong>Германии</strong> — reverse charge не применяется,
+                        НДС <strong>19%</strong> начисляется как обычно.
+                    </div>
+                {% else %}
+                    <div class="side-menu-vat-desc">
+                        Страна <strong>{{ country }}</strong> — применяется <strong>reverse charge</strong>,
+                        НДС платформа не начисляет.
+                    </div>
+                {% endif %}
+            {% elif vat_status == "invalid" %}
+                <div class="side-menu-vat-title">VAT ID недействителен</div>
+                <div class="side-menu-vat-desc">
+                    НДС начисляется по стандартной ставке страны <strong>{{ country }}</strong>.
+                    <span class="vat-warn">Ответственность за корректность номера — на владельце.</span>
+                </div>
+            {% elif vat_status == "unknown" %}
+                <div class="side-menu-vat-title">VAT ID не проверен</div>
+                <div class="side-menu-vat-desc">
+                    VIES недоступен. Пока действует стандартная ставка для <strong>{{ country }}</strong>.
+                </div>
+            {% else %}
+                <div class="side-menu-vat-title">VAT ID не привязан</div>
+                <div class="side-menu-vat-desc">
+                    НДС начисляется по стандартной ставке страны <strong>{{ country }}</strong>.
+                </div>
+            {% endif %}
+
+            <div class="side-menu-vat-side">
+                <span class="side-menu-vat-country">{{ country }}</span>
+                <button type="button" class="side-menu-vat-link" id="vatPortalButton">Портал</button>
+            </div>
+        </div>
     </nav>
 </aside>
 
@@ -763,7 +945,6 @@
             <h3>
                 Финансы и аналитика
             </h3>
-
             <p>
                 Выручка, продажи и статистика блюд
             </p>
@@ -784,6 +965,7 @@
     const sideMenuToggle = document.getElementById("sideMenuToggle");
     const manageSubscriptionButton = document.getElementById("manageSubscriptionButton");
     const subscriptionError = document.getElementById("subscriptionError");
+    const vatPortalButton = document.getElementById("vatPortalButton");
     const logoutButton = document.getElementById("logoutButton");
     const logoutError = document.getElementById("logoutError");
     const logoutForm = document.getElementById("logoutForm");
@@ -794,6 +976,57 @@
         sideMenuToggle.setAttribute("aria-label", isCollapsed ? "Развернуть меню" : "Свернуть меню");
         sideMenuToggle.textContent = isCollapsed ? "›" : "‹";
     });
+
+    async function openSubscriptionPortal(button, errorEl) {
+        errorEl.textContent = "";
+        errorEl.classList.remove("show");
+
+        const originalHTML = button.innerHTML;
+        button.disabled = true;
+
+        try {
+            const response = await apiFetch("/subscription/portal", { method: "GET" });
+
+            if (!response.ok) {
+                let data = null;
+                try { data = await response.json(); } catch {}
+
+                errorEl.textContent =
+                    data?.detail ||
+                    data?.message ||
+                    "Не удалось открыть портал управления подпиской.";
+                errorEl.classList.add("show");
+                return;
+            }
+
+            const data = await response.json();
+
+            if (!data?.url) {
+                errorEl.textContent = "Сервер не вернул ссылку на портал.";
+                errorEl.classList.add("show");
+                return;
+            }
+
+            window.location.href = data.url;
+        } catch (error) {
+            console.error("SUBSCRIPTION PORTAL ERROR:", error);
+            errorEl.textContent = "Не удалось подключиться к серверу.";
+            errorEl.classList.add("show");
+        } finally {
+            button.disabled = false;
+            button.innerHTML = originalHTML;
+        }
+    }
+
+    manageSubscriptionButton.addEventListener("click", () =>
+        openSubscriptionPortal(manageSubscriptionButton, subscriptionError)
+    );
+
+    if (vatPortalButton) {
+        vatPortalButton.addEventListener("click", () =>
+            openSubscriptionPortal(vatPortalButton, subscriptionError)
+        );
+    }
 
     logoutButton.addEventListener("click", async () => {
         logoutError.textContent = "";
@@ -832,51 +1065,6 @@
         } finally {
             logoutButton.disabled = false;
             logoutButton.innerHTML = originalHTML;
-        }
-    });
-
-    manageSubscriptionButton.addEventListener("click", async () => {
-        subscriptionError.textContent = "";
-        subscriptionError.classList.remove("show");
-
-        const originalHTML = manageSubscriptionButton.innerHTML;
-        manageSubscriptionButton.disabled = true;
-
-        try {
-            const response = await apiFetch("/subscription/portal", {
-                method: "GET"
-            });
-
-            if (!response.ok) {
-                let data = null;
-                try { data = await response.json(); } catch {}
-
-                subscriptionError.textContent =
-                    data?.detail ||
-                    data?.message ||
-                    "Не удалось открыть портал управления подпиской.";
-                subscriptionError.classList.add("show");
-                return;
-            }
-
-            const data = await response.json();
-
-            if (!data?.url) {
-                subscriptionError.textContent =
-                    "Сервер не вернул ссылку на портал.";
-                subscriptionError.classList.add("show");
-                return;
-            }
-
-            window.location.href = data.url;
-        } catch (error) {
-            console.error("SUBSCRIPTION PORTAL ERROR:", error);
-            subscriptionError.textContent =
-                "Не удалось подключиться к серверу.";
-            subscriptionError.classList.add("show");
-        } finally {
-            manageSubscriptionButton.disabled = false;
-            manageSubscriptionButton.innerHTML = originalHTML;
         }
     });
 </script>

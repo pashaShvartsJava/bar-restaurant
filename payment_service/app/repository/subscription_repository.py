@@ -57,7 +57,11 @@ class SubscriptionRepository:
             price=data.price,
             order_commission_percent=data.order_commission_percent,
             currency=data.currency,
-            sub_idempotency_key=data.sub_idempotency_key
+            sub_idempotency_key=data.sub_idempotency_key,
+            vat_id=data.vat_id,
+            vat_status=data.vat_verified,
+            vat_checked_at=data.vat_checked_at,
+            country=data.country
         )
         self.db.add(new_subscription)
         await self.db.flush()
@@ -69,12 +73,32 @@ class SubscriptionRepository:
         return subscription
 
     async def get_by_idempotency_key(self, key : UUID):
-        result = await self.db.execute(select(Subscription).where(Subscription.sub_idempotency_key==key))
+        result = await self.db.execute(select(Subscription)
+                                       .where(Subscription.sub_idempotency_key==key)
+                                       .where(or_(Subscription.status == SubscriptionStatus.ACTIVE,
+                                                  Subscription.status == SubscriptionStatus.TRIALING))
+                                       )
         return result.scalar_one_or_none()
 
     async def get_by_stripe_subscription_id(self, stripe_subscription_id : str) -> Subscription:
-        result = await self.db.execute(select(Subscription).where(Subscription.stripe_subscription_id==stripe_subscription_id))
+        result = await self.db.execute(select(Subscription)
+                                       .where(Subscription.stripe_subscription_id==stripe_subscription_id)
+                                       .where(or_(Subscription.status == SubscriptionStatus.ACTIVE,
+                                                  Subscription.status == SubscriptionStatus.TRIALING))
+                                       )
         return result.scalar_one_or_none()
+
+    async def get_by_stripe_customer_id(self, stripe_customer_id : str) -> Subscription:
+        result = await self.db.execute(select(Subscription)
+                                       .where(Subscription.stripe_customer_id == stripe_customer_id)
+                                       .where(or_(Subscription.status == SubscriptionStatus.ACTIVE,
+                                                  Subscription.status == SubscriptionStatus.TRIALING))
+                                       )
+        return result.scalar_one_or_none()
+
+    async def update(self, subscription : Subscription):
+        await self.db.commit()
+        await self.db.refresh(subscription)
 
     async def delete_saga_subscription(self, sub_idempotency_key : str):
         found_subscription = await self.get_by_idempotency_key(uuid.UUID(sub_idempotency_key))

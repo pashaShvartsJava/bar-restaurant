@@ -13,7 +13,7 @@ from ..schema.admin import AdminUpdateDTO, AdminRegistrationDTO, IdentityEdit, A
 from typing import Annotated
 
 from ..dependencies.dependencies import get_service_dependency, get_httpx_async_connection, get_restaurant_dependency, \
-    get_restaurant_dependency_by_id, get_authentication_key, get_new_key
+    get_restaurant_dependency_by_id, get_authentication_key, get_new_key, get_vat_status_dependency
 from ..security.internal_security import verify_internal_token
 from ..security.role.role import IdentityRole
 from ..service.admin_service import AdminService
@@ -81,10 +81,12 @@ async def show_admin_panel(request: Request):
                                     params={"restaurant_id" : restaurant_id})
     support_data = response.json()
     unread_support_count = support_data["count"]
+    vat_status = await get_vat_status_dependency(restaurant_id)
     return templates.TemplateResponse("admin_panel.html", {"request" : request,
                                                            "unread_support_count" : unread_support_count,
                                                            "restaurant_name" : restaurant.restaurant_name,
-                                                           "restaurant" : restaurant})
+                                                           "restaurant" : restaurant,
+                                                           "vat_status" : vat_status})
 
 @router.get("/admin_panel/all_admins")
 async def show_all_admins(request: Request, admin_service : AdminService = Depends(get_service_dependency)):

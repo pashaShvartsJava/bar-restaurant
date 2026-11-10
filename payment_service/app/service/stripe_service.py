@@ -4,9 +4,13 @@ from decimal import Decimal, ROUND_HALF_UP
 
 import stripe
 
+from .stripe_tax_manager_rate import StripeTaxRateManager
 from ..config.config import settings
 from ..models.payments import Payment
-from ..models.subscriptions import Subscription
+from ..models.subscriptions import Subscription, VatStatus
+import logging
+
+logger = logging.getLogger(__name__)
 
 def create_line_items(total_food : Decimal, total_drink : Decimal) -> list[dict]:
     FOOD_TAX_RATE_ID = "txr_1UYsLHEBszTkRGCJ6l2dQU2p"
@@ -36,6 +40,7 @@ def create_line_items(total_food : Decimal, total_drink : Decimal) -> list[dict]
 class StripeService:
     def __init__(self):
         self.client = stripe.StripeClient(settings.stripe_secret_key_subscriptions)
+        self.tax_rate_manager = StripeTaxRateManager(self.client)
 
     async def create_checkout_session(self, payment : Payment, stripe_account_id : str, order_commission_percent : int):
         application_fee_eur = (
@@ -67,10 +72,42 @@ class StripeService:
     def construct_webhook_event(self, payload: bytes, signature: str):
         return stripe.Webhook.construct_event(payload, signature, settings.stripe_webhook_secret_subscriptions)
 
-    async def create_checkout_subscription_session(self, subscription: Subscription, key : str):
+    async def create_checkout_subscription_session(self, subscription: Subscription, key: str):
+        is_reverse_charge = (subscription.vat_status == VatStatus.VALID and subscription.country != "DE")
+        customer_params = {
+            "email": subscription.email,
+            "metadata": {"restaurant_id": str(subscription.restaurant_id), "owner_id": str(subscription.owner_id)}}
+        if is_reverse_charge:
+            customer_params["tax_exempt"] = "reverse"
+            if subscription.vat_id:
+                customer_params["tax_id_data"] = [{"type": "eu_vat", "value": subscription.vat_id}]
+        else:
+            customer_params["tax_exempt"] = "none"
+        if subscription.stripe_customer_id:
+            customer = await self.client.v1.customers.update_async(subscription.stripe_customer_id, params=customer_params)
+        else:
+            customer = await self.client.v1.customers.create_async(params=customer_params)
+        tax_rate_id = None
+        if not is_reverse_charge:
+            tax_rate_id = await self.tax_rate_manager.get_or_create_tax_rate(subscription.country)
+            if tax_rate_id is None:
+                logger.warning(
+                    "No VAT rate configured for country %s (subscription %s). "
+                    "Tax will not be applied.",
+                    subscription.country,
+                    subscription.subscription_number)
+        subscription_data = {
+            "trial_period_days": subscription.trial_days,
+            "metadata": {
+                "sub_idempotency_key": str(subscription.sub_idempotency_key),
+                "restaurant_id": str(subscription.restaurant_id),
+                "owner_id": str(subscription.owner_id)}}
+        if tax_rate_id:
+            subscription_data["default_tax_rates"] = [tax_rate_id]
         session = await self.client.v1.checkout.sessions.create_async(
             params={
                 "mode": "subscription",
+                "customer": customer.id,
                 "line_items": [
                     {
                         "price_data": {
@@ -91,19 +128,11 @@ class StripeService:
                     "restaurant_id": str(subscription.restaurant_id),
                     "owner_id": str(subscription.owner_id),
                 },
-                "subscription_data": {
-                    "trial_period_days": subscription.trial_days,
-                    "metadata": {
-                        "sub_idempotency_key": str(subscription.sub_idempotency_key),
-                        "restaurant_id": str(subscription.restaurant_id),
-                        "owner_id": str(subscription.owner_id),
-                    },
-                },
+                "subscription_data": subscription_data,
                 "success_url": f"https://localhost:8443/payment/subscription/success?subscription_number={subscription.subscription_number}&key={key}",
                 "cancel_url": "https://localhost:8443/payment/subscription/cancel",
             },
-            options={"idempotency_key": f"subscription:{subscription.sub_idempotency_key}"},
-        )
+            options={"idempotency_key": f"subscription:{subscription.sub_idempotency_key}"})
         return session
 
     def construct_webhook_subscription_event(self, payload: bytes, signature: str):

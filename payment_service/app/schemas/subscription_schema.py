@@ -1,3 +1,4 @@
+from datetime import datetime
 from decimal import Decimal
 from pydantic import BaseModel, EmailStr
 from uuid import UUID
@@ -61,3 +62,7 @@ class SubscriptionCheckoutDTO(BaseModel):
     order_commission_percent: Decimal = Decimal("0")
     currency: str = "EUR"
     key: str
+    vat_id: str | None = None
+    vat_verified: str
+    vat_checked_at: datetime
+    country: str

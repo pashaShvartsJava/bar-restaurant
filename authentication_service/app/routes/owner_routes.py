@@ -1,15 +1,17 @@
 import uuid
+from datetime import datetime, timezone
 from typing import Annotated
 
 from fastapi import Request, APIRouter, HTTPException, Form
 from fastapi.params import Depends, Query
 from sqlalchemy.exc import SQLAlchemyError
+from starlette.concurrency import run_in_threadpool
 from starlette.responses import  RedirectResponse
 from starlette.templating import Jinja2Templates
 
 from ..schemas.admin_schema import  AdminRegistrationDTO
 from ..model.identity_model import Status, IdentityRole
-from ..schemas.restaurant_schema import RestaurantRegistrationDTO, RestaurantCreationDTO
+from ..schemas.restaurant_schema import RestaurantRegistrationDTO, RestaurantCreationDTO, EU_COUNTRIES, SUPPORTED_COUNTRIES
 from ..dependencies.dependency import get_service_dependency, get_httpx_async_connection
 from ..schemas.subscription_schema import SubscriptionCheckoutDTO, PLANS
 from ..services.authentication_service import AuthenticationService
@@ -23,6 +25,43 @@ logger = logging.getLogger(__name__)
 INTERNAL_TOKEN = settings.internal_token
 templates = Jinja2Templates(directory="app/templates_auth")
 router = APIRouter()
+
+from ambolt_vies import check_vat, ViesError
+import logging
+
+logger = logging.getLogger(__name__)
+
+async def get_country_code(country: str) -> str:
+    if not country:
+        raise ValueError("Страна не указана")
+    code = country.strip().upper()
+    if code not in SUPPORTED_COUNTRIES:
+        raise ValueError(f"Неподдерживаемая страна: {country}")
+    return code
+
+async def verify_vat_id(vat_id: str | None) -> dict:
+    if not vat_id:
+        return {"status": "invalid", "checked_at": None}
+    vat_id = vat_id.strip().upper()
+    try:
+        result = await run_in_threadpool(check_vat, vat_id)
+    except ViesError as exc:
+        logger.warning("VIES unavailable for %s: %s", vat_id, exc)
+        return {"status": "unknown", "error": str(exc), "checked_at": None}
+    now = datetime.now(timezone.utc)
+    if result.get("valid") is True:
+        return {
+            "status": "valid",
+            "name": result.get("name") or None,
+            "address": result.get("address") or None,
+            "checked_at": now,
+            "vies_checked_at": result.get("checkedAt")
+        }
+    return {
+        "status": "invalid",
+        "checked_at": now,
+        "vies_checked_at": result.get("checkedAt")
+    }
 
 async def create_restaurant_dto(data : Annotated[RestaurantRegistrationDTO, Form()], identity_id : UUID):
     created_restaurant = None
@@ -111,7 +150,6 @@ async def create_restaurant_and_subscription_checkout(data : Annotated[Restauran
     if existing_owner is not None and (
             existing_owner.status == Status.ACTIVE or existing_owner.status == Status.BLOCKED):
         raise HTTPException(detail="Такой пользователь уже существует", status_code=409)
-
     if existing_owner is not None and (existing_owner.status==Status.PENDING or existing_owner.status==Status.FAILED):
         restaurant_id = await create_restaurant_dto(data, existing_owner.id)
         old_admin_dto = AdminRegistrationDTO(identity_id=existing_owner.id, name=data.name,
@@ -124,7 +162,6 @@ async def create_restaurant_and_subscription_checkout(data : Annotated[Restauran
         response.raise_for_status()
         await service.update_status_identity(existing_owner, Status.ACTIVE)
         return RedirectResponse(url="/choose_subscription", status_code=303)
-
     identity_id = uuid.uuid4()
     restaurant_id = await create_restaurant_dto(data, identity_id)
     created_owner = None
@@ -163,7 +200,8 @@ async def create_restaurant_and_subscription_checkout(data : Annotated[Restauran
             raise HTTPException(detail="Invalid currency entered", status_code=400)
         if server_order_percent_commission != data.order_commission_percent:
             raise HTTPException(detail="Invalid order percent commission entered", status_code=400)
-
+        vat_result = await verify_vat_id(data.vat_id)
+        country_code = await get_country_code(data.country)
         subscription_checkout_dto = SubscriptionCheckoutDTO(
             user_id=created_owner.id,
             restaurant_id=restaurant_id,
@@ -175,8 +213,11 @@ async def create_restaurant_and_subscription_checkout(data : Annotated[Restauran
             price=server_price,
             order_commission_percent=server_order_percent_commission,
             currency=server_currency.value,
-            key=authentication_key
-        )
+            key=authentication_key,
+            vat_id=data.vat_id,
+            vat_verified=vat_result["status"],
+            vat_checked_at=vat_result["checked_at"],
+            country=country_code)
         checkout_response = await client.post("http://payment-service:8008/payment/subscription",
                                               headers={"internal_token": INTERNAL_TOKEN},
                                               json=subscription_checkout_dto.model_dump(mode="json"))

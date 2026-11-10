@@ -10,6 +10,15 @@ from datetime import date
 from .subscription_schema import SubscriptionDTO
 from uuid import UUID
 
+EU_COUNTRIES = {
+    "AT","BE","BG","HR","CY","CZ","DK","EE","FI","FR","DE","GR","HU",
+    "IE","IT","LV","LT","LU","MT","NL","PL","PT","RO","SK","SI","ES","SE",
+}
+
+SUPPORTED_COUNTRIES = {
+    "US","DE","FR","ES","GB","PL","AT","IT","NL","UA","KZ","GE","AM",
+}
+
 class RestaurantStatus(str, Enum):
     PENDING = "pending"
     ACTIVE = "active"
@@ -30,6 +39,17 @@ class RestaurantRegistrationDTO(SubscriptionDTO):
     slug: str = Field(...)
     restaurant_currency: str = Field(...)
     timezone: str = Field(...)
+    vat_id: str | None = None
+
+    @field_validator("vat_id")
+    @classmethod
+    def validate_vat_id(cls, value):
+        if value is None or value == "":
+            return None
+        import re
+        if not re.fullmatch(r"[A-Z]{2}[0-9A-Z]{2,12}", value):
+            raise ValueError("Некорректный формат VAT ID")
+        return value
 
     @field_validator("phone")
     @classmethod

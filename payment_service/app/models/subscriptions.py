@@ -33,6 +33,12 @@ class BillingPeriod(str, Enum):
     MONTHLY = "monthly"
     YEARLY = "yearly"
 
+class VatStatus(str, Enum):
+    NONE = "none"
+    VALID = "valid"
+    INVALID = "invalid"
+    UNKNOWN = "unknown"
+
 class Subscription(Base):
 
     __tablename__ = "subscriptions"
@@ -64,3 +70,8 @@ class Subscription(Base):
     trial_end = Column(DateTime(timezone=True), nullable=True)
     last_payment_error = Column(Text, nullable=True)
     sub_idempotency_key = Column(UUID(as_uuid=True), nullable=False, unique=True, index=True)
+
+    vat_id = Column(String(20), nullable=True, index=True)
+    vat_status = Column(SQLEnum(VatStatus), nullable=False, default=VatStatus.NONE)
+    vat_checked_at = Column(DateTime(timezone=True), nullable=True)
+    country = Column(String(2), nullable=False, index=True, server_default="DE")

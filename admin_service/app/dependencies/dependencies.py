@@ -53,3 +53,10 @@ async def get_new_key(restaurant_id : str, token : str):
                                  cookies={"access_token": token})
     new_key = response.json()
     return new_key
+
+async def get_vat_status_dependency(restaurant_id: str):
+    client = await get_client()
+    response = await client.get(url="http://payment-service:8008/subscription/get_vat_status",
+                                 params={"restaurant_id": restaurant_id})
+    vat_status = response.json()
+    return vat_status

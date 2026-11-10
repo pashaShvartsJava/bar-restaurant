@@ -124,6 +124,16 @@
         .confirm-actions .button{min-height:42px;font-size:11px}
         .confirm-actions .button-secondary{margin-top:0}
 
+        /* ===== VAT предупреждение ===== */
+        .vat-warning{display:none;margin-top:12px;padding:12px 14px;border:1px solid rgba(229,140,140,.35);border-radius:9px;background:rgba(229,140,140,.06);color:#f0b8b8;font-size:10px;line-height:1.65}
+        .vat-warning.show{display:block}
+        .vat-warning strong{color:#f5caca}
+        .vat-warning ul{margin:7px 0 0 16px;padding:0}
+        .vat-warning li{margin-bottom:4px}
+        .vat-warning .vat-ack{display:flex;align-items:flex-start;gap:8px;margin-top:10px}
+        .vat-warning .vat-ack input{flex:0 0 14px;width:14px;height:14px;margin-top:2px;accent-color:var(--gold);cursor:pointer}
+        .vat-warning .vat-ack label{margin:0;color:#e7c9c9;font-size:10px;line-height:1.6;cursor:pointer}
+
         @keyframes appear{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
         @media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;animation-duration:.01ms!important;transition-duration:.01ms!important}}
         @media(max-width:850px){body{padding:25px 18px}.page{width:min(100%,520px);grid-template-columns:minmax(0,1fr);gap:0}.sidebar{display:none}.card{padding:30px}}
@@ -174,6 +184,7 @@
             <input type="hidden" name="price" id="price" value="">
             <input type="hidden" name="currency" id="currency_subscription" value="">
             <input type="hidden" name="order_commission_percent" id="order_commission_percent" value="0">
+            <input type="hidden" name="vat_acknowledged" id="vatAcknowledged" value="false">
             <div class="steps">
                 <section class="step active" data-step="0">
                     <button class="step-header" type="button" aria-expanded="true" aria-controls="stepBody0">
@@ -199,7 +210,7 @@
                 <section class="step" data-step="1">
                     <button class="step-header" type="button" aria-expanded="false" aria-controls="stepBody1">
                         <span class="step-number">2</span>
-                        <span class="step-heading"><span class="step-title">Ваше заведение</span><span class="step-hint">Название, адрес и региональные настройки</span><span class="step-summary"></span></span>
+                        <span class="step-heading"><span class="step-title">Ваше заведение</span><span class="step-hint">Название, адрес регистрации и региональные настройки</span><span class="step-summary"></span></span>
                         <span class="step-chevron" aria-hidden="true">⌄</span>
                     </button>
                     <div class="step-body" id="stepBody1">
@@ -208,16 +219,59 @@
                             <p class="step-description">Укажите сведения о заведении. Они будут использоваться для настройки рабочего пространства ресторана.</p>
                             <div class="field"><label for="restaurantName">Название заведения <span class="required">*</span></label><input id="restaurantName" name="restaurant_name" type="text" placeholder="Например, Atelier Bistro" autocomplete="organization" minlength="2" maxlength="100" required><div class="field-error">Укажите название от 2 до 100 символов.</div></div>
                             <div class="row">
-                                <div class="field"><label for="country">Страна <span class="required">*</span></label><div class="select-wrap"><select id="country" name="country" autocomplete="country" required><option value="">Загрузка списка стран…</option></select></div><div class="field-help">Выберите страну, в которой находится заведение.</div><div class="field-error">Выберите страну из списка.</div></div>
-                                <div class="field"><label for="city">Город <span class="required">*</span></label><input id="city" name="city" type="text" placeholder="Например, Тбилиси" autocomplete="address-level2" minlength="2" maxlength="100" required><div class="field-error">Укажите город (от 2 до 100 символов).</div></div>
+                                <div class="field"><label for="country">Страна регистрации <span class="required">*</span></label><div class="select-wrap"><select id="country" name="country" autocomplete="country" required><option value="">Загрузка списка стран…</option></select></div><div class="field-help">Выберите страну регистрации заведения.</div><div class="field-error">Выберите страну из списка.</div></div>
+                                <div class="field"><label for="city">Город регистрации <span class="required">*</span></label><input id="city" name="city" type="text" placeholder="Например, Тбилиси" autocomplete="address-level2" minlength="2" maxlength="100" required><div class="field-error">Укажите город (от 2 до 100 символов).</div></div>
                             </div>
-                            <div class="field"><label for="address">Адрес <span class="required">*</span></label><input id="address" name="address" type="text" placeholder="Улица и номер" autocomplete="street-address" minlength="3" maxlength="200" required><div class="field-error">Укажите адрес заведения (от 3 до 200 символов).</div></div>
+                            <div class="field"><label for="address">Адрес регистрации ресторана <span class="required">*</span></label><input id="address" name="address" type="text" placeholder="Юридический адрес: улица и номер" autocomplete="street-address" minlength="3" maxlength="200" required><div class="field-help">Юридический адрес заведения, указываемый при регистрации.</div><div class="field-error">Укажите адрес регистрации (от 3 до 200 символов).</div></div>
                             <div class="field"><label for="slug">Адрес страницы заведения (slug) <span class="required">*</span></label><input id="slug" name="slug" type="text" placeholder="atelier-bistro" minlength="2" maxlength="100" pattern="[a-z0-9]+(-[a-z0-9]+)*" autocomplete="off" required><div class="field-help">Генерируется из названия. Можно изменить вручную. Только строчные латинские буквы, цифры и дефисы.</div><div class="field-error">Используйте латинские буквы, цифры и одиночные дефисы.</div></div>
                             <div class="row">
-                                <div class="field"><label for="currency">Валюта заведения <span class="required">*</span></label><div class="select-wrap"><select id="currency" name="restaurant_currency" required><option value="">Выберите валюту</option><option value="GEL">GEL — Грузинский лари</option><option value="EUR">EUR — Евро</option><option value="USD">USD — Доллар США</option><option value="GBP">GBP — Фунт стерлингов</option><option value="CHF">CHF — Швейцарский франк</option><option value="PLN">PLN — Польский злотый</option></select></div><div class="field-error">Выберите валюту.</div></div>
+                                <div class="field"><label for="currency">Валюта заведения <span class="required">*</span></label><div class="select-wrap"><select id="currency" name="restaurant_currency" required><option value="">Выберите валюту</option><option value="EUR">EUR — Евро</option><option value="GBP">GBP — Фунт стерлингов</option><option value="PLN">PLN — Польский злотый</option><option value="CHF">CHF — Швейцарский франк</option><option value="CZK">CZK — Чешская крона</option><option value="SEK">SEK — Шведская крона</option><option value="DKK">DKK — Датская крона</option><option value="RON">RON — Румынский лей</option><option value="BGN">BGN — Болгарский лев</option><option value="HUF">HUF — Венгерский форинт</option><option value="GEL">GEL — Грузинский лари</option><option value="UAH">UAH — Украинская гривна</option><option value="KZT">KZT — Казахстанский тенге</option><option value="AMD">AMD — Армянский драм</option><option value="USD">USD — Доллар США</option></select></div><div class="field-error">Выберите валюту.</div></div>
                                 <div class="field"><label for="timezone">Часовой пояс <span class="required">*</span></label><div class="select-wrap"><select id="timezone" name="timezone" required><option value="">Загрузка часовых поясов…</option></select></div><div class="field-help">Список часовых поясов IANA с городами и UTC-смещением.</div><div class="field-error">Выберите часовой пояс из списка.</div></div>
                             </div>
-                            <button class="button next-button" type="button">Продолжить <span class="button-arrow" aria-hidden="true">→</span></button>
+
+                            <!-- VAT ID -->
+                            <div class="field">
+                                <label>Налоговый номер (VAT ID)</label>
+                                <div class="field-help" style="margin-bottom:10px;">
+                                    Если у вашего заведения есть VAT ID (для компаний в ЕС), укажите его — это позволит применять обратное начисление НДС (reverse charge).
+                                    <strong>Поле необязательное</strong>: вы можете зарегистрироваться как физическое лицо или индивидуальный предприниматель без VAT ID.
+                                </div>
+
+                                <div style="display:flex; gap:10px; margin-bottom:12px;">
+                                    <button type="button" id="vatYesBtn" class="button button-secondary" style="flex:1; min-height:38px; font-size:10px;">
+                                        Да, есть VAT ID
+                                    </button>
+                                    <button type="button" id="vatNoBtn" class="button button-secondary" style="flex:1; min-height:38px; font-size:10px;">
+                                        Нет / регистрируюсь как физлицо
+                                    </button>
+                                </div>
+
+                                <div id="vatInputWrap" style="display:none;">
+                                    <input id="vatId" name="vat_id" type="text" placeholder="Например: DE123456789" maxlength="20" autocomplete="off">
+                                    <div class="field-help">Формат: код страны (2 буквы) + номер. Проверка через официальную систему ЕС (VIES).</div>
+                                    <div class="field-error" id="vatError"></div>
+                                    <div id="vatStatus" style="margin-top:8px; font-size:10px; line-height:1.5;"></div>
+
+                                    <div class="vat-warning" id="vatWarning">
+                                        <strong>⚠ Внимание: VAT ID недействителен</strong>
+                                        <div>VIES не подтвердил этот номер. Если вы продолжите с ним:</div>
+                                        <ul>
+                                            <li>НДС будет начислен по стандартной ставке страны вашего заведения, как для физического лица.</li>
+                                            <li>Вы не сможете применить обратное начисление НДС (reverse charge).</li>
+                                            <li><strong>Ответственность за корректность налогового номера и налоговые последствия лежит на вас.</strong> Если номер окажется чужим/поддельным, налоговая может предъявить претензии вам как владельцу заведения.</li>
+                                            <li>Вы сможете исправить VAT ID позже в панели управления — после успешной проверки VIES налоговый режим изменится со следующего периода.</li>
+                                        </ul>
+                                        <div class="vat-ack">
+                                            <input id="vatAck" type="checkbox">
+                                            <label for="vatAck">Я понимаю риски и подтверждаю, что продолжу с указанным VAT ID, принимая налоговую ответственность на себя.</label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <input type="hidden" name="vat_verified" id="vatVerified" value="false">
+                            </div>
+
+                            <button class="button next-button" type="button" id="vatNextBtn">Продолжить <span class="button-arrow" aria-hidden="true">→</span></button>
                             <button class="button button-secondary back-button" type="button" data-back="0">← Вернуться к данным владельца</button>
                         </div>
                     </div>
@@ -305,68 +359,54 @@
     const slugInput = document.getElementById("slug");
     const countrySelect = document.getElementById("country");
     const timezoneSelect = document.getElementById("timezone");
-    const currencySelect = document.getElementById("currency"); // id остался "currency", name теперь restaurant_currency
+    const currencySelect = document.getElementById("currency");
+
+    const vatYesBtn = document.getElementById("vatYesBtn");
+    const vatNoBtn = document.getElementById("vatNoBtn");
+    const vatInputWrap = document.getElementById("vatInputWrap");
+    const vatIdInput = document.getElementById("vatId");
+    const vatError = document.getElementById("vatError");
+    const vatStatus = document.getElementById("vatStatus");
+    const vatVerified = document.getElementById("vatVerified");
+    const vatWarning = document.getElementById("vatWarning");
+    const vatAck = document.getElementById("vatAck");
+    const vatAcknowledged = document.getElementById("vatAcknowledged");
+    const vatNextBtn = document.getElementById("vatNextBtn");
 
     let currentStep = 0;
     let slugEditedManually = false;
     let isSubmitting = false;
     let emailConfirmedForSubmit = false;
+    let vatCheckAbort = null;
+    let vatCurrentState = "none"; // none | valid | invalid | unknown
 
     const completedSteps = new Set();
     const getField = id => document.getElementById(id);
 
-    /* =========================================================
-     * Подписка: поля SubscriptionDTO — plan_id, billing_period,
-     * trial_days, price, currency, order_commission_percent.
-     * Кладём их в скрытые input'ы из query-параметров.
-     * currency подписки — отдельное поле с name="currency",
-     * валюта заведения — name="restaurant_currency".
-     * ========================================================= */
     const PLAN_IDS = ["starter", "advanced", "professional"];
     const SUBSCRIPTION_FIELDS = [
-        "plan_id",
-        "billing_period",
-        "trial_days",
-        "price",
-        "currency",
-        "order_commission_percent"
+        "plan_id", "billing_period", "trial_days",
+        "price", "currency", "order_commission_percent"
     ];
 
     function readSubscriptionFromQuery() {
         const qs = new URLSearchParams(window.location.search);
         const sub = {};
-        SUBSCRIPTION_FIELDS.forEach((key) => {
-            sub[key] = qs.get(key) || "";
-        });
+        SUBSCRIPTION_FIELDS.forEach((key) => { sub[key] = qs.get(key) || ""; });
 
-        if (!PLAN_IDS.includes(sub.plan_id)) {
-            sub.plan_id = "";
-        }
-        if (sub.billing_period !== "monthly" && sub.billing_period !== "yearly") {
-            sub.billing_period = "monthly";
-        }
+        if (!PLAN_IDS.includes(sub.plan_id)) sub.plan_id = "";
+        if (sub.billing_period !== "monthly" && sub.billing_period !== "yearly") sub.billing_period = "monthly";
+
         const price = Number(sub.price);
-        if (!Number.isFinite(price) || price <= 0) {
-            sub.price = "";
-        } else {
-            sub.price = price.toFixed(2);
-        }
-        if (!/^[A-Z]{3}$/.test(sub.currency)) {
-            sub.currency = "EUR";
-        }
+        sub.price = (!Number.isFinite(price) || price <= 0) ? "" : price.toFixed(2);
+
+        if (!/^[A-Z]{3}$/.test(sub.currency)) sub.currency = "EUR";
+
         const trial = Number(sub.trial_days);
-        if (!Number.isFinite(trial) || trial <= 0 || trial > 30) {
-            sub.trial_days = "";
-        } else {
-            sub.trial_days = String(Math.trunc(trial));
-        }
-        // Процент комиссии с заказов: 0..100, по умолчанию 0
+        sub.trial_days = (!Number.isFinite(trial) || trial <= 0 || trial > 30) ? "" : String(Math.trunc(trial));
+
         const commission = Number(sub.order_commission_percent);
-        if (!Number.isFinite(commission) || commission < 0 || commission > 100) {
-            sub.order_commission_percent = "0";
-        } else {
-            sub.order_commission_percent = String(commission);
-        }
+        sub.order_commission_percent = (!Number.isFinite(commission) || commission < 0 || commission > 100) ? "0" : String(commission);
         return sub;
     }
 
@@ -378,120 +418,30 @@
         document.getElementById("trial_days").value = sub.trial_days || "";
         document.getElementById("price").value = sub.price || "";
         document.getElementById("currency_subscription").value = sub.currency || "";
-        document.getElementById("order_commission_percent").value =
-            sub.order_commission_percent || "0";
+        document.getElementById("order_commission_percent").value = sub.order_commission_percent || "0";
     }
-
     applySubscriptionToForm(subscription);
 
-    /* =========================================================
-     * Справочники: страны, часовые пояса
-     * ========================================================= */
     const countryData = [
-        ["AF","Афганистан","Afghanistan"],["AL","Албания","Albania"],
-        ["DZ","Алжир","Algeria"],["AD","Андорра","Andorra"],
-        ["AO","Ангола","Angola"],["AG","Антигуа и Барбуда","Antigua and Barbuda"],
-        ["AR","Аргентина","Argentina"],["AM","Армения","Armenia"],
-        ["AU","Австралия","Australia"],["AT","Австрия","Austria"],
-        ["AZ","Азербайджан","Azerbaijan"],["BS","Багамы","Bahamas"],
-        ["BH","Бахрейн","Bahrain"],["BD","Бангладеш","Bangladesh"],
-        ["BB","Барбадос","Barbados"],["BY","Беларусь","Belarus"],
-        ["BE","Бельгия","Belgium"],["BZ","Белиз","Belize"],
-        ["BJ","Бенин","Benin"],["BT","Бутан","Bhutan"],
-        ["BO","Боливия","Bolivia"],["BA","Босния и Герцеговина","Bosnia and Herzegovina"],
-        ["BW","Ботсвана","Botswana"],["BR","Бразилия","Brazil"],
-        ["BN","Бруней","Brunei"],["BG","Болгария","Bulgaria"],
-        ["BF","Буркина-Фасо","Burkina Faso"],["BI","Бурунди","Burundi"],
-        ["KH","Камбоджа","Cambodia"],["CM","Камерун","Cameroon"],
-        ["CA","Канада","Canada"],["CV","Кабо-Верде","Cabo Verde"],
-        ["CF","Центральноафриканская Республика","Central African Republic"],
-        ["TD","Чад","Chad"],["CL","Чили","Chile"],
-        ["CN","Китай","China"],["CO","Колумбия","Colombia"],
-        ["KM","Коморы","Comoros"],["CG","Республика Конго","Republic of the Congo"],
-        ["CD","Демократическая Республика Конго","Democratic Republic of the Congo"],
-        ["CR","Коста-Рика","Costa Rica"],["CI","Кот-д’Ивуар","Côte d’Ivoire"],
-        ["HR","Хорватия","Croatia"],["CU","Куба","Cuba"],
-        ["CY","Кипр","Cyprus"],["CZ","Чехия","Czechia"],
-        ["DK","Дания","Denmark"],["DJ","Джибути","Djibouti"],
-        ["DM","Доминика","Dominica"],
-        ["DO","Доминиканская Республика","Dominican Republic"],
-        ["EC","Эквадор","Ecuador"],["EG","Египет","Egypt"],
-        ["SV","Сальвадор","El Salvador"],
-        ["GQ","Экваториальная Гвинея","Equatorial Guinea"],
-        ["ER","Эритрея","Eritrea"],["EE","Эстония","Estonia"],
-        ["SZ","Эсватини","Eswatini"],["ET","Эфиопия","Ethiopia"],
-        ["FJ","Фиджи","Fiji"],["FI","Финляндия","Finland"],
-        ["FR","Франция","France"],["GA","Габон","Gabon"],
-        ["GM","Гамбия","Gambia"],["GE","Грузия","Georgia"],
-        ["DE","Германия","Germany"],["GH","Гана","Ghana"],
-        ["GR","Греция","Greece"],["GD","Гренада","Grenada"],
-        ["GT","Гватемала","Guatemala"],["GN","Гвинея","Guinea"],
-        ["GW","Гвинея-Бисау","Guinea-Bissau"],["GY","Гайана","Guyana"],
-        ["HT","Гаити","Haiti"],["HN","Гондурас","Honduras"],
-        ["HU","Венгрия","Hungary"],["IS","Исландия","Iceland"],
-        ["IN","Индия","India"],["ID","Индонезия","Indonesia"],
-        ["IR","Иран","Iran"],["IQ","Ирак","Iraq"],
-        ["IE","Ирландия","Ireland"],["IL","Израиль","Israel"],
-        ["IT","Италия","Italy"],["JM","Ямайка","Jamaica"],
-        ["JP","Япония","Japan"],["JO","Иордания","Jordan"],
-        ["KZ","Казахстан","Kazakhstan"],["KE","Кения","Kenya"],
-        ["KI","Кирибати","Kiribati"],["KW","Кувейт","Kuwait"],
-        ["KG","Кыргызстан","Kyrgyzstan"],["LA","Лаос","Laos"],
-        ["LV","Латвия","Latvia"],["LB","Ливан","Lebanon"],
-        ["LS","Лесото","Lesotho"],["LR","Либерия","Liberia"],
-        ["LY","Ливия","Libya"],["LI","Лихтенштейн","Liechtenstein"],
-        ["LT","Литва","Lithuania"],["LU","Люксембург","Luxembourg"],
-        ["MG","Мадагаскар","Madagascar"],["MW","Малави","Malawi"],
-        ["MY","Малайзия","Malaysia"],["MV","Мальдивы","Maldives"],
-        ["ML","Мали","Mali"],["MT","Мальта","Malta"],
-        ["MH","Маршалловы Острова","Marshall Islands"],
-        ["MR","Мавритания","Mauritania"],["MU","Маврикий","Mauritius"],
-        ["MX","Мексика","Mexico"],["FM","Микронезия","Micronesia"],
-        ["MD","Молдова","Moldova"],["MC","Монако","Monaco"],
-        ["MN","Монголия","Mongolia"],["ME","Черногория","Montenegro"],
-        ["MA","Марокко","Morocco"],["MZ","Мозамбик","Mozambique"],
-        ["MM","Мьянма","Myanmar"],["NA","Намибия","Namibia"],
-        ["NR","Науру","Nauru"],["NP","Непал","Nepal"],
-        ["NL","Нидерланды","Netherlands"],["NZ","Новая Зеландия","New Zealand"],
-        ["NI","Никарагуа","Nicaragua"],["NE","Нигер","Niger"],
-        ["NG","Нигерия","Nigeria"],["KP","КНДР","North Korea"],
-        ["MK","Северная Македония","North Macedonia"],["NO","Норвегия","Norway"],
-        ["OM","Оман","Oman"],["PK","Пакистан","Pakistan"],
-        ["PW","Палау","Palau"],["PS","Палестина","Palestine"],
-        ["PA","Панама","Panama"],["PG","Папуа — Новая Гвинея","Papua New Guinea"],
-        ["PY","Парагвай","Paraguay"],["PE","Перу","Peru"],
-        ["PH","Филиппины","Philippines"],["PL","Польша","Poland"],
-        ["PT","Португалия","Portugal"],["QA","Катар","Qatar"],
-        ["RO","Румыния","Romania"],["RU","Россия","Russia"],
-        ["RW","Руанда","Rwanda"],["KN","Сент-Китс и Невис","Saint Kitts and Nevis"],
-        ["LC","Сент-Люсия","Saint Lucia"],
-        ["VC","Сент-Винсент и Гренадины","Saint Vincent and the Grenadines"],
-        ["WS","Самоа","Samoa"],["SM","Сан-Марино","San Marino"],
-        ["ST","Сан-Томе и Принсипи","Sao Tome and Principe"],
-        ["SA","Саудовская Аравия","Saudi Arabia"],["SN","Сенегал","Senegal"],
-        ["RS","Сербия","Serbia"],["SC","Сейшелы","Seychelles"],
-        ["SL","Сьерра-Леоне","Sierra Leone"],["SG","Сингапур","Singapore"],
-        ["SK","Словакия","Slovakia"],["SI","Словения","Slovenia"],
-        ["SB","Соломоновы Острова","Solomon Islands"],["SO","Сомали","Somalia"],
-        ["ZA","ЮАР","South Africa"],["KR","Южная Корея","South Korea"],
-        ["SS","Южный Судан","South Sudan"],["ES","Испания","Spain"],
-        ["LK","Шри-Ланка","Sri Lanka"],["SD","Судан","Sudan"],
-        ["SR","Суринам","Suriname"],["SE","Швеция","Sweden"],
-        ["CH","Швейцария","Switzerland"],["SY","Сирия","Syria"],
-        ["TW","Тайвань","Taiwan"],["TJ","Таджикистан","Tajikistan"],
-        ["TZ","Танзания","Tanzania"],["TH","Таиланд","Thailand"],
-        ["TL","Восточный Тимор","Timor-Leste"],["TG","Того","Togo"],
-        ["TO","Тонга","Tonga"],["TT","Тринидад и Тобаго","Trinidad and Tobago"],
-        ["TN","Тунис","Tunisia"],["TR","Турция","Türkiye"],
-        ["TM","Туркменистан","Turkmenistan"],["TV","Тувалу","Tuvalu"],
-        ["UG","Уганда","Uganda"],["UA","Украина","Ukraine"],
-        ["AE","ОАЭ","United Arab Emirates"],["GB","Великобритания","United Kingdom"],
-        ["US","США","United States"],["UY","Уругвай","Uruguay"],
-        ["UZ","Узбекистан","Uzbekistan"],["VU","Вануату","Vanuatu"],
-        ["VA","Ватикан","Vatican City"],["VE","Венесуэла","Venezuela"],
-        ["VN","Вьетнам","Vietnam"],["YE","Йемен","Yemen"],
-        ["ZM","Замбия","Zambia"],["ZW","Зимбабве","Zimbabwe"]
+        ["US","США","United States"],
+        ["DE","Германия","Germany"],
+        ["FR","Франция","France"],
+        ["ES","Испания","Spain"],
+        ["PL","Польша","Poland"],
+        ["AT","Австрия","Austria"],
+        ["IT","Италия","Italy"],
+        ["NL","Нидерланды","Netherlands"],
+        ["UA","Украина","Ukraine"],
+        ["KZ","Казахстан","Kazakhstan"],
+        ["GE","Грузия","Georgia"],
+        ["AM","Армения","Armenia"]
     ];
+
+    const currencyByCountry = {
+        US:"USD", DE:"EUR", FR:"EUR", ES:"EUR", PL:"PLN",
+        AT:"EUR", IT:"EUR", NL:"EUR",
+        UA:"UAH", KZ:"KZT", GE:"GEL", AM:"AMD"
+    };
 
     const countryFragment = document.createDocumentFragment();
     countryData.sort((a, b) => a[1].localeCompare(b[1], "ru"));
@@ -508,9 +458,7 @@
     function getOffset(timeZone, date = new Date()) {
         try {
             const parts = new Intl.DateTimeFormat("en-GB", {
-                timeZone,
-                timeZoneName: "longOffset",
-                hour: "2-digit"
+                timeZone, timeZoneName: "longOffset", hour: "2-digit"
             }).formatToParts(date);
             const raw = parts.find(p => p.type === "timeZoneName")?.value || "GMT";
             if (raw === "GMT" || raw === "UTC") return "UTC+00:00";
@@ -524,23 +472,24 @@
         const parts = zone.split("/");
         const city = (parts[parts.length - 1] || zone).replace(/_/g, " ");
         const names = {
-            Tbilisi:"Тбилиси",Berlin:"Берлин",Paris:"Париж",London:"Лондон",
-            Vienna:"Вена",Rome:"Рим",Madrid:"Мадрид",Warsaw:"Варшава",
-            Kyiv:"Киев",Moscow:"Москва",Istanbul:"Стамбул",Tokyo:"Токио",
-            Singapore:"Сингапур",Dubai:"Дубай","New York":"Нью-Йорк",
-            "Los Angeles":"Лос-Анджелес",Chicago:"Чикаго",Toronto:"Торонто",
-            Sydney:"Сидней",Auckland:"Окленд","Hong Kong":"Гонконг",
-            Bangkok:"Бангкок",Yerevan:"Ереван",Baku:"Баку",Almaty:"Алматы",
-            Tashkent:"Ташкент",Kolkata:"Калькутта",Kathmandu:"Катманду",
-            Cairo:"Каир",Johannesburg:"Йоханнесбург",Reykjavik:"Рейкьявик",
-            Lisbon:"Лиссабон",Athens:"Афины",Helsinki:"Хельсинки",
-            Stockholm:"Стокгольм",Prague:"Прага",Zurich:"Цюрих",
-            Amsterdam:"Амстердам",Brussels:"Брюссель",Copenhagen:"Копенгаген",
-            Dublin:"Дублин",Chisinau:"Кишинёв",Belgrade:"Белград",
-            Sofia:"София",Bucharest:"Бухарест","Tel Aviv":"Тель-Авив",
-            Seoul:"Сеул",Taipei:"Тайбэй",Manila:"Манила",Jakarta:"Джакарта",
-            "Ho Chi Minh":"Хошимин","Kuala Lumpur":"Куала-Лумпур",
-            Anchorage:"Анкоридж",Honolulu:"Гонолулу",Fiji:"Фиджи",UTC:"UTC"
+             Tbilisi:"Тбилиси",
+    Yerevan:"Ереван",
+    Berlin:"Берлин",
+    Paris:"Париж",
+    Madrid:"Мадрид",
+    Warsaw:"Варшава",
+    Rome:"Рим",
+    Amsterdam:"Амстердам",
+    Kyiv:"Киев",
+    Almaty:"Алматы",
+    "New York":"Нью-Йорк",
+    "Los Angeles":"Лос-Анджелес",
+    Chicago:"Чикаго",
+    Denver:"Денвер",
+    Phoenix:"Финикс",
+    Anchorage:"Анкоридж",
+    Honolulu:"Гонолулу",
+    UTC:"UTC"
         };
         return names[city] || city;
     }
@@ -567,8 +516,7 @@
         timezoneSelect.replaceChildren(
             new Option("Выберите часовой пояс", ""),
             ...fallback.map(zone => new Option(
-                `${timezoneCityName(zone)} — ${zone} (${getOffset(zone)})`,
-                zone
+                `${timezoneCityName(zone)} — ${zone} (${getOffset(zone)})`, zone
             ))
         );
     }
@@ -588,9 +536,7 @@
         if (!value) return null;
         const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
         if (!match) return null;
-        const year = Number(match[1]);
-        const month = Number(match[2]);
-        const day = Number(match[3]);
+        const year = Number(match[1]), month = Number(match[2]), day = Number(match[3]);
         const birth = new Date(year, month - 1, day);
         if (birth.getFullYear() !== year || birth.getMonth() !== month - 1 || birth.getDate() !== day) return null;
         const today = new Date();
@@ -609,14 +555,8 @@
         formError.scrollIntoView({ behavior: "smooth", block: "center" });
     }
 
-    function showServerError() {
-        showFormError("Ошибка сервера. Попробуйте позже.");
-    }
-
-    function clearFormError() {
-        formError.textContent = "";
-        formError.classList.remove("show");
-    }
+    function showServerError() { showFormError("Ошибка сервера. Попробуйте позже."); }
+    function clearFormError() { formError.textContent = ""; formError.classList.remove("show"); }
 
     function updateProgress() {
         const percent = Math.round((currentStep + 1) / steps.length * 100);
@@ -701,14 +641,14 @@
         } else if (field.id === "city" && (value.length < 2 || value.length > 100)) {
             message = "Город должен содержать от 2 до 100 символов.";
         } else if (field.id === "address" && (value.length < 3 || value.length > 200)) {
-            message = "Адрес должен содержать от 3 до 200 символов.";
+            message = "Адрес регистрации должен содержать от 3 до 200 символов.";
         } else if (field.id === "country" && !countryData.some(country => country[0] === value)) {
             message = "Выберите страну из списка.";
         } else if (field.id === "slug" && value && !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(value)) {
             message = "Slug должен содержать строчные латинские буквы, цифры и одиночные дефисы.";
-        } else if (field.id === "currency" && value && !["GEL", "EUR", "USD", "GBP", "CHF", "PLN"].includes(value)) {
+        } else if (field.id === "currency" && value && !Array.from(field.options).some(o => o.value === value)) {
             message = "Выберите валюту из списка.";
-        } else if (field.id === "timezone" && value && !Array.from(field.options).some(option => option.value === value)) {
+        } else if (field.id === "timezone" && value && !Array.from(field.options).some(o => o.value === value)) {
             message = "Выберите часовой пояс из списка.";
         } else if (field.id === "password") {
             if (value.length < 8 || value.length > 64) message = "Пароль должен содержать от 8 до 64 символов.";
@@ -716,6 +656,10 @@
             else if (!/[0-9]/.test(value)) message = "Добавьте в пароль хотя бы одну цифру.";
         } else if (field.id === "password_confirm" && value !== password.value) {
             message = "Пароли не совпадают.";
+        } else if (field.id === "vatId") {
+            if (value && !/^[A-Z]{2}[0-9A-Z]{2,12}$/.test(value)) {
+                message = "Формат: 2 буквы кода страны + номер (например, DE123456789).";
+            }
         }
 
         setFieldError(field, message);
@@ -725,6 +669,7 @@
     function validateStep(index) {
         const fields = Array.from(steps[index].querySelectorAll("input, select")).filter(
             field => field.type !== "checkbox" && field.type !== "hidden"
+                && field.id !== "vatId"
         );
         let valid = true;
         let firstInvalid = null;
@@ -735,6 +680,13 @@
                 if (!firstInvalid) firstInvalid = field;
             }
         });
+
+        if (index === 1 && vatInputWrap.style.display !== "none" && vatIdInput.value.trim()) {
+            if (!validateField(vatIdInput)) {
+                valid = false;
+                if (!firstInvalid) firstInvalid = vatIdInput;
+            }
+        }
 
         if (index === 2 && !terms.checked) {
             termsError.classList.add("show");
@@ -750,6 +702,32 @@
         return valid;
     }
 
+    function validateVatBeforeNext() {
+        if (vatInputWrap.style.display === "none") return true; // пользователь выбрал "нет"
+        const value = vatIdInput.value.trim();
+        if (!value) return true; // пустое поле — ок, это опционально
+
+        if (vatCurrentState === "valid") return true;
+
+        if (vatCurrentState === "invalid") {
+            if (!vatAck.checked) {
+                vatWarning.classList.add("show");
+                vatWarning.scrollIntoView({ behavior: "smooth", block: "center" });
+                showFormError("VAT ID недействителен. Ознакомьтесь с предупреждением и подтвердите ответственность, либо измените номер.");
+                return false;
+            }
+            vatAcknowledged.value = "true";
+            return true;
+        }
+
+        if (vatCurrentState === "unknown") {
+            showFormError("Не удалось проверить VAT ID (VIES недоступен). Попробуйте позже или нажмите «Нет» и зарегистрируйтесь как физлицо.");
+            return false;
+        }
+        showFormError("Дождитесь окончания проверки VAT ID или измените номер.");
+        return false;
+    }
+
     steps.forEach((step, index) => {
         const nextButton = step.querySelector(".next-button");
         if (nextButton) {
@@ -757,6 +735,9 @@
                 clearFormError();
                 if (!validateStep(index)) {
                     showFormError("Проверьте отмеченные поля и заполните их корректно.");
+                    return;
+                }
+                if (index === 1 && !validateVatBeforeNext()) {
                     return;
                 }
                 completedSteps.add(index);
@@ -845,18 +826,9 @@
             if (field.tagName === "SELECT" || field.type === "date") validateField(field);
 
             if (field === countrySelect) {
-                const defaults = {
-                    GE:{currency:"GEL",timezone:"Asia/Tbilisi"},
-                    DE:{currency:"EUR",timezone:"Europe/Berlin"},
-                    US:{currency:"USD",timezone:"America/New_York"},
-                    GB:{currency:"GBP",timezone:"Europe/London"},
-                    PL:{currency:"PLN",timezone:"Europe/Warsaw"},
-                    CH:{currency:"CHF",timezone:"Europe/Zurich"}
-                };
-                const defaultsForCountry = defaults[countrySelect.value];
-                if (defaultsForCountry) {
-                    if (!currencySelect.dataset.userChanged || !currencySelect.value) currencySelect.value = defaultsForCountry.currency;
-                    if (!timezoneSelect.dataset.userChanged || !timezoneSelect.value) timezoneSelect.value = defaultsForCountry.timezone;
+                const cur = currencyByCountry[countrySelect.value];
+                if (cur && (!currencySelect.dataset.userChanged || !currencySelect.value)) {
+                    currencySelect.value = cur;
                 }
             }
             if (field === currencySelect) currencySelect.dataset.userChanged = "1";
@@ -874,9 +846,117 @@
         });
     });
 
-    /* =========================================================
-     * Модальное окно подтверждения почты перед оплатой.
-     * ========================================================= */
+    vatYesBtn.addEventListener("click", () => {
+        vatInputWrap.style.display = "block";
+        vatNoBtn.classList.remove("active");
+        vatYesBtn.classList.add("active");
+        vatIdInput.focus();
+    });
+
+    vatNoBtn.addEventListener("click", () => {
+        vatInputWrap.style.display = "none";
+        vatYesBtn.classList.remove("active");
+        vatNoBtn.classList.add("active");
+        vatIdInput.value = "";
+        vatVerified.value = "false";
+        vatAcknowledged.value = "false";
+        vatCurrentState = "none";
+        vatAck.checked = false;
+        vatWarning.classList.remove("show");
+        vatError.textContent = "";
+        vatError.style.display = "none";
+        vatStatus.textContent = "";
+    });
+
+    function setVatError(message) {
+        vatError.textContent = message || "";
+        vatError.style.display = message ? "block" : "none";
+        vatIdInput.closest(".field")?.classList.toggle("invalid", Boolean(message));
+    }
+
+    function setVatStatus(text, color = "#91898a") {
+        vatStatus.textContent = text;
+        vatStatus.style.color = color;
+    }
+
+    async function checkVies(vatNumber) {
+        if (vatCheckAbort) vatCheckAbort.abort();
+        vatCheckAbort = new AbortController();
+        const signal = vatCheckAbort.signal;
+
+        const countryCode = vatNumber.slice(0, 2);
+        const vatNumberOnly = vatNumber.slice(2);
+
+        setVatStatus("Проверяем через VIES…", "#91898a");
+        setVatError("");
+        vatCurrentState = "pending";
+        vatWarning.classList.remove("show");
+        vatAck.checked = false;
+        vatAcknowledged.value = "false";
+
+        try {
+            const resp = await fetch(
+                `https://ec.europa.eu/taxation_customs/vies/rest-api/ms/${countryCode}/vat/${vatNumberOnly}`,
+                { signal, headers: { "Accept": "application/json" } }
+            );
+
+            if (!resp.ok) {
+                vatCurrentState = "unknown";
+                setVatStatus("");
+                setVatError("VIES временно недоступен. Попробуйте позже или нажмите «Нет / регистрируюсь как физлицо».");
+                return;
+            }
+
+            const data = await resp.json();
+            if (data.valid === true) {
+                vatCurrentState = "valid";
+                vatVerified.value = "true";
+                setVatStatus(`✓ VAT ID действителен: ${data.name || "—"}`, "#9bc8a5");
+                vatWarning.classList.remove("show");
+            } else {
+                vatCurrentState = "invalid";
+                vatVerified.value = "false";
+                setVatStatus("");
+                setVatError("VAT ID недействителен по данным VIES.");
+                vatWarning.classList.add("show");
+            }
+        } catch (err) {
+            if (err.name === "AbortError") return;
+            vatCurrentState = "unknown";
+            setVatStatus("");
+            setVatError("Не удалось проверить VAT ID. Проверьте соединение или нажмите «Нет / регистрируюсь как физлицо».");
+        }
+    }
+
+    let vatDebounce = null;
+    vatIdInput.addEventListener("input", () => {
+        const value = vatIdInput.value.trim().toUpperCase();
+        vatIdInput.value = value;
+        vatVerified.value = "false";
+        vatAcknowledged.value = "false";
+        vatAck.checked = false;
+        vatWarning.classList.remove("show");
+        vatCurrentState = "none";
+        setVatError("");
+
+        if (!value) {
+            setVatStatus("");
+            return;
+        }
+        if (!/^[A-Z]{2}[0-9A-Z]{2,12}$/.test(value)) {
+            setVatStatus("");
+            setVatError("Формат: 2 буквы кода страны + номер (например, DE123456789).");
+            return;
+        }
+
+        clearTimeout(vatDebounce);
+        vatDebounce = setTimeout(() => checkVies(value), 600);
+    });
+
+    vatAck.addEventListener("change", () => {
+        vatAcknowledged.value = vatAck.checked ? "true" : "false";
+    });
+
     const emailConfirmOverlay = document.getElementById("emailConfirmOverlay");
     const confirmEmailValue = document.getElementById("confirmEmailValue");
     const confirmEmailProceed = document.getElementById("confirmEmailProceed");
@@ -888,13 +968,10 @@
         confirmEmailProceed.focus({ preventScroll: true });
     }
 
-    function closeEmailConfirm() {
-        emailConfirmOverlay.classList.remove("show");
-    }
+    function closeEmailConfirm() { emailConfirmOverlay.classList.remove("show"); }
 
     confirmEmailRecheck.addEventListener("click", () => {
         closeEmailConfirm();
-        // возвращаем пользователя на шаг 1 (данные владельца), чтобы он мог исправить email
         openStep(0);
         const emailField = getField("email");
         if (emailField) {
@@ -906,17 +983,11 @@
     confirmEmailProceed.addEventListener("click", () => {
         closeEmailConfirm();
         emailConfirmedForSubmit = true;
-        if (form.requestSubmit) {
-            form.requestSubmit();
-        } else {
-            form.submit();
-        }
+        if (form.requestSubmit) form.requestSubmit(); else form.submit();
     });
 
     emailConfirmOverlay.addEventListener("click", (event) => {
-        if (event.target === emailConfirmOverlay) {
-            closeEmailConfirm();
-        }
+        if (event.target === emailConfirmOverlay) closeEmailConfirm();
     });
 
     document.addEventListener("keydown", (event) => {
@@ -928,7 +999,6 @@
     form.addEventListener("submit", async event => {
         event.preventDefault();
         clearFormError();
-
         if (isSubmitting) return;
 
         for (let i = 0; i < steps.length; i++) {
@@ -940,14 +1010,17 @@
             }
         }
 
-        // Показываем модальное окно подтверждения почты, если ещё не подтвердили
+        if (!validateVatBeforeNext()) {
+            openStep(1);
+            return;
+        }
+
         if (!emailConfirmedForSubmit) {
             openEmailConfirm();
             return;
         }
 
         emailConfirmedForSubmit = false;
-
         isSubmitting = true;
         submitButton.disabled = true;
         submitButton.textContent = "Отправка…";
@@ -963,19 +1036,13 @@
 
             if (response.redirected) {
                 const finalUrl = new URL(response.url);
-                if (
-                    finalUrl.pathname === "/choose_subscription" ||
-                    finalUrl.pathname === "/payment/subscription"
-                ) {
+                if (finalUrl.pathname === "/choose_subscription" || finalUrl.pathname === "/payment/subscription") {
                     window.location.assign(finalUrl.href);
                     return;
                 }
             }
 
-            if (response.status >= 500) {
-                showServerError();
-                return;
-            }
+            if (response.status >= 500) { showServerError(); return; }
 
             if (!response.ok) {
                 const messages = {
@@ -994,25 +1061,11 @@
             const contentType = response.headers.get("content-type") || "";
             if (contentType.includes("application/json")) {
                 const data = await response.json();
-
-                const checkoutUrl =
-                    data.url || data.checkout_url ||
+                const checkoutUrl = data.url || data.checkout_url ||
                     (data.session && (data.session.url || data.session.checkout_url));
-
-                if (checkoutUrl) {
-                    window.location.assign(checkoutUrl);
-                    return;
-                }
-
-                if (data.success === true) {
-                    window.location.href = "/restaurant/register?registered=1";
-                    return;
-                }
-
-                if (data.success === false && data.message) {
-                    showFormError(data.message);
-                    return;
-                }
+                if (checkoutUrl) { window.location.assign(checkoutUrl); return; }
+                if (data.success === true) { window.location.href = "/restaurant/register?registered=1"; return; }
+                if (data.success === false && data.message) { showFormError(data.message); return; }
             }
 
             window.location.href = "/restaurant/register?registered=1";
@@ -1028,7 +1081,6 @@
 
     const params = new URLSearchParams(window.location.search);
     const errorCode = params.get("error");
-
     const serverErrors = {
         "400":"Некорректные данные. Проверьте заполненные поля.",
         "401":"Не удалось выполнить авторизацию. Попробуйте снова.",
@@ -1047,11 +1099,8 @@
         isSubmitting = false;
         submitButton.disabled = false;
         submitButton.innerHTML = 'Создать аккаунт и перейти к оплате <span class="button-arrow" aria-hidden="true">→</span>';
-        if (errorCode === "500" || errorCode === "502" || errorCode === "503" || errorCode === "504") {
-            showServerError();
-        } else {
-            showFormError(serverErrors[errorCode]);
-        }
+        if (["500","502","503","504"].includes(errorCode)) showServerError();
+        else showFormError(serverErrors[errorCode]);
         const cleanUrl = new URL(window.location.href);
         cleanUrl.searchParams.delete("error");
         window.history.replaceState({}, "", cleanUrl);
@@ -1068,13 +1117,12 @@
         document.getElementById("progressWrap").style.display = "none";
         document.getElementById("successPanel").classList.add("show");
         document.getElementById("footer").style.display = "none";
-        document.getElementById("securityNote").style.display = "none";
         document.getElementById("pageTitle").textContent = "Регистрация завершена";
         document.getElementById("pageSubtitle").textContent = "Ваш запрос на регистрацию обработан.";
     }
 
     updatePasswordRules();
-    openStep(0, {scroll:false});
+    openStep(0, { scroll: false });
 })();
 </script>
 </body>
