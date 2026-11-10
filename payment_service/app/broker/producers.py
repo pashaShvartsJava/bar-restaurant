@@ -30,3 +30,21 @@ async def publish_subscription_event(subscription_id : str,
         .encode(), message_id=event_id, delivery_mode=aio_pika.DeliveryMode.PERSISTENT,
         content_type="application/json")
     await rabbitmq.subscription_exchange.publish(message, routing_key="subscriptions_routing_key")
+
+async def publish_subscription_vat_status_changed_event(subscription_id : str,
+                                                        restaurant_id : str,
+                                                        client_id : str,
+                                                        vat_status : str,
+                                                        email : str,
+                                                        event_id : str):
+    message = aio_pika.Message(
+        body=json.dumps({
+            "event": "subscription_vat_status_changed",
+            "subscription_id": subscription_id,
+            "client_id": client_id,
+            "restaurant_id": restaurant_id,
+            "vat_status": vat_status,
+            "email" : email})
+        .encode(), message_id=event_id, delivery_mode=aio_pika.DeliveryMode.PERSISTENT,
+        content_type="application/json")
+    await rabbitmq.subscription_exchange.publish(message, routing_key="subscriptions_vat_status_routing_key")

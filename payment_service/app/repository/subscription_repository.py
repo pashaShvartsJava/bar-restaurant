@@ -7,7 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from uuid import UUID
 
-from ..models.subscriptions import Subscription, SubscriptionStatus
+from ..models.subscriptions import Subscription, SubscriptionStatus, VatStatus
 from ..schemas.subscription_schema import SubscriptionCheckoutDTO, PLANS, PlanId
 
 
@@ -41,6 +41,12 @@ class SubscriptionRepository:
                                        .where(or_(Subscription.status==SubscriptionStatus.ACTIVE,
                                                   Subscription.status==SubscriptionStatus.TRIALING)))
         return result.scalar_one_or_none()
+
+    async def get_subscriptions_with_valid_vats(self) -> list[Subscription]:
+        result = await self.db.execute(select(Subscription).where(Subscription.vat_status==VatStatus.VALID)
+                                                     .where(or_(Subscription.status == SubscriptionStatus.ACTIVE,
+                                                                Subscription.status == SubscriptionStatus.TRIALING)))
+        return result.scalars().all()
 
     async def create_subscription(self, data : SubscriptionCheckoutDTO) -> Subscription:
         subscription_number = generate_subscription_number()
@@ -97,7 +103,7 @@ class SubscriptionRepository:
         return result.scalar_one_or_none()
 
     async def update(self, subscription : Subscription):
-        await self.db.commit()
+        await self.db.flush()
         await self.db.refresh(subscription)
 
     async def delete_saga_subscription(self, sub_idempotency_key : str):

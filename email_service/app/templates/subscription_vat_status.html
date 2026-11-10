@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Статус налогового номера изменён</title>
+</head>
+<body style="margin:0;padding:0;background-color:#0c0b0e;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
+           style="background-color:#0c0b0e;padding:40px 16px;">
+        <tr>
+            <td align="center">
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
+                       style="max-width:560px;background:linear-gradient(180deg,#1d181b 0%,#121013 100%);border:1px solid rgba(213,166,91,0.25);border-radius:18px;overflow:hidden;">
+                    <!-- Шапка -->
+                    <tr>
+                        <td style="padding:32px 32px 8px 32px;text-align:center;">
+                            <div style="color:#d5a65b;font-family:Georgia,'Times New Roman',serif;font-size:11px;letter-spacing:5px;margin-bottom:14px;">
+                                FDCPLATFORM
+                            </div>
+                            <h1 style="margin:0;color:#f0e7e0;font-family:Georgia,'Times New Roman',serif;font-weight:normal;font-size:24px;line-height:1.3;">
+                                Обновление статуса VAT ID
+                            </h1>
+                        </td>
+                    </tr>
+
+                    <!-- Тело -->
+                    <tr>
+                        <td style="padding:20px 32px 8px 32px;">
+                            {% if vat_status == "valid" %}
+                                <p style="margin:0 0 14px 0;color:#9bc8a5;font-family:Arial,sans-serif;font-size:15px;line-height:1.6;">
+                                    ✓ Ваш налоговый номер успешно подтверждён через систему VIES.
+                                </p>
+                                <p style="margin:0 0 14px 0;color:#b9b0b3;font-family:Arial,sans-serif;font-size:14px;line-height:1.7;">
+                                    К вашей подписке применён режим <strong style="color:#e6c58f;">reverse charge</strong>.
+                                    Это означает, что платформа не начисляет НДС на услуги подписки,
+                                    а налоговые обязательства по декларированию НДС переходят на вашу организацию.
+                                </p>
+                                <p style="margin:0 0 14px 0;color:#b9b0b3;font-family:Arial,sans-serif;font-size:14px;line-height:1.7;">
+                                    Пожалуйста, убедитесь, что ваш бухгалтер учитывает этот режим при обработке счетов.
+                                </p>
+
+                            {% elif vat_status == "invalid" %}
+                                <p style="margin:0 0 14px 0;color:#e58c8c;font-family:Arial,sans-serif;font-size:15px;line-height:1.6;">
+                                    ⚠ Ваш налоговый номер не подтверждён системой VIES.
+                                </p>
+                                <p style="margin:0 0 14px 0;color:#b9b0b3;font-family:Arial,sans-serif;font-size:14px;line-height:1.7;">
+                                    Это означает, что VAT ID, указанный в вашем аккаунте, не найден или неактивен
+                                    в официальной базе ЕС. В связи с этим к вашей подписке
+                                    <strong style="color:#f0e7e0;">применяется стандартная ставка НДС</strong>
+                                    как для физического лица.
+                                </p>
+                                <p style="margin:0 0 14px 0;color:#b9b0b3;font-family:Arial,sans-serif;font-size:14px;line-height:1.7;">
+                                    Если номер был указан с ошибкой, вы можете исправить его в портале управления подпиской.
+                                    После успешной проверки VIES режим reverse charge будет применён
+                                    <strong style="color:#f0e7e0;">со следующего расчётного периода</strong>.
+                                </p>
+                                <p style="margin:0 0 14px 0;color:#e58c8c;font-family:Arial,sans-serif;font-size:13px;line-height:1.7;">
+                                    Обратите внимание: ответственность за корректность указанного налогового номера
+                                    и налоговые последствия лежит на владельце заведения.
+                                </p>
+
+                            {% elif vat_status == "unknown" %}
+                                <p style="margin:0 0 14px 0;color:#e0b86a;font-family:Arial,sans-serif;font-size:15px;line-height:1.6;">
+                                    ⏳ Не удалось проверить статус вашего налогового номера.
+                                </p>
+                                <p style="margin:0 0 14px 0;color:#b9b0b3;font-family:Arial,sans-serif;font-size:14px;line-height:1.7;">
+                                    Система VIES временно недоступна, поэтому мы не смогли подтвердить
+                                    действительность вашего VAT ID. Пока действует
+                                    <strong style="color:#f0e7e0;">стандартная ставка НДС</strong>.
+                                </p>
+                                <p style="margin:0 0 14px 0;color:#b9b0b3;font-family:Arial,sans-serif;font-size:14px;line-height:1.7;">
+                                    Мы автоматически повторим проверку позже. Вы также можете открыть портал управления
+                                    подпиской и обновить номер вручную.
+                                </p>
+
+                            {% elif vat_status == "none" %}
+                                <p style="margin:0 0 14px 0;color:#e0b86a;font-family:Arial,sans-serif;font-size:15px;line-height:1.6;">
+                                    ℹ Налоговый номер не привязан к вашей подписке.
+                                </p>
+                                <p style="margin:0 0 14px 0;color:#b9b0b3;font-family:Arial,sans-serif;font-size:14px;line-height:1.7;">
+                                    К вашей подписке применяется <strong style="color:#f0e7e0;">стандартная ставка НДС</strong>
+                                    как для физического лица.
+                                </p>
+                                <p style="margin:0 0 14px 0;color:#b9b0b3;font-family:Arial,sans-serif;font-size:14px;line-height:1.7;">
+                                    Если у вашего заведения есть VAT ID, добавьте его в портале управления подпиской —
+                                    после успешной проверки VIES режим reverse charge будет применён
+                                    <strong style="color:#f0e7e0;">со следующего расчётного периода</strong>.
+                                </p>
+
+                            {% else %}
+                                <p style="margin:0 0 14px 0;color:#b9b0b3;font-family:Arial,sans-serif;font-size:14px;line-height:1.7;">
+                                    Статус вашего налогового номера был обновлён. Пожалуйста, проверьте актуальную
+                                    информацию в портале управления подпиской.
+                                </p>
+                            {% endif %}
+
+                            <!-- Реквизиты -->
+                            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
+                                   style="margin:24px 0 8px 0;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:12px;">
+                                <tr>
+                                    <td style="padding:16px 18px;">
+                                        <div style="color:#8a8082;font-family:Arial,sans-serif;font-size:10px;letter-spacing:1.4px;text-transform:uppercase;margin-bottom:10px;">
+                                            Детали подписки
+                                        </div>
+                                        <div style="color:#b9b0b3;font-family:Arial,sans-serif;font-size:12px;line-height:1.9;">
+                                            <div>
+                                                <span style="color:#777074;">Номер подписки:</span>
+                                                <span style="color:#e0d6d1;">{{ subscription_id }}</span>
+                                            </div>
+                                            <div>
+                                                <span style="color:#777074;">ID заведения:</span>
+                                                <span style="color:#e0d6d1;">{{ restaurant_id }}</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <!-- Кнопка -->
+                            <table role="presentation" cellpadding="0" cellspacing="0" border="0"
+                                   style="margin:22px auto 8px auto;">
+                                <tr>
+                                    <td align="center" style="border-radius:8px;background:linear-gradient(145deg,#392920,#20191b);border:1px solid rgba(213,166,91,0.55);">
+                                        <a href="https://localhost:8443/admin_panel"
+                                           style="display:inline-block;padding:13px 26px;color:#f0e7df;font-family:Arial,sans-serif;font-size:13px;font-weight:600;text-decoration:none;letter-spacing:0.3px;">
+                                            Открыть панель управления →
+                                        </a>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+
+                    <!-- Подвал -->
+                    <tr>
+                        <td style="padding:24px 32px 30px 32px;border-top:1px solid rgba(255,255,255,0.06);">
+                            <p style="margin:0 0 6px 0;color:#777074;font-family:Arial,sans-serif;font-size:11px;line-height:1.7;text-align:center;">
+                                Это автоматическое уведомление от FDCPlatform.
+                            </p>
+                            <p style="margin:0;color:#4f4f54;font-family:Arial,sans-serif;font-size:10px;line-height:1.7;text-align:center;">
+                                Если вы не ожидали этого письма — просто проигнорируйте его.
+                            </p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

@@ -182,13 +182,33 @@ class EmailService:
         smtp = aiosmtplib.SMTP(
             hostname=settings.EMAIL_HOST,
             port=settings.EMAIL_PORT,
-            timeout=20,
-        )
+            timeout=20)
 
         await smtp.connect()
         await smtp.login(
             settings.EMAIL_USERNAME,
             settings.EMAIL_PASSWORD,
         )
+        await smtp.send_message(message)
+        await smtp.quit()
+
+    async def send_vat_status_changed_status(self,
+                                             client_id : str,
+                                             restaurant_id : str,
+                                             vat_status : str,
+                                             email : str,
+                                             subscription_id : str):
+        message = EmailMessage()
+        message["From"] = settings.EMAIL_FROM
+        message["To"] = email
+        message["Subject"] = "Статус вашего налогового номера (VAT ID) обновлён"
+        html = templates.get_template("subscription_vat_status.html").render(client_id=client_id,
+                                                                             restaurant_id=restaurant_id,
+                                                                             vat_status=vat_status,
+                                                                             subscription_id=subscription_id)
+        message.add_alternative(html, subtype="html", )
+        smtp = aiosmtplib.SMTP(hostname=settings.EMAIL_HOST, port=settings.EMAIL_PORT, timeout=20)
+        await smtp.connect()
+        await smtp.login(settings.EMAIL_USERNAME, settings.EMAIL_PASSWORD)
         await smtp.send_message(message)
         await smtp.quit()

@@ -8,6 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.concurrency import run_in_threadpool
 
 from .stripe_service import StripeService
+from ..broker.producers import publish_subscription_vat_status_changed_event
 from ..broker.rabbitmq import RabbitMQ
 from ..models.subscriptions import Subscription, SubscriptionStatus, VatStatus
 from ..repository.outbox_repository import OutboxPaymentEventsRepository
@@ -191,47 +192,78 @@ class SubscriptionService:
         return subscription
 
     async def handle_tax_id_webhook(self, event):
-        event_type = event["type"]
-        tax_id_obj = event["data"]["object"]
-        tax_id_dict = tax_id_obj.to_dict() if hasattr(tax_id_obj, "to_dict") else tax_id_obj
-        customer_id = tax_id_dict.get("customer")
-        if not customer_id:
-            logger.warning("Tax ID webhook without customer: %s", event_type)
-            return
-        subscription = await self.subscription_repository.get_by_stripe_customer_id(customer_id)
-        if not subscription:
-            logger.warning("No subscription for Stripe customer %s", customer_id)
-            return
-        if event_type == "customer.tax_id.deleted":
-            new_vat_id = None
-            vat_status = VatStatus.NONE
-            checked_at = None
-        else:
-            new_vat_id = tax_id_dict.get("value")
-            if not new_vat_id:
-                logger.warning("Tax ID webhook without value: %s", event_type)
+        async with self.db.begin():
+            event_type = event["type"]
+            tax_id_obj = event["data"]["object"]
+            tax_id_dict = tax_id_obj.to_dict() if hasattr(tax_id_obj, "to_dict") else tax_id_obj
+            customer_id = tax_id_dict.get("customer")
+            if not customer_id:
+                logger.warning("Tax ID webhook without customer: %s", event_type)
                 return
-            vat_result = await verify_vat_id(new_vat_id)
-            vat_status = VatStatus(vat_result["status"])
-            checked_at = vat_result.get("checked_at")
-        subscription.vat_id = new_vat_id
-        subscription.vat_status = vat_status
-        subscription.vat_checked_at = checked_at
-        await self.subscription_repository.update(subscription)
-        should_reverse = (
-                vat_status == VatStatus.VALID
-                and subscription.country != "DE"
-                and new_vat_id is not None)
-        new_tax_exempt = "reverse" if should_reverse else "none"
-        try:
-            await self.stripe_service.client.v1.customers.update_async(customer_id, params={"tax_exempt": new_tax_exempt})
-            logger.info(
-                "Updated tax_exempt for customer %s to %s (vat_status=%s, country=%s)",
-                customer_id, new_tax_exempt, vat_status.value, subscription.country)
-        except stripe.StripeError as e:
-            logger.error("Failed to update tax_exempt for %s: %s", customer_id, e)
+            subscription = await self.subscription_repository.get_by_stripe_customer_id(customer_id)
+            if not subscription:
+                logger.warning("No subscription for Stripe customer %s", customer_id)
+                return
+            if event_type == "customer.tax_id.deleted":
+                new_vat_id = None
+                vat_status = VatStatus.NONE
+                checked_at = None
+            else:
+                new_vat_id = tax_id_dict.get("value")
+                if not new_vat_id:
+                    logger.warning("Tax ID webhook without value: %s", event_type)
+                    return
+                vat_result = await verify_vat_id(new_vat_id)
+                vat_status = VatStatus(vat_result["status"])
+                checked_at = vat_result.get("checked_at")
+            subscription.vat_id = new_vat_id
+            subscription.vat_status = vat_status
+            subscription.vat_checked_at = checked_at
+            await self.subscription_repository.update(subscription)
+            should_reverse = (
+                    vat_status == VatStatus.VALID
+                    and subscription.country != "DE"
+                    and new_vat_id is not None)
+            new_tax_exempt = "reverse" if should_reverse else "none"
+            try:
+                await self.stripe_service.client.v1.customers.update_async(customer_id,
+                                                                           params={"tax_exempt": new_tax_exempt})
+                logger.info(
+                    "Updated tax_exempt for customer %s to %s (vat_status=%s, country=%s)",
+                    customer_id, new_tax_exempt, vat_status.value, subscription.country)
+            except stripe.StripeError as e:
+                logger.error("Failed to update tax_exempt for %s: %s", customer_id, e)
 
     async def get_subscription_by_restaurant_id(self, restaurant_id: UUID) -> Subscription:
         return await self.subscription_repository.get_subscription_by_restaurant_id(restaurant_id)
 
+    async def get_subscriptions_with_valid_vats(self) -> list[Subscription]:
+        return await self.subscription_repository.get_subscriptions_with_valid_vats()
+
+    async def check_vat_validity(self):
+        async with self.db.begin():
+            subscriptions = await self.get_subscriptions_with_valid_vats()
+            for subscription in subscriptions:
+                data = await verify_vat_id(subscription.vat_id)
+                if data["status"] == "invalid":
+                    subscription.vat_status = VatStatus.INVALID
+                    subscription.vat_checked_at = data["checked_at"]
+                    await self.subscription_repository.update(subscription)
+                    customer_id = subscription.stripe_customer_id
+                    vat_status = subscription.vat_status
+                    new_tax_exempt = "none"
+                    try:
+                        await self.stripe_service.client.v1.customers.update_async(customer_id, params={"tax_exempt": new_tax_exempt})
+                        logger.info(
+                            "Updated tax_exempt for customer %s to %s (vat_status=%s, country=%s)",
+                            customer_id, new_tax_exempt, vat_status.value, subscription.country)
+                    except stripe.StripeError as e:
+                        logger.error("Failed to update tax_exempt for %s: %s", customer_id, e)
+                    event_id = f"cron:vat:{uuid.uuid4()}"
+                    await self.outbox_repository.create_outbox_subscription_vat_status_event(subscription.id,
+                                                                        subscription.restaurant_id,
+                                                                        subscription.owner_id,
+                                                                        subscription.vat_status,
+                                                                        subscription.email,
+                                                                        event_id)
 

@@ -3,7 +3,7 @@ import aio_pika
 from aio_pika import connect_robust
 
 from .consumer import EmailVerificationConsumer, ChangePasswordVerificationConsumer, ChangeStatusConsumer, \
-    ResetPasswordConsumer, CreateReservationConsumer
+    ResetPasswordConsumer, CreateReservationConsumer, ChangeVatStatusConsumer
 from ..config.config import settings
 
 
@@ -13,16 +13,25 @@ class RabbitMQ:
         self.channel = None
         self.exchange = None
         self.reservation_exchange = None
+
         self.email_verification_queue = None
         self.change_password_verification_queue = None
+
         self.consume_email_verification = None
         self.consume_change_password_verification = None
+
         self.change_status_queue = None
         self.consume_change_status_queue = None
+
         self.reset_password_queue = None
         self.consume_reset_password_queue = None
+
         self.create_reservation_queue = None
         self.consume_create_reservation = None
+
+        self.subscriptions_exchange = None
+        self.create_vat_status_changed_queue = None
+        self.consume_vat_status_changed = None
 
     async def connect(self):
         while True:
@@ -66,6 +75,12 @@ class RabbitMQ:
         self.reset_password_queue = await self.channel.declare_queue("reset_password", durable=True)
         await self.reset_password_queue.bind(self.exchange, routing_key="reset_password_event")
         self.consume_reset_password_queue = ResetPasswordConsumer(self.reset_password_queue)
+
+        self.subscriptions_exchange = await self.channel.declare_exchange(
+            "subscriptions_events", aio_pika.ExchangeType.DIRECT, durable=True)
+        self.create_vat_status_changed_queue = await self.channel.declare_queue("vat_status_changed_queue", durable=True)
+        await self.create_vat_status_changed_queue.bind(self.exchange, routing_key="subscriptions_vat_status_routing_key")
+        self.consume_vat_status_changed = ChangeVatStatusConsumer(self.create_vat_status_changed_queue)
 
     async def close(self):
         if self.connection:

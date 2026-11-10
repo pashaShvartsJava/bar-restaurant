@@ -3,7 +3,8 @@ import asyncio
 from ..database.database import SessionLocal
 from ..repository.outbox_repository import OutboxPaymentEventsRepository
 import logging
-from ..broker.producers import publish_subscription_event, publish_payment_paid
+from ..broker.producers import publish_subscription_event, publish_payment_paid, \
+    publish_subscription_vat_status_changed_event
 
 logger = logging.getLogger(__name__)
 
@@ -23,10 +24,17 @@ async def outbox_publisher():
                                                    restaurant_id=event.payload["restaurant_id"])
                     if event.event_type == "SubscriptionStatusChanged":
                         await publish_subscription_event(subscription_id=event.payload["subscription_id"],
-                                                                  restaurant_id=event.payload["restaurant_id"],
-                                                                  client_id=event.payload["client_id"],
-                                                                  status=event.payload["status"],
-                                                                  event_id=event.id)
+                                                         restaurant_id=event.payload["restaurant_id"],
+                                                         client_id=event.payload["client_id"],
+                                                         status=event.payload["status"],
+                                                         event_id=event.id)
+                    if event.event_type == "SubscriptionVatStatusChanged":
+                        await publish_subscription_vat_status_changed_event(subscription_id=event.payload["subscription_id"],
+                                                                            restaurant_id=event.payload["restaurant_id"],
+                                                                            client_id=event.payload["client_id"],
+                                                                            vat_status=event.payload["vat_status"],
+                                                                            email=event.payload["email"],
+                                                                            event_id=event.id)
                     await repository.mark_event_as_published(event)
                     await session.commit()
                 except KeyError:
