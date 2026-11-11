@@ -87,7 +87,7 @@
 
         .container {
             width: 100%;
-            max-width: 1320px;
+            max-width: 1440px;
             margin: 0 auto;
             padding: 35px 34px 25px;
         }
@@ -360,9 +360,9 @@
 
         .plans {
             display: grid;
-            grid-template-columns: repeat(3, minmax(0, 1fr));
+            grid-template-columns: repeat(4, minmax(0, 1fr));
             align-items: stretch;
-            gap: 19px;
+            gap: 17px;
             margin-top: 30px;
         }
 
@@ -371,7 +371,7 @@
             display: flex;
             flex-direction: column;
             min-width: 0;
-            padding: 29px 25px 25px;
+            padding: 27px 21px 22px;
             overflow: hidden;
             border: 1px solid rgba(255, 255, 255, .075);
             border-radius: 13px;
@@ -391,17 +391,10 @@
                 background .35s ease;
         }
 
-        .plan:nth-child(1) {
-            animation-delay: .14s;
-        }
-
-        .plan:nth-child(2) {
-            animation-delay: .25s;
-        }
-
-        .plan:nth-child(3) {
-            animation-delay: .36s;
-        }
+        .plan:nth-child(1) { animation-delay: .12s; }
+        .plan:nth-child(2) { animation-delay: .20s; }
+        .plan:nth-child(3) { animation-delay: .28s; }
+        .plan:nth-child(4) { animation-delay: .36s; }
 
         .plan::before {
             position: absolute;
@@ -452,45 +445,45 @@
         .popular {
             position: absolute;
             top: 0;
-            right: 21px;
-            padding: 7px 10px 8px;
+            right: 18px;
+            padding: 6px 9px 7px;
             border-radius: 0 0 6px 6px;
             background: rgba(213, 166, 91, .16);
             color: var(--gold-light);
-            font-size: 8px;
-            letter-spacing: 1.2px;
+            font-size: 7px;
+            letter-spacing: 1.1px;
             text-transform: uppercase;
         }
 
         .plan-top {
-            min-height: 104px;
+            min-height: 112px;
         }
 
         .plan-number {
-            margin-bottom: 13px;
+            margin-bottom: 12px;
             color: var(--gold);
             font-family: Georgia, serif;
-            font-size: 11px;
-            letter-spacing: 2px;
+            font-size: 10px;
+            letter-spacing: 1.8px;
         }
 
         .plan h2 {
-            margin-bottom: 10px;
+            margin-bottom: 9px;
             font-family: Georgia, serif;
-            font-size: 23px;
+            font-size: 21px;
             font-weight: normal;
             letter-spacing: .3px;
         }
 
         .plan-description {
             color: var(--muted);
-            font-size: 11px;
-            line-height: 1.7;
+            font-size: 10px;
+            line-height: 1.65;
         }
 
         .price-area {
-            min-height: 135px;
-            padding: 23px 0 20px;
+            min-height: 130px;
+            padding: 20px 0 18px;
             border-bottom: 1px solid rgba(255, 255, 255, .075);
         }
 
@@ -503,30 +496,30 @@
 
         .currency {
             align-self: flex-start;
-            margin-top: 8px;
+            margin-top: 7px;
             color: var(--gold);
-            font-size: 15px;
+            font-size: 14px;
         }
 
         .price {
             color: #fff;
             font-family: Georgia, serif;
-            font-size: clamp(34px, 3.1vw, 43px);
+            font-size: clamp(30px, 2.6vw, 37px);
             line-height: 1.15;
-            letter-spacing: -1.4px;
+            letter-spacing: -1.2px;
             transition: opacity .2s ease, transform .2s ease;
         }
 
         .period {
             color: #85838a;
-            font-size: 10px;
+            font-size: 9px;
         }
 
         .price-note {
-            margin-top: 10px;
+            margin-top: 9px;
             color: #77777d;
-            font-size: 10px;
-            line-height: 1.7;
+            font-size: 9px;
+            line-height: 1.65;
         }
 
         .price-note strong {
@@ -536,44 +529,44 @@
 
         .plan-features {
             flex: 1;
-            padding: 23px 0 25px;
+            padding: 20px 0 22px;
         }
 
         .features-heading {
-            margin-bottom: 16px;
+            margin-bottom: 14px;
             color: #a8a5ab;
-            font-size: 9px;
-            letter-spacing: 1.6px;
+            font-size: 8px;
+            letter-spacing: 1.5px;
             text-transform: uppercase;
         }
 
         .feature-list {
             display: grid;
-            gap: 14px;
+            gap: 12px;
             list-style: none;
         }
 
         .feature-list li {
             display: flex;
             align-items: flex-start;
-            gap: 10px;
+            gap: 9px;
             color: #d1cfd3;
-            font-size: 11px;
-            line-height: 1.65;
+            font-size: 10px;
+            line-height: 1.6;
         }
 
         .check {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            flex: 0 0 17px;
-            width: 17px;
-            height: 17px;
+            flex: 0 0 16px;
+            width: 16px;
+            height: 16px;
             margin-top: 0;
             border: 1px solid rgba(213, 166, 91, .32);
             border-radius: 50%;
             color: var(--gold);
-            font-size: 10px;
+            font-size: 9px;
         }
 
         .feature-list strong {
@@ -585,8 +578,8 @@
             display: block;
             margin-top: 3px;
             color: #77777d;
-            font-size: 10px;
-            line-height: 1.55;
+            font-size: 9px;
+            line-height: 1.5;
         }
 
         .plan-divider {
@@ -595,23 +588,23 @@
         }
 
         .plan-bottom {
-            padding-top: 20px;
+            padding-top: 18px;
         }
 
         .select-plan {
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 9px;
+            gap: 8px;
             width: 100%;
-            min-height: 45px;
-            padding: 12px 15px;
+            min-height: 43px;
+            padding: 11px 14px;
             border: 1px solid rgba(213, 166, 91, .3);
             border-radius: 7px;
             background: rgba(213, 166, 91, .065);
             color: var(--gold-light);
             font-size: 10px;
-            letter-spacing: .35px;
+            letter-spacing: .3px;
             cursor: pointer;
             transition:
                 background .25s ease,
@@ -621,7 +614,7 @@
         }
 
         .select-plan .arrow {
-            font-size: 15px;
+            font-size: 14px;
             transition: transform .25s ease;
         }
 
@@ -656,10 +649,10 @@
         }
 
         .plan-footnote {
-            margin-top: 12px;
+            margin-top: 11px;
             color: #69676d;
-            font-size: 9px;
-            line-height: 1.65;
+            font-size: 8px;
+            line-height: 1.6;
             text-align: center;
         }
 
@@ -694,14 +687,14 @@
 
         .comparison table {
             width: 100%;
-            min-width: 610px;
+            min-width: 720px;
             border-collapse: collapse;
             text-align: center;
         }
 
         .comparison th,
         .comparison td {
-            padding: 16px 19px;
+            padding: 15px 16px;
             border-bottom: 1px solid rgba(255, 255, 255, .055);
             font-size: 10px;
         }
@@ -714,7 +707,7 @@
 
         .comparison th:first-child,
         .comparison td:first-child {
-            width: 37%;
+            width: 32%;
             color: #c3c0c6;
             text-align: left;
         }
@@ -729,7 +722,7 @@
 
         .yes {
             color: #9ac49d !important;
-            font-size: 13px !important;
+            font-size: 12px !important;
         }
 
         .no {
@@ -1026,59 +1019,26 @@
         }
 
         @keyframes fadeUp {
-            from {
-                opacity: 0;
-                transform: translateY(18px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(18px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         @keyframes fadeDown {
-            from {
-                opacity: 0;
-                transform: translateY(-12px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(-12px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         @keyframes cardReveal {
-            from {
-                opacity: 0;
-                transform: translateY(25px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(25px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         @keyframes ambientPulse {
-            from {
-                opacity: .55;
-                transform: translateX(-50%) scale(.9);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(-50%) scale(1.1);
-            }
+            from { opacity: .55; transform: translateX(-50%) scale(.9); }
+            to { opacity: 1; transform: translateX(-50%) scale(1.1); }
         }
 
-        @media (max-width: 980px) {
-            .container {
-                padding-right: 22px;
-                padding-left: 22px;
-            }
-
-            .top {
-                margin-bottom: 54px;
-            }
-
+        @media (max-width: 1180px) {
             .plans {
                 grid-template-columns: repeat(2, minmax(0, 1fr));
                 max-width: 760px;
@@ -1090,168 +1050,78 @@
                 grid-column: 1 / -1;
             }
 
-            .plan.featured .plan-top {
-                min-height: auto;
-            }
-
-            .plan.featured .plan-features {
-                padding-bottom: 20px;
-            }
-
             .plan.featured .feature-list {
                 grid-template-columns: repeat(2, minmax(0, 1fr));
             }
 
-            .price {
-                font-size: 39px;
-            }
+            .price { font-size: 34px; }
+        }
+
+        @media (max-width: 980px) {
+            .container { padding-right: 22px; padding-left: 22px; }
+            .top { margin-bottom: 54px; }
+            .price { font-size: 32px; }
         }
 
         @media (max-width: 620px) {
-            .container {
-                padding: 24px 16px 18px;
-            }
-
-            .top {
-                margin-bottom: 47px;
-            }
-
-            .secure {
-                display: none;
-            }
-
-            .brand {
-                font-size: 9px;
-                letter-spacing: 2px;
-            }
-
-            .header {
-                margin-bottom: 28px;
-            }
-
-            h1 {
-                font-size: 34px;
-                letter-spacing: .3px;
-            }
-
-            .subtitle {
-                max-width: 360px;
-                font-size: 12px;
-            }
-
-            .billing {
-                gap: 9px;
-            }
-
-            .billing-label {
-                font-size: 10px;
-            }
-
-            .save-badge {
-                font-size: 8px;
-            }
-
-            .trial-banner,
-            .renew-banner {
+            .container { padding: 24px 16px 18px; }
+            .top { margin-bottom: 47px; }
+            .secure { display: none; }
+            .brand { font-size: 9px; letter-spacing: 2px; }
+            .header { margin-bottom: 28px; }
+            h1 { font-size: 34px; letter-spacing: .3px; }
+            .subtitle { max-width: 360px; font-size: 12px; }
+            .billing { gap: 9px; }
+            .billing-label { font-size: 10px; }
+            .save-badge { font-size: 8px; }
+            .trial-banner, .renew-banner {
                 align-items: flex-start;
                 gap: 12px;
                 margin-bottom: 27px;
                 padding: 16px;
             }
-
-            .trial-icon,
-            .renew-banner-icon {
+            .trial-icon, .renew-banner-icon {
                 flex-basis: 34px;
                 width: 34px;
                 height: 34px;
                 font-size: 18px;
             }
-
-            .trial-content strong,
-            .renew-banner-content strong {
+            .trial-content strong, .renew-banner-content strong {
                 font-size: 11px;
                 line-height: 1.6;
             }
-
-            .trial-content span,
-            .renew-banner-content span {
-                font-size: 10px;
-            }
-
-            .trial-badge {
-                display: none;
-            }
-
+            .trial-content span, .renew-banner-content span { font-size: 10px; }
+            .trial-badge { display: none; }
             .plans {
                 grid-template-columns: 1fr;
                 max-width: 410px;
                 gap: 14px;
                 margin-top: 32px;
             }
-
-            .plan,
-            .plan.featured {
+            .plan, .plan.featured {
                 grid-column: auto;
-                padding: 25px 22px 21px;
+                padding: 24px 20px 20px;
             }
-
-            .plan-top {
-                min-height: auto;
-            }
-
-            .plan h2 {
-                font-size: 24px;
-            }
-
-            .price-area {
-                min-height: auto;
-                padding: 20px 0;
-            }
-
-            .price {
-                font-size: 42px;
-            }
-
-            .plan-features {
-                padding: 22px 0;
-            }
-
-            .plan.featured .feature-list {
-                grid-template-columns: 1fr;
-            }
-
-            .comparison {
-                margin-top: 52px;
-            }
-
-            .section-heading h2 {
-                font-size: 23px;
-            }
-
-            .commission-note {
-                padding: 14px;
-            }
-
-            .faq {
-                margin-top: 52px;
-            }
-
+            .plan-top { min-height: auto; }
+            .plan h2 { font-size: 22px; }
+            .price-area { min-height: auto; padding: 18px 0; }
+            .price { font-size: 36px; }
+            .plan-features { padding: 20px 0; }
+            .plan.featured .feature-list { grid-template-columns: 1fr; }
+            .comparison { margin-top: 52px; }
+            .section-heading h2 { font-size: 23px; }
+            .commission-note { padding: 14px; }
+            .faq { margin-top: 52px; }
             .footer {
                 justify-content: center;
                 margin-top: 48px;
                 text-align: center;
             }
-
-            .footer-links {
-                justify-content: center;
-                width: 100%;
-            }
+            .footer-links { justify-content: center; width: 100%; }
         }
 
         @media (prefers-reduced-motion: reduce) {
-            *,
-            *::before,
-            *::after {
+            *, *::before, *::after {
                 scroll-behavior: auto !important;
                 animation-duration: .01ms !important;
                 animation-iteration-count: 1 !important;
@@ -1365,24 +1235,24 @@
                 <span>
                     Попробуйте все возможности выбранного плана.
                     Длительность пробного периода зависит от тарифа:
-                    Starter — 3 дня, Advanced — 7 дней,
-                    Professional Business — 14 дней.
+                    Basic — 3 дня, Online — 3 дня,
+                    Advanced — 7 дней, Professional Business — 14 дней.
                     Подписка начнёт оплачиваться после окончания пробного периода.
                 </span>
             </div>
 
-            <div class="trial-badge">3 / 7 / 14 DAYS</div>
+            <div class="trial-badge">3 / 3 / 7 / 14 DAYS</div>
         </section>
         {% endif %}
 
         <section class="plans" aria-label="Тарифные планы">
             <article class="plan">
                 <div class="plan-top">
-                    <div class="plan-number">01 / START</div>
-                    <h2>Starter</h2>
+                    <div class="plan-number">01 / BASIC</div>
+                    <h2>Basic</h2>
                     <p class="plan-description">
-                        Для ресторанов, которые начинают принимать
-                        заказы онлайн.
+                        Для небольших заведений без доставки и онлайн-оплат.
+                        Сайт, меню и управление заказами.
                     </p>
                 </div>
 
@@ -1396,13 +1266,13 @@
                         {% if mode == 'renew' %}
                             Затем 39,99 € в месяц
                             <br>
-                            Комиссия 9% с каждого онлайн-заказа
+                            Комиссия 11% с каждого онлайн-заказа
                         {% else %}
                             <strong>3 дня бесплатно</strong>
                             <br>
                             Затем 39,99 € в месяц
                             <br>
-                            Комиссия 9% с каждого онлайн-заказа
+                            Комиссия 11% с каждого онлайн-заказа
                         {% endif %}
                     </p>
                 </div>
@@ -1413,8 +1283,8 @@
                         <li>
                             <span class="check">✓</span>
                             <span>
-                                <strong>Онлайн-доставка</strong>
-                                <small>Приём заказов через интернет</small>
+                                <strong>Сайт заведения</strong>
+                                <small>Основные настройки сайта</small>
                             </span>
                         </li>
                         <li>
@@ -1427,7 +1297,14 @@
                         </li>
                         <li>
                             <span class="check">✓</span>
-                            <span>Базовая панель управления</span>
+                            <span>Управление администрацией</span>
+                        </li>
+                        <li>
+                            <span class="check">✓</span>
+                            <span>
+                                Техподдержка FDCPlatform
+                                <small>Взаимодействие с клиентами через платформу</small>
+                            </span>
                         </li>
                     </ul>
                 </div>
@@ -1435,8 +1312,8 @@
                 <div class="plan-divider"></div>
 
                 <div class="plan-bottom">
-                    <button class="select-plan" data-plan="starter" type="button">
-                        Выбрать Starter
+                    <button class="select-plan" data-plan="basic" type="button">
+                        Выбрать Basic
                         <span class="arrow">→</span>
                     </button>
                     <p class="plan-footnote">
@@ -1452,11 +1329,88 @@
 
             <article class="plan">
                 <div class="plan-top">
-                    <div class="plan-number">02 / GROWTH</div>
+                    <div class="plan-number">02 / ONLINE</div>
+                    <h2>Online</h2>
+                    <p class="plan-description">
+                        Для заведений с доставкой и онлайн-оплатой.
+                        Всё из Basic плюс доставка и клиенты.
+                    </p>
+                </div>
+
+                <div class="price-area">
+                    <div class="price-line">
+                        <span class="currency">€</span>
+                        <span class="price">59,99</span>
+                        <span class="period">/ месяц</span>
+                    </div>
+                    <p class="price-note">
+                        {% if mode == 'renew' %}
+                            Затем 59,99 € в месяц
+                            <br>
+                            Комиссия 9% с каждого онлайн-заказа
+                        {% else %}
+                            <strong>3 дня бесплатно</strong>
+                            <br>
+                            Затем 59,99 € в месяц
+                            <br>
+                            Комиссия 9% с каждого онлайн-заказа
+                        {% endif %}
+                    </p>
+                </div>
+
+                <div class="plan-features">
+                    <p class="features-heading">Всё из Basic, плюс</p>
+                    <ul class="feature-list">
+                        <li>
+                            <span class="check">✓</span>
+                            <span>
+                                <strong>Онлайн-доставка</strong>
+                                <small>Приём заказов через интернет</small>
+                            </span>
+                        </li>
+                        <li>
+                            <span class="check">✓</span>
+                            <span>История онлайн-оплат</span>
+                        </li>
+                        <li>
+                            <span class="check">✓</span>
+                            <span>Управление зарегистрированными клиентами</span>
+                        </li>
+                        <li>
+                            <span class="check">✓</span>
+                            <span>
+                                Собственная техподдержка
+                                <small>Общение с клиентами напрямую</small>
+                            </span>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="plan-divider"></div>
+
+                <div class="plan-bottom">
+                    <button class="select-plan" data-plan="online" type="button">
+                        Выбрать Online
+                        <span class="arrow">→</span>
+                    </button>
+                    <p class="plan-footnote">
+                        {% if mode == 'renew' %}
+                            Оплата сразу после оформления подписки.
+                        {% else %}
+                            После 3-дневного пробного периода — 59,99 € в месяц.
+                            Комиссия 9% с онлайн-заказов.
+                        {% endif %}
+                    </p>
+                </div>
+            </article>
+
+            <article class="plan">
+                <div class="plan-top">
+                    <div class="plan-number">03 / ADVANCED</div>
                     <h2>Advanced</h2>
                     <p class="plan-description">
-                        Для заведений, которые хотят обслуживать
-                        гостей и в зале, и онлайн.
+                        Для заведений с посадкой в зале. Управление столиками
+                        и бронями по звонку, почте или соцсетям.
                     </p>
                 </div>
 
@@ -1482,26 +1436,25 @@
                 </div>
 
                 <div class="plan-features">
-                    <p class="features-heading">Всё из Starter, плюс</p>
+                    <p class="features-heading">Всё из Online, плюс</p>
                     <ul class="feature-list">
                         <li>
                             <span class="check">✓</span>
                             <span>
-                                <strong>QR-коды в заведении</strong>
-                                <small>Гости открывают меню по QR-коду</small>
+                                <strong>Управление столиками</strong>
+                                <small>Столики, посадка, статусы</small>
+                            </span>
+                        </li>
+                        <li>
+                            <span class="check">✓</span>
+                            <span>
+                                <strong>Управление бронями</strong>
+                                <small>Брони по звонку, почте или соцсетям</small>
                             </span>
                         </li>
                         <li>
                             <span class="check">✓</span>
                             <span>Заказы со столиков</span>
-                        </li>
-                        <li>
-                            <span class="check">✓</span>
-                            <span>Идентификация столов</span>
-                        </li>
-                        <li>
-                            <span class="check">✓</span>
-                            <span>Онлайн-доставка и управление заказами</span>
                         </li>
                     </ul>
                 </div>
@@ -1528,11 +1481,11 @@
                 <div class="popular">Полный доступ</div>
 
                 <div class="plan-top">
-                    <div class="plan-number">03 / PROFESSIONAL</div>
+                    <div class="plan-number">04 / PROFESSIONAL</div>
                     <h2>Professional Business</h2>
                     <p class="plan-description">
-                        Полный набор инструментов для управления,
-                        планирования и развития бизнеса.
+                        Полный набор инструментов: онлайн-бронирование,
+                        финансы, аналитика и минимальная комиссия.
                     </p>
                 </div>
 
@@ -1543,18 +1496,18 @@
                         <span class="period" id="proPeriod">/ месяц</span>
                     </div>
                     <p class="price-note" id="proPriceNote"
-                       data-monthly-normal="{% if mode == 'renew' %}Затем 199,99 € в месяц<br>Без комиссии платформы с заказов{% else %}<strong>14 дней бесплатно</strong><br>Затем 199,99 € в месяц<br>Без комиссии платформы с заказов{% endif %}"
+                       data-monthly-normal="{% if mode == 'renew' %}Затем 199,99 € в месяц<br>Комиссия 1% с каждого онлайн-заказа{% else %}<strong>14 дней бесплатно</strong><br>Затем 199,99 € в месяц<br>Комиссия 1% с каждого онлайн-заказа{% endif %}"
                        data-yearly-normal="{% if mode == 'renew' %}Затем 2 099,99 € за год<br>Экономия 299,89 € в год{% else %}<strong>14 дней бесплатно</strong><br>Затем 2 099,99 € за год<br>Экономия 299,89 € в год{% endif %}">
                         {% if mode == 'renew' %}
                             Затем 199,99 € в месяц
                             <br>
-                            Без комиссии платформы с заказов
+                            Комиссия 1% с каждого онлайн-заказа
                         {% else %}
                             <strong>14 дней бесплатно</strong>
                             <br>
                             Затем 199,99 € в месяц
                             <br>
-                            Без комиссии платформы с заказов
+                            Комиссия 1% с каждого онлайн-заказа
                         {% endif %}
                     </p>
                 </div>
@@ -1566,7 +1519,7 @@
                             <span class="check">✓</span>
                             <span>
                                 <strong>Онлайн-бронирование</strong>
-                                <small>Приём и управление резервированиями</small>
+                                <small>Гости бронируют столики сами</small>
                             </span>
                         </li>
                         <li>
@@ -1620,32 +1573,86 @@
                     <thead>
                         <tr>
                             <th>Возможность</th>
-                            <th>Starter</th>
+                            <th>Basic</th>
+                            <th>Online</th>
                             <th>Advanced</th>
                             <th>Professional</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
+                            <td>Сайт заведения и основные настройки</td>
+                            <td class="yes">✓</td>
+                            <td class="yes">✓</td>
+                            <td class="yes">✓</td>
+                            <td class="yes">✓</td>
+                        </tr>
+                        <tr>
+                            <td>Управление меню и ценами</td>
+                            <td class="yes">✓</td>
+                            <td class="yes">✓</td>
+                            <td class="yes">✓</td>
+                            <td class="yes">✓</td>
+                        </tr>
+                        <tr>
+                            <td>Управление заказами</td>
+                            <td class="yes">✓</td>
+                            <td class="yes">✓</td>
+                            <td class="yes">✓</td>
+                            <td class="yes">✓</td>
+                        </tr>
+                        <tr>
+                            <td>Управление администрацией</td>
+                            <td class="yes">✓</td>
+                            <td class="yes">✓</td>
+                            <td class="yes">✓</td>
+                            <td class="yes">✓</td>
+                        </tr>
+                        <tr>
                             <td>Онлайн-доставка</td>
+                            <td class="no">—</td>
                             <td class="yes">✓</td>
                             <td class="yes">✓</td>
                             <td class="yes">✓</td>
                         </tr>
                         <tr>
-                            <td>Управление меню и заказами</td>
+                            <td>История онлайн-оплат</td>
+                            <td class="no">—</td>
                             <td class="yes">✓</td>
                             <td class="yes">✓</td>
                             <td class="yes">✓</td>
                         </tr>
                         <tr>
-                            <td>QR-меню в заведении</td>
+                            <td>Управление зарегистрированными клиентами</td>
+                            <td class="no">—</td>
+                            <td class="yes">✓</td>
+                            <td class="yes">✓</td>
+                            <td class="yes">✓</td>
+                        </tr>
+                        <tr>
+                            <td>Собственная техподдержка</td>
+                            <td class="no">—</td>
+                            <td class="yes">✓</td>
+                            <td class="yes">✓</td>
+                            <td class="yes">✓</td>
+                        </tr>
+                        <tr>
+                            <td>Управление столиками</td>
+                            <td class="no">—</td>
+                            <td class="no">—</td>
+                            <td class="yes">✓</td>
+                            <td class="yes">✓</td>
+                        </tr>
+                        <tr>
+                            <td>Управление бронями (без онлайн-записи)</td>
+                            <td class="no">—</td>
                             <td class="no">—</td>
                             <td class="yes">✓</td>
                             <td class="yes">✓</td>
                         </tr>
                         <tr>
                             <td>Заказы со столиков</td>
+                            <td class="no">—</td>
                             <td class="no">—</td>
                             <td class="yes">✓</td>
                             <td class="yes">✓</td>
@@ -1654,10 +1661,12 @@
                             <td>Онлайн-бронирование</td>
                             <td class="no">—</td>
                             <td class="no">—</td>
+                            <td class="no">—</td>
                             <td class="yes">✓</td>
                         </tr>
                         <tr>
                             <td>Финансы</td>
+                            <td class="no">—</td>
                             <td class="no">—</td>
                             <td class="no">—</td>
                             <td class="yes">✓</td>
@@ -1666,17 +1675,20 @@
                             <td>Расширенная аналитика</td>
                             <td class="no">—</td>
                             <td class="no">—</td>
+                            <td class="no">—</td>
                             <td class="yes">✓</td>
                         </tr>
                         <tr>
                             <td>Комиссия платформы с онлайн-заказов</td>
+                            <td>11%</td>
                             <td>9%</td>
                             <td>5%</td>
-                            <td class="yes">0%</td>
+                            <td class="yes">1%</td>
                         </tr>
                         {% if mode != 'renew' %}
                         <tr>
                             <td>Бесплатный пробный период</td>
+                            <td class="yes">3 дня</td>
                             <td class="yes">3 дня</td>
                             <td class="yes">7 дней</td>
                             <td class="yes">14 дней</td>
@@ -1684,6 +1696,7 @@
                         {% else %}
                         <tr>
                             <td>Оплата после оформления</td>
+                            <td class="yes">Сразу</td>
                             <td class="yes">Сразу</td>
                             <td class="yes">Сразу</td>
                             <td class="yes">Сразу</td>
@@ -1698,11 +1711,10 @@
                 <p>
                     <strong>О комиссии тарифов.</strong>
                     К стоимости подписки добавляется комиссия с каждого
-                    онлайн-заказа: 9% на Starter, 5% на Advanced.
+                    онлайн-заказа: 11% на Basic, 9% на Online,
+                    5% на Advanced и 1% на Professional Business.
                     Условия расчёта комиссии, возвратов и платёжных сборов
                     указываются отдельно в условиях тарифа.
-                    Комиссия платформы не взимается только на тарифе
-                    Professional Business.
                 </p>
             </div>
         </section>
@@ -1724,8 +1736,8 @@
                         <div>
                             <p>
                                 Длительность пробного периода зависит от тарифа:
-                                Starter — 3 дня, Advanced — 7 дней,
-                                Professional Business — 14 дней.
+                                Basic — 3 дня, Online — 3 дня,
+                                Advanced — 7 дней, Professional Business — 14 дней.
                                 После его окончания начнётся оплата выбранной
                                 подписки согласно условиям оформления.
                                 Возможность отменить подписку и условия
@@ -1761,9 +1773,9 @@
                     <div class="faq-answer">
                         <div>
                             <p>
-                                На Starter взимается комиссия 9% с онлайн-заказов,
-                                на Advanced — 5%. На тарифе Professional Business
-                                комиссия платформы составляет 0%.
+                                На Basic взимается комиссия 11% с онлайн-заказов,
+                                на Online — 9%, на Advanced — 5%,
+                                на Professional Business — 1%.
                                 Условия расчёта, возвраты и платёжные сборы
                                 определяются отдельно.
                             </p>
@@ -1859,10 +1871,17 @@
 <script src="/static/api.js"></script>
 <script>
     const PLANS = {
-        starter: {
-            name: "Starter",
+        basic: {
+            name: "Basic",
             monthlyPrice: 39.99,
             yearlyPrice: 419.99,
+            trialDays: 3,
+            orderCommissionPercent: 11
+        },
+        online: {
+            name: "Online",
+            monthlyPrice: 59.99,
+            yearlyPrice: 629.99,
             trialDays: 3,
             orderCommissionPercent: 9
         },
@@ -1878,7 +1897,7 @@
             monthlyPrice: 199.99,
             yearlyPrice: 2099.99,
             trialDays: 14,
-            orderCommissionPercent: 0
+            orderCommissionPercent: 1
         }
     };
 
