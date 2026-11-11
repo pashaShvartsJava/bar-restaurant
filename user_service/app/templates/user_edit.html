@@ -6,185 +6,506 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Настройки профиля | Bar & Lounge</title>
     <style>
-        * { box-sizing: border-box; }
-        body {
-            margin: 0;
-            min-height: 100vh;
-            font-family: "Segoe UI", sans-serif;
-            background:
-                radial-gradient(circle at 15% 15%, rgba(213,166,91,.2), transparent 30%),
-                radial-gradient(circle at 85% 85%, rgba(180,70,110,.16), transparent 30%),
-                linear-gradient(135deg, #24191f, #39252c, #21191e);
-            color: #fff;
-            padding: 40px 20px;
+    :root {
+        --bg: #100e11;
+        --bg-soft: #191418;
+        --panel: rgba(25, 21, 25, 0.94);
+        --panel-light: rgba(39, 29, 32, 0.92);
+        --text: #eee5df;
+        --muted: #93898d;
+        --muted-dark: #6f666c;
+        --gold: #d5a65b;
+        --gold-light: #e8c58e;
+        --violet: #a78bfa;
+        --violet-light: #c4b5fd;
+        --violet-border: rgba(167, 139, 250, 0.35);
+        --border: rgba(255, 255, 255, 0.08);
+        --gold-border: rgba(213, 166, 91, 0.38);
+        --danger: #e58c8c;
+        --danger-border: rgba(229, 140, 140, 0.4);
+    }
+
+    * {
+        box-sizing: border-box;
+    }
+
+    html {
+        scroll-behavior: smooth;
+    }
+
+    body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: Arial, sans-serif;
+        color: var(--text);
+        line-height: 1.6;
+        background:
+            radial-gradient(
+                ellipse at 50% -8%,
+                rgba(157, 69, 76, 0.32) 0%,
+                rgba(89, 39, 49, 0.26) 28%,
+                rgba(35, 24, 30, 0.72) 54%,
+                rgba(15, 14, 17, 0.98) 82%
+            ),
+            linear-gradient(
+                180deg,
+                #301b22 0%,
+                #1d171c 34%,
+                #121114 70%,
+                #0c0c0e 100%
+            );
+        background-attachment: fixed;
+        padding: 40px 20px;
+        position: relative;
+        overflow-x: hidden;
+    }
+
+    body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        pointer-events: none;
+        background:
+            radial-gradient(
+                circle at 12% 20%,
+                rgba(183, 91, 78, 0.055),
+                transparent 30%
+            ),
+            radial-gradient(
+                circle at 88% 34%,
+                rgba(213, 166, 91, 0.035),
+                transparent 28%
+            );
+    }
+
+    a {
+        color: inherit;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    button,
+    input,
+    select,
+    textarea {
+        font: inherit;
+    }
+
+    .page {
+        position: relative;
+        z-index: 1;
+        width: 900px;
+        max-width: 100%;
+        margin: auto;
+    }
+
+    /* ===== Верхняя панель ===== */
+
+    .top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+    }
+
+    .back {
+        color: #a79b9d;
+        text-decoration: none;
+        font-size: 12px;
+        transition: color 0.2s;
+    }
+
+    .back:hover {
+        color: var(--gold-light);
+    }
+
+    .brand {
+        color: var(--gold);
+        font-family: Georgia, serif;
+        letter-spacing: 3px;
+        font-size: 11px;
+    }
+
+    /* ===== Основная карточка ===== */
+
+    .card {
+        background: linear-gradient(
+            145deg,
+            rgba(41, 29, 33, 0.98),
+            rgba(16, 15, 18, 0.99)
+        );
+        border: 1px solid var(--gold-border);
+        border-radius: 18px;
+        padding: 35px;
+        box-shadow:
+            0 35px 90px rgba(0, 0, 0, 0.42),
+            0 0 45px rgba(213, 166, 91, 0.06),
+            inset 0 1px rgba(255, 255, 255, 0.04);
+        backdrop-filter: blur(16px);
+        animation: appear 0.55s ease both;
+    }
+
+    .header {
+        margin-bottom: 30px;
+    }
+
+    .header-label {
+        color: var(--gold);
+        font-size: 9px;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        margin-bottom: 8px;
+    }
+
+    h1 {
+        margin: 0;
+        font-family: Georgia, serif;
+        font-size: 30px;
+        font-weight: normal;
+        letter-spacing: -0.5px;
+        line-height: 1.25;
+        color: #f0e5de;
+    }
+
+    .description {
+        color: var(--muted);
+        font-size: 12px;
+        margin-top: 9px;
+        line-height: 1.7;
+    }
+
+    /* ===== Ошибка формы ===== */
+
+    .form-error {
+        display: none;
+        margin-bottom: 18px;
+        padding: 11px 13px;
+        background: rgba(240, 168, 168, 0.05);
+        border: 1px solid rgba(240, 168, 168, 0.35);
+        border-radius: 8px;
+        color: #f2b6b6;
+        font-size: 11px;
+        font-weight: 500;
+        line-height: 1.5;
+        overflow-wrap: anywhere;
+    }
+
+    .form-error.visible {
+        display: block;
+    }
+
+    /* ===== Сетка контента ===== */
+
+    .content {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 22px;
+    }
+
+    .section {
+        background: linear-gradient(
+            145deg,
+            rgba(32, 26, 29, 0.91),
+            rgba(17, 16, 19, 0.96)
+        );
+        border: 1px solid rgba(255, 255, 255, 0.075);
+        border-radius: 14px;
+        padding: 24px;
+        box-shadow: 0 18px 45px rgba(0, 0, 0, 0.25);
+        backdrop-filter: blur(12px);
+    }
+
+    .section-title {
+        color: var(--gold);
+        font-size: 10px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        margin-bottom: 20px;
+    }
+
+    /* ===== Поля ===== */
+
+    .field {
+        margin-bottom: 15px;
+    }
+
+    .field:last-child {
+        margin-bottom: 0;
+    }
+
+    .row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+    }
+
+    label {
+        display: block;
+        margin-bottom: 8px;
+        color: #c8bfc0;
+        font-size: 10px;
+        line-height: 1.5;
+    }
+
+    input,
+    select,
+    textarea {
+        width: 100%;
+        min-height: 44px;
+        padding: 12px 13px;
+        background: rgba(255, 255, 255, 0.045);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 9px;
+        color: #eee8e3;
+        font-size: 12px;
+        outline: none;
+        transition:
+            border-color 0.25s,
+            background 0.25s,
+            box-shadow 0.25s;
+    }
+
+    input::placeholder,
+    textarea::placeholder {
+        color: #6e666b;
+    }
+
+    input:hover,
+    select:hover,
+    textarea:hover {
+        border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+        border-color: rgba(213, 166, 91, 0.75);
+        background: rgba(255, 255, 255, 0.07);
+        box-shadow: 0 0 0 3px rgba(213, 166, 91, 0.1);
+    }
+
+    textarea {
+        min-height: 100px;
+        resize: vertical;
+        line-height: 1.6;
+    }
+
+    /* ===== Action-карточки ===== */
+
+    .account-actions {
+        grid-column: 1 / -1;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+    }
+
+    .action-card {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 14px;
+        padding: 20px;
+        border-radius: 14px;
+        border: 1px solid rgba(255, 255, 255, 0.075);
+        background: linear-gradient(
+            145deg,
+            rgba(32, 26, 29, 0.91),
+            rgba(17, 16, 19, 0.96)
+        );
+        color: var(--text);
+        text-decoration: none;
+        backdrop-filter: blur(12px);
+        transition:
+            transform 0.25s,
+            border-color 0.25s,
+            background 0.25s;
+    }
+
+    .action-card:hover {
+        border-color: var(--gold-border);
+        background: linear-gradient(
+            145deg,
+            rgba(43, 31, 34, 0.96),
+            rgba(21, 18, 21, 0.98)
+        );
+        transform: translateY(-3px);
+    }
+
+    .action-info strong {
+        display: block;
+        color: #e5dad6;
+        font-size: 13px;
+        font-weight: 600;
+        margin-bottom: 5px;
+    }
+
+    .action-info span {
+        color: #857b80;
+        font-size: 10px;
+    }
+
+    .arrow {
+        color: var(--gold-light);
+        font-size: 18px;
+        transition: transform 0.2s;
+    }
+
+    .action-card:hover .arrow {
+        transform: translateX(3px);
+    }
+
+    /* ===== Нижняя панель ===== */
+
+    .bottom {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 15px;
+        margin-top: 28px;
+        padding-top: 22px;
+        border-top: 1px solid rgba(255, 255, 255, 0.075);
+    }
+
+    .cancel {
+        color: #a79b9d;
+        text-decoration: none;
+        font-size: 12px;
+        transition: color 0.2s;
+    }
+
+    .cancel:hover {
+        color: var(--text);
+    }
+
+    .bottom-right {
+        display: flex;
+        gap: 12px;
+    }
+
+    .save,
+    .delete {
+        min-height: 44px;
+        padding: 12px 20px;
+        border-radius: 9px;
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        transition:
+            transform 0.22s,
+            background 0.22s,
+            border-color 0.22s,
+            box-shadow 0.22s;
+    }
+
+    .save {
+        border: 1px solid rgba(213, 166, 91, 0.45);
+        background: linear-gradient(
+            135deg,
+            rgba(111, 67, 49, 0.5),
+            rgba(66, 38, 42, 0.8)
+        );
+        color: var(--gold-light);
+        letter-spacing: 0.4px;
+    }
+
+    .save:hover {
+        transform: translateY(-2px);
+        border-color: var(--gold);
+        background: linear-gradient(
+            135deg,
+            rgba(142, 88, 55, 0.56),
+            rgba(83, 45, 46, 0.9)
+        );
+        box-shadow: 0 9px 25px rgba(213, 166, 91, 0.12);
+    }
+
+    .delete {
+        border: 1px solid var(--danger-border);
+        background: rgba(229, 140, 140, 0.06);
+        color: var(--danger);
+    }
+
+    .delete:hover {
+        transform: translateY(-2px);
+        border-color: rgba(229, 140, 140, 0.7);
+        background: rgba(229, 140, 140, 0.12);
+    }
+
+    .save:disabled,
+    .delete:disabled {
+        opacity: 0.65;
+        cursor: wait;
+        transform: none;
+    }
+
+    /* ===== Анимация ===== */
+
+    @keyframes appear {
+        from {
+            opacity: 0;
+            transform: translateY(14px);
         }
-        .page { width: 900px; max-width: 100%; margin: auto; }
-        .top {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 25px;
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
         }
-        .back { color: #aaa; text-decoration: none; font-size: 12px; }
-        .back:hover { color: #d5a65b; }
-        .brand {
-            color: #d5a65b;
-            font-family: Georgia, serif;
-            letter-spacing: 3px;
-            font-size: 11px;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        html {
+            scroll-behavior: auto;
         }
+
+        *,
+        *::before,
+        *::after {
+            transition-duration: 0.01ms !important;
+            animation-duration: 0.01ms !important;
+        }
+    }
+
+    /* ===== Адаптивность ===== */
+
+    @media (max-width: 700px) {
         .card {
-            background: rgba(39,32,38,.96);
-            border: 1px solid rgba(255,255,255,.1);
-            border-radius: 18px;
-            padding: 35px;
-            box-shadow: 0 25px 60px rgba(0,0,0,.4);
-        }
-        .header { margin-bottom: 30px; }
-        .header-label {
-            color: #d5a65b;
-            font-size: 9px;
-            letter-spacing: 3px;
-            margin-bottom: 7px;
-        }
-        h1 {
-            margin: 0;
-            font-family: Georgia, serif;
-            font-size: 30px;
-            font-weight: normal;
-        }
-        .description { color: #999; font-size: 12px; margin-top: 8px; }
-        .form-error {
-            display: none;
-            margin-bottom: 18px;
-            padding: 11px 13px;
-            background: rgba(130,55,65,.14);
-            border: 1px solid #714449;
-            border-radius: 8px;
-            color: #d98282;
-            font-size: 11px;
-            line-height: 1.5;
-        }
-        .form-error.visible { display: block; }
-        .content {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 25px;
-        }
-        .section {
-            background: rgba(255,255,255,.025);
-            border: 1px solid #40383e;
+            padding: 25px 18px;
             border-radius: 14px;
-            padding: 22px;
         }
-        .section-title {
-            color: #d5a65b;
-            font-size: 10px;
-            letter-spacing: 2px;
-            margin-bottom: 20px;
-        }
-        .field { margin-bottom: 15px; }
-        .field:last-child { margin-bottom: 0; }
-        .row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-        }
-        label {
-            display: block;
-            margin-bottom: 6px;
-            color: #ccc;
-            font-size: 11px;
-        }
-        input {
-            width: 100%;
-            padding: 11px 12px;
-            background: #302a30;
-            border: 1px solid #51484e;
-            border-radius: 8px;
-            color: white;
-            font-size: 13px;
-            outline: none;
-            transition: .2s;
-        }
-        input:focus {
-            border-color: #d5a65b;
-            box-shadow: 0 0 0 3px rgba(213,166,91,.07);
-        }
+
+        .content,
         .account-actions {
-            grid-column: 1 / -1;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
+            grid-template-columns: 1fr;
         }
-        .action-card {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 18px;
-            border-radius: 12px;
-            border: 1px solid #40383e;
-            background: rgba(255,255,255,.025);
-            color: white;
-            text-decoration: none;
-            transition: .2s;
+
+        .account-actions {
+            grid-column: auto;
         }
-        .action-card:hover {
-            border-color: #d5a65b;
-            background: rgba(213,166,91,.06);
-            transform: translateY(-2px);
+
+        .row {
+            grid-template-columns: 1fr;
         }
-        .action-info strong { display: block; font-size: 13px; margin-bottom: 5px; }
-        .action-info span { color: #888; font-size: 10px; }
-        .arrow { color: #d5a65b; font-size: 18px; }
+
         .bottom {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 25px;
-            padding-top: 22px;
-            border-top: 1px solid #40383e;
+            flex-direction: column;
+            gap: 15px;
+            align-items: stretch;
         }
-        .cancel { color: #999; text-decoration: none; font-size: 12px; }
-        .cancel:hover { color: white; }
-        .bottom-right { display: flex; gap: 12px; }
-        .save, .delete {
-            padding: 12px 20px;
-            border-radius: 8px;
-            font-size: 12px;
-            cursor: pointer;
-            transition: .2s;
+
+        .bottom-right {
+            flex-direction: column-reverse;
         }
-        .save {
-            border: none;
-            background: #d5a65b;
-            color: #211a15;
-            font-weight: 600;
-        }
-        .save:hover { background: #e5b970; }
+
+        .save,
         .delete {
-            border: 1px solid #714449;
-            background: rgba(130,55,65,.12);
-            color: #d98282;
+            width: 100%;
         }
-        .delete:hover {
-            background: rgba(150,60,70,.22);
-            border-color: #a85c64;
+
+        h1 {
+            font-size: 26px;
         }
-        @media (max-width: 700px) {
-            .card { padding: 25px 18px; }
-            .content, .account-actions { grid-template-columns: 1fr; }
-            .account-actions { grid-column: auto; }
-            .row { grid-template-columns: 1fr; }
-            .bottom {
-                flex-direction: column;
-                gap: 15px;
-                align-items: stretch;
-            }
-            .bottom-right { flex-direction: column-reverse; }
-            .save, .delete { width: 100%; }
-        }
-    </style>
+    }
+</style>
 </head>
 <body>
 <div class="page">

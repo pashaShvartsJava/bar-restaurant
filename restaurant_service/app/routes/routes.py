@@ -105,7 +105,7 @@ async def get_restaurant_by_slug(slug : str,
     return RestaurantConstructorDTO.model_validate(restaurant, from_attributes=True)
 
 @router.get("/restaurants/get_restaurant_by_id")
-async def get_restaurant_by_slug(restaurant_id : str,
+async def get_restaurant_by_restaurant_id(restaurant_id : str,
                          internal_token: str = Header(..., alias="internal_token"),
                          service: RestaurantService = Depends(get_restaurant_dependency)):
     await verify_internal_token(internal_token)

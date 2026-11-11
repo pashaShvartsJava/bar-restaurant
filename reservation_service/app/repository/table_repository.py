@@ -24,6 +24,11 @@ class TableRepository:
                                                                                                                  Table.restaurant_id==restaurant_id))
         return result.scalar_one_or_none()
 
+    async def get_table_by_table_number(self, table_number : int, restaurant_id : UUID) -> Table:
+        result = await self.db.execute(select(Table).where(Table.table_number==table_number,
+                                                           Table.restaurant_id==restaurant_id))
+        return result.scalar_one_or_none()
+
     async def get_all_tables(self, restaurant_id : UUID):
         result = await self.db.execute(select(Table).order_by(Table.table_number.asc()).where(Table.restaurant_id==restaurant_id))
         return result.scalars().all()

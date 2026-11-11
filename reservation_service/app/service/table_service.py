@@ -1,6 +1,7 @@
 from datetime import datetime
 from uuid import UUID
 
+from ..models import Table
 from ..repository.table_repository import TableRepository
 from typing import List
 
@@ -17,6 +18,9 @@ class TableService:
 
     async def get_table_by_id(self, table_id : int, restaurant_id : UUID):
         return await self.table_repository.get_table_by_id(table_id, restaurant_id)
+
+    async def get_table_by_table_number(self, table_number: int, restaurant_id: UUID) -> Table:
+        return await self.table_repository.get_table_by_table_number(table_number, restaurant_id)
 
     async def get_free_table(self, people_amount: int, requested_datetime: datetime, restaurant_d : UUID):
         return await self.table_repository.get_free_table(people_amount, requested_datetime, restaurant_d)

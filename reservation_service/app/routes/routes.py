@@ -1,22 +1,23 @@
-import secrets
+import io
+import uuid
 from datetime import datetime, timezone, date, timedelta
-from email.header import Header
 from typing import Annotated
 from uuid import UUID
 
+import qrcode
 from fastapi import APIRouter, Request, Form, HTTPException, Response, Header
 from itsdangerous import URLSafeTimedSerializer, BadSignature, SignatureExpired
 from pydantic import EmailStr
-from starlette.responses import RedirectResponse, JSONResponse
+from starlette.responses import RedirectResponse, StreamingResponse
 from starlette.templating import Jinja2Templates
-from fastapi.params import Depends
+from fastapi.params import Depends, Query
 
 from ..security.internal_security import verify_internal_token
 from ..security.jwt.jwt import get_payload
 from ..security.authorization.authorization import required_roles
 from ..security.role.role import IdentityRole
 from ..dependencies.dependencies import get_table_service_dependency, get_table_session_service_dependency, \
-    get_reservation_service_dependency, get_restaurant_dependency
+    get_reservation_service_dependency, get_restaurant_dependency, get_restaurant_dependency_by_id
 from ..service.table_service import TableService
 from ..service.table_session_service import TableSessionService
 from ..service.reservation_service import ReservationService
@@ -41,6 +42,38 @@ async def show_tables_page(request : Request, table_service : TableService = Dep
     restaurant_id = payload.get("restaurant_id")
     tables = await table_service.find_all_tables(restaurant_id)
     return templates.TemplateResponse("all_tables.html", {"request" : request, "tables" : tables})
+
+@router.get("/tables/generate_qr_code")
+async def get_generating_qr_page(request : Request):
+    payload = get_payload(request)
+    required_roles(IdentityRole.OWNER, IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
+    restaurant_id = payload.get("restaurant_id")
+    restaurant = await get_restaurant_dependency_by_id(restaurant_id)
+    return templates.TemplateResponse("generate_qr_code.html", {"request" : request, "restaurant" : restaurant})
+
+@router.get("/tables/qr/by-number/{table_number}")
+async def get_qr_code_by_number(request: Request,
+                                table_number: int,
+                                download: bool = Query(False),
+                                table_service : TableService = Depends(get_table_service_dependency)):
+    payload = get_payload(request)
+    required_roles(IdentityRole.OWNER, IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
+    restaurant_id = payload.get("restaurant_id")
+    restaurant = await get_restaurant_dependency_by_id(restaurant_id)
+    table = await table_service.get_table_by_table_number(table_number, uuid.UUID(restaurant_id))
+    if table is None:
+        raise HTTPException(status_code=404, detail="Столик с таким номером не найден")
+    qr = qrcode.QRCode(version=1, error_correction=qrcode.constants.ERROR_CORRECT_M, box_size=10, border=3)
+    qr.add_data(f"https://localhost:8443/r/{restaurant.slug}/menu_page/qr_code_menu?table_number={table_number}")
+    qr.make(fit=True)
+    img = qr.make_image(fill_color="black", back_color="white")
+    buf = io.BytesIO()
+    img.save(buf, format="PNG")
+    buf.seek(0)
+    disposition = "attachment" if download else "inline"
+    filename = f"qr_table_{table.table_number}.png"
+    return StreamingResponse(buf, media_type="image/png",
+        headers={"Content-Disposition": f'{disposition}; filename="{filename}"', "Cache-Control": "no-store"})
 
 @router.get("/tables/add_table")
 async def add_table_page(request : Request):

@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR-коды столиков — {{ restaurant.restaurant_name }}</title>
+
+<style>
+    :root {
+        --bg: #100e11;
+        --text: #eee5df;
+        --muted: #93898d;
+        --gold: #d5a65b;
+        --gold-light: #e8c58e;
+        --border: rgba(255, 255, 255, 0.08);
+        --gold-border: rgba(213, 166, 91, 0.38);
+        --danger: #e58c8c;
+    }
+
+    * {
+        box-sizing: border-box;
+    }
+
+    html {
+        scroll-behavior: smooth;
+    }
+
+    body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: Arial, sans-serif;
+        color: var(--text);
+        line-height: 1.6;
+        background:
+            radial-gradient(
+                ellipse at 50% -8%,
+                rgba(157, 69, 76, 0.32) 0%,
+                rgba(89, 39, 49, 0.26) 28%,
+                rgba(35, 24, 30, 0.72) 54%,
+                rgba(15, 14, 17, 0.98) 82%
+            ),
+            linear-gradient(
+                180deg,
+                #301b22 0%,
+                #1d171c 34%,
+                #121114 70%,
+                #0c0c0e 100%
+            );
+        background-attachment: fixed;
+        padding: 40px 20px;
+        position: relative;
+        overflow-x: hidden;
+    }
+
+    body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        pointer-events: none;
+        background:
+            radial-gradient(circle at 12% 20%, rgba(183, 91, 78, 0.055), transparent 30%),
+            radial-gradient(circle at 88% 34%, rgba(213, 166, 91, 0.035), transparent 28%);
+    }
+
+    a {
+        color: inherit;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    button,
+    input,
+    select {
+        font: inherit;
+    }
+
+    .page {
+        position: relative;
+        z-index: 1;
+        width: 900px;
+        max-width: 100%;
+        margin: auto;
+    }
+
+    .top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+    }
+
+    .back {
+        color: #a79b9d;
+        text-decoration: none;
+        font-size: 12px;
+        transition: color 0.2s;
+    }
+
+    .back:hover {
+        color: var(--gold-light);
+    }
+
+    .brand {
+        color: var(--gold);
+        font-family: Georgia, serif;
+        letter-spacing: 3px;
+        font-size: 11px;
+    }
+
+    .card {
+        background: linear-gradient(
+            145deg,
+            rgba(41, 29, 33, 0.98),
+            rgba(16, 15, 18, 0.99)
+        );
+        border: 1px solid var(--gold-border);
+        border-radius: 18px;
+        padding: 35px;
+        box-shadow:
+            0 35px 90px rgba(0, 0, 0, 0.42),
+            0 0 45px rgba(213, 166, 91, 0.06),
+            inset 0 1px rgba(255, 255, 255, 0.04);
+        backdrop-filter: blur(16px);
+        animation: appear 0.55s ease both;
+    }
+
+    .header {
+        margin-bottom: 28px;
+    }
+
+    .header-label {
+        color: var(--gold);
+        font-size: 9px;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        margin-bottom: 8px;
+    }
+
+    h1 {
+        margin: 0;
+        font-family: Georgia, serif;
+        font-size: 30px;
+        font-weight: normal;
+        letter-spacing: -0.5px;
+        line-height: 1.25;
+        color: #f0e5de;
+    }
+
+    .description {
+        color: var(--muted);
+        font-size: 12px;
+        margin-top: 9px;
+        line-height: 1.7;
+    }
+
+    /* ===== Форма ввода номера ===== */
+
+    .qr-form {
+        padding: 22px 24px;
+        margin-bottom: 22px;
+        background: linear-gradient(
+            145deg,
+            rgba(32, 26, 29, 0.91),
+            rgba(17, 16, 19, 0.96)
+        );
+        border: 1px solid rgba(255, 255, 255, 0.075);
+        border-radius: 14px;
+        box-shadow: 0 18px 45px rgba(0, 0, 0, 0.25);
+        backdrop-filter: blur(12px);
+    }
+
+    .qr-form label {
+        display: block;
+        margin-bottom: 8px;
+        color: #c8bfc0;
+        font-size: 10px;
+        line-height: 1.5;
+    }
+
+    .qr-form-row {
+        display: flex;
+        gap: 10px;
+        align-items: stretch;
+    }
+
+    .qr-form-row input {
+        flex: 1;
+        min-width: 0;
+        min-height: 44px;
+        padding: 12px 13px;
+        background: rgba(255, 255, 255, 0.045);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 9px;
+        color: #eee8e3;
+        font-size: 12px;
+        outline: none;
+        transition:
+            border-color 0.25s,
+            background 0.25s,
+            box-shadow 0.25s;
+    }
+
+    .qr-form-row input::placeholder {
+        color: #6e666b;
+    }
+
+    .qr-form-row input:hover {
+        border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .qr-form-row input:focus {
+        border-color: rgba(213, 166, 91, 0.75);
+        background: rgba(255, 255, 255, 0.07);
+        box-shadow: 0 0 0 3px rgba(213, 166, 91, 0.1);
+    }
+
+    .field-error {
+        display: none;
+        margin-top: 8px;
+        color: #f0a8a8;
+        font-size: 11px;
+        line-height: 1.5;
+    }
+
+    .field-error.visible {
+        display: block;
+    }
+
+    /* ===== Блок с QR ===== */
+
+    .qr-result {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 28px;
+        align-items: center;
+        padding: 24px;
+        background: linear-gradient(
+            145deg,
+            rgba(32, 26, 29, 0.91),
+            rgba(17, 16, 19, 0.96)
+        );
+        border: 1px solid rgba(255, 255, 255, 0.075);
+        border-radius: 16px;
+        box-shadow: 0 18px 45px rgba(0, 0, 0, 0.25);
+        backdrop-filter: blur(12px);
+    }
+
+    .qr-result[hidden] {
+        display: none;
+    }
+
+    .qr-image-wrap {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 18px;
+        background: #ffffff;
+        border-radius: 14px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+    }
+
+    .qr-image {
+        width: 240px;
+        height: 240px;
+        display: block;
+        image-rendering: crisp-edges;
+    }
+
+    .qr-info {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        min-width: 0;
+    }
+
+    .qr-title {
+        color: #e5dad6;
+        font-family: Georgia, serif;
+        font-size: 20px;
+        font-weight: normal;
+        line-height: 1.35;
+    }
+
+    .qr-subtitle {
+        color: var(--muted);
+        font-size: 11px;
+        line-height: 1.7;
+    }
+
+    .qr-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin-top: 4px;
+    }
+
+    .btn {
+        min-height: 44px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 9px;
+        padding: 12px 20px;
+        border-radius: 9px;
+        font-size: 12px;
+        font-weight: 600;
+        text-decoration: none;
+        cursor: pointer;
+        transition:
+            transform 0.22s,
+            background 0.22s,
+            border-color 0.22s,
+            box-shadow 0.22s;
+    }
+
+    .btn:disabled {
+        opacity: 0.65;
+        cursor: wait;
+        transform: none;
+    }
+
+    .btn-primary {
+        border: 1px solid rgba(213, 166, 91, 0.45);
+        background: linear-gradient(
+            135deg,
+            rgba(111, 67, 49, 0.5),
+            rgba(66, 38, 42, 0.8)
+        );
+        color: var(--gold-light);
+    }
+
+    .btn-primary:hover:not(:disabled) {
+        transform: translateY(-2px);
+        border-color: var(--gold);
+        background: linear-gradient(
+            135deg,
+            rgba(142, 88, 55, 0.56),
+            rgba(83, 45, 46, 0.9)
+        );
+        box-shadow: 0 9px 25px rgba(213, 166, 91, 0.12);
+    }
+
+    .btn-secondary {
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        background: rgba(255, 255, 255, 0.035);
+        color: #d6ccca;
+    }
+
+    .btn-secondary:hover:not(:disabled) {
+        transform: translateY(-2px);
+        border-color: rgba(255, 255, 255, 0.23);
+        background: rgba(255, 255, 255, 0.065);
+    }
+
+    .hint {
+        margin-top: 22px;
+        padding: 14px 16px;
+        border: 1px solid rgba(213, 166, 91, 0.2);
+        border-radius: 10px;
+        background: rgba(213, 166, 91, 0.055);
+        color: #c5a77c;
+        font-size: 11px;
+        line-height: 1.7;
+    }
+
+    .hint strong {
+        color: var(--gold-light);
+        font-weight: 600;
+    }
+
+    @keyframes appear {
+        from {
+            opacity: 0;
+            transform: translateY(14px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        html {
+            scroll-behavior: auto;
+        }
+        *,
+        *::before,
+        *::after {
+            transition-duration: 0.01ms !important;
+            animation-duration: 0.01ms !important;
+        }
+    }
+
+    @media (max-width: 700px) {
+        .card {
+            padding: 25px 18px;
+            border-radius: 14px;
+        }
+
+        .qr-form {
+            padding: 18px;
+        }
+
+        .qr-form-row {
+            flex-direction: column;
+        }
+
+        .qr-result {
+            grid-template-columns: 1fr;
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .qr-image-wrap {
+            justify-self: center;
+        }
+
+        .qr-actions {
+            width: 100%;
+        }
+
+        .btn {
+            width: 100%;
+        }
+
+        h1 {
+            font-size: 26px;
+        }
+
+        .qr-image {
+            width: 220px;
+            height: 220px;
+        }
+    }
+</style>
+</head>
+
+<body>
+    <main class="page">
+        <div class="top">
+            <a href="/admin_panel" class="back">← Назад в панель</a>
+            <span class="brand">FDCPLATFORM</span>
+        </div>
+
+        <section class="card">
+            <header class="header">
+                <div class="header-label">QR-код столика</div>
+                <h1>{{ restaurant.restaurant_name }}</h1>
+                <p class="description">
+                    Введите номер столика и сгенерируйте QR-код. Гость сканирует код
+                    и попадает в меню с привязкой к этому столику.
+                </p>
+            </header>
+
+            <div class="qr-form">
+                <label for="tableNumberInput">Номер столика</label>
+                <div class="qr-form-row">
+                    <input
+                        id="tableNumberInput"
+                        type="number"
+                        inputmode="numeric"
+                        min="1"
+                        step="1"
+                        placeholder="Например, 5"
+                        autocomplete="off"
+                    >
+                    <button type="button" class="btn btn-primary" id="generateButton">
+                        Сгенерировать
+                    </button>
+                </div>
+                <div class="field-error" id="qrError"></div>
+            </div>
+
+            <div class="qr-result" id="qrResult" hidden>
+                <div class="qr-image-wrap">
+                    <img
+                        src=""
+                        alt="QR-код столика"
+                        class="qr-image"
+                        id="qrImage"
+                    >
+                </div>
+
+                <div class="qr-info">
+                    <div class="qr-title" id="qrTitle">Столик №—</div>
+                    <div class="qr-subtitle">
+                        Отсканируйте код, чтобы открыть меню и оформить заказ.
+                    </div>
+
+                    <div class="qr-actions">
+                        <a
+                            href="#"
+                            class="btn btn-primary"
+                            id="downloadLink"
+                            download
+                        >
+                            Скачать PNG
+                        </a>
+                        <button
+                            type="button"
+                            class="btn btn-secondary"
+                            id="printButton"
+                        >
+                            Распечатать
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="hint">
+                <strong>Совет:</strong> распечатайте QR-код на плотной бумаге
+                и разместите на столе. Код должен быть хорошо освещён и не иметь
+                бликов — так гости смогут отсканировать его с первого раза.
+            </div>
+        </section>
+    </main>
+
+    <script>
+        (function () {
+            const input = document.getElementById("tableNumberInput");
+            const generateButton = document.getElementById("generateButton");
+            const errorEl = document.getElementById("qrError");
+            const result = document.getElementById("qrResult");
+            const image = document.getElementById("qrImage");
+            const title = document.getElementById("qrTitle");
+            const downloadLink = document.getElementById("downloadLink");
+            const printButton = document.getElementById("printButton");
+
+            let currentObjectUrl = null;
+
+            function showError(message) {
+                errorEl.textContent = message;
+                errorEl.classList.toggle("visible", Boolean(message));
+            }
+
+            function clearError() {
+                showError("");
+            }
+
+            function releaseObjectUrl() {
+                if (currentObjectUrl) {
+                    URL.revokeObjectURL(currentObjectUrl);
+                    currentObjectUrl = null;
+                }
+            }
+
+            async function generate() {
+                clearError();
+                const raw = input.value.trim();
+
+                if (!raw) {
+                    showError("Введите номер столика.");
+                    input.focus();
+                    return;
+                }
+
+                const tableNumber = Number(raw);
+                if (!Number.isInteger(tableNumber) || tableNumber <= 0) {
+                    showError("Номер столика должен быть положительным целым числом.");
+                    input.focus();
+                    return;
+                }
+
+                const url = `/tables/qr/by-number/${tableNumber}`;
+
+                generateButton.disabled = true;
+                const originalText = generateButton.textContent;
+                generateButton.textContent = "Генерация…";
+
+                try {
+                    const resp = await fetch(url, { method: "GET" });
+
+                    if (!resp.ok) {
+                        if (resp.status === 404) {
+                            showError("Столик с таким номером не найден.");
+                        } else if (resp.status === 401) {
+                            window.location.href = "/login";
+                        } else if (resp.status === 403) {
+                            showError("У вас нет доступа к этому действию.");
+                        } else if (resp.status === 422) {
+                            showError("Некорректный номер столика.");
+                        } else {
+                            showError("Не удалось сгенерировать QR-код. Попробуйте позже.");
+                        }
+                        result.hidden = true;
+                        return;
+                    }
+
+                    const blob = await resp.blob();
+                    releaseObjectUrl();
+                    currentObjectUrl = URL.createObjectURL(blob);
+
+                    image.src = currentObjectUrl;
+                    image.alt = `QR-код столика ${tableNumber}`;
+                    title.textContent = `Столик №${tableNumber}`;
+                    downloadLink.href = `${url}?download=1`;
+                    downloadLink.setAttribute("download", `qr_table_${tableNumber}.png`);
+
+                    result.hidden = false;
+                } catch (e) {
+                    console.error("QR generation error:", e);
+                    showError("Не удалось подключиться к серверу. Проверьте соединение.");
+                    result.hidden = true;
+                } finally {
+                    generateButton.disabled = false;
+                    generateButton.textContent = originalText;
+                }
+            }
+
+            generateButton.addEventListener("click", generate);
+
+            input.addEventListener("keydown", (e) => {
+                if (e.key === "Enter") {
+                    e.preventDefault();
+                    generate();
+                }
+            });
+
+            printButton.addEventListener("click", () => {
+                if (!image.src) return;
+
+                const win = window.open("", "_blank");
+                if (!win) return;
+
+                const restaurantName = {{ restaurant.restaurant_name | tojson }};
+                const titleText = title.textContent;
+
+                win.document.write(`
+                    <!DOCTYPE html>
+                    <html lang="ru">
+                    <head>
+                        <meta charset="UTF-8">
+                        <title>Печать QR — ${titleText}</title>
+                        <style>
+                            * { margin: 0; padding: 0; box-sizing: border-box; }
+                            body {
+                                display: flex;
+                                flex-direction: column;
+                                align-items: center;
+                                justify-content: center;
+                                min-height: 100vh;
+                                font-family: Arial, sans-serif;
+                                color: #111;
+                                padding: 30px;
+                                text-align: center;
+                            }
+                            .wrap {
+                                display: flex;
+                                flex-direction: column;
+                                align-items: center;
+                                gap: 18px;
+                            }
+                            h1 {
+                                font-family: Georgia, serif;
+                                font-size: 22px;
+                                font-weight: normal;
+                            }
+                            h2 {
+                                font-family: Georgia, serif;
+                                font-size: 18px;
+                                font-weight: normal;
+                            }
+                            img {
+                                width: 320px;
+                                height: 320px;
+                            }
+                            p {
+                                font-size: 12px;
+                                color: #555;
+                            }
+                        </style>
+                    </head>
+                    <body>
+                        <div class="wrap">
+                            <h1>${restaurantName}</h1>
+                            <h2>${titleText}</h2>
+                            <img src="${image.src}" alt="QR-код">
+                            <p>Отсканируйте код, чтобы открыть меню</p>
+                        </div>
+                    </body>
+                    </html>
+                `);
+                win.document.close();
+                win.focus();
+                win.onload = () => {
+                    win.print();
+                };
+            });
+        })();
+    </script>
+</body>
+</html>
