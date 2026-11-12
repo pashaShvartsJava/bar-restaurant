@@ -1,10 +1,11 @@
 import uuid
-from uuid import UUID
+from datetime import datetime, timezone
 
 import stripe
 from fastapi import APIRouter, Request, Depends, HTTPException
 from fastapi.params import Header
 from starlette.templating import Jinja2Templates
+
 from ..schemas.subscription_schema import SubscriptionCheckoutDTO
 from ..security.authorization.authorization import required_roles
 from ..security.internal_security import verify_internal_token
@@ -93,25 +94,6 @@ async def subscription_success_page(request : Request):
 async def subscription_success_page(request : Request):
     return templates.TemplateResponse("subscription_cancel_page.html", {"request" : request})
 
-@router.get("/subscription/portal")
-async def create_portal_session(request: Request, sub_service: SubscriptionService = Depends(get_subscription_service_dependency)):
-    payload = get_payload(request)
-    required_roles(IdentityRole.OWNER, payload=payload)
-    customer_id = payload.get("sub")
-    restaurant_id = payload.get("restaurant_id")
-    subscription = await sub_service.get_subscription_by_owner_id(customer_id, restaurant_id)
-    if not subscription or not subscription.stripe_customer_id:
-        raise HTTPException(status_code=404, detail="No active subscription or currently subscription has a trialing period")
-    try:
-        configuration_id = get_or_create_portal_configuration()
-        session = stripe.billing_portal.Session.create(
-            customer=subscription.stripe_customer_id,
-            return_url="http://localhost:8443/admin_panel",
-            configuration=configuration_id)
-    except stripe.error.StripeError as e:
-        raise HTTPException(status_code=400, detail=str(e))
-    return {"url": session.url}
-
 @router.get("/subscription/get_percentage_commission")
 async def get_restaurant_percentage_commission(restaurant_id : str,
                                                internal_token : str = Header(..., alias="internal_token"),
@@ -127,4 +109,164 @@ async def get_subscription_vat_status(restaurant_id : str,
     await verify_internal_token(internal_token)
     active_subscription = await sub_service.get_subscription_by_restaurant_id(uuid.UUID(restaurant_id))
     return active_subscription.vat_status.value
+
+@router.get("/subscription/management")
+async def create_portal_session(request: Request, sub_service: SubscriptionService = Depends(get_subscription_service_dependency)):
+    payload = get_payload(request)
+    required_roles(IdentityRole.OWNER, payload=payload)
+    customer_id = payload.get("sub")
+    restaurant_id = payload.get("restaurant_id")
+    subscription = await sub_service.get_subscription_by_owner_id(customer_id, restaurant_id)
+    if not subscription or not subscription.stripe_customer_id:
+        raise HTTPException(status_code=404, detail="No active subscription or currently subscription has a trialing period")
+    return templates.TemplateResponse("subscription_management.html",
+                                      {"request": request, "stripe_publishable_key": settings.STRIPE_PUBLISHABLE_KEY})
+
+@router.get("/subscription/management")
+async def subscription_management_page(request: Request, sub_service: SubscriptionService = Depends(get_subscription_service_dependency),):
+    payload = get_payload(request)
+    required_roles(IdentityRole.OWNER, payload=payload)
+    customer_id = payload.get("sub")
+    restaurant_id = payload.get("restaurant_id")
+    subscription = await sub_service.get_subscription_by_owner_id(customer_id, restaurant_id)
+    if not subscription or not subscription.stripe_customer_id:
+        raise HTTPException(status_code=404, detail="No active subscription or currently subscription has a trialing period")
+    return templates.TemplateResponse("subscription_management.html",
+                                      {"request": request, "stripe_publishable_key": settings.STRIPE_PUBLISHABLE_KEY})
+
+@router.get("/subscription/current")
+async def get_current_subscription(request: Request, sub_service: SubscriptionService = Depends(get_subscription_service_dependency)):
+    payload = get_payload(request)
+    required_roles(IdentityRole.OWNER, payload=payload)
+    sub = await sub_service.get_subscription_by_owner_id(payload["sub"], payload["restaurant_id"])
+    if not sub:
+        raise HTTPException(404, "No subscription")
+    cancel_at_period_end = False
+    if sub.stripe_subscription_id:
+        try:
+            stripe_sub = await stripe.Subscription.retrieve_async(sub.stripe_subscription_id)
+            cancel_at_period_end = stripe_sub.cancel_at_period_end
+        except stripe.StripeError:
+            pass
+    return {
+        "plan_id": sub.plan_id.value if hasattr(sub.plan_id, "value") else sub.plan_id,
+        "plan_name": sub.plan_name,
+        "status": sub.status.value if hasattr(sub.status, "value") else sub.status,
+        "cancel_at_period_end": cancel_at_period_end,
+        "current_period_end": sub.current_period_end.isoformat() if sub.current_period_end else None,
+        "vat_id": sub.vat_id,
+        "vat_status": sub.vat_status.value if hasattr(sub.vat_status, "value") else sub.vat_status,
+        "address": {
+            "line1": getattr(sub, "address_line1", None),
+            "city": getattr(sub, "address_city", None),
+            "postal_code": getattr(sub, "address_postal_code", None),
+            "country": sub.country} if getattr(sub, "country", None) else None}
+
+@router.get("/subscription/invoices")
+async def get_invoices(request: Request, sub_service: SubscriptionService = Depends(get_subscription_service_dependency)):
+    payload = get_payload(request)
+    required_roles(IdentityRole.OWNER, payload=payload)
+    sub = await sub_service.get_subscription_by_owner_id(payload["sub"], payload["restaurant_id"])
+    if not sub or not sub.stripe_customer_id:
+        return []
+    invoices = await stripe.Invoice.list_async(customer=sub.stripe_customer_id, limit=20)
+    result = []
+    for inv in invoices.data:
+        result.append({
+            "date": datetime.fromtimestamp(inv.created, tz=timezone.utc).strftime("%d.%m.%Y"),
+            "total": f"{inv.total / 100:.2f}",
+            "currency": inv.currency.upper(),
+            "hosted_invoice_url": inv.hosted_invoice_url})
+    return result
+
+@router.post("/subscription/setup-intent")
+async def create_setup_intent(request: Request, sub_service: SubscriptionService = Depends(get_subscription_service_dependency),):
+    payload = get_payload(request)
+    required_roles(IdentityRole.OWNER, payload=payload)
+    sub = await sub_service.get_subscription_by_owner_id(payload["sub"], payload["restaurant_id"])
+    if not sub or not sub.stripe_customer_id:
+        raise HTTPException(404, "No subscription")
+    setup_intent = await stripe.SetupIntent.create_async(customer=sub.stripe_customer_id, payment_method_types=["card", "sepa_debit"])
+    return {"client_secret": setup_intent.client_secret}
+
+@router.post("/subscription/attach-payment-method")
+async def attach_payment_method(request: Request,
+                                body: dict,
+                                sub_service: SubscriptionService = Depends(get_subscription_service_dependency)):
+    payload = get_payload(request)
+    required_roles(IdentityRole.OWNER, payload=payload)
+    payment_method_id = body.get("payment_method_id")
+    if not payment_method_id:
+        raise HTTPException(400, "payment_method_id required")
+    sub = await sub_service.get_subscription_by_owner_id(payload["sub"], payload["restaurant_id"])
+    if not sub or not sub.stripe_customer_id:
+        raise HTTPException(404, "No subscription")
+    await stripe.PaymentMethod.attach_async(payment_method_id, customer=sub.stripe_customer_id)
+    await stripe.Customer.modify_async(sub.stripe_customer_id, invoice_settings={"default_payment_method": payment_method_id})
+    return {"status": "ok"}
+
+@router.post("/subscription/change-plan")
+async def change_plan(request: Request,
+                      body: dict,
+                      sub_service: SubscriptionService = Depends(get_subscription_service_dependency)):
+    payload = get_payload(request)
+    required_roles(IdentityRole.OWNER, payload=payload)
+    plan_id = body.get("plan_id")
+    if not plan_id:
+        raise HTTPException(400, "plan_id required")
+    sub = await sub_service.get_subscription_by_owner_id(payload["sub"], payload["restaurant_id"])
+    if not sub or not sub.stripe_subscription_id:
+        raise HTTPException(404, "No subscription")
+    await sub_service.change_subscription_plan(sub, plan_id)
+    return {"status": "ok"}
+
+
+@router.post("/subscription/update-vat")
+async def update_vat(request: Request, body: dict, sub_service: SubscriptionService = Depends(get_subscription_service_dependency)):
+    payload = get_payload(request)
+    required_roles(IdentityRole.OWNER, payload=payload)
+    vat_id = (body.get("vat_id") or "").strip().upper()
+    if not vat_id:
+        raise HTTPException(400, "vat_id required")
+    sub = await sub_service.get_subscription_by_owner_id(payload["sub"], payload["restaurant_id"])
+    if not sub:
+        raise HTTPException(404, "No subscription")
+    result = await sub_service.update_vat(sub, vat_id)
+    return result
+
+@router.post("/subscription/update-address")
+async def update_address(request: Request, body: dict, sub_service: SubscriptionService = Depends(get_subscription_service_dependency)):
+    payload = get_payload(request)
+    required_roles(IdentityRole.OWNER, payload=payload)
+    sub = await sub_service.get_subscription_by_owner_id(payload["sub"], payload["restaurant_id"])
+    if not sub or not sub.stripe_customer_id:
+        raise HTTPException(404, "No subscription")
+    await stripe.Customer.modify_async(
+        sub.stripe_customer_id,
+        address={
+            "line1": body.get("line1"),
+            "city": body.get("city"),
+            "postal_code": body.get("postal_code"),
+            "country": body.get("country")})
+    return {"status": "ok"}
+
+@router.post("/subscription/cancel")
+async def cancel_subscription(request: Request, sub_service: SubscriptionService = Depends(get_subscription_service_dependency),):
+    payload = get_payload(request)
+    required_roles(IdentityRole.OWNER, payload=payload)
+    sub = await sub_service.get_subscription_by_owner_id(payload["sub"], payload["restaurant_id"])
+    if not sub or not sub.stripe_subscription_id:
+        raise HTTPException(404, "No subscription")
+    await stripe.Subscription.modify_async(sub.stripe_subscription_id, cancel_at_period_end=True)
+    return {"status": "ok"}
+
+@router.post("/subscription/resume")
+async def resume_subscription(request: Request, sub_service: SubscriptionService = Depends(get_subscription_service_dependency),):
+    payload = get_payload(request)
+    required_roles(IdentityRole.OWNER, payload=payload)
+    sub = await sub_service.get_subscription_by_owner_id(payload["sub"], payload["restaurant_id"])
+    if not sub or not sub.stripe_subscription_id:
+        raise HTTPException(404, "No subscription")
+    await stripe.Subscription.modify_async(sub.stripe_subscription_id, cancel_at_period_end=False)
+    return {"status": "ok"}
 

@@ -10,7 +10,7 @@ from starlette.concurrency import run_in_threadpool
 from .stripe_service import StripeService
 from ..broker.producers import publish_subscription_vat_status_changed_event
 from ..broker.rabbitmq import RabbitMQ
-from ..models.subscriptions import Subscription, SubscriptionStatus, VatStatus
+from ..models.subscriptions import Subscription, SubscriptionStatus, VatStatus, PlanId
 from ..repository.outbox_repository import OutboxPaymentEventsRepository
 from ..repository.subscription_repository import SubscriptionRepository
 from uuid import UUID
@@ -70,6 +70,12 @@ class SubscriptionService:
         subscription.stripe_checkout_session_id = session.id
         await self.subscription_repository.save_subscription(subscription)
         return subscription, session.url
+
+    async def change_subscription_plan(self, sub: Subscription, plan_id: PlanId) -> Subscription:
+        return await self.subscription_repository.change_subscription_plan(sub, plan_id)
+
+    async def update_vat(self, sub: Subscription, vat_id: str) -> Subscription:
+        return await self.subscription_repository.update_vat(sub, vat_id)
 
     async def delete_saga_subscription(self, sub_idempotency_key: str):
         return await self.subscription_repository.delete_saga_subscription(sub_idempotency_key)

@@ -78,6 +78,18 @@ class SubscriptionRepository:
         await self.db.refresh(subscription)
         return subscription
 
+    async def change_subscription_plan(self, sub : Subscription, plan_id : PlanId) -> Subscription:
+        sub.plan_id = plan_id
+        await self.db.commit()
+        await self.db.refresh(sub)
+        return sub
+
+    async def update_vat(self, sub : Subscription, vat_id : str) -> Subscription:
+        sub.vat_id = vat_id
+        await self.db.commit()
+        await self.db.refresh(sub)
+        return sub
+
     async def get_by_idempotency_key(self, key : UUID):
         result = await self.db.execute(select(Subscription)
                                        .where(Subscription.sub_idempotency_key==key)
