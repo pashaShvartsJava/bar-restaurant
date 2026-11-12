@@ -1,6 +1,7 @@
 import asyncio
 import uuid
 from datetime import timezone, datetime
+from decimal import Decimal
 
 import stripe
 from ambolt_vies import ViesError, check_vat
@@ -14,7 +15,7 @@ from ..models.subscriptions import Subscription, SubscriptionStatus, VatStatus, 
 from ..repository.outbox_repository import OutboxPaymentEventsRepository
 from ..repository.subscription_repository import SubscriptionRepository
 from uuid import UUID
-from ..schemas.subscription_schema import SubscriptionCheckoutDTO
+from ..schemas.subscription_schema import SubscriptionCheckoutDTO, PRICE_TO_PLAN, PLANS
 import logging
 logger = logging.getLogger(__name__)
 
@@ -131,6 +132,7 @@ class SubscriptionService:
         stripe_subscription = event["data"]["object"].to_dict()
         stripe_subscription_id = stripe_subscription["id"]
         if not stripe_subscription_id:
+            print("DEBUG: No stripe_subscription_id in event", flush=True)
             return None
         async with self.db.begin():
             subscription = await self.subscription_repository.get_by_stripe_subscription_id(stripe_subscription_id)
@@ -140,33 +142,71 @@ class SubscriptionService:
                 if sub_key:
                     subscription = await self.subscription_repository.get_by_idempotency_key(uuid.UUID(sub_key))
             if subscription is None:
+                print(f"DEBUG: Subscription not found for {stripe_subscription_id}", flush=True)
                 return None
+            subscription = await self.db.merge(subscription)
             old_status = subscription.status
+            old_plan_id = subscription.plan_id
+            print(f"DEBUG: Found sub {subscription.id}. Old status: {old_status}, Old plan: {old_plan_id}", flush=True)
             try:
                 new_status = SubscriptionStatus(stripe_subscription["status"])
+                subscription.status = new_status
             except ValueError:
-                print("Unknown subscription status from Stripe: %s", stripe_subscription["status"])
+                print(f"DEBUG: Unknown subscription status from Stripe: {stripe_subscription['status']}", flush=True)
                 return None
             items = stripe_subscription["items"]["data"] if "items" in stripe_subscription else []
+            new_plan_id = None
             if items:
                 subscription.current_period_start = datetime.fromtimestamp(items[0]["current_period_start"], tz=timezone.utc)
                 subscription.current_period_end = datetime.fromtimestamp(items[0]["current_period_end"], tz=timezone.utc)
+                price_id = items[0]["price"]["id"]
+                new_plan_id = PRICE_TO_PLAN.get(price_id)
+                print(f"DEBUG: Received price_id from Stripe: {price_id}", flush=True)
+                print(f"DEBUG: Mapped new_plan_id: {new_plan_id}", flush=True)
+                if new_plan_id:
+                    try:
+                        plan_enum = PlanId(new_plan_id)
+                    except ValueError:
+                        print(f"DEBUG: Unknown plan '{new_plan_id}'", flush=True)
+                        return None
+                    subscription.plan_id = plan_enum
+                    new_plan = PLANS.get(plan_enum)
+                    if new_plan:
+                        subscription.plan_name = new_plan["name"]
+                        subscription.order_commission_percent = new_plan["order_commission_percent"]
+                        subscription.trial_days = new_plan["trial_days"]
+                        subscription.price = Decimal(str(new_plan["monthly"]))
+                else:
+                    print(f"DEBUG: WARNING! price_id {price_id} not found in PRICE_TO_PLAN", flush=True)
             subscription.cancel_at_period_end = stripe_subscription.get("cancel_at_period_end", False)
             if stripe_subscription.get("canceled_at"):
                 subscription.canceled_at = datetime.fromtimestamp(stripe_subscription["canceled_at"], tz=timezone.utc)
+            else:
+                subscription.canceled_at = None
             if stripe_subscription.get("trial_start"):
                 subscription.trial_start = datetime.fromtimestamp(stripe_subscription["trial_start"], tz=timezone.utc)
             if stripe_subscription.get("trial_end"):
                 subscription.trial_end = datetime.fromtimestamp(stripe_subscription["trial_end"], tz=timezone.utc)
-            subscription.status = new_status
-            if new_status != old_status:
-                await self.outbox_repository.create_outbox_subscription_event(
-                    subscription.id,
-                    subscription.restaurant_id,
-                    subscription.owner_id,
-                    new_status,
-                    event["id"]
-                )
+            await self.subscription_repository.update(subscription)
+            plan_changed = (new_plan_id is not None and old_plan_id.value != new_plan_id)
+            print(f"DEBUG: Status changed: {old_status != new_status}. Plan changed: {plan_changed}", flush=True)
+            if new_status != old_status or plan_changed:
+                print(f"DEBUG: Creating outbox event for sub {subscription.id}", flush=True)
+                await self.outbox_repository.create_outbox_subscription_event(subscription.id,
+                                                                              subscription.restaurant_id,
+                                                                              subscription.owner_id,
+                                                                              new_status,
+                                                                              event["id"])
+            try:
+                await self.db.flush()
+                print(f"DEBUG: Flushed to DB. Plan in memory: {subscription.plan_id}", flush=True)
+            except Exception as e:
+                print(f"DEBUG: DB SAVE ERROR: {e}", flush=True)
+                raise e
+            print(
+                f"DEBUG: Successfully updated sub {subscription.id}. New plan: {subscription.plan_id}, New status: {subscription.status}",
+                flush=True)
+        print(f"DEBUG: Transaction COMMITTED successfully for sub {subscription.id}", flush=True)
         return subscription
 
     async def handle_subscription_deleted(self, event):

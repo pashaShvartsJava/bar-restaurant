@@ -348,6 +348,85 @@
                 animation-duration: .01ms !important;
             }
         }
+        /* ===== Тосты ===== */
+.toast-stack {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    z-index: 2000;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-width: 360px;
+    pointer-events: none;
+}
+.toast {
+    pointer-events: auto;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 12px 14px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: rgba(25, 21, 25, 0.97);
+    box-shadow: 0 18px 45px rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(14px);
+    color: var(--text);
+    font-size: 12px;
+    line-height: 1.5;
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+    transition: opacity .25s ease, transform .25s ease;
+}
+.toast.toast--visible {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+}
+.toast-icon {
+    flex: 0 0 22px;
+    width: 22px;
+    height: 22px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-size: 12px;
+    font-weight: 700;
+}
+.toast-text { flex: 1; min-width: 0; }
+.toast-close {
+    flex: 0 0 22px;
+    width: 22px;
+    height: 22px;
+    border: 0;
+    background: transparent;
+    color: var(--muted);
+    font-size: 16px;
+    line-height: 1;
+    cursor: pointer;
+    transition: color .2s ease;
+}
+.toast-close:hover { color: var(--text); }
+
+.toast--success { border-color: var(--green-border); }
+.toast--success .toast-icon {
+    background: rgba(155, 200, 165, 0.15);
+    color: var(--green);
+}
+.toast--error { border-color: var(--red-border); }
+.toast--error .toast-icon {
+    background: rgba(229, 140, 140, 0.15);
+    color: var(--red);
+}
+.toast--info { border-color: var(--gold-border); }
+.toast--info .toast-icon {
+    background: rgba(213, 166, 91, 0.15);
+    color: var(--gold-light);
+}
+
+@media (max-width: 500px) {
+    .toast-stack { right: 12px; left: 12px; bottom: 12px; max-width: none; }
+}
     </style>
 </head>
 <body>
@@ -528,21 +607,15 @@
     const currentPlanHint = $("currentPlanHint");
     const plansGrid = $("plansGrid");
     const changePlanBtn = $("changePlanBtn");
-    const changePlanError = $("changePlanError");
-    const changePlanSuccess = $("changePlanSuccess");
 
     const paymentElementMount = $("paymentElement");
     const paymentElementError = $("paymentElementError");
     const savePaymentBtn = $("savePaymentBtn");
-    const paymentError = $("paymentError");
-    const paymentSuccess = $("paymentSuccess");
 
     const vatStatusBadge = $("vatStatusBadge");
     const vatCurrentValue = $("vatCurrentValue");
     const vatInput = $("vatInput");
     const saveVatBtn = $("saveVatBtn");
-    const vatError = $("vatError");
-    const vatSuccess = $("vatSuccess");
 
     const addressLine1 = $("addressLine1");
     const addressCity = $("addressCity");
@@ -552,13 +625,9 @@
     const countryMenu = $("countryMenu");
     const addressBlock = $("addressBlock");
     const saveAddressBtn = $("saveAddressBtn");
-    const addressError = $("addressError");
-    const addressSuccess = $("addressSuccess");
 
     const invoiceList = $("invoiceList");
     const cancelSubscriptionBtn = $("cancelSubscriptionBtn");
-    const cancelError = $("cancelError");
-    const cancelSuccess = $("cancelSuccess");
 
     let selectedPlanId = null;
     let currentPlanId = null;
@@ -568,6 +637,53 @@
     let paymentClientSecret = null;
     let cancelAtPeriodEnd = false;
 
+    // ===== Стильные тосты =====
+    const toastStack = document.createElement("div");
+    toastStack.className = "toast-stack";
+    document.body.appendChild(toastStack);
+
+    function showToast(message, type) {
+        type = type || "info";
+        const toast = document.createElement("div");
+        toast.className = "toast toast--" + type;
+        toast.setAttribute("role", "status");
+
+        const icon = document.createElement("span");
+        icon.className = "toast-icon";
+        icon.textContent = type === "success" ? "✓" : type === "error" ? "!" : "i";
+
+        const text = document.createElement("span");
+        text.className = "toast-text";
+        text.textContent = message;
+
+        const close = document.createElement("button");
+        close.type = "button";
+        close.className = "toast-close";
+        close.setAttribute("aria-label", "Закрыть");
+        close.textContent = "×";
+        close.addEventListener("click", () => removeToast(toast));
+
+        toast.appendChild(icon);
+        toast.appendChild(text);
+        toast.appendChild(close);
+        toastStack.appendChild(toast);
+
+        requestAnimationFrame(() => toast.classList.add("toast--visible"));
+
+        const timeout = setTimeout(() => removeToast(toast), 5000);
+        toast._timeout = timeout;
+    }
+
+    function removeToast(toast) {
+        if (!toast || !toast.parentNode) return;
+        clearTimeout(toast._timeout);
+        toast.classList.remove("toast--visible");
+        setTimeout(() => {
+            if (toast.parentNode) toast.parentNode.removeChild(toast);
+        }, 250);
+    }
+
+    // ===== Планы =====
     function renderPlans() {
         plansGrid.innerHTML = "";
         PLANS.forEach((plan) => {
@@ -593,6 +709,7 @@
         changePlanBtn.disabled = !planId || planId === currentPlanId;
     }
 
+    // ===== Кастомный select =====
     function renderCountryMenu() {
         countryMenu.innerHTML = "";
         COUNTRIES.forEach((c) => {
@@ -637,9 +754,6 @@
         if (!countrySelect.contains(e.target)) closeCountryMenu();
     });
 
-    function showAlert(el, message) { el.textContent = message; el.classList.add("show"); }
-    function hideAlert(el) { el.textContent = ""; el.classList.remove("show"); }
-
     async function apiFetch(url, options) {
         options = options || {};
         const resp = await fetch(url, {
@@ -676,10 +790,7 @@
             paymentElement.on("ready", () => paymentElementError.classList.remove("show"));
             paymentElement.on("change", (event) => {
                 if (event.error) {
-                    paymentError.textContent = event.error.message;
-                    paymentError.classList.add("show");
-                } else {
-                    paymentError.classList.remove("show");
+                    showToast(event.error.message, "error");
                 }
             });
         } catch (e) {
@@ -723,7 +834,7 @@
                 currentPlanHint.style.color = "#e8c58e";
             } else if (data.status === "active") {
                 currentPlanHint.textContent = endDate
-                    ? "Активна до " + endDate
+                    ? "Активна. Следующее списание " + endDate
                     : "Активна";
                 currentPlanHint.style.color = "";
             } else if (data.status === "trialing") {
@@ -778,30 +889,34 @@
         }
     }
 
+    // ===== Смена плана с обработкой checkout_url =====
     changePlanBtn.addEventListener("click", async () => {
-        hideAlert(changePlanError);
-        hideAlert(changePlanSuccess);
         if (!selectedPlanId) return;
         changePlanBtn.disabled = true;
         try {
-            await apiFetch("/subscription/change-plan", {
+            const result = await apiFetch("/subscription/change-plan", {
                 method: "POST",
                 body: JSON.stringify({ plan_id: selectedPlanId }),
             });
-            showAlert(changePlanSuccess, "План изменён.");
+
+            if (result && result.checkout_url) {
+                // Есть доплата — перенаправляем на оплату
+                window.location.href = result.checkout_url;
+                return;
+            }
+
+            showToast("План изменён.", "success");
             await loadSubscriptionState();
         } catch (e) {
-            showAlert(changePlanError, e.message);
+            showToast(e.message, "error");
         } finally {
             changePlanBtn.disabled = false;
         }
     });
 
     savePaymentBtn.addEventListener("click", async () => {
-        hideAlert(paymentError);
-        hideAlert(paymentSuccess);
         if (!paymentElement || !paymentClientSecret) {
-            showAlert(paymentError, "Платёжный виджет не загружен.");
+            showToast("Платёжный виджет не загружен.", "error");
             return;
         }
         savePaymentBtn.disabled = true;
@@ -810,7 +925,7 @@
         try {
             const { error: submitError } = await elements.submit();
             if (submitError) {
-                showAlert(paymentError, submitError.message);
+                showToast(submitError.message, "error");
                 return;
             }
 
@@ -822,7 +937,7 @@
             });
 
             if (result.error) {
-                showAlert(paymentError, result.error.message);
+                showToast(result.error.message, "error");
                 return;
             }
             if (result.setupIntent && result.setupIntent.status === "succeeded") {
@@ -830,11 +945,11 @@
                     method: "POST",
                     body: JSON.stringify({ payment_method_id: result.setupIntent.payment_method }),
                 });
-                showAlert(paymentSuccess, "Способ оплаты сохранён.");
+                showToast("Способ оплаты сохранён.", "success");
                 paymentElement.clear();
             }
         } catch (e) {
-            showAlert(paymentError, e.message);
+            showToast(e.message, "error");
         } finally {
             savePaymentBtn.disabled = false;
             savePaymentBtn.textContent = "Сохранить способ оплаты";
@@ -842,10 +957,8 @@
     });
 
     saveVatBtn.addEventListener("click", async () => {
-        hideAlert(vatError);
-        hideAlert(vatSuccess);
         const vatId = vatInput.value.trim().toUpperCase();
-        if (!vatId) { showAlert(vatError, "Введите VAT ID."); return; }
+        if (!vatId) { showToast("Введите VAT ID.", "error"); return; }
         saveVatBtn.disabled = true;
         saveVatBtn.textContent = "Проверка...";
         try {
@@ -857,23 +970,25 @@
                 vatStatusBadge.className = "status-badge status-valid";
                 vatStatusBadge.textContent = "Подтверждён";
                 vatCurrentValue.textContent = "Текущий: " + vatId;
-                showAlert(vatSuccess, "VAT ID подтверждён. Применён reverse charge (если применимо).");
+                showToast("VAT ID подтверждён. Применён reverse charge (если применимо).", "success");
             } else if (result.status === "invalid") {
                 vatStatusBadge.className = "status-badge status-invalid";
                 vatStatusBadge.textContent = "Недействителен";
-                showAlert(vatError, "VAT ID недействителен. НДС будет начисляться по стандартной ставке.");
+                showToast("VAT ID недействителен. НДС будет начисляться по стандартной ставке.", "error");
             } else {
                 vatStatusBadge.className = "status-badge status-none";
                 vatStatusBadge.textContent = "Не проверен";
-                showAlert(vatError, "VIES временно недоступен. Попробуйте позже.");
+                showToast("VIES временно недоступен. Попробуйте позже.", "error");
             }
-        } catch (e) { showAlert(vatError, e.message); }
-        finally { saveVatBtn.disabled = false; saveVatBtn.textContent = "Проверить и сохранить"; }
+        } catch (e) {
+            showToast(e.message, "error");
+        } finally {
+            saveVatBtn.disabled = false;
+            saveVatBtn.textContent = "Проверить и сохранить";
+        }
     });
 
     saveAddressBtn.addEventListener("click", async () => {
-        hideAlert(addressError);
-        hideAlert(addressSuccess);
         saveAddressBtn.disabled = true;
         try {
             await apiFetch("/subscription/update-address", {
@@ -885,9 +1000,12 @@
                     country: selectedCountry,
                 }),
             });
-            showAlert(addressSuccess, "Адрес обновлён.");
-        } catch (e) { showAlert(addressError, e.message); }
-        finally { saveAddressBtn.disabled = false; }
+            showToast("Адрес обновлён.", "success");
+        } catch (e) {
+            showToast(e.message, "error");
+        } finally {
+            saveAddressBtn.disabled = false;
+        }
     });
 
     async function loadInvoices() {
@@ -919,21 +1037,19 @@
 
         if (!confirm(confirmMsg)) return;
 
-        hideAlert(cancelError);
-        hideAlert(cancelSuccess);
         cancelSubscriptionBtn.disabled = true;
 
         try {
             if (isResume) {
                 await apiFetch("/subscription/resume", { method: "POST" });
-                showAlert(cancelSuccess, "Подписка возобновлена.");
+                showToast("Подписка возобновлена.", "success");
             } else {
                 await apiFetch("/subscription/cancel", { method: "POST" });
-                showAlert(cancelSuccess, "Подписка будет отменена в конце оплаченного периода.");
+                showToast("Подписка будет отменена в конце оплаченного периода.", "info");
             }
             await loadSubscriptionState();
         } catch (e) {
-            showAlert(cancelError, e.message);
+            showToast(e.message, "error");
         } finally {
             cancelSubscriptionBtn.disabled = false;
         }

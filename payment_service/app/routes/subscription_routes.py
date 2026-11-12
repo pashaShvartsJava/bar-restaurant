@@ -6,7 +6,7 @@ from fastapi import APIRouter, Request, Depends, HTTPException
 from fastapi.params import Header
 from starlette.templating import Jinja2Templates
 
-from ..schemas.subscription_schema import SubscriptionCheckoutDTO
+from ..schemas.subscription_schema import SubscriptionCheckoutDTO, PlanId, STRIPE_PRICE_IDS
 from ..security.authorization.authorization import required_roles
 from ..security.internal_security import verify_internal_token
 from ..dependencies.dependencies import get_subscription_service_dependency
@@ -14,12 +14,17 @@ from ..config.config import settings
 from ..security.jwt.jwt import get_payload
 from ..security.role.role import IdentityRole
 from ..service.subscription_service import SubscriptionService
+from ..service.stripe_tax_manager_rate import StripeTaxRateManager
 
 router = APIRouter()
 templates = Jinja2Templates(directory="app/templates")
 INTERNAL_TOKEN=settings.internal_token
 
 PORTAL_CONFIGURATION_ID: str | None = None
+
+
+async def get_price_id_for_plan(plan_id: str) -> str | None:
+    return STRIPE_PRICE_IDS.get(plan_id)
 
 def get_or_create_portal_configuration() -> str:
     global PORTAL_CONFIGURATION_ID
@@ -56,6 +61,7 @@ async def subscription_payment(data : SubscriptionCheckoutDTO,
 async def stripe_subscription_webhook(request: Request, sub_service : SubscriptionService = Depends(get_subscription_service_dependency)):
     payload = await request.body()
     signature = request.headers.get("stripe-signature")
+    print("DEBUG: Router with webhook handling ran ::::::")
     try:
         event = sub_service.stripe_service.construct_webhook_subscription_event(payload, signature)
     except (ValueError, stripe.error.SignatureVerificationError):
@@ -66,6 +72,7 @@ async def stripe_subscription_webhook(request: Request, sub_service : Subscripti
             return {"status": "ignored"}
         await sub_service.handle_subscription_webhook(event)
     elif event["type"] in ("customer.subscription.created", "customer.subscription.updated"):
+        print("DEBUG: elif with update webhook ran ::::::")
         await sub_service.handle_subscription_updated(event)
     elif event["type"] == "customer.subscription.deleted":
         await sub_service.handle_subscription_deleted(event)
@@ -109,18 +116,6 @@ async def get_subscription_vat_status(restaurant_id : str,
     await verify_internal_token(internal_token)
     active_subscription = await sub_service.get_subscription_by_restaurant_id(uuid.UUID(restaurant_id))
     return active_subscription.vat_status.value
-
-@router.get("/subscription/management")
-async def create_portal_session(request: Request, sub_service: SubscriptionService = Depends(get_subscription_service_dependency)):
-    payload = get_payload(request)
-    required_roles(IdentityRole.OWNER, payload=payload)
-    customer_id = payload.get("sub")
-    restaurant_id = payload.get("restaurant_id")
-    subscription = await sub_service.get_subscription_by_owner_id(customer_id, restaurant_id)
-    if not subscription or not subscription.stripe_customer_id:
-        raise HTTPException(status_code=404, detail="No active subscription or currently subscription has a trialing period")
-    return templates.TemplateResponse("subscription_management.html",
-                                      {"request": request, "stripe_publishable_key": settings.STRIPE_PUBLISHABLE_KEY})
 
 @router.get("/subscription/management")
 async def subscription_management_page(request: Request, sub_service: SubscriptionService = Depends(get_subscription_service_dependency),):
@@ -217,8 +212,25 @@ async def change_plan(request: Request,
     sub = await sub_service.get_subscription_by_owner_id(payload["sub"], payload["restaurant_id"])
     if not sub or not sub.stripe_subscription_id:
         raise HTTPException(404, "No subscription")
-    await sub_service.change_subscription_plan(sub, plan_id)
-    return {"status": "ok"}
+    try:
+        stripe_sub = await stripe.Subscription.retrieve_async(sub.stripe_subscription_id)
+        current_item_id = stripe_sub["items"]["data"][0]["id"]
+        new_price_id = await get_price_id_for_plan(plan_id)
+        if not new_price_id:
+            raise HTTPException(400, "Invalid plan")
+        tax_manager = StripeTaxRateManager(client=sub_service.stripe_service.client)
+        tax_rate_id = await tax_manager.get_or_create_tax_rate(sub.country)
+        updated_sub = await stripe.Subscription.modify_async(sub.stripe_subscription_id,
+                                                             items=[{"id": current_item_id,
+                                                                     "price": new_price_id}],
+                                                             proration_behavior="always_invoice",
+                                                             default_tax_rates=[tax_rate_id])
+        invoices = await stripe.Invoice.list_async(subscription=updated_sub.id, status="open", limit=1)
+        if invoices.data:
+            return {"checkout_url": invoices.data[0]["hosted_invoice_url"]}
+        return {"status": "ok"}
+    except stripe.StripeError as e:
+        raise HTTPException(400, str(e))
 
 
 @router.post("/subscription/update-vat")

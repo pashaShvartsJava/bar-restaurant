@@ -6,6 +6,15 @@ from uuid import UUID
 
 from enum import Enum
 
+STRIPE_PRICE_IDS = {
+    "basic": "price_1Ub39rEBszTkRGCJJDTd6TE2",
+    "online": "price_1Ub3AdEBszTkRGCJmN37jyvq",
+    "advanced": "price_1Ub3B3EBszTkRGCJnyvZe6sf",
+    "professional": "price_1Ub3BnEBszTkRGCJxVmKKtCX"
+}
+
+PRICE_TO_PLAN = {v: k for k, v in STRIPE_PRICE_IDS.items()}
+
 class PlanId(str, Enum):
     BASIC = "basic"
     ONLINE = "online"
