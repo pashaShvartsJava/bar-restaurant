@@ -398,6 +398,59 @@
 
     .side-menu-error.show { display: block; }
 
+    /* ===== Выбор языка в сайдбаре ===== */
+    .side-menu-lang {
+        margin: 8px 6px 0;
+        padding: 10px 12px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 10px;
+        background: rgba(255, 255, 255, 0.03);
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .side-menu.collapsed .side-menu-lang {
+        display: none;
+    }
+
+    .side-menu-lang-title {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        color: #8a8082;
+        font-size: 9px;
+        font-weight: 600;
+        letter-spacing: 1.2px;
+        text-transform: uppercase;
+    }
+
+    .lang-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+
+    .lang-link {
+        flex: 1 1 calc(33% - 6px);
+        padding: 6px;
+        border: 1px solid rgba(213, 166, 91, 0.2);
+        border-radius: 6px;
+        background: rgba(213, 166, 91, 0.05);
+        color: #d5a65b;
+        font-size: 9px;
+        font-weight: 600;
+        text-align: center;
+        text-decoration: none;
+        transition: background 0.2s, border-color 0.2s;
+    }
+
+    .lang-link:hover {
+        background: rgba(213, 166, 91, 0.15);
+        border-color: rgba(213, 166, 91, 0.5);
+        color: #e8c58e;
+    }
+
     /* ===== VAT-карточка ===== */
     .side-menu-vat {
         margin: 8px 6px 0;
@@ -507,10 +560,10 @@
 <aside class="side-menu" id="sideMenu">
     <div class="side-menu-header">
         <div class="side-menu-brand">
-            <strong>Main settings</strong>
+            <strong>{{ trans('main_settings') }}</strong>
         </div>
 
-        <button type="button" class="side-menu-toggle" id="sideMenuToggle" aria-label="Свернуть меню" aria-expanded="true">
+        <button type="button" class="side-menu-toggle" id="sideMenuToggle" aria-label="{{ trans('collapse_menu') }}" aria-expanded="true">
             ‹
         </button>
     </div>
@@ -518,13 +571,13 @@
     <nav class="side-menu-list">
         <a href="/restaurants/constructor" class="side-menu-item">
             <span class="menu-icon">⚙️</span>
-            <span class="menu-label">Конструктор сайта</span>
+            <span class="menu-label">{{ trans('site_constructor') }}</span>
         </a>
 
         <a href="/support/general_support" class="side-menu-item support-item">
             <span class="menu-icon">📩</span>
-            <span class="menu-label">Техподдержка FDCPlatform</span>
-            {% if unread_support_count > 0 %}
+            <span class="menu-label">{{ trans('fdc_support') }}</span>
+            {% if unread_support_count and unread_support_count > 0 %}
                 <span class="support-badge">{{ unread_support_count }}</span>
             {% endif %}
         </a>
@@ -534,17 +587,17 @@
         {% if restaurant.stripe_account_id and restaurant.stripe_charges_enabled %}
             <a href="/restaurants/connect/dashboard" class="side-menu-item connect-item--connected" id="connectAccountButton">
                 <span class="menu-icon">💳</span>
-                <span class="menu-label">Управление счётом</span>
+                <span class="menu-label">{{ trans('manage_account') }}</span>
             </a>
         {% elif restaurant.stripe_account_id %}
             <a href="/restaurants/connect/onboarding" class="side-menu-item connect-item--pending" id="connectAccountButton">
                 <span class="menu-icon">💳</span>
-                <span class="menu-label">Продолжить настройку</span>
+                <span class="menu-label">{{ trans('continue_setup') }}</span>
             </a>
         {% else %}
             <a href="/restaurants/connect/onboarding" class="side-menu-item connect-item--not-connected" id="connectAccountButton">
                 <span class="menu-icon">💳</span>
-                <span class="menu-label">Привязать счёт</span>
+                <span class="menu-label">{{ trans('connect_account') }}</span>
             </a>
         {% endif %}
 
@@ -552,7 +605,7 @@
 
         <button type="button" class="side-menu-item" id="manageSubscriptionButton">
             <span class="menu-icon">👑</span>
-            <span class="menu-label">Управление подпиской</span>
+            <span class="menu-label">{{ trans('manage_subscription') }}</span>
         </button>
 
         <div id="subscriptionError" class="side-menu-error"></div>
@@ -561,12 +614,27 @@
 
         <button type="button" class="side-menu-item logout-item" id="logoutButton">
             <span class="menu-icon">⏻</span>
-            <span class="menu-label">Выйти из панели</span>
+            <span class="menu-label">{{ trans('logout') }}</span>
         </button>
 
         <div id="logoutError" class="side-menu-error"></div>
 
         <form id="logoutForm" method="post" action="/admin/logout" style="display:none;"></form>
+
+        {# ===== ВЫБОР ЯЗЫКА ===== #}
+        <div class="side-menu-lang">
+            <div class="side-menu-lang-title">
+                <span>🌐</span> {{ trans('language') }}
+            </div>
+            <div class="lang-grid">
+                <a href="/set-language/en" class="lang-link">EN</a>
+                <a href="/set-language/de" class="lang-link">DE</a>
+                <a href="/set-language/ru" class="lang-link">RU</a>
+                <a href="/set-language/uk" class="lang-link">UK</a>
+                <a href="/set-language/fr" class="lang-link">FR</a>
+                <a href="/set-language/ka" class="lang-link">KA</a>
+            </div>
+        </div>
 
         {# ===== Налоговый статус (VAT) ===== #}
         {% set country = restaurant.country or "—" %}
@@ -575,41 +643,40 @@
         <div class="side-menu-vat side-menu-vat--{{ vat_status }}">
             <div class="side-menu-vat-label">
                 <span class="side-menu-vat-dot"></span>
-                VAT ID
+                {{ trans('vat_id') }}
             </div>
 
             {% if vat_status == "valid" %}
-                <div class="side-menu-vat-title">VAT ID подтверждён</div>
+                <div class="side-menu-vat-title">{{ trans('vat_valid') }}</div>
                 {% if is_domestic %}
                     <div class="side-menu-vat-desc">
-                        Заведение в <strong>Германии</strong> — reverse charge не применяется, НДС <strong>19%</strong> начисляется как обычно.
+                        {{ trans('vat_valid_desc_domestic') | safe }}
                     </div>
                 {% else %}
                     <div class="side-menu-vat-desc">
-                        Страна <strong>{{ country }}</strong> — применяется <strong>reverse charge</strong>, НДС платформа не начисляет.
+                        {{ trans('vat_valid_desc_foreign', country=country) | safe }}
                     </div>
                 {% endif %}
             {% elif vat_status == "invalid" %}
-                <div class="side-menu-vat-title">VAT ID недействителен</div>
+                <div class="side-menu-vat-title">{{ trans('vat_invalid') }}</div>
                 <div class="side-menu-vat-desc">
-                    НДС начисляется по стандартной ставке страны <strong>{{ country }}</strong>.
-                    <span class="vat-warn">Ответственность за корректность номера — на владельце.</span>
+                    {{ trans('vat_invalid_desc', country=country) | safe }}
                 </div>
             {% elif vat_status == "unknown" %}
-                <div class="side-menu-vat-title">VAT ID не проверен</div>
+                <div class="side-menu-vat-title">{{ trans('vat_unknown') }}</div>
                 <div class="side-menu-vat-desc">
-                    VIES недоступен. Пока действует стандартная ставка для <strong>{{ country }}</strong>.
+                    {{ trans('vat_unknown_desc', country=country) | safe }}
                 </div>
             {% else %}
-                <div class="side-menu-vat-title">VAT ID не привязан</div>
+                <div class="side-menu-vat-title">{{ trans('vat_none') }}</div>
                 <div class="side-menu-vat-desc">
-                    НДС начисляется по стандартной ставке страны <strong>{{ country }}</strong>.
+                    {{ trans('vat_none_desc', country=country) | safe }}
                 </div>
             {% endif %}
 
             <div class="side-menu-vat-side">
                 <span class="side-menu-vat-country">{{ country }}</span>
-                <button type="button" class="side-menu-vat-link" id="vatPortalButton">Портал</button>
+                <button type="button" class="side-menu-vat-link" id="vatPortalButton">{{ trans('portal') }}</button>
             </div>
         </div>
     </nav>
@@ -633,14 +700,14 @@
     </h1>
 
     <p>
-        Панель управления {{ restaurant_name }}
+        {{ trans('control_panel', name=restaurant_name) }}
     </p>
 </header>
 
 <section class="section">
     <div class="section-title">
         <h2>
-            Работа заведения
+            {{ trans('work_section') }}
         </h2>
 
         <div class="section-line"></div>
@@ -649,28 +716,28 @@
     <div class="buttons buttons-main">
         <a href="/menu_page" class="button button-large">
             <div class="icon">🍸</div>
-            <h3>Меню</h3>
-            <p>Управление меню</p>
+            <h3>{{ trans('menu') }}</h3>
+            <p>{{ trans('manage_menu') }}</p>
         </a>
 
         <a href="/orders/get_orders" class="button button-large">
             <div class="icon">🛵</div>
-            <h3>Заказы</h3>
-            <p>Заказы на доставку</p>
+            <h3>{{ trans('orders') }}</h3>
+            <p>{{ trans('delivery_orders') }}</p>
         </a>
 
         {% if can_tables %}
             <a href="/tables" class="button button-large">
                 <div class="icon">▦</div>
-                <h3>Бронь</h3>
-                <p>Столики и бронирования</p>
+                <h3>{{ trans('reservations') }}</h3>
+                <p>{{ trans('tables_and_reservations') }}</p>
             </a>
         {% else %}
             <a href="/subscription/management" class="button button-large button-locked">
                 <div class="icon">▦</div>
-                <h3>Бронь</h3>
-                <p>Требуется тариф Advanced</p>
-                <span class="upgrade-badge">Перейти на Advanced</span>
+                <h3>{{ trans('reservations') }}</h3>
+                <p>{{ trans('requires_advanced') }}</p>
+                <span class="upgrade-badge">{{ trans('go_to_advanced') }}</span>
             </a>
         {% endif %}
     </div>
@@ -679,7 +746,7 @@
 <section class="section">
     <div class="section-title">
         <h2>
-            Клиенты
+            {{ trans('clients_section') }}
         </h2>
 
         <div class="section-line"></div>
@@ -688,34 +755,34 @@
     <div class="buttons buttons-secondary">
         {% if can_delivery %}
             <a href="/support/general_support" class="button support-button">
-                {% if unread_support_count > 0 %}
+                {% if unread_support_count and unread_support_count > 0 %}
                     <span class="support-badge">{{ unread_support_count }}</span>
                 {% endif %}
                 <div class="icon">💬</div>
-                <h3>Поддержка</h3>
-                <p>Общение с клиентами</p>
+                <h3>{{ trans('support') }}</h3>
+                <p>{{ trans('client_communication') }}</p>
             </a>
         {% else %}
             <a href="/subscription/management" class="button button-locked support-button">
                 <div class="icon">💬</div>
-                <h3>Поддержка</h3>
-                <p>Требуется тариф Online</p>
-                <span class="upgrade-badge">Перейти на Online</span>
+                <h3>{{ trans('support') }}</h3>
+                <p>{{ trans('requires_online') }}</p>
+                <span class="upgrade-badge">{{ trans('go_to_online') }}</span>
             </a>
         {% endif %}
 
         {% if can_delivery %}
             <a href="/admin_panel/all_customers" class="button">
                 <div class="icon">♙</div>
-                <h3>Клиенты</h3>
-                <p>Зарегистрированные клиенты</p>
+                <h3>{{ trans('clients') }}</h3>
+                <p>{{ trans('registered_clients') }}</p>
             </a>
         {% else %}
             <a href="/subscription/management" class="button button-locked">
                 <div class="icon">♙</div>
-                <h3>Клиенты</h3>
-                <p>Требуется тариф Online</p>
-                <span class="upgrade-badge">Перейти на Online</span>
+                <h3>{{ trans('clients') }}</h3>
+                <p>{{ trans('requires_online') }}</p>
+                <span class="upgrade-badge">{{ trans('go_to_online') }}</span>
             </a>
         {% endif %}
     </div>
@@ -724,7 +791,7 @@
 <section class="section">
     <div class="section-title">
         <h2>
-            Управление
+            {{ trans('management_section') }}
         </h2>
 
         <div class="section-line"></div>
@@ -733,37 +800,37 @@
     <div class="buttons buttons-management">
         <a href="/admin_panel/all_admins" class="button">
             <div class="icon">♙</div>
-            <h3>Администраторы</h3>
-            <p>Управление администраторами</p>
+            <h3>{{ trans('admins') }}</h3>
+            <p>{{ trans('manage_admins') }}</p>
         </a>
 
         {% if can_delivery %}
             <a href="/payment/history" class="button">
                 <div class="icon">💳</div>
-                <h3>История онлайн оплат</h3>
-                <p>Архив транзакций</p>
+                <h3>{{ trans('payment_history') }}</h3>
+                <p>{{ trans('transaction_archive') }}</p>
             </a>
         {% else %}
             <a href="/subscription/management" class="button button-locked">
                 <div class="icon">💳</div>
-                <h3>История онлайн оплат</h3>
-                <p>Требуется тариф Online</p>
-                <span class="upgrade-badge">Перейти на Online</span>
+                <h3>{{ trans('payment_history') }}</h3>
+                <p>{{ trans('requires_online') }}</p>
+                <span class="upgrade-badge">{{ trans('go_to_online') }}</span>
             </a>
         {% endif %}
 
         {% if can_finance %}
             <a href="/analytics" class="button">
                 <div class="icon">📊</div>
-                <h3>Финансы и аналитика</h3>
-                <p>Выручка, продажи и статистика блюд</p>
+                <h3>{{ trans('analytics') }}</h3>
+                <p>{{ trans('revenue_and_stats') }}</p>
             </a>
         {% else %}
             <a href="/subscription/management" class="button button-locked">
                 <div class="icon">📊</div>
-                <h3>Финансы и аналитика</h3>
-                <p>Требуется тариф Professional</p>
-                <span class="upgrade-badge">Перейти на Professional</span>
+                <h3>{{ trans('analytics') }}</h3>
+                <p>{{ trans('requires_professional') }}</p>
+                <span class="upgrade-badge">{{ trans('go_to_professional') }}</span>
             </a>
         {% endif %}
     </div>
@@ -778,6 +845,16 @@
 <script src="/static/api.js"></script>
 
 <script>
+    const i18n = {
+        error_open_sub: "{{ trans('error_open_sub') | escape }}",
+        error_no_access: "{{ trans('error_no_access') | escape }}",
+        error_no_sub: "{{ trans('error_no_sub') | escape }}",
+        error_server: "{{ trans('error_server') | escape }}",
+        error_connect: "{{ trans('error_connect') | escape }}",
+        error_logout: "{{ trans('error_logout') | escape }}",
+        error_connect_check: "{{ trans('error_connect_check') | escape }}"
+    };
+
     const sideMenu = document.getElementById("sideMenu");
     const sideMenuToggle = document.getElementById("sideMenuToggle");
     const manageSubscriptionButton = document.getElementById("manageSubscriptionButton");
@@ -792,7 +869,7 @@
     sideMenuToggle.addEventListener("click", () => {
         const isCollapsed = sideMenu.classList.toggle("collapsed");
         sideMenuToggle.setAttribute("aria-expanded", String(!isCollapsed));
-        sideMenuToggle.setAttribute("aria-label", isCollapsed ? "Развернуть меню" : "Свернуть меню");
+        sideMenuToggle.setAttribute("aria-label", isCollapsed ? "{{ trans('expand_menu') | escape }}" : "{{ trans('collapse_menu') | escape }}");
         sideMenuToggle.textContent = isCollapsed ? "›" : "‹";
     });
 
@@ -814,17 +891,17 @@
             });
 
             if (!response.ok) {
-                let message = "Не удалось открыть страницу управления подпиской.";
+                let message = i18n.error_open_sub;
                 if (response.status === 401) {
                     window.location.href = "/login";
                     return;
                 }
                 if (response.status === 403) {
-                    message = "Нет доступа к управлению подпиской.";
+                    message = i18n.error_no_access;
                 } else if (response.status === 404) {
-                    message = "Активная подписка не найдена.";
+                    message = i18n.error_no_sub;
                 } else if (response.status >= 500) {
-                    message = "Ошибка сервера. Попробуйте позже.";
+                    message = i18n.error_server;
                 }
                 errorEl.textContent = message;
                 errorEl.classList.add("show");
@@ -834,7 +911,7 @@
             window.location.href = "/subscription/management";
         } catch (error) {
             console.error("SUBSCRIPTION MANAGEMENT ERROR:", error);
-            errorEl.textContent = "Не удалось подключиться к серверу.";
+            errorEl.textContent = i18n.error_connect;
             errorEl.classList.add("show");
         } finally {
             button.disabled = false;
@@ -880,12 +957,11 @@
             logoutError.textContent =
                 data?.detail ||
                 data?.message ||
-                "Не удалось выйти из панели управления.";
+                i18n.error_logout;
             logoutError.classList.add("show");
         } catch (error) {
             console.error("LOGOUT ERROR:", error);
-            logoutError.textContent =
-                "Не удалось подключиться к серверу. Проверьте соединение.";
+            logoutError.textContent = i18n.error_connect_check;
             logoutError.classList.add("show");
         } finally {
             logoutButton.disabled = false;

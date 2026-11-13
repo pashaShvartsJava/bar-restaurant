@@ -9,6 +9,7 @@ from pydantic import EmailStr
 from sqlalchemy.exc import SQLAlchemyError
 from starlette.responses import HTMLResponse, RedirectResponse, JSONResponse
 from starlette.templating import Jinja2Templates
+
 from ..schema.admin import AdminUpdateDTO, AdminRegistrationDTO, IdentityEdit, AdminRegistrationForm, AddAdminRequest
 from typing import Annotated
 
@@ -61,6 +62,12 @@ async def verify_csrf(request: Request):
     header_token = request.headers.get("X-CSRF-Token")
     if not cookie_token or cookie_token != header_token:
         raise HTTPException(status_code=403)
+
+@router.get("/set-language/{lang}")
+async def set_language(lang: str, request: Request):
+    response = RedirectResponse(url=request.headers.get("referer", "/"))
+    response.set_cookie(key="user_lang", value=lang, max_age=31536000)
+    return response
 
 @router.post("/admin/logout")
 def logout(request : Request):
