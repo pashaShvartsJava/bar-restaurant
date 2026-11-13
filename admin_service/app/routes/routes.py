@@ -13,7 +13,9 @@ from ..schema.admin import AdminUpdateDTO, AdminRegistrationDTO, IdentityEdit, A
 from typing import Annotated
 
 from ..dependencies.dependencies import get_service_dependency, get_httpx_async_connection, get_restaurant_dependency, \
-    get_restaurant_dependency_by_id, get_authentication_key, get_new_key, get_vat_status_dependency, get_plan_in_cache
+    get_restaurant_dependency_by_id, get_authentication_key, get_new_key, get_vat_status_dependency, get_plan_in_cache, \
+    required_plans
+from ..schema.subscription_schema import PlanId
 from ..security.internal_security import verify_internal_token
 from ..security.role.role import IdentityRole
 from ..service.admin_service import AdminService
@@ -76,12 +78,14 @@ async def show_admin_panel(request: Request):
     restaurant_id = payload.get("restaurant_id")
     restaurant = await get_restaurant_dependency_by_id(restaurant_id)
     plan = await get_plan_in_cache(restaurant_id)
-    async with httpx.AsyncClient() as client:
-        response = await client.get("http://support-service:8006/support/unread/count",
-                                    headers={"internal_token" : INTERNAL_TOKEN},
-                                    params={"restaurant_id" : restaurant_id})
-    support_data = response.json()
-    unread_support_count = support_data["count"]
+    unread_support_count = 0
+    if plan != PlanId.BASIC.value:
+        async with httpx.AsyncClient() as client:
+            response = await client.get("http://support-service:8006/support/unread/count",
+                                        headers={"internal_token": INTERNAL_TOKEN},
+                                        params={"restaurant_id": restaurant_id})
+        support_data = response.json()
+        unread_support_count = support_data["count"]
     vat_status = await get_vat_status_dependency(restaurant_id)
     return templates.TemplateResponse("admin_panel.html", {"request" : request,
                                                            "unread_support_count" : unread_support_count,
@@ -293,6 +297,9 @@ async def edit_password(request: Request, service: AdminService = Depends(get_se
 async def show_all_customers(request : Request):
     payload = get_payload(request)
     required_roles(IdentityRole.OWNER, IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
+    restaurant_id = payload.get("restaurant_id")
+    current_plan_id = await get_plan_in_cache(restaurant_id)
+    await required_plans(current_plan_id, PlanId.ONLINE, PlanId.ADVANCED, PlanId.PROFESSIONAL)
     async with httpx.AsyncClient() as client:
         response = await client.get(url="http://user-service:8005/get_all_users", headers={"internal_token" : INTERNAL_TOKEN} )
         response.raise_for_status()
@@ -313,9 +320,13 @@ async def show_all_customers(request : Request):
 async def search_customer(request : Request, client_id : UUID):
     payload = get_payload(request)
     required_roles(IdentityRole.OWNER, IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
+    restaurant_id = payload.get("restaurant_id")
+    current_plan_id = await get_plan_in_cache(restaurant_id)
+    await required_plans(current_plan_id, PlanId.ONLINE, PlanId.ADVANCED, PlanId.PROFESSIONAL)
     async with httpx.AsyncClient() as client:
         response = await client.get(url="http://user-service:8005/get_all_users",
-                                    headers={"internal_token": INTERNAL_TOKEN})
+                                    headers={"internal_token": INTERNAL_TOKEN},
+                                    cookies={"access_token" : payload.get("access_token")})
         response.raise_for_status()
     users = response.json()
 
@@ -338,6 +349,9 @@ async def search_customer(request : Request, client_id : UUID):
 async def customer_info(request : Request, identity_id : UUID):
     payload = get_payload(request)
     required_roles(IdentityRole.OWNER, IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
+    restaurant_id = payload.get("restaurant_id")
+    current_plan_id = await get_plan_in_cache(restaurant_id)
+    await required_plans(current_plan_id, PlanId.ONLINE, PlanId.ADVANCED, PlanId.PROFESSIONAL)
     async with httpx.AsyncClient() as client:
         response = await client.get(url="http://user-service:8005/get_user_address",
                                     params={"identity_id" : str(identity_id)},
@@ -359,6 +373,9 @@ async def customer_info(request : Request, identity_id : UUID):
 async def customer_info(request : Request, identity_id : UUID):
     payload = get_payload(request)
     required_roles(IdentityRole.OWNER, IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
+    restaurant_id = payload.get("restaurant_id")
+    current_plan_id = await get_plan_in_cache(restaurant_id)
+    await required_plans(current_plan_id, PlanId.ONLINE, PlanId.ADVANCED, PlanId.PROFESSIONAL)
     async with httpx.AsyncClient() as client:
         response = await client.get("http://order-service:8007/orders/get_customer_orders",
                                     params={"identity_id": str(identity_id)},

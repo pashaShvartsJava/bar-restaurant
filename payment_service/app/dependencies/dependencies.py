@@ -1,13 +1,16 @@
 import httpx
 
+from ..models.subscriptions import PlanId
+from ..redis.redis_client import redis
 from ..repository.outbox_repository import OutboxPaymentEventsRepository
 from ..repository.payment_repository import PaymentRepository
 from ..repository.subscription_repository import SubscriptionRepository
 from ..schemas.restaurant_schema import RestaurantConstructorDTO, CURRENCY_SYMBOLS
+from ..schemas.subscription_schema import SubscriptionDataDTO
 from ..service.payment_service import PaymentService
 
 from ..database.database import get_db
-from fastapi import Depends
+from fastapi import Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from ..service.stripe_service import StripeService
@@ -61,3 +64,21 @@ async def get_restaurant_dependency_by_stripe_account_id(stripe_account_id : str
                                     headers={"internal_token" : INTERNAL_TOKEN},
                                     params={"stripe_account_id" : stripe_account_id})
     return RestaurantConstructorDTO(**response.json())
+
+async def get_subscription_dependency(restaurant_id : str):
+    client = await get_client()
+    response = await client.get(url="http://payment-service:8008/subscription/get_subscription",
+                                params={"restaurant_id": restaurant_id})
+    return SubscriptionDataDTO(**response.json())
+
+async def get_plan_in_cache(restaurant_id : str):
+    plan_id = await redis.get(f"plan:{restaurant_id}")
+    if plan_id is None:
+        subscription = await get_subscription_dependency(restaurant_id)
+        await redis.set(f"plan:{subscription.restaurant_id}", subscription.plan_id.value, ex=3600)
+        plan_id = await redis.get(f"plan:{subscription.restaurant_id}")
+    return plan_id
+
+async def required_plans(current_plan_id : PlanId, *allowed_plans : PlanId):
+    if current_plan_id not in allowed_plans:
+        raise HTTPException(detail="Forbidden. This service is not available for this subscription plan", status_code=403)

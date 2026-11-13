@@ -10,11 +10,13 @@ from starlette.templating import Jinja2Templates
 
 from ..model.user_model import Status
 from ..schema.address_schema import AddressEditSchema
+from ..schema.susbcription_schema import PlanId
 from ..security.internal_security import verify_internal_token
 from ..security.jwt.jwt import get_payload
 from ..security.authorization.authorization import required_roles, required_role
 from ..security.role.roles import IdentityRole
-from ..dependencies.dependency import get_service_dependency, get_restaurant_dependency
+from ..dependencies.dependency import get_service_dependency, get_restaurant_dependency, get_plan_in_cache, \
+    required_plans
 from ..services.user_service import UserService
 from ..schema.user_schema import RegisterRequest, EmailRequest, UserDto, UserInfo
 from ..schema.user_schema import UserEditSchema
@@ -170,10 +172,16 @@ async def edit_password(request: Request,service: UserService = Depends(get_serv
     return response
 
 @router.get("/get_all_users")
-async def get_all_users(service : UserService = Depends(get_service_dependency),
+async def get_all_users(request : Request,
+                        service : UserService = Depends(get_service_dependency),
                         internal_token : str = Header(..., alias="internal_token")):
+    payload = get_payload(request)
+    required_roles(IdentityRole.OWNER, IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
     if internal_token != INTERNAL_TOKEN or internal_token is None:
         raise HTTPException(detail="Forbidden", status_code=403)
+    restaurant_id = payload.get("restaurant_id")
+    current_plan_id = await get_plan_in_cache(restaurant_id)
+    await required_plans(current_plan_id, PlanId.ONLINE, PlanId.ADVANCED, PlanId.PROFESSIONAL)
     users = await service.find_all_users()
     return [UserDto.model_validate(user).model_dump(mode="json") for user in users]
 
@@ -185,6 +193,9 @@ async def get_user_address(request : Request,
     await verify_internal_token(internal_token)
     payload = get_payload(request)
     required_roles(IdentityRole.OWNER, IdentityRole.ADMIN, IdentityRole.MODERATOR, payload=payload)
+    restaurant_id = payload.get("restaurant_id")
+    current_plan_id = await get_plan_in_cache(restaurant_id)
+    await required_plans(current_plan_id, PlanId.ONLINE, PlanId.ADVANCED, PlanId.PROFESSIONAL)
     user = await service.find_by_identity_id(identity_id)
     return UserInfo(
         name=user.name,

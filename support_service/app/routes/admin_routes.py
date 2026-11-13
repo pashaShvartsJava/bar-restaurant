@@ -6,10 +6,12 @@ from fastapi.params import Depends, Header
 from starlette.responses import RedirectResponse
 from starlette.templating import Jinja2Templates
 
+from ..schema.susbcription_schema import PlanId
 from ..security.jwt.jwt import get_payload
 from ..security.authorization.authorization import required_roles
 from ..security.role.role import IdentityRole
-from ..dependencies.dependencies import get_conversation_service_dependency, get_restaurant_dependency
+from ..dependencies.dependencies import get_conversation_service_dependency, get_restaurant_dependency, \
+    get_plan_in_cache, required_plans
 from ..service.conversation_service import ConversationService
 from uuid import UUID
 from ..config.config import settings
@@ -32,6 +34,8 @@ async def show_admin_chat(request : Request,
     payload  = get_payload(request)
     required_roles(IdentityRole.OWNER, IdentityRole.ADMIN, IdentityRole.MODERATOR, payload=payload)
     restaurant_id = payload.get("restaurant_id")
+    current_plan_id = await get_plan_in_cache(restaurant_id)
+    await required_plans(current_plan_id, PlanId.ONLINE, PlanId.ADVANCED, PlanId.PROFESSIONAL)
     conversation = await conversation_service.get_or_create_admin_conversation(identity_id, UUID(payload["sub"]), restaurant_id)
     return templates.TemplateResponse("admin_chat_page.html", {"request" : request, "conversation" : conversation})
 
@@ -43,6 +47,8 @@ async def free_conversation(request : Request,
     required_roles(IdentityRole.OWNER, IdentityRole.ADMIN, IdentityRole.MODERATOR, payload=payload)
     await verify_csrf(request)
     restaurant_id = payload.get("restaurant_id")
+    current_plan_id = await get_plan_in_cache(restaurant_id)
+    await required_plans(current_plan_id, PlanId.ONLINE, PlanId.ADVANCED, PlanId.PROFESSIONAL)
     await conversation_service.free_conversation(conversation_id, restaurant_id)
     return RedirectResponse(url="/admin_panel/all_customers", status_code=303)
 
@@ -51,6 +57,8 @@ async def general_support(request : Request, conversation_service : Conversation
     payload = get_payload(request)
     required_roles(IdentityRole.OWNER, IdentityRole.ADMIN, IdentityRole.MODERATOR, payload=payload)
     restaurant_id = payload.get("restaurant_id")
+    current_plan_id = await get_plan_in_cache(restaurant_id)
+    await required_plans(current_plan_id, PlanId.ONLINE, PlanId.ADVANCED, PlanId.PROFESSIONAL)
     conversations = await conversation_service.get_unread_conversations(restaurant_id)
     return templates.TemplateResponse("general_support.html", {"request" : request, "conversations" : conversations})
 
@@ -60,5 +68,7 @@ async def get_unread_support_count(restaurant_id : str,
                                    conversation_service: ConversationService = Depends(get_conversation_service_dependency)):
     if internal_token != INTERNAL_TOKEN or internal_token is None:
         raise HTTPException(detail="Forbidden", status_code=403)
+    current_plan_id = await get_plan_in_cache(restaurant_id)
+    await required_plans(current_plan_id, PlanId.ONLINE, PlanId.ADVANCED, PlanId.PROFESSIONAL)
     count = await conversation_service.count_unread_conversations(uuid.UUID(restaurant_id))
     return {"count": count}

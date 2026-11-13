@@ -12,12 +12,14 @@ from starlette.responses import RedirectResponse, StreamingResponse
 from starlette.templating import Jinja2Templates
 from fastapi.params import Depends, Query
 
+from ..schema.susbcription_schema import PlanId
 from ..security.internal_security import verify_internal_token
 from ..security.jwt.jwt import get_payload
 from ..security.authorization.authorization import required_roles
 from ..security.role.role import IdentityRole
 from ..dependencies.dependencies import get_table_service_dependency, get_table_session_service_dependency, \
-    get_reservation_service_dependency, get_restaurant_dependency, get_restaurant_dependency_by_id
+    get_reservation_service_dependency, get_restaurant_dependency, get_restaurant_dependency_by_id, get_plan_in_cache, \
+    required_plans
 from ..service.table_service import TableService
 from ..service.table_session_service import TableSessionService
 from ..service.reservation_service import ReservationService
@@ -40,6 +42,8 @@ async def show_tables_page(request : Request, table_service : TableService = Dep
     payload = get_payload(request)
     required_roles(IdentityRole.OWNER, IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
     restaurant_id = payload.get("restaurant_id")
+    current_plan_id = await get_plan_in_cache(restaurant_id)
+    await required_plans(current_plan_id, PlanId.ADVANCED, PlanId.PROFESSIONAL)
     tables = await table_service.find_all_tables(restaurant_id)
     return templates.TemplateResponse("all_tables.html", {"request" : request, "tables" : tables})
 
@@ -47,6 +51,9 @@ async def show_tables_page(request : Request, table_service : TableService = Dep
 async def get_generating_qr_page(request : Request):
     payload = get_payload(request)
     required_roles(IdentityRole.OWNER, IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
+    restaurant_id = payload.get("restaurant_id")
+    current_plan_id = await get_plan_in_cache(restaurant_id)
+    await required_plans(current_plan_id, PlanId.ADVANCED, PlanId.PROFESSIONAL)
     restaurant_id = payload.get("restaurant_id")
     restaurant = await get_restaurant_dependency_by_id(restaurant_id)
     return templates.TemplateResponse("generate_qr_code.html", {"request" : request, "restaurant" : restaurant})
@@ -59,6 +66,8 @@ async def get_qr_code_by_number(request: Request,
     payload = get_payload(request)
     required_roles(IdentityRole.OWNER, IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
     restaurant_id = payload.get("restaurant_id")
+    current_plan_id = await get_plan_in_cache(restaurant_id)
+    await required_plans(current_plan_id, PlanId.ADVANCED, PlanId.PROFESSIONAL)
     restaurant = await get_restaurant_dependency_by_id(restaurant_id)
     table = await table_service.get_table_by_table_number(table_number, uuid.UUID(restaurant_id))
     if table is None:
@@ -79,6 +88,9 @@ async def get_qr_code_by_number(request: Request,
 async def add_table_page(request : Request):
     payload = get_payload(request)
     required_roles(IdentityRole.OWNER, IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
+    restaurant_id = payload.get("restaurant_id")
+    current_plan_id = await get_plan_in_cache(restaurant_id)
+    await required_plans(current_plan_id, PlanId.ADVANCED, PlanId.PROFESSIONAL)
     return templates.TemplateResponse("add_table.html", {"request" : request})
 
 @router.post("/tables/add_table")
@@ -90,6 +102,8 @@ async def add_table(request : Request,
     required_roles(IdentityRole.OWNER, IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
     await verify_csrf(request)
     restaurant_id = payload.get("restaurant_id")
+    current_plan_id = await get_plan_in_cache(restaurant_id)
+    await required_plans(current_plan_id, PlanId.ADVANCED, PlanId.PROFESSIONAL)
     await table_service.create_table(table_number, capacity, restaurant_id)
     return RedirectResponse(url="/tables", status_code=303)
 
@@ -99,6 +113,8 @@ async def take_table(request : Request, table_id : int,  service : TableSessionS
     required_roles(IdentityRole.OWNER, IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
     await verify_csrf(request)
     restaurant_id = payload.get("restaurant_id")
+    current_plan_id = await get_plan_in_cache(restaurant_id)
+    await required_plans(current_plan_id, PlanId.ADVANCED, PlanId.PROFESSIONAL)
     await service.start_session(table_id, restaurant_id)
     return RedirectResponse(url="/tables", status_code=303)
 
@@ -108,6 +124,8 @@ async def take_table(request : Request, table_id : int,  service : TableSessionS
     required_roles(IdentityRole.OWNER, IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
     await verify_csrf(request)
     restaurant_id = payload.get("restaurant_id")
+    current_plan_id = await get_plan_in_cache(restaurant_id)
+    await required_plans(current_plan_id, PlanId.ADVANCED, PlanId.PROFESSIONAL)
     await service.end_session(table_id, restaurant_id)
     return RedirectResponse(url="/tables", status_code=303)
 
@@ -116,6 +134,8 @@ async def create_reservation_page(request : Request, table_id : int, table_servi
     payload = get_payload(request)
     required_roles(IdentityRole.OWNER, IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
     restaurant_id = payload.get("restaurant_id")
+    current_plan_id = await get_plan_in_cache(restaurant_id)
+    await required_plans(current_plan_id, PlanId.ADVANCED, PlanId.PROFESSIONAL)
     table = await table_service.get_table_by_id(table_id, restaurant_id)
     return templates.TemplateResponse("add_reservation.html", {"request" : request, "table" : table})
 
@@ -133,6 +153,8 @@ async def create_reservation(request : Request,
     required_roles(IdentityRole.OWNER, IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
     await verify_csrf(request)
     restaurant_id = payload.get("restaurant_id")
+    current_plan_id = await get_plan_in_cache(restaurant_id)
+    await required_plans(current_plan_id, PlanId.ADVANCED, PlanId.PROFESSIONAL)
     reservation_start = reservation_start.replace(tzinfo=timezone.utc)
     reservation_end = reservation_end.replace(tzinfo=timezone.utc)
     now = datetime.now(timezone.utc)
@@ -152,6 +174,8 @@ async def reservations_page(request : Request, reservation_service : Reservation
     payload = get_payload(request)
     required_roles(IdentityRole.OWNER, IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
     restaurant_id = payload.get("restaurant_id")
+    current_plan_id = await get_plan_in_cache(restaurant_id)
+    await required_plans(current_plan_id, PlanId.ADVANCED, PlanId.PROFESSIONAL)
     reservations = await reservation_service.get_all_reservations(restaurant_id)
     return templates.TemplateResponse("all_reservations.html", {"request" : request,
                                                                 "reservations" : reservations,
@@ -163,6 +187,8 @@ async def cancel_reservation(request : Request, reservation_id : int, reservatio
     required_roles(IdentityRole.OWNER, IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
     await verify_csrf(request)
     restaurant_id = payload.get("restaurant_id")
+    current_plan_id = await get_plan_in_cache(restaurant_id)
+    await required_plans(current_plan_id, PlanId.ADVANCED, PlanId.PROFESSIONAL)
     await reservation_service.cancel_reservation(reservation_id, restaurant_id)
     return RedirectResponse(url="/tables/reservations/history", status_code=303)
 
@@ -175,6 +201,8 @@ async def show_reservation(request : Request,
     payload = get_payload(request)
     required_roles(IdentityRole.OWNER, IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
     restaurant_id = payload.get("restaurant_id")
+    current_plan_id = await get_plan_in_cache(restaurant_id)
+    await required_plans(current_plan_id, PlanId.ADVANCED, PlanId.PROFESSIONAL)
     reservation_uuid = None
     if reservation_number:
         reservation_uuid = UUID(reservation_number)
@@ -191,6 +219,8 @@ async def filter_reservations(request : Request,
     payload = get_payload(request)
     required_roles(IdentityRole.OWNER, IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
     restaurant_id = payload.get("restaurant_id")
+    current_plan_id = await get_plan_in_cache(restaurant_id)
+    await required_plans(current_plan_id, PlanId.ADVANCED, PlanId.PROFESSIONAL)
     reservations = await reservation_service.filter_reservations(date, status, table_number, restaurant_id)
     return templates.TemplateResponse("all_reservations.html", {"request": request,
                                                                 "reservations": reservations,
@@ -199,6 +229,8 @@ async def filter_reservations(request : Request,
 @router.get("/r/{slug}/tables/get_free_table")
 async def find_free_table(request : Request, slug : str):
     restaurant = await get_restaurant_dependency(slug)
+    current_plan_id = await get_plan_in_cache(restaurant.id)
+    await required_plans(current_plan_id, PlanId.ADVANCED, PlanId.PROFESSIONAL)
     return templates.TemplateResponse("get_free_table.html", {"request" : request, "slug" : slug, "restaurant" : restaurant})
 
 @router.post("/r/{slug}/tables/get_free_table")
@@ -208,6 +240,8 @@ async def find_free_table(response : Response,
                           requested_datetime : datetime = Form(),
                           service : TableService = Depends(get_table_service_dependency)):
     restaurant = await get_restaurant_dependency(slug)
+    current_plan_id = await get_plan_in_cache(restaurant.id)
+    await required_plans(current_plan_id, PlanId.ADVANCED, PlanId.PROFESSIONAL)
     free_table = await service.get_free_table(people_amount, requested_datetime, restaurant.id)
     if not free_table:
         raise HTTPException(status_code=409, detail="К сожалению, все столики уже заняты. Попробуйте выбрать другое время")
@@ -239,6 +273,9 @@ async def confirm_reservation(request : Request,
                               surname : str = Form(..., min_length=2),
                               email : EmailStr = Form(),
                               service : ReservationService = Depends(get_reservation_service_dependency)):
+    restaurant = await get_restaurant_dependency(slug)
+    current_plan_id = await get_plan_in_cache(restaurant.id)
+    await required_plans(current_plan_id, PlanId.ADVANCED, PlanId.PROFESSIONAL)
     token = request.cookies.get("reservation_draft")
     if not token:
         raise HTTPException(status_code=400, detail="Срок действия бронирования истёк. Повторите поиск столика.")
@@ -274,6 +311,8 @@ async def get_available_tables(request : Request,
     await verify_internal_token(internal_token)
     payload = get_payload(request)
     required_roles(IdentityRole.OWNER, IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
+    current_plan_id = await get_plan_in_cache(str(restaurant_id))
+    await required_plans(current_plan_id, PlanId.ADVANCED, PlanId.PROFESSIONAL)
     available_tables = await service.find_all_available_tables(restaurant_id)
     return available_tables
 
