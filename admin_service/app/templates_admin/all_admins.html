@@ -1,17 +1,12 @@
 <!DOCTYPE html>
-
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Администраторы — BAR</title>
+    <title>{{ trans('admins_title') }} — BAR</title>
 
 <style>
-    * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
     :root {
         color-scheme: dark;
@@ -25,7 +20,6 @@
         --line: rgba(213, 166, 91, .16);
         --line-soft: rgba(255, 255, 255, .07);
         --text-main: #f5f5f5;
-        --text-soft: #c7c2bc;
         --warning: #d8c8a0;
         --warning-soft: rgba(199, 165, 106, .06);
         --warning-border: rgba(199, 165, 106, .3);
@@ -34,10 +28,7 @@
         --danger-border: rgba(217, 130, 130, .35);
     }
 
-    html {
-        min-width: 320px;
-        scroll-behavior: smooth;
-    }
+    html { min-width: 320px; scroll-behavior: smooth; }
 
     body {
         min-height: 100vh;
@@ -49,47 +40,21 @@
         overflow-x: hidden;
     }
 
-    button, input, select {
-        font: inherit;
-    }
+    button, input, select { font: inherit; }
 
-    a:focus-visible,
-    button:focus-visible {
+    a:focus-visible, button:focus-visible {
         outline: 2px solid var(--purple);
         outline-offset: 3px;
     }
 
-    .container {
-        width: 100%;
-        max-width: 950px;
-        margin: 0 auto;
-        padding: 40px 30px 60px;
-    }
+    .container { width: 100%; max-width: 950px; margin: 0 auto; padding: 40px 30px 60px; }
 
-    .top {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 45px;
-    }
+    .top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 45px; }
 
-    .back {
-        color: var(--muted-soft);
-        font-size: 11px;
-        text-decoration: none;
-        transition: color .2s;
-    }
+    .back { color: var(--muted-soft); font-size: 11px; text-decoration: none; transition: color .2s; }
+    .back:hover { color: var(--gold); }
 
-    .back:hover {
-        color: var(--gold);
-    }
-
-    .brand {
-        color: var(--gold);
-        font-family: Georgia, serif;
-        font-size: 11px;
-        letter-spacing: 3px;
-    }
+    .brand { color: var(--gold); font-family: Georgia, serif; font-size: 11px; letter-spacing: 3px; }
 
     .header {
         display: flex;
@@ -101,12 +66,7 @@
         border-bottom: 1px solid var(--line);
     }
 
-    .header span {
-        color: var(--gold);
-        font-size: 9px;
-        letter-spacing: 3px;
-        text-transform: uppercase;
-    }
+    .header span { color: var(--gold); font-size: 9px; letter-spacing: 3px; text-transform: uppercase; }
 
     .header h1 {
         margin-top: 7px;
@@ -135,11 +95,7 @@
         transition: background .2s, border-color .2s, color .2s;
     }
 
-    .add:hover {
-        background: rgba(213, 166, 91, .22);
-        border-color: var(--gold);
-        color: #e4b971;
-    }
+    .add:hover { background: rgba(213, 166, 91, .22); border-color: var(--gold); color: #e4b971; }
 
     .admins {
         overflow: hidden;
@@ -161,20 +117,10 @@
         transition: background .2s;
     }
 
-    .admin:hover {
-        background: rgba(38, 36, 38, .98);
-    }
+    .admin:hover { background: rgba(38, 36, 38, .98); }
+    .admin:last-child { border-bottom: none; }
 
-    .admin:last-child {
-        border-bottom: none;
-    }
-
-    .admin-info {
-        display: flex;
-        align-items: center;
-        gap: 14px;
-        min-width: 0;
-    }
+    .admin-info { display: flex; align-items: center; gap: 14px; min-width: 0; }
 
     .avatar {
         width: 46px;
@@ -193,29 +139,13 @@
         transition: .2s;
     }
 
-    .admin:hover .avatar {
-        background: var(--gold);
-        color: #252427;
-    }
+    .admin:hover .avatar { background: var(--gold); color: #252427; }
 
-    .admin-name {
-        color: var(--text-main);
-        font-size: 13px;
-        font-weight: 600;
-        overflow-wrap: anywhere;
-    }
+    .admin-name { color: var(--text-main); font-size: 13px; font-weight: 600; overflow-wrap: anywhere; }
 
-    .admin-role {
-        margin-top: 5px;
-        color: var(--muted-soft);
-        font-size: 10px;
-    }
+    .admin-role { margin-top: 5px; color: var(--muted-soft); font-size: 10px; }
 
-    .actions {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 7px;
-    }
+    .actions { display: flex; flex-wrap: wrap; gap: 7px; }
 
     .action {
         display: inline-flex;
@@ -235,31 +165,13 @@
         transition: background .2s, border-color .2s, color .2s;
     }
 
-    .action:hover {
-        background: rgba(52, 49, 52, .98);
-        border-color: var(--gold);
-        color: #ffffff;
-    }
+    .action:hover { background: rgba(52, 49, 52, .98); border-color: var(--gold); color: #ffffff; }
 
-    .delete:hover {
-        border-color: rgba(210, 85, 90, .5);
-        color: #d98282;
-    }
+    .delete:hover { border-color: rgba(210, 85, 90, .5); color: #d98282; }
 
-    .field-error {
-        padding: 15px 20px;
-        color: #d98282;
-        font-size: 11px;
-        text-align: center;
-    }
+    .field-error { padding: 15px 20px; color: #d98282; font-size: 11px; text-align: center; }
 
-    /* ===== Кнопка ключа вне рамки ===== */
-
-    .key-bar {
-        display: flex;
-        justify-content: flex-end;
-        margin-top: 18px;
-    }
+    .key-bar { display: flex; justify-content: flex-end; margin-top: 18px; }
 
     .key-button {
         display: inline-flex;
@@ -278,18 +190,8 @@
         transition: background .2s, border-color .2s, color .2s;
     }
 
-    .key-button:hover {
-        background: rgba(52, 49, 52, .98);
-        border-color: var(--gold);
-        color: var(--gold);
-    }
-
-    .key-button .key-icon {
-        font-size: 13px;
-        line-height: 1;
-    }
-
-    /* ===== Модальное окно с ключом ===== */
+    .key-button:hover { background: rgba(52, 49, 52, .98); border-color: var(--gold); color: var(--gold); }
+    .key-button .key-icon { font-size: 13px; line-height: 1; }
 
     .key-modal-overlay {
         position: fixed;
@@ -303,9 +205,7 @@
         backdrop-filter: blur(5px);
     }
 
-    .key-modal-overlay.active {
-        display: flex;
-    }
+    .key-modal-overlay.active { display: flex; }
 
     .key-modal {
         width: 100%;
@@ -327,20 +227,8 @@
         border-bottom: 1px solid var(--line-soft);
     }
 
-    .key-modal-title {
-        color: var(--text-main);
-        font-family: Georgia, serif;
-        font-size: 22px;
-        font-weight: normal;
-        line-height: 1.3;
-    }
-
-    .key-modal-subtitle {
-        margin-top: 6px;
-        color: var(--muted-soft);
-        font-size: 11px;
-        line-height: 1.5;
-    }
+    .key-modal-title { color: var(--text-main); font-family: Georgia, serif; font-size: 22px; font-weight: normal; line-height: 1.3; }
+    .key-modal-subtitle { margin-top: 6px; color: var(--muted-soft); font-size: 11px; line-height: 1.5; }
 
     .key-modal-close {
         flex-shrink: 0;
@@ -356,21 +244,11 @@
         transition: color .2s, border-color .2s;
     }
 
-    .key-modal-close:hover {
-        color: var(--gold);
-        border-color: var(--gold);
-    }
+    .key-modal-close:hover { color: var(--gold); border-color: var(--gold); }
 
-    .key-modal-body {
-        padding: 22px 24px;
-    }
+    .key-modal-body { padding: 22px 24px; }
 
-    .key-display {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        margin-bottom: 10px;
-    }
+    .key-display { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
 
     .key-display code {
         flex: 1;
@@ -405,30 +283,11 @@
         transition: background .2s, color .2s, border-color .2s;
     }
 
-    .key-copy-btn:hover {
-        background: rgba(199, 165, 106, .22);
-        border-color: rgba(199, 165, 106, .5);
-        color: #f0e2b8;
-    }
+    .key-copy-btn:hover { background: rgba(199, 165, 106, .22); border-color: rgba(199, 165, 106, .5); color: #f0e2b8; }
+    .key-copy-btn.copied { background: rgba(155, 200, 165, .16); border-color: rgba(155, 200, 165, .45); color: #9bc8a5; }
 
-    .key-copy-btn.copied {
-        background: rgba(155, 200, 165, .16);
-        border-color: rgba(155, 200, 165, .45);
-        color: #9bc8a5;
-    }
-
-    .key-hint {
-        color: var(--muted-soft);
-        font-size: 10px;
-        line-height: 1.6;
-        text-align: center;
-    }
-
-    .key-divider {
-        margin: 20px 0;
-        border: none;
-        border-top: 1px solid var(--line-soft);
-    }
+    .key-hint { color: var(--muted-soft); font-size: 10px; line-height: 1.6; text-align: center; }
+    .key-divider { margin: 20px 0; border: none; border-top: 1px solid var(--line-soft); }
 
     .generate-key-btn {
         display: inline-flex;
@@ -448,18 +307,8 @@
         transition: background .2s, border-color .2s, color .2s;
     }
 
-    .generate-key-btn:hover:not(:disabled) {
-        background: rgba(139, 92, 246, .22);
-        border-color: var(--purple);
-        color: #e0d4ff;
-    }
-
-    .generate-key-btn:disabled {
-        opacity: .5;
-        cursor: not-allowed;
-    }
-
-    /* ===== Предупреждение после генерации ===== */
+    .generate-key-btn:hover:not(:disabled) { background: rgba(139, 92, 246, .22); border-color: var(--purple); color: #e0d4ff; }
+    .generate-key-btn:disabled { opacity: .5; cursor: not-allowed; }
 
     .new-key-warning {
         display: none;
@@ -471,30 +320,11 @@
         animation: warningAppear .3s ease both;
     }
 
-    .new-key-warning.active {
-        display: block;
-    }
+    .new-key-warning.active { display: block; }
 
-    .new-key-warning-title {
-        margin-bottom: 8px;
-        color: #e8a0a0;
-        font-size: 11px;
-        font-weight: 700;
-        letter-spacing: 1px;
-        text-transform: uppercase;
-    }
-
-    .new-key-warning-text {
-        color: #e3b4b4;
-        font-size: 11px;
-        line-height: 1.6;
-    }
-
-    .new-key-warning-text strong {
-        color: #f0c8c8;
-        font-weight: 600;
-    }
-
+    .new-key-warning-title { margin-bottom: 8px; color: #e8a0a0; font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
+    .new-key-warning-text { color: #e3b4b4; font-size: 11px; line-height: 1.6; }
+    .new-key-warning-text strong { color: #f0c8c8; font-weight: 600; }
     .new-key-warning-recommendation {
         margin-top: 10px;
         padding-top: 10px;
@@ -510,80 +340,37 @@
     }
 
     @media (max-width: 600px) {
-        .container {
-            padding: 30px 15px 45px;
-        }
-
-        .top {
-            margin-bottom: 35px;
-        }
-
-        .header {
-            align-items: stretch;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        .add {
-            width: 100%;
-            text-align: center;
-        }
-
-        .admin {
-            align-items: flex-start;
-            flex-direction: column;
-        }
-
-        .actions {
-            width: 100%;
-        }
-
-        .action {
-            flex: 1;
-            text-align: center;
-        }
-
-        .key-bar {
-            justify-content: stretch;
-        }
-
-        .key-button {
-            width: 100%;
-            justify-content: center;
-        }
-
-        .key-display {
-            flex-direction: column;
-            align-items: stretch;
-        }
-
-        .key-copy-btn {
-            min-height: 40px;
-        }
+        .container { padding: 30px 15px 45px; }
+        .top { margin-bottom: 35px; }
+        .header { align-items: stretch; flex-direction: column; gap: 15px; }
+        .add { width: 100%; text-align: center; }
+        .admin { align-items: flex-start; flex-direction: column; }
+        .actions { width: 100%; }
+        .action { flex: 1; text-align: center; }
+        .key-bar { justify-content: stretch; }
+        .key-button { width: 100%; justify-content: center; }
+        .key-display { flex-direction: column; align-items: stretch; }
+        .key-copy-btn { min-height: 40px; }
     }
 </style>
-
 </head>
 
 <body>
     <main class="container">
 
     <div class="top">
-        <a href="/admin_panel" class="back">← Назад</a>
+        <a href="/admin_panel" class="back">{{ trans('back') }}</a>
         <span class="brand">BAR. ADMIN</span>
     </div>
 
     <header class="header">
         <div>
-            <span>MANAGEMENT</span>
-            <h1>Администраторы</h1>
+            <span>{{ trans('management') }}</span>
+            <h1>{{ trans('admins_title') }}</h1>
         </div>
 
-        <a
-            href="/admin_panel/all_admins/add_admin"
-            class="add"
-        >
-            + Добавить администратора
+        <a href="/admin_panel/all_admins/add_admin" class="add">
+            {{ trans('add_admin') }}
         </a>
     </header>
 
@@ -591,39 +378,17 @@
         {% for admin in admins %}
         <div class="admin">
             <div class="admin-info">
-                <div class="avatar">
-                    {{ admin.name[0] }}
-                </div>
-
+                <div class="avatar">{{ admin.name[0] }}</div>
                 <div>
-                    <div class="admin-name">
-                        {{ admin.name }} {{ admin.surname }}
-                    </div>
-
-                    <div class="admin-role">
-                        {{ admin.role.value }}
-                    </div>
+                    <div class="admin-name">{{ admin.name }} {{ admin.surname }}</div>
+                    <div class="admin-role">{{ admin.role.value }}</div>
                 </div>
             </div>
 
             <div class="actions">
-                <a
-                    href="/admin_panel/edit/{{ admin.id }}"
-                    class="action"
-                >
-                    Изменить
-                </a>
-
-                <form
-                    class="deleteAdminForm"
-                    data-admin-id="{{ admin.id }}"
-                >
-                    <button
-                        type="submit"
-                        class="action delete"
-                    >
-                        Удалить
-                    </button>
+                <a href="/admin_panel/edit/{{ admin.id }}" class="action">{{ trans('edit') }}</a>
+                <form class="deleteAdminForm" data-admin-id="{{ admin.id }}">
+                    <button type="submit" class="action delete">{{ trans('delete') }}</button>
                 </form>
             </div>
         </div>
@@ -636,7 +401,7 @@
     <div class="key-bar">
         <button type="button" class="key-button" id="openKeyModalButton">
             <span class="key-icon">🔑</span>
-            Показать секретный ключ
+            {{ trans('show_secret_key') }}
         </button>
     </div>
 
@@ -644,52 +409,31 @@
         <div class="key-modal">
             <div class="key-modal-header">
                 <div>
-                    <h2 class="key-modal-title" id="keyModalTitle">Секретный ключ</h2>
-                    <p class="key-modal-subtitle">Ключ доступа к аккаунту владельца</p>
+                    <h2 class="key-modal-title" id="keyModalTitle">{{ trans('secret_key') }}</h2>
+                    <p class="key-modal-subtitle">{{ trans('secret_key_desc') }}</p>
                 </div>
-
-                <button type="button" class="key-modal-close" aria-label="Закрыть" id="closeKeyModalButton">
-                    &times;
-                </button>
+                <button type="button" class="key-modal-close" aria-label="{{ trans('close') }}" id="closeKeyModalButton">&times;</button>
             </div>
 
             <div class="key-modal-body">
                 <div class="key-display">
                     <code id="maskedKey">{{ masked_key }}</code>
-                    <button type="button" class="key-copy-btn" id="copyKeyButton">
-                        Скопировать
-                    </button>
+                    <button type="button" class="key-copy-btn" id="copyKeyButton">{{ trans('copy') }}</button>
                 </div>
 
-                <p class="key-hint">
-                    Показаны только последние символы. Полный ключ скрыт в целях безопасности.
-                </p>
+                <p class="key-hint">{{ trans('masked_key_hint') }}</p>
 
                 <hr class="key-divider">
 
-                <button type="button" class="generate-key-btn" id="generateKeyButton">
-                    Сгенерировать новый ключ
-                </button>
+                <button type="button" class="generate-key-btn" id="generateKeyButton">{{ trans('generate_new_key') }}</button>
 
                 <div class="new-key-warning" id="newKeyWarning">
-                    <div class="new-key-warning-title">Обязательно сохраните новый ключ</div>
-
-                    <div class="new-key-warning-text">
-                        <strong>Сохраните этот ключ до выхода из страницы.</strong>
-                        После закрытия окна или перезагрузки страницы ключ больше не будет показан.
-                        Зайти в аккаунт без данного ключа будет невозможно.
-                    </div>
-
-                    <div class="new-key-warning-recommendation">
-                        Никому не показывайте этот ключ и ни с кем не делитесь им.
-                        Храните его в безопасном месте.
-                    </div>
-
+                    <div class="new-key-warning-title">{{ trans('save_key_title') }}</div>
+                    <div class="new-key-warning-text">{{ trans('save_key_text') | safe }}</div>
+                    <div class="new-key-warning-recommendation">{{ trans('save_key_recommendation') }}</div>
                     <div class="key-display" style="margin-top: 14px; margin-bottom: 0;">
                         <code id="newKeyValue"></code>
-                        <button type="button" class="key-copy-btn" id="copyNewKeyButton">
-                            Скопировать
-                        </button>
+                        <button type="button" class="key-copy-btn" id="copyNewKeyButton">{{ trans('copy') }}</button>
                     </div>
                 </div>
 
@@ -704,55 +448,41 @@
 <script src="/static/api.js"></script>
 
 <script>
+    const i18n = {
+        confirm_delete: "{{ trans('confirm_delete_admin') | escape }}",
+        error_delete: "{{ trans('error_delete_admin') | escape }}",
+        error_connection: "{{ trans('error_connection') | escape }}",
+        copied: "{{ trans('copied') | escape }}",
+        copy: "{{ trans('copy') | escape }}",
+        confirm_generate: "{{ trans('confirm_generate_key') | escape }}",
+        generating: "{{ trans('generating') | escape }}",
+        error_generate: "{{ trans('error_generate_key') | escape }}",
+        error_no_key: "{{ trans('error_no_key') | escape }}",
+        generate_new_key: "{{ trans('generate_new_key') | escape }}"
+    };
+
     const formError = document.getElementById("form-error");
 
     document.querySelectorAll(".deleteAdminForm").forEach(form => {
         form.addEventListener("submit", async function(event) {
             event.preventDefault();
-
             const adminId = form.dataset.adminId;
 
-            const confirmed = confirm(
-                "Вы действительно хотите удалить этого администратора?"
-            );
-
-            if (!confirmed) {
-                return;
-            }
+            if (!confirm(i18n.confirm_delete)) return;
 
             formError.textContent = "";
 
             try {
-                const response = await apiFetch(
-                    `/admin_panel/delete_admin/${adminId}`,
-                    {
-                        method: "POST"
-                    }
-                );
-
-                if (response.ok) {
-                    window.location.reload();
-                    return;
-                }
+                const response = await apiFetch(`/admin_panel/delete_admin/${adminId}`, { method: "POST" });
+                if (response.ok) { window.location.reload(); return; }
 
                 let data = null;
+                try { data = await response.json(); } catch { data = null; }
 
-                try {
-                    data = await response.json();
-                } catch {
-                    data = null;
-                }
-
-                formError.textContent =
-                    data?.detail ||
-                    data?.message ||
-                    "Не удалось удалить администратора.";
+                formError.textContent = data?.detail || data?.message || i18n.error_delete;
             } catch (error) {
                 console.error(error);
-
-                formError.textContent =
-                    "Не удалось подключиться к серверу. " +
-                    "Проверьте соединение.";
+                formError.textContent = i18n.error_connection;
             }
         });
     });
@@ -789,15 +519,11 @@
         closeKeyModalButton.addEventListener("click", closeKeyModal);
 
         keyModal.addEventListener("click", event => {
-            if (event.target === keyModal) {
-                closeKeyModal();
-            }
+            if (event.target === keyModal) closeKeyModal();
         });
 
         document.addEventListener("keydown", event => {
-            if (event.key === "Escape" && keyModal.classList.contains("active")) {
-                closeKeyModal();
-            }
+            if (event.key === "Escape" && keyModal.classList.contains("active")) closeKeyModal();
         });
 
         async function copyToClipboard(text, button, successLabel, defaultLabel) {
@@ -813,10 +539,8 @@
                     document.execCommand("copy");
                     selection.removeAllRanges();
                 }
-
                 button.textContent = successLabel;
                 button.classList.add("copied");
-
                 setTimeout(() => {
                     button.textContent = defaultLabel;
                     button.classList.remove("copied");
@@ -827,60 +551,29 @@
         }
 
         copyKeyButton.addEventListener("click", () => {
-            copyToClipboard(
-                maskedKey.textContent.trim(),
-                copyKeyButton,
-                "Скопировано",
-                "Скопировать"
-            );
+            copyToClipboard(maskedKey.textContent.trim(), copyKeyButton, i18n.copied, i18n.copy);
         });
 
         copyNewKeyButton.addEventListener("click", () => {
-            copyToClipboard(
-                newKeyValue.textContent.trim(),
-                copyNewKeyButton,
-                "Скопировано",
-                "Скопировать"
-            );
+            copyToClipboard(newKeyValue.textContent.trim(), copyNewKeyButton, i18n.copied, i18n.copy);
         });
 
         generateKeyButton.addEventListener("click", async () => {
             keyError.textContent = "";
             newKeyWarning.classList.remove("active");
 
-            const confirmed = confirm(
-                "Сгенерировать новый ключ? Старый ключ перестанет работать, " +
-                "и войти в аккаунт по нему будет невозможно."
-            );
-
-            if (!confirmed) {
-                return;
-            }
+            if (!confirm(i18n.confirm_generate)) return;
 
             generateKeyButton.disabled = true;
-            generateKeyButton.textContent = "Генерация...";
+            generateKeyButton.textContent = i18n.generating;
 
             try {
-                const response = await apiFetch(
-                    "/admin_panel/generate_key",
-                    {
-                        method: "POST"
-                    }
-                );
+                const response = await apiFetch("/admin_panel/generate_key", { method: "POST" });
 
                 if (!response.ok) {
                     let data = null;
-
-                    try {
-                        data = await response.json();
-                    } catch {
-                        data = null;
-                    }
-
-                    keyError.textContent =
-                        data?.detail ||
-                        data?.message ||
-                        "Не удалось сгенерировать новый ключ.";
+                    try { data = await response.json(); } catch { data = null; }
+                    keyError.textContent = data?.detail || data?.message || i18n.error_generate;
                     return;
                 }
 
@@ -888,29 +581,22 @@
                 const newKey = data?.key || data?.new_key || "";
 
                 if (!newKey) {
-                    keyError.textContent =
-                        "Сервер не вернул новый ключ.";
+                    keyError.textContent = i18n.error_no_key;
                     return;
                 }
 
                 newKeyValue.textContent = newKey;
                 newKeyWarning.classList.add("active");
-
-                newKeyWarning.scrollIntoView({
-                    behavior: "smooth",
-                    block: "nearest"
-                });
+                newKeyWarning.scrollIntoView({ behavior: "smooth", block: "nearest" });
             } catch (error) {
                 console.error("GENERATE KEY ERROR:", error);
-                keyError.textContent =
-                    "Не удалось подключиться к серверу.";
+                keyError.textContent = i18n.error_connection;
             } finally {
                 generateKeyButton.disabled = false;
-                generateKeyButton.textContent = "Сгенерировать новый ключ";
+                generateKeyButton.textContent = i18n.generate_new_key;
             }
         });
     }
 </script>
-
 </body>
 </html>

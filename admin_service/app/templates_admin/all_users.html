@@ -1,17 +1,12 @@
 <!DOCTYPE html>
-
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Клиенты | BAR. ADMIN</title>
+    <title>{{ trans('clients_title') }} | BAR. ADMIN</title>
 
 <style>
-    * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
         min-height: 100vh;
@@ -22,69 +17,24 @@
         font-family: Arial, sans-serif;
     }
 
-    .container {
-        width: 100%;
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 60px 35px;
-    }
+    .container { width: 100%; max-width: 1200px; margin: 0 auto; padding: 60px 35px; }
 
-    .top {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 45px;
-    }
+    .top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 45px; }
 
-    .back {
-        color: #77777d;
-        font-size: 11px;
-        text-decoration: none;
-        transition: color 0.2s;
-    }
+    .back { color: #77777d; font-size: 11px; text-decoration: none; transition: color 0.2s; }
+    .back:hover { color: #d5a65b; }
 
-    .back:hover {
-        color: #d5a65b;
-    }
+    .brand { color: #d5a65b; font-family: Georgia, serif; font-size: 11px; letter-spacing: 3px; }
 
-    .brand {
-        color: #d5a65b;
-        font-family: Georgia, serif;
-        font-size: 11px;
-        letter-spacing: 3px;
-    }
+    .header { text-align: center; margin-bottom: 35px; }
 
-    .header {
-        text-align: center;
-        margin-bottom: 35px;
-    }
+    .header-label { margin-bottom: 10px; color: #d5a65b; font-size: 9px; letter-spacing: 3px; }
 
-    .header-label {
-        margin-bottom: 10px;
-        color: #d5a65b;
-        font-size: 9px;
-        letter-spacing: 3px;
-    }
+    .header h1 { font-family: Georgia, serif; font-size: 42px; font-weight: normal; letter-spacing: 3px; }
 
-    .header h1 {
-        font-family: Georgia, serif;
-        font-size: 42px;
-        font-weight: normal;
-        letter-spacing: 3px;
-    }
+    .description { margin-top: 12px; color: #77777d; font-size: 13px; }
 
-    .description {
-        margin-top: 12px;
-        color: #77777d;
-        font-size: 13px;
-    }
-
-    .search-form {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        margin-bottom: 25px;
-    }
+    .search-form { display: flex; align-items: center; gap: 8px; margin-bottom: 25px; }
 
     .search-input {
         flex: 1;
@@ -100,16 +50,10 @@
         transition: border-color 0.2s;
     }
 
-    .search-input::placeholder {
-        color: #77777d;
-    }
+    .search-input::placeholder { color: #77777d; }
+    .search-input:focus { border-color: rgba(139, 92, 246, 0.55); }
 
-    .search-input:focus {
-        border-color: rgba(139, 92, 246, 0.55);
-    }
-
-    .search-button,
-    .reset-button {
+    .search-button, .reset-button {
         display: inline-flex;
         align-items: center;
         justify-content: center;
@@ -123,29 +67,11 @@
         transition: background 0.2s, border-color 0.2s, color 0.2s;
     }
 
-    .search-button {
-        background: rgba(42, 40, 42, 0.95);
-        border: 1px solid rgba(139, 92, 246, 0.35);
-        color: #a78bfa;
-    }
+    .search-button { background: rgba(42, 40, 42, 0.95); border: 1px solid rgba(139, 92, 246, 0.35); color: #a78bfa; }
+    .search-button:hover { background: rgba(52, 49, 52, 0.98); border-color: #a78bfa; color: #c4b5fd; }
 
-    .search-button:hover {
-        background: rgba(52, 49, 52, 0.98);
-        border-color: #a78bfa;
-        color: #c4b5fd;
-    }
-
-    .reset-button {
-        background: rgba(42, 40, 42, 0.95);
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        color: #aaa9ae;
-    }
-
-    .reset-button:hover {
-        background: rgba(52, 49, 52, 0.98);
-        border-color: #77777d;
-        color: #ffffff;
-    }
+    .reset-button { background: rgba(42, 40, 42, 0.95); border: 1px solid rgba(255, 255, 255, 0.08); color: #aaa9ae; }
+    .reset-button:hover { background: rgba(52, 49, 52, 0.98); border-color: #77777d; color: #ffffff; }
 
     .error {
         display: none;
@@ -193,21 +119,10 @@
         transition: background 0.2s, border-color 0.2s;
     }
 
-    .client:last-child {
-        border-bottom: none;
-    }
+    .client:last-child { border-bottom: none; }
+    .client:hover { background: rgba(38, 36, 38, 0.98); border-color: rgba(213, 166, 91, 0.18); }
 
-    .client:hover {
-        background: rgba(38, 36, 38, 0.98);
-        border-color: rgba(213, 166, 91, 0.18);
-    }
-
-    .client-main {
-        display: flex;
-        align-items: center;
-        gap: 14px;
-        min-width: 0;
-    }
+    .client-main { display: flex; align-items: center; gap: 14px; min-width: 0; }
 
     .avatar {
         width: 46px;
@@ -225,30 +140,12 @@
         transition: 0.2s;
     }
 
-    .client:hover .avatar {
-        background: #d5a65b;
-        color: #252427;
-    }
+    .client:hover .avatar { background: #d5a65b; color: #252427; }
 
-    .client-name {
-        margin-bottom: 5px;
-        color: #ffffff;
-        font-size: 13px;
-        font-weight: 600;
-    }
+    .client-name { margin-bottom: 5px; color: #ffffff; font-size: 13px; font-weight: 600; }
+    .client-email { color: #77777d; font-size: 10px; word-break: break-all; }
 
-    .client-email {
-        color: #77777d;
-        font-size: 10px;
-        word-break: break-all;
-    }
-
-    .status-wrapper {
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 8px;
-    }
+    .status-wrapper { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; }
 
     .status {
         display: inline-flex;
@@ -260,32 +157,12 @@
         white-space: nowrap;
     }
 
-    .status::before {
-        content: "";
-        width: 5px;
-        height: 5px;
-        flex-shrink: 0;
-        border-radius: 50%;
-        background: currentColor;
-    }
+    .status::before { content: ""; width: 5px; height: 5px; flex-shrink: 0; border-radius: 50%; background: currentColor; }
 
-    .status.active {
-        background: rgba(100, 130, 80, 0.12);
-        border: 1px solid rgba(120, 150, 95, 0.25);
-        color: #9aaa8b;
-    }
+    .status.active { background: rgba(100, 130, 80, 0.12); border: 1px solid rgba(120, 150, 95, 0.25); color: #9aaa8b; }
+    .status.blocked { background: rgba(150, 55, 65, 0.16); border: 1px solid rgba(210, 85, 90, 0.32); color: #d98282; }
 
-    .status.blocked {
-        background: rgba(150, 55, 65, 0.16);
-        border: 1px solid rgba(210, 85, 90, 0.32);
-        color: #d98282;
-    }
-
-    .actions {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 7px;
-    }
+    .actions { display: flex; flex-wrap: wrap; gap: 7px; }
 
     .action {
         display: inline-flex;
@@ -304,43 +181,15 @@
         transition: background 0.2s, border-color 0.2s, color 0.2s;
     }
 
-    .action:hover {
-        background: rgba(52, 49, 52, 0.98);
-        border-color: #d5a65b;
-        color: #ffffff;
-    }
+    .action:hover { background: rgba(52, 49, 52, 0.98); border-color: #d5a65b; color: #ffffff; }
+    .action.info:hover { border-color: #d5a65b; color: #d5a65b; }
+    .action.history:hover { border-color: rgba(190, 145, 80, 0.65); color: #d5a65b; }
 
-    .action.info:hover {
-        border-color: #d5a65b;
-        color: #d5a65b;
-    }
+    .status-action { display: flex; justify-content: flex-end; }
+    .status-button { width: 125px; }
 
-    .action.history:hover {
-        border-color: rgba(190, 145, 80, 0.65);
-        color: #d5a65b;
-    }
-
-    .status-action {
-        display: flex;
-        justify-content: flex-end;
-    }
-
-    .status-button {
-        width: 125px;
-    }
-
-    /* Кнопка "Связаться с клиентом" — на месте бывшей "Заблокировать" */
-    .action.contact {
-        background: rgba(45, 35, 60, 0.55);
-        border-color: rgba(139, 92, 246, 0.4);
-        color: #a78bfa;
-    }
-
-    .action.contact:hover {
-        background: rgba(60, 45, 85, 0.75);
-        border-color: #a78bfa;
-        color: #c4b5fd;
-    }
+    .action.contact { background: rgba(45, 35, 60, 0.55); border-color: rgba(139, 92, 246, 0.4); color: #a78bfa; }
+    .action.contact:hover { background: rgba(60, 45, 85, 0.75); border-color: #a78bfa; color: #c4b5fd; }
 
     .empty {
         padding: 55px 30px;
@@ -351,142 +200,53 @@
         box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
     }
 
-    .empty-title {
-        color: #ffffff;
-        font-family: Georgia, serif;
-        font-size: 18px;
-    }
+    .empty-title { color: #ffffff; font-family: Georgia, serif; font-size: 18px; }
+    .empty-description { margin-top: 9px; color: #77777d; font-size: 10px; }
 
-    .empty-description {
-        margin-top: 9px;
-        color: #77777d;
-        font-size: 10px;
-    }
-
-    .footer {
-        padding-top: 35px;
-        text-align: center;
-        color: #4f4f54;
-        font-size: 9px;
-        letter-spacing: 1px;
-    }
+    .footer { padding-top: 35px; text-align: center; color: #4f4f54; font-size: 9px; letter-spacing: 1px; }
 
     @media (max-width: 900px) {
-        .table-header {
-            display: none;
-        }
-
-        .client {
-            display: grid;
-            grid-template-columns: 1fr 140px;
-            gap: 18px;
-            padding: 20px;
-        }
-
-        .client-main {
-            grid-column: 1 / -1;
-        }
-
-        .status-wrapper {
-            grid-column: 1;
-        }
-
-        .actions {
-            grid-column: 1 / -1;
-        }
-
-        .status-action {
-            grid-column: 2;
-            grid-row: 2;
-            justify-content: flex-end;
-        }
+        .table-header { display: none; }
+        .client { display: grid; grid-template-columns: 1fr 140px; gap: 18px; padding: 20px; }
+        .client-main { grid-column: 1 / -1; }
+        .status-wrapper { grid-column: 1; }
+        .actions { grid-column: 1 / -1; }
+        .status-action { grid-column: 2; grid-row: 2; justify-content: flex-end; }
     }
 
     @media (max-width: 600px) {
-        .container {
-            padding: 35px 18px;
-        }
-
-        .top {
-            margin-bottom: 35px;
-        }
-
-        .header {
-            margin-bottom: 30px;
-        }
-
-        .header h1 {
-            font-size: 34px;
-        }
-
-        .search-form {
-            flex-direction: column;
-            align-items: stretch;
-        }
-
-        .search-input,
-        .search-button,
-        .reset-button {
-            width: 100%;
-        }
-
-        .client {
-            display: flex;
-            flex-direction: column;
-            align-items: stretch;
-            gap: 15px;
-        }
-
-        .status-action {
-            justify-content: flex-start;
-        }
-
-        .status-button {
-            width: 100%;
-        }
-
-        .actions {
-            flex-direction: column;
-        }
-
-        .action {
-            width: 100%;
-            text-align: center;
-        }
+        .container { padding: 35px 18px; }
+        .top { margin-bottom: 35px; }
+        .header { margin-bottom: 30px; }
+        .header h1 { font-size: 34px; }
+        .search-form { flex-direction: column; align-items: stretch; }
+        .search-input, .search-button, .reset-button { width: 100%; }
+        .client { display: flex; flex-direction: column; align-items: stretch; gap: 15px; }
+        .status-action { justify-content: flex-start; }
+        .status-button { width: 100%; }
+        .actions { flex-direction: column; }
+        .action { width: 100%; text-align: center; }
     }
 </style>
-
 </head>
 
 <body>
     <div class="container">
         <div class="top">
-            <a href="/admin_panel" class="back">← Вернуться в панель управления</a>
+            <a href="/admin_panel" class="back">{{ trans('back_to_panel') }}</a>
             <span class="brand">BAR. ADMIN</span>
         </div>
 
     <div class="header">
-        <div class="header-label">CLIENTS</div>
-        <h1>Клиенты</h1>
-        <div class="description">
-            Управление зарегистрированными клиентами заведения
-        </div>
+        <div class="header-label">{{ trans('clients_label') }}</div>
+        <h1>{{ trans('clients_title') }}</h1>
+        <div class="description">{{ trans('clients_description') }}</div>
     </div>
 
     <form method="get" action="/admin_panel/all_customers/found_customer" class="search-form">
-        <input
-            type="text"
-            name="client_id"
-            class="search-input"
-            placeholder="Введите номер клиента"
-            value="{{ client_id or '' }}"
-        >
-        <button type="submit" class="search-button">
-            Найти
-        </button>
-        <a href="/admin_panel/all_customers" class="reset-button">
-            Сбросить
-        </a>
+        <input type="text" name="client_id" class="search-input" placeholder="{{ trans('enter_client_id') }}" value="{{ client_id or '' }}">
+        <button type="submit" class="search-button">{{ trans('search') }}</button>
+        <a href="/admin_panel/all_customers" class="reset-button">{{ trans('reset') }}</a>
     </form>
 
     <div id="pageError" class="error"></div>
@@ -494,95 +254,54 @@
     {% if not users %}
         <div class="empty">
             {% if client_id %}
-                <div class="empty-title">
-                    Клиент не найден
-                </div>
-                <div class="empty-description">
-                    Клиента с номером {{ client_id }} не существует.
-                </div>
+                <div class="empty-title">{{ trans('client_not_found') }}</div>
+                <div class="empty-description">{{ trans('client_not_found_desc', id=client_id) }}</div>
             {% else %}
-                <div class="empty-title">
-                    У вас пока нет зарегистрированных клиентов
-                </div>
-                <div class="empty-description">
-                    Зарегистрированные пользователи появятся здесь.
-                </div>
+                <div class="empty-title">{{ trans('no_clients_title') }}</div>
+                <div class="empty-description">{{ trans('no_clients_desc') }}</div>
             {% endif %}
         </div>
     {% else %}
         <div class="clients">
             <div class="table-header">
-                <div>Клиент</div>
-                <div>Статус</div>
-                <div>Действия</div>
-                <div>Связь</div>
+                <div>{{ trans('col_client') }}</div>
+                <div>{{ trans('col_status') }}</div>
+                <div>{{ trans('col_actions') }}</div>
+                <div>{{ trans('col_contact') }}</div>
             </div>
 
             {% for user in users %}
-                <div
-                    class="client"
-                    data-client-id="{{ user.id }}"
-                >
+                <div class="client" data-client-id="{{ user.id }}">
                     <div class="client-main">
-                        <div class="avatar">
-                            {{ user.name[0] }}{{ user.surname[0] }}
-                        </div>
-
+                        <div class="avatar">{{ user.name[0] }}{{ user.surname[0] }}</div>
                         <div>
-                            <div class="client-name">
-                                {{ user.name }} {{ user.surname }}
-                            </div>
-
-                            <div class="client-email">
-                                {{ user.email }}
-                            </div>
+                            <div class="client-name">{{ user.name }} {{ user.surname }}</div>
+                            <div class="client-email">{{ user.email }}</div>
                         </div>
                     </div>
 
                     <div class="status-wrapper">
                         {% if user.status == "blocked" %}
-                            <div class="status blocked">
-                                Заблокирован
-                            </div>
+                            <div class="status blocked">{{ trans('status_blocked') }}</div>
                         {% else %}
-                            <div class="status active">
-                                Активен
-                            </div>
+                            <div class="status active">{{ trans('status_active') }}</div>
                         {% endif %}
                     </div>
 
                     <div class="actions">
-                        <a
-                            href="/admin_panel/all_customers/{{ user.identity_id }}"
-                            class="action info"
-                        >
-                            Информация
-                        </a>
-
-                        <a
-                            href="/admin_panel/all_customers/orders/{{ user.identity_id }}"
-                            class="action history"
-                        >
-                            История заказов
-                        </a>
+                        <a href="/admin_panel/all_customers/{{ user.identity_id }}" class="action info">{{ trans('info') }}</a>
+                        <a href="/admin_panel/all_customers/orders/{{ user.identity_id }}" class="action history">{{ trans('order_history') }}</a>
                     </div>
 
                     <div class="status-action">
-                        <a
-                            href="/support/admin?identity_id={{ user.identity_id }}"
-                            class="action contact status-button"
-                        >
-                            Связаться с клиентом
-                        </a>
+                        <a href="/support/admin?identity_id={{ user.identity_id }}" class="action contact status-button">{{ trans('contact_client') }}</a>
                     </div>
                 </div>
             {% endfor %}
         </div>
     {% endif %}
 
-    <footer class="footer">
-        BAR. ADMIN PANEL
-    </footer>
+    <footer class="footer">BAR. ADMIN PANEL</footer>
 </div>
 
 <script src="/static/api.js"></script>

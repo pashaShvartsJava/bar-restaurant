@@ -175,10 +175,11 @@ async def edit_password(request: Request,service: UserService = Depends(get_serv
 async def get_all_users(request : Request,
                         service : UserService = Depends(get_service_dependency),
                         internal_token : str = Header(..., alias="internal_token")):
+    print("USER-SERVICE COOKIES:", request.cookies, flush=True)
+    print("USER-SERVICE HEADERS:", dict(request.headers), flush=True)
     payload = get_payload(request)
     required_roles(IdentityRole.OWNER, IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
-    if internal_token != INTERNAL_TOKEN or internal_token is None:
-        raise HTTPException(detail="Forbidden", status_code=403)
+    await verify_internal_token(internal_token)
     restaurant_id = payload.get("restaurant_id")
     current_plan_id = await get_plan_in_cache(restaurant_id)
     await required_plans(current_plan_id, PlanId.ONLINE, PlanId.ADVANCED, PlanId.PROFESSIONAL)

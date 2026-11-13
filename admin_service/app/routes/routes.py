@@ -308,7 +308,9 @@ async def show_all_customers(request : Request):
     current_plan_id = await get_plan_in_cache(restaurant_id)
     await required_plans(current_plan_id, PlanId.ONLINE, PlanId.ADVANCED, PlanId.PROFESSIONAL)
     async with httpx.AsyncClient() as client:
-        response = await client.get(url="http://user-service:8005/get_all_users", headers={"internal_token" : INTERNAL_TOKEN} )
+        response = await client.get(url="http://user-service:8005/get_all_users",
+                                    headers={"internal_token" : INTERNAL_TOKEN},
+                                    cookies=request.cookies)
         response.raise_for_status()
     users = response.json()
 
