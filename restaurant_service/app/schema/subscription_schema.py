@@ -6,7 +6,8 @@ from uuid import UUID
 from enum import Enum
 
 class PlanId(str, Enum):
-    STARTER = "starter"
+    BASIC = "basic"
+    ONLINE = "online"
     ADVANCED = "advanced"
     PROFESSIONAL = "professional"
 
@@ -23,10 +24,18 @@ class Currency(str, Enum):
     PLN = "PLN"
 
 PLANS = {
-    PlanId.STARTER: {
-        "name": "Starter",
+    PlanId.BASIC: {
+        "name": "Basic",
         "monthly": Decimal("39.99"),
         "yearly": Decimal("419.99"),
+        "trial_days": 3,
+        "currency": Currency.EUR,
+        "order_commission_percent": 11,
+    },
+    PlanId.ONLINE: {
+        "name": "Online",
+        "monthly": Decimal("59.99"),
+        "yearly": Decimal("629.99"),
         "trial_days": 3,
         "currency": Currency.EUR,
         "order_commission_percent": 9,
@@ -45,7 +54,7 @@ PLANS = {
         "yearly": Decimal("2099.99"),
         "trial_days": 14,
         "currency": Currency.EUR,
-        "order_commission_percent": 0,
+        "order_commission_percent": 1,
     },
 }
 

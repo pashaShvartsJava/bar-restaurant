@@ -25,7 +25,8 @@ class Currency(str, Enum):
     PLN = "PLN"
 
 class PlanId(str, Enum):
-    STARTER = "starter"
+    BASIC = "basic"
+    ONLINE = "online"
     ADVANCED = "advanced"
     PROFESSIONAL = "professional"
 

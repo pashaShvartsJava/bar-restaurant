@@ -6,7 +6,7 @@ from fastapi import APIRouter, Request, Depends, HTTPException
 from fastapi.params import Header
 from starlette.templating import Jinja2Templates
 
-from ..schemas.subscription_schema import SubscriptionCheckoutDTO, PlanId, STRIPE_PRICE_IDS
+from ..schemas.subscription_schema import SubscriptionCheckoutDTO, PlanId, STRIPE_PRICE_IDS, SubscriptionDataDTO
 from ..security.authorization.authorization import required_roles
 from ..security.internal_security import verify_internal_token
 from ..dependencies.dependencies import get_subscription_service_dependency
@@ -281,4 +281,13 @@ async def resume_subscription(request: Request, sub_service: SubscriptionService
         raise HTTPException(404, "No subscription")
     await stripe.Subscription.modify_async(sub.stripe_subscription_id, cancel_at_period_end=False)
     return {"status": "ok"}
+
+@router.get("/subscription/get_subscription")
+async def get_subscription_dto(restaurant_id : str,
+                               internal_token : str = Header(..., alias="internal_token"),
+                               service : SubscriptionService = Depends(get_subscription_service_dependency)):
+    await verify_internal_token(internal_token)
+    subscription = await service.get_subscription_by_restaurant_id(uuid.UUID(restaurant_id))
+    return SubscriptionDataDTO.model_validate(subscription)
+
 

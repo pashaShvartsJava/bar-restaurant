@@ -7,27 +7,13 @@
     <title>Admin Panel {{ restaurant_name }}</title>
 
 <style>
-    * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
         min-height: 100vh;
         background:
-            radial-gradient(
-                ellipse at 50% 0%,
-                rgba(220, 120, 100, 0.40) 0%,
-                rgba(150, 65, 80, 0.45) 40%,
-                rgba(18, 18, 21, 0.97) 80%
-            ),
-            linear-gradient(
-                180deg,
-                #4a292d 0%,
-                #281b20 50%,
-                #101012 100%
-            );
+            radial-gradient(ellipse at 50% 0%, rgba(220, 120, 100, 0.40) 0%, rgba(150, 65, 80, 0.45) 40%, rgba(18, 18, 21, 0.97) 80%),
+            linear-gradient(180deg, #4a292d 0%, #281b20 50%, #101012 100%);
         color: #f2c1a8;
         font-family: Arial, sans-serif;
         position: relative;
@@ -40,10 +26,7 @@
         padding: 70px 35px;
     }
 
-    .header {
-        text-align: center;
-        margin-bottom: 65px;
-    }
+    .header { text-align: center; margin-bottom: 65px; }
 
     .header h1 {
         font-family: Georgia, serif;
@@ -52,9 +35,7 @@
         letter-spacing: 3px;
     }
 
-    .header h1 span {
-        color: #d5a65b;
-    }
+    .header h1 span { color: #d5a65b; }
 
     .header p {
         margin-top: 12px;
@@ -62,9 +43,7 @@
         font-size: 13px;
     }
 
-    .section {
-        margin-bottom: 50px;
-    }
+    .section { margin-bottom: 50px; }
 
     .section-title {
         display: flex;
@@ -81,25 +60,11 @@
         text-transform: uppercase;
     }
 
-    .section-line {
-        height: 1px;
-        flex: 1;
-        background: #29292d;
-    }
+    .section-line { height: 1px; flex: 1; background: #29292d; }
 
-    .buttons {
-        display: grid;
-        gap: 14px;
-    }
-
-    .buttons-main {
-        grid-template-columns: repeat(3, 1fr);
-    }
-
-    .buttons-secondary,
-    .buttons-management {
-        grid-template-columns: repeat(3, 1fr);
-    }
+    .buttons { display: grid; gap: 14px; }
+    .buttons-main { grid-template-columns: repeat(3, 1fr); }
+    .buttons-secondary, .buttons-management { grid-template-columns: repeat(3, 1fr); }
 
     .button {
         position: relative;
@@ -116,10 +81,7 @@
         color: #ffffff;
         text-decoration: none;
         backdrop-filter: blur(8px);
-        transition:
-            background 0.2s,
-            border-color 0.2s,
-            transform 0.2s;
+        transition: background 0.2s, border-color 0.2s, transform 0.2s;
     }
 
     .button:hover {
@@ -141,38 +103,16 @@
         transition: 0.2s;
     }
 
-    .button:hover .icon {
-        background: #d5a65b;
-    }
+    .button:hover .icon { background: #d5a65b; }
 
-    .button h3 {
-        font-size: 14px;
-        font-weight: 600;
-    }
+    .button h3 { font-size: 14px; font-weight: 600; }
+    .button p { margin-top: 6px; color: #77777d; font-size: 10px; }
 
-    .button p {
-        margin-top: 6px;
-        color: #77777d;
-        font-size: 10px;
-    }
+    .button-large { min-height: 155px; }
+    .button-large .icon { width: 56px; height: 56px; font-size: 24px; }
+    .button-large h3 { font-size: 16px; }
 
-    .button-large {
-        min-height: 155px;
-    }
-
-    .button-large .icon {
-        width: 56px;
-        height: 56px;
-        font-size: 24px;
-    }
-
-    .button-large h3 {
-        font-size: 16px;
-    }
-
-    .support-button {
-        position: relative;
-    }
+    .support-button { position: relative; }
 
     .support-badge {
         position: absolute;
@@ -192,6 +132,51 @@
         font-weight: 600;
     }
 
+    /* ===== Заблокированные кнопки ===== */
+    .button.button-locked {
+        background: rgba(28, 28, 32, 0.7);
+        border-color: rgba(255, 255, 255, 0.08);
+        cursor: default;
+        opacity: 0.85;
+    }
+
+    .button.button-locked:hover {
+        transform: none;
+        border-color: rgba(255, 255, 255, 0.08);
+    }
+
+    .button.button-locked .icon {
+        background: #242427;
+        opacity: 0.7;
+    }
+
+    .button.button-locked:hover .icon { background: #242427; }
+    .button.button-locked h3 { color: #b4b3b8; }
+    .button.button-locked p { color: #7d7b82; }
+
+    .upgrade-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        margin-top: 10px;
+        padding: 4px 10px;
+        border: 1px solid rgba(213, 166, 91, 0.35);
+        border-radius: 20px;
+        background: rgba(213, 166, 91, 0.08);
+        color: #d5a65b;
+        font-size: 9px;
+        font-weight: 600;
+        letter-spacing: .3px;
+        text-decoration: none;
+        transition: background .2s, border-color .2s;
+    }
+
+    .upgrade-badge:hover {
+        background: rgba(213, 166, 91, 0.16);
+        border-color: #d5a65b;
+        color: #e8c58e;
+    }
+
     .footer {
         padding-top: 35px;
         text-align: center;
@@ -200,8 +185,7 @@
         letter-spacing: 1px;
     }
 
-    /* ===== Боковое выдвижное меню ===== */
-
+    /* ===== Боковое меню ===== */
     .side-menu {
         position: fixed;
         top: 20px;
@@ -213,33 +197,16 @@
         width: 320px;
         padding: 14px;
         background:
-            radial-gradient(
-                ellipse at 50% 0%,
-                rgba(220, 120, 100, 0.12) 0%,
-                rgba(150, 65, 80, 0.14) 40%,
-                rgba(25, 20, 22, 0.92) 80%
-            ),
-            linear-gradient(
-                180deg,
-                rgba(40, 25, 28, 0.96) 0%,
-                rgba(24, 18, 20, 0.96) 50%,
-                rgba(16, 14, 16, 0.96) 100%
-            );
+            radial-gradient(ellipse at 50% 0%, rgba(220, 120, 100, 0.12) 0%, rgba(150, 65, 80, 0.14) 40%, rgba(25, 20, 22, 0.92) 80%),
+            linear-gradient(180deg, rgba(40, 25, 28, 0.96) 0%, rgba(24, 18, 20, 0.96) 50%, rgba(16, 14, 16, 0.96) 100%);
         border: 1px solid rgba(255, 255, 255, 0.06);
         border-radius: 18px;
-        box-shadow:
-            0 25px 70px rgba(0, 0, 0, 0.5),
-            inset 0 1px rgba(255, 255, 255, 0.03);
+        box-shadow: 0 25px 70px rgba(0, 0, 0, 0.5), inset 0 1px rgba(255, 255, 255, 0.03);
         backdrop-filter: blur(14px);
-        transition:
-            width 0.28s ease,
-            padding 0.28s ease;
+        transition: width 0.28s ease, padding 0.28s ease;
     }
 
-    .side-menu.collapsed {
-        width: 64px;
-        padding: 14px 8px;
-    }
+    .side-menu.collapsed { width: 64px; padding: 14px 8px; }
 
     .side-menu-header {
         display: flex;
@@ -269,19 +236,7 @@
         white-space: nowrap;
     }
 
-    .side-menu-brand span {
-        color: #8a8082;
-        font-size: 9px;
-        letter-spacing: 1.2px;
-        text-transform: uppercase;
-        white-space: nowrap;
-    }
-
-    .side-menu.collapsed .side-menu-brand {
-        opacity: 0;
-        width: 0;
-        pointer-events: none;
-    }
+    .side-menu.collapsed .side-menu-brand { opacity: 0; width: 0; pointer-events: none; }
 
     .side-menu-toggle {
         flex-shrink: 0;
@@ -306,11 +261,7 @@
         color: #f2c1a8;
     }
 
-    .side-menu-list {
-        display: flex;
-        flex-direction: column;
-        gap: 4px;
-    }
+    .side-menu-list { display: flex; flex-direction: column; gap: 4px; }
 
     .side-menu-item {
         display: flex;
@@ -330,10 +281,7 @@
         cursor: pointer;
         white-space: nowrap;
         overflow: hidden;
-        transition:
-            background 0.2s,
-            border-color 0.2s,
-            color 0.2s;
+        transition: background 0.2s, border-color 0.2s, color 0.2s;
     }
 
     .side-menu-item:hover {
@@ -363,27 +311,12 @@
         transition: opacity 0.2s ease;
     }
 
-    .side-menu.collapsed .side-menu-item {
-        justify-content: center;
-        padding: 11px 6px;
-    }
+    .side-menu.collapsed .side-menu-item { justify-content: center; padding: 11px 6px; }
+    .side-menu.collapsed .side-menu-item .menu-label { opacity: 0; width: 0; pointer-events: none; }
 
-    .side-menu.collapsed .side-menu-item .menu-label {
-        opacity: 0;
-        width: 0;
-        pointer-events: none;
-    }
+    .side-menu-divider { height: 1px; margin: 6px 8px; background: rgba(255, 255, 255, 0.06); }
 
-    .side-menu-divider {
-        height: 1px;
-        margin: 6px 8px;
-        background: rgba(255, 255, 255, 0.06);
-    }
-
-    .side-menu-item.support-item {
-        position: relative;
-    }
-
+    .side-menu-item.support-item { position: relative; }
     .side-menu-item.support-item .support-badge {
         position: absolute;
         top: 6px;
@@ -392,39 +325,27 @@
         height: 18px;
         font-size: 9px;
     }
+    .side-menu.collapsed .side-menu-item.support-item .support-badge { top: 3px; right: 3px; }
 
-    .side-menu.collapsed .side-menu-item.support-item .support-badge {
-        top: 3px;
-        right: 3px;
-    }
-
-    .side-menu-item.logout-item {
-        color: #b8a8a6;
-    }
-
+    .side-menu-item.logout-item { color: #b8a8a6; }
     .side-menu-item.logout-item:hover {
         background: rgba(120, 60, 60, 0.18);
         border-color: rgba(180, 90, 90, 0.28);
         color: #e0b0a8;
     }
 
-    .side-menu-item:disabled {
-        opacity: 0.55;
-        cursor: not-allowed;
-    }
+    .side-menu-item:disabled { opacity: 0.55; cursor: not-allowed; }
 
     .side-menu-item.connect-item--connected {
         background: rgba(100, 160, 100, 0.08);
         border-color: rgba(120, 180, 120, 0.3);
         color: #b8d9b8;
     }
-
     .side-menu-item.connect-item--connected:hover {
         background: rgba(100, 160, 100, 0.16);
         border-color: rgba(140, 200, 140, 0.5);
         color: #d4ead4;
     }
-
     .side-menu-item.connect-item--connected .menu-icon {
         background: rgba(100, 160, 100, 0.15);
         border-color: rgba(120, 180, 120, 0.35);
@@ -436,13 +357,11 @@
         border-color: rgba(213, 166, 91, 0.3);
         color: #e8c58e;
     }
-
     .side-menu-item.connect-item--pending:hover {
         background: rgba(213, 166, 91, 0.16);
         border-color: rgba(213, 166, 91, 0.5);
         color: #f0cc86;
     }
-
     .side-menu-item.connect-item--pending .menu-icon {
         background: rgba(213, 166, 91, 0.12);
         border-color: rgba(213, 166, 91, 0.3);
@@ -454,13 +373,11 @@
         border-color: rgba(200, 90, 90, 0.3);
         color: #d98282;
     }
-
     .side-menu-item.connect-item--not-connected:hover {
         background: rgba(180, 70, 70, 0.16);
         border-color: rgba(220, 110, 110, 0.5);
         color: #e39a9a;
     }
-
     .side-menu-item.connect-item--not-connected .menu-icon {
         background: rgba(180, 70, 70, 0.12);
         border-color: rgba(200, 90, 90, 0.3);
@@ -479,12 +396,9 @@
         line-height: 1.5;
     }
 
-    .side-menu-error.show {
-        display: block;
-    }
+    .side-menu-error.show { display: block; }
 
-    /* ===== VAT-карточка внутри сайдбара ===== */
-
+    /* ===== VAT-карточка ===== */
     .side-menu-vat {
         margin: 8px 6px 0;
         padding: 12px 12px 14px;
@@ -496,24 +410,17 @@
     }
 
     .side-menu.collapsed .side-menu-vat {
-        opacity: 0;
-        height: 0;
-        padding: 0;
-        margin: 0;
-        border: 0;
-        pointer-events: none;
+        opacity: 0; height: 0; padding: 0; margin: 0; border: 0; pointer-events: none;
     }
 
     .side-menu-vat--valid {
         border-color: rgba(120, 180, 120, 0.35);
         background: rgba(60, 100, 60, 0.10);
     }
-
     .side-menu-vat--invalid {
         border-color: rgba(220, 110, 110, 0.4);
         background: rgba(120, 50, 50, 0.12);
     }
-
     .side-menu-vat--unknown,
     .side-menu-vat--none {
         border-color: rgba(213, 166, 91, 0.35);
@@ -533,135 +440,63 @@
     }
 
     .side-menu-vat-dot {
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
-        background: #8a8082;
-        flex-shrink: 0;
+        width: 8px; height: 8px; border-radius: 50%; background: #8a8082; flex-shrink: 0;
     }
 
     .side-menu-vat--valid .side-menu-vat-dot {
-        background: #7fc47f;
-        box-shadow: 0 0 7px rgba(127, 196, 127, 0.6);
+        background: #7fc47f; box-shadow: 0 0 7px rgba(127, 196, 127, 0.6);
     }
-
     .side-menu-vat--invalid .side-menu-vat-dot {
-        background: #e07a7a;
-        box-shadow: 0 0 7px rgba(224, 122, 122, 0.6);
+        background: #e07a7a; box-shadow: 0 0 7px rgba(224, 122, 122, 0.6);
     }
-
     .side-menu-vat--unknown .side-menu-vat-dot,
     .side-menu-vat--none .side-menu-vat-dot {
-        background: #e0b86a;
-        box-shadow: 0 0 7px rgba(224, 184, 106, 0.5);
+        background: #e0b86a; box-shadow: 0 0 7px rgba(224, 184, 106, 0.5);
     }
 
     .side-menu-vat-title {
-        color: #f0e7e0;
-        font-family: Georgia, serif;
-        font-size: 13px;
-        line-height: 1.35;
-        margin-bottom: 5px;
+        color: #f0e7e0; font-family: Georgia, serif; font-size: 13px;
+        line-height: 1.35; margin-bottom: 5px;
     }
 
-    .side-menu-vat-desc {
-        color: #9a9093;
-        font-size: 10px;
-        line-height: 1.55;
-    }
-
-    .side-menu-vat-desc strong {
-        color: #e0d6d1;
-        font-weight: 600;
-    }
-
-    .side-menu-vat-desc .vat-warn {
-        color: #e39a9a;
-    }
+    .side-menu-vat-desc { color: #9a9093; font-size: 10px; line-height: 1.55; }
+    .side-menu-vat-desc strong { color: #e0d6d1; font-weight: 600; }
+    .side-menu-vat-desc .vat-warn { color: #e39a9a; }
 
     .side-menu-vat-side {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 8px;
-        margin-top: 9px;
+        display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 9px;
     }
 
     .side-menu-vat-country {
-        padding: 3px 8px;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 6px;
-        background: rgba(255, 255, 255, 0.04);
-        color: #c8bfc0;
-        font-size: 9px;
-        letter-spacing: 1px;
+        padding: 3px 8px; border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 6px;
+        background: rgba(255, 255, 255, 0.04); color: #c8bfc0; font-size: 9px; letter-spacing: 1px;
     }
 
     .side-menu-vat-link {
-        padding: 5px 9px;
-        border: 1px solid rgba(213, 166, 91, 0.4);
-        border-radius: 6px;
-        background: rgba(213, 166, 91, 0.08);
-        color: #e6c58f;
-        font-size: 9px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: background 0.2s, border-color 0.2s, color 0.2s;
+        padding: 5px 9px; border: 1px solid rgba(213, 166, 91, 0.4); border-radius: 6px;
+        background: rgba(213, 166, 91, 0.08); color: #e6c58f; font-size: 9px; font-weight: 600;
+        cursor: pointer; transition: background 0.2s, border-color 0.2s, color 0.2s;
     }
 
     .side-menu-vat-link:hover {
-        background: rgba(213, 166, 91, 0.16);
-        border-color: rgba(213, 166, 91, 0.7);
-        color: #f0cc86;
+        background: rgba(213, 166, 91, 0.16); border-color: rgba(213, 166, 91, 0.7); color: #f0cc86;
     }
 
-    .side-menu-vat-link:disabled {
-        opacity: 0.55;
-        cursor: wait;
-    }
+    .side-menu-vat-link:disabled { opacity: 0.55; cursor: wait; }
 
     @media (max-width: 800px) {
-        .container {
-            padding: 45px 25px 45px 110px;
-        }
-
-        .buttons-main,
-        .buttons-secondary,
-        .buttons-management {
-            grid-template-columns: 1fr;
-        }
-
-        .header {
-            margin-bottom: 45px;
-        }
-
-        .header h1 {
-            font-size: 34px;
-        }
+        .container { padding: 45px 25px 45px 110px; }
+        .buttons-main, .buttons-secondary, .buttons-management { grid-template-columns: 1fr; }
+        .header { margin-bottom: 45px; }
+        .header h1 { font-size: 34px; }
     }
 
     @media (max-width: 500px) {
-        .container {
-            padding: 35px 18px 35px 90px;
-        }
-
-        .button {
-            min-height: 110px;
-        }
-
-        .button-large {
-            min-height: 125px;
-        }
-
-        .side-menu {
-            top: 10px;
-            left: 10px;
-            width: 260px;
-        }
-
-        .side-menu.collapsed {
-            width: 58px;
-        }
+        .container { padding: 35px 18px 35px 90px; }
+        .button { min-height: 110px; }
+        .button-large { min-height: 125px; }
+        .side-menu { top: 10px; left: 10px; width: 260px; }
+        .side-menu.collapsed { width: 58px; }
     }
 </style>
 
@@ -697,23 +532,17 @@
         <div class="side-menu-divider"></div>
 
         {% if restaurant.stripe_account_id and restaurant.stripe_charges_enabled %}
-            <a href="/restaurants/connect/dashboard"
-               class="side-menu-item connect-item--connected"
-               id="connectAccountButton">
+            <a href="/restaurants/connect/dashboard" class="side-menu-item connect-item--connected" id="connectAccountButton">
                 <span class="menu-icon">💳</span>
                 <span class="menu-label">Управление счётом</span>
             </a>
         {% elif restaurant.stripe_account_id %}
-            <a href="/restaurants/connect/onboarding"
-               class="side-menu-item connect-item--pending"
-               id="connectAccountButton">
+            <a href="/restaurants/connect/onboarding" class="side-menu-item connect-item--pending" id="connectAccountButton">
                 <span class="menu-icon">💳</span>
                 <span class="menu-label">Продолжить настройку</span>
             </a>
         {% else %}
-            <a href="/restaurants/connect/onboarding"
-               class="side-menu-item connect-item--not-connected"
-               id="connectAccountButton">
+            <a href="/restaurants/connect/onboarding" class="side-menu-item connect-item--not-connected" id="connectAccountButton">
                 <span class="menu-icon">💳</span>
                 <span class="menu-label">Привязать счёт</span>
             </a>
@@ -753,13 +582,11 @@
                 <div class="side-menu-vat-title">VAT ID подтверждён</div>
                 {% if is_domestic %}
                     <div class="side-menu-vat-desc">
-                        Заведение в <strong>Германии</strong> — reverse charge не применяется,
-                        НДС <strong>19%</strong> начисляется как обычно.
+                        Заведение в <strong>Германии</strong> — reverse charge не применяется, НДС <strong>19%</strong> начисляется как обычно.
                     </div>
                 {% else %}
                     <div class="side-menu-vat-desc">
-                        Страна <strong>{{ country }}</strong> — применяется <strong>reverse charge</strong>,
-                        НДС платформа не начисляет.
+                        Страна <strong>{{ country }}</strong> — применяется <strong>reverse charge</strong>, НДС платформа не начисляет.
                     </div>
                 {% endif %}
             {% elif vat_status == "invalid" %}
@@ -790,6 +617,16 @@
 
 <main class="container">
 
+{# ===== ВЫЧИСЛЯЕМ ДОСТУПНОСТЬ ПО ТАРИФУ ===== #}
+{% set plan_basic = plan in ("basic",) %}
+{% set plan_online = plan in ("basic", "online") %}
+{% set plan_advanced = plan in ("basic", "online", "advanced") %}
+{% set plan_professional = plan in ("basic", "online", "advanced", "professional") %}
+
+{% set can_delivery = plan in ("online", "advanced", "professional") %}
+{% set can_tables = plan in ("advanced", "professional") %}
+{% set can_finance = plan == "professional" %}
+
 <header class="header">
     <h1>
         ADMIN<span>.</span> PANEL
@@ -811,46 +648,31 @@
 
     <div class="buttons buttons-main">
         <a href="/menu_page" class="button button-large">
-            <div class="icon">
-                🍸
-            </div>
-
-            <h3>
-                Меню
-            </h3>
-
-            <p>
-                Управление меню
-            </p>
+            <div class="icon">🍸</div>
+            <h3>Меню</h3>
+            <p>Управление меню</p>
         </a>
 
         <a href="/orders/get_orders" class="button button-large">
-            <div class="icon">
-                🛵
-            </div>
-
-            <h3>
-                Заказы
-            </h3>
-
-            <p>
-                Заказы на доставку
-            </p>
+            <div class="icon">🛵</div>
+            <h3>Заказы</h3>
+            <p>Заказы на доставку</p>
         </a>
 
-        <a href="/tables" class="button button-large">
-            <div class="icon">
-                ▦
-            </div>
-
-            <h3>
-                Бронь
-            </h3>
-
-            <p>
-                Столики и бронирования
-            </p>
-        </a>
+        {% if can_tables %}
+            <a href="/tables" class="button button-large">
+                <div class="icon">▦</div>
+                <h3>Бронь</h3>
+                <p>Столики и бронирования</p>
+            </a>
+        {% else %}
+            <a href="/subscription/management" class="button button-large button-locked">
+                <div class="icon">▦</div>
+                <h3>Бронь</h3>
+                <p>Требуется тариф Advanced</p>
+                <span class="upgrade-badge">Перейти на Advanced</span>
+            </a>
+        {% endif %}
     </div>
 </section>
 
@@ -864,39 +686,38 @@
     </div>
 
     <div class="buttons buttons-secondary">
-        <a href="/support/general_support" class="button support-button">
-            {% if unread_support_count > 0 %}
-                <span class="support-badge">
-                    {{ unread_support_count }}
-                </span>
-            {% endif %}
+        {% if can_delivery %}
+            <a href="/support/general_support" class="button support-button">
+                {% if unread_support_count > 0 %}
+                    <span class="support-badge">{{ unread_support_count }}</span>
+                {% endif %}
+                <div class="icon">💬</div>
+                <h3>Поддержка</h3>
+                <p>Общение с клиентами</p>
+            </a>
+        {% else %}
+            <a href="/subscription/management" class="button button-locked support-button">
+                <div class="icon">💬</div>
+                <h3>Поддержка</h3>
+                <p>Требуется тариф Online</p>
+                <span class="upgrade-badge">Перейти на Online</span>
+            </a>
+        {% endif %}
 
-            <div class="icon">
-                💬
-            </div>
-
-            <h3>
-                Поддержка
-            </h3>
-
-            <p>
-                Общение с клиентами
-            </p>
-        </a>
-
-        <a href="/admin_panel/all_customers" class="button">
-            <div class="icon">
-                ♙
-            </div>
-
-            <h3>
-                Клиенты
-            </h3>
-
-            <p>
-                Зарегистрированные клиенты
-            </p>
-        </a>
+        {% if can_delivery %}
+            <a href="/admin_panel/all_customers" class="button">
+                <div class="icon">♙</div>
+                <h3>Клиенты</h3>
+                <p>Зарегистрированные клиенты</p>
+            </a>
+        {% else %}
+            <a href="/subscription/management" class="button button-locked">
+                <div class="icon">♙</div>
+                <h3>Клиенты</h3>
+                <p>Требуется тариф Online</p>
+                <span class="upgrade-badge">Перейти на Online</span>
+            </a>
+        {% endif %}
     </div>
 </section>
 
@@ -911,45 +732,40 @@
 
     <div class="buttons buttons-management">
         <a href="/admin_panel/all_admins" class="button">
-            <div class="icon">
-                ♙
-            </div>
-
-            <h3>
-                Администраторы
-            </h3>
-
-            <p>
-                Управление администраторами
-            </p>
+            <div class="icon">♙</div>
+            <h3>Администраторы</h3>
+            <p>Управление администраторами</p>
         </a>
 
-        <a href="/payment/history" class="button">
-            <div class="icon">
-                💳
-            </div>
+        {% if can_delivery %}
+            <a href="/payment/history" class="button">
+                <div class="icon">💳</div>
+                <h3>История онлайн оплат</h3>
+                <p>Архив транзакций</p>
+            </a>
+        {% else %}
+            <a href="/subscription/management" class="button button-locked">
+                <div class="icon">💳</div>
+                <h3>История онлайн оплат</h3>
+                <p>Требуется тариф Online</p>
+                <span class="upgrade-badge">Перейти на Online</span>
+            </a>
+        {% endif %}
 
-            <h3>
-                История онлайн оплат
-            </h3>
-
-            <p>
-                Архив транзакций
-            </p>
-        </a>
-
-        <a href="/analytics" class="button">
-            <div class="icon">
-                📊
-            </div>
-
-            <h3>
-                Финансы и аналитика
-            </h3>
-            <p>
-                Выручка, продажи и статистика блюд
-            </p>
-        </a>
+        {% if can_finance %}
+            <a href="/analytics" class="button">
+                <div class="icon">📊</div>
+                <h3>Финансы и аналитика</h3>
+                <p>Выручка, продажи и статистика блюд</p>
+            </a>
+        {% else %}
+            <a href="/subscription/management" class="button button-locked">
+                <div class="icon">📊</div>
+                <h3>Финансы и аналитика</h3>
+                <p>Требуется тариф Professional</p>
+                <span class="upgrade-badge">Перейти на Professional</span>
+            </a>
+        {% endif %}
     </div>
 </section>
 
@@ -971,7 +787,6 @@
     const logoutError = document.getElementById("logoutError");
     const logoutForm = document.getElementById("logoutForm");
 
-    // CSRF токен из meta-тега (передаётся из шаблона)
     const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content || "";
 
     sideMenuToggle.addEventListener("click", () => {
@@ -981,8 +796,6 @@
         sideMenuToggle.textContent = isCollapsed ? "›" : "‹";
     });
 
-    // Переход на кастомную страницу управления подпиской.
-    // Роутер возвращает HTML, поэтому fetch → просто проверяем статус и переходим.
     async function openSubscriptionPortal(button, errorEl) {
         errorEl.textContent = "";
         errorEl.classList.remove("show");
@@ -1018,7 +831,6 @@
                 return;
             }
 
-            // Успех — переходим на страницу
             window.location.href = "/subscription/management";
         } catch (error) {
             console.error("SUBSCRIPTION MANAGEMENT ERROR:", error);

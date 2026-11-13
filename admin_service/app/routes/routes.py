@@ -13,7 +13,7 @@ from ..schema.admin import AdminUpdateDTO, AdminRegistrationDTO, IdentityEdit, A
 from typing import Annotated
 
 from ..dependencies.dependencies import get_service_dependency, get_httpx_async_connection, get_restaurant_dependency, \
-    get_restaurant_dependency_by_id, get_authentication_key, get_new_key, get_vat_status_dependency
+    get_restaurant_dependency_by_id, get_authentication_key, get_new_key, get_vat_status_dependency, get_plan_in_cache
 from ..security.internal_security import verify_internal_token
 from ..security.role.role import IdentityRole
 from ..service.admin_service import AdminService
@@ -75,6 +75,7 @@ async def show_admin_panel(request: Request):
     required_roles(IdentityRole.OWNER,IdentityRole.ADMIN, IdentityRole.MODERATOR, payload=payload)
     restaurant_id = payload.get("restaurant_id")
     restaurant = await get_restaurant_dependency_by_id(restaurant_id)
+    plan = await get_plan_in_cache(restaurant_id)
     async with httpx.AsyncClient() as client:
         response = await client.get("http://support-service:8006/support/unread/count",
                                     headers={"internal_token" : INTERNAL_TOKEN},
@@ -86,7 +87,8 @@ async def show_admin_panel(request: Request):
                                                            "unread_support_count" : unread_support_count,
                                                            "restaurant_name" : restaurant.restaurant_name,
                                                            "restaurant" : restaurant,
-                                                           "vat_status" : vat_status})
+                                                           "vat_status" : vat_status,
+                                                           "plan" : plan})
 
 @router.get("/admin_panel/all_admins")
 async def show_all_admins(request: Request, admin_service : AdminService = Depends(get_service_dependency)):
