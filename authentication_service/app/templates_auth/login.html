@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#1b1518">
-    <title>Вход | FDCPlatform</title>
+    <title>{{ trans('login_title') }} | FDCPlatform</title>
 
    <style>
     :root {
@@ -508,19 +508,18 @@
         <div class="side-card">
             <span class="side-label">FDCPlatform</span>
 
-            <h3>С возвращением</h3>
+            <h3>{{ trans('welcome_back') }}</h3>
 
             <p>
-                Войдите в свой аккаунт, чтобы продолжить пользоваться
-                возможностями FDCPlatform.
+                {{ trans('login_side_welcome_desc') }}
             </p>
         </div>
 
         <div class="side-card">
-            <span class="side-label">АТМОСФЕРА</span>
+            <span class="side-label">{{ trans('atmosphere_label') }}</span>
 
             <p class="quote">
-                «Каждый хороший вечер с чего-то начинается»
+                {{ trans('atmosphere_quote') }}
             </p>
         </div>
 
@@ -533,11 +532,11 @@
         </div>
 
         <h1>
-            Вход
+            {{ trans('login_title') }}
         </h1>
 
         <div class="subtitle">
-            Войдите в свой аккаунт, чтобы продолжить
+            {{ trans('login_subtitle') }}
         </div>
 
         <form id="loginForm">
@@ -561,14 +560,14 @@
             <div class="field">
 
                 <label>
-                    Пароль
+                    {{ trans('password') }}
                     <span class="required">*</span>
                 </label>
 
                 <input
                     type="password"
                     name="password"
-                    placeholder="Введите пароль"
+                    placeholder="{{ trans('enter_password') }}"
                     required
                 >
 
@@ -578,7 +577,7 @@
                 href="/bar_name/forgot_password"
                 class="forgot-password"
             >
-                Забыли пароль?
+                {{ trans('forgot_password') }}
             </a>
 
             <div
@@ -590,7 +589,7 @@
                 type="submit"
                 class="btn"
             >
-                Войти
+                {{ trans('login') }}
             </button>
 
         </form>
@@ -598,9 +597,9 @@
         <div class="divider"></div>
 
         <div class="register-link">
-            Нет аккаунта?
+            {{ trans('no_account_q') }}
             <a href="/registration">
-                Зарегистрироваться
+                {{ trans('register') }}
             </a>
         </div>
 
@@ -608,7 +607,7 @@
             href="/restaurants"
             class="back-link"
         >
-            ← Вернуться на главную
+            ← {{ trans('back_to_main') }}
         </a>
 
     </main>
@@ -618,7 +617,7 @@
         <div class="side-card">
 
             <span class="side-label">
-                ДЛЯ ГОСТЕЙ
+                {{ trans('for_guests_label') }}
             </span>
 
             <div class="drink">
@@ -630,11 +629,11 @@
                 <div>
 
                     <div class="drink-name">
-                        Ваши заказы
+                        {{ trans('your_orders') }}
                     </div>
 
                     <div class="drink-description">
-                        Всё необходимое в одном месте
+                        {{ trans('everything_in_one_place') }}
                     </div>
 
                 </div>
@@ -650,12 +649,11 @@
             </span>
 
             <h3>
-                Хороший вечер
+                {{ trans('good_evening') }}
             </h3>
 
             <p>
-                Меню, заказы, история покупок и связь с техподдержкой —
-                всё доступно после входа.
+                {{ trans('login_side_features_desc') }}
             </p>
 
         </div>
@@ -663,19 +661,19 @@
         <div class="side-card">
 
             <span class="side-label">
-                НАСТРОЕНИЕ
+                {{ trans('mood_label') }}
             </span>
 
             <p class="quote">
-                Напитки. Музыка. Люди.
+                {{ trans('drinks_music_people') }}
             </p>
 
         </div>
 
         <div class="register-link">
-            Вы администратор?
+            {{ trans('are_you_admin_q') }}
             <a href="/admin/login">
-                Войти как администратор
+                {{ trans('login_as_admin') }}
             </a>
         </div>
 
@@ -686,6 +684,15 @@
 <script src="/static/api.js"></script>
 
 <script>
+    const i18n = {
+        error_generic: "{{ trans('error_generic') | escape }}",
+        invalid_value: "{{ trans('invalid_value') | escape }}",
+        error_not_found: "{{ trans('error_not_found') | escape }}",
+        error_too_many_login_attempts: "{{ trans('error_too_many_login_attempts') | escape }}",
+        error_server: "{{ trans('error_server') | escape }}",
+        error_connection: "{{ trans('error_connection') | escape }}"
+    };
+
     const form = document.getElementById("loginForm");
     const formError = document.getElementById("form-error");
 
@@ -738,7 +745,7 @@
         try {
             data = await response.json();
         } catch {
-            showFormError("Произошла ошибка.");
+            showFormError(i18n.error_generic);
             return;
         }
 
@@ -750,7 +757,7 @@
                 if (input) {
                     showError(
                         input,
-                        error.msg || "Некорректное значение."
+                        error.msg || i18n.invalid_value
                     );
                 }
             });
@@ -768,7 +775,7 @@
             return;
         }
 
-        showFormError("Произошла ошибка.");
+        showFormError(i18n.error_generic);
     }
 
     async function handleResponse(response) {
@@ -786,25 +793,25 @@
         }
 
         if (response.status === 404) {
-            showFormError("Страница не найдена.");
+            showFormError(i18n.error_not_found);
             return false;
         }
 
         if (response.status === 429) {
             showFormError(
-                "Слишком много попыток входа. Попробуйте позже."
+                i18n.error_too_many_login_attempts
             );
             return false;
         }
 
         if (response.status >= 500) {
             showFormError(
-                "Ошибка сервера. Попробуйте позже."
+                i18n.error_server
             );
             return false;
         }
 
-        showFormError("Произошла ошибка.");
+        showFormError(i18n.error_generic);
         return false;
     }
 
@@ -825,7 +832,7 @@
             window.location.href = "/user/my_profile";
         } catch (error) {
             showFormError(
-                "Не удалось подключиться к серверу. Проверьте соединение."
+                i18n.error_connection
             );
         }
     });

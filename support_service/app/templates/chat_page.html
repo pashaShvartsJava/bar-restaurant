@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Чат с поддержкой</title>
+    <title>{{ trans('support_chat_page_title') }}</title>
 
     <style>
         * {
@@ -394,15 +394,15 @@
             <a
                 href="/user/my_profile"
                 class="back-button"
-                aria-label="Назад"
-                title="Назад"
+                aria-label="{{ trans('back_button') }}"
+                title="{{ trans('back_button') }}"
             >←</a>
 
             <div class="chat-header-left">
-                <h1 class="chat-title">Чат с поддержкой</h1>
+                <h1 class="chat-title">{{ trans('support_chat_page_title') }}</h1>
 
                 <p class="chat-subtitle">
-                    Мы постараемся помочь вам как можно скорее
+                    {{ trans('support_chat_subtitle') }}
                 </p>
             </div>
 
@@ -410,7 +410,7 @@
                 <span class="status-dot" id="statusDot"></span>
 
                 <span id="statusText">
-                    Подключение...
+                    {{ trans('status_connecting') }}
                 </span>
             </div>
         </div>
@@ -431,9 +431,9 @@
                             <div class="message-meta">
                                 <span>
                                     {% if message.sender_role.value == 'user' or message.sender_role == 'user' %}
-                                        Вы
+                                        {{ trans('sender_you') }}
                                     {% else %}
-                                        Поддержка
+                                        {{ trans('sender_support') }}
                                     {% endif %}
                                 </span>
 
@@ -453,11 +453,11 @@
                     <div class="empty-chat-icon">💬</div>
 
                     <div class="empty-chat-title">
-                        Начните чат
+                        {{ trans('chat_empty_title_user') }}
                     </div>
 
                     <div class="empty-chat-text">
-                        Напишите нам, и мы постараемся помочь вам как можно скорее.
+                        {{ trans('chat_empty_text_user') }}
                     </div>
                 </div>
 
@@ -469,7 +469,7 @@
             <textarea
                 class="message-input"
                 id="messageInput"
-                placeholder="Введите сообщение..."
+                placeholder="{{ trans('message_placeholder') }}"
                 rows="1"
                 autocomplete="off"
             ></textarea>
@@ -480,7 +480,7 @@
                 type="submit"
                 disabled
             >
-                Отправить
+                {{ trans('send_button') }}
             </button>
         </form>
 
@@ -488,6 +488,15 @@
 </div>
 
 <script>
+    const i18n = {
+        status_connected: "{{ trans('status_connected') | escape }}",
+        status_disconnected: "{{ trans('status_disconnected') | escape }}",
+        status_error: "{{ trans('status_connection_error') | escape }}",
+        sender_you: "{{ trans('sender_you') | escape }}",
+        sender_support: "{{ trans('sender_support') | escape }}",
+        locale: document.documentElement.lang || "ru"
+    };
+
     const conversationId = {{ conversation.id }};
 
     const messagesContainer = document.getElementById("messages");
@@ -513,7 +522,7 @@
 
     socket.onopen = function() {
         statusDot.classList.remove("disconnected");
-        statusText.textContent = "Подключено";
+        statusText.textContent = i18n.status_connected;
         sendButton.disabled = false;
 
         if (lastSupportMessageId !== null) {
@@ -526,13 +535,13 @@
 
     socket.onclose = function() {
         statusDot.classList.add("disconnected");
-        statusText.textContent = "Не подключено";
+        statusText.textContent = i18n.status_disconnected;
         sendButton.disabled = true;
     };
 
     socket.onerror = function() {
         statusDot.classList.add("disconnected");
-        statusText.textContent = "Ошибка подключения";
+        statusText.textContent = i18n.status_error;
         sendButton.disabled = true;
     };
 
@@ -603,7 +612,7 @@
         meta.className = "message-meta";
 
         const sender = document.createElement("span");
-        sender.textContent = isUser ? "Вы" : "Поддержка";
+        sender.textContent = isUser ? i18n.sender_you : i18n.sender_support;
 
         const time = document.createElement("span");
         time.textContent = formatTime(message.created_at);
@@ -623,10 +632,17 @@
     function formatTime(dateString) {
         const date = new Date(dateString);
 
-        return date.toLocaleTimeString("ru-RU", {
-            hour: "2-digit",
-            minute: "2-digit"
-        });
+        try {
+            return date.toLocaleTimeString(i18n.locale, {
+                hour: "2-digit",
+                minute: "2-digit"
+            });
+        } catch {
+            return date.toLocaleTimeString("ru-RU", {
+                hour: "2-digit",
+                minute: "2-digit"
+            });
+        }
     }
 
     messagesContainer.scrollTop = messagesContainer.scrollHeight;

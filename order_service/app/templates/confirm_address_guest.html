@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Данные для доставки — {{ restaurant.restaurant_name if restaurant else 'Restaurant' }}</title>
+    <title>{{ trans('delivery_data_page_title') }} — {{ restaurant.restaurant_name if restaurant else 'Restaurant' }}</title>
     <style>
         * {
             box-sizing: border-box;
@@ -266,17 +266,16 @@
 <body>
 <div class="page">
     <div class="top">
-        <a href="/r/{{ slug }}/delivery" class="back">← Вернуться к меню</a>
+        <a href="/r/{{ slug }}/delivery" class="back">← {{ trans('back_to_menu') }}</a>
         <div class="brand">{{ restaurant.restaurant_name if restaurant else 'RESTAURANT' }}</div>
     </div>
 
     <div class="card">
         <div class="header">
             <div class="header-label">GUEST DELIVERY</div>
-            <h1>Данные для доставки</h1>
+            <h1>{{ trans('delivery_data_page_title') }}</h1>
             <div class="description">
-                Заполните контактные данные и адрес доставки.
-                После проверки информации вы сможете перейти к оплате заказа.
+                {{ trans('delivery_data_description') }}
             </div>
         </div>
 
@@ -284,70 +283,70 @@
             <div class="section">
                 <div class="section-title">
                     <div class="section-number">1</div>
-                    КОНТАКТНЫЕ ДАННЫЕ
+                    {{ trans('contact_data_section') }}
                 </div>
 
                 <div class="row">
                     <div class="field">
-                        <label for="name">Имя<span class="required">*</span></label>
-                        <input id="name" type="text" name="name" placeholder="Введите имя" autocomplete="given-name" required>
+                        <label for="name">{{ trans('name') }}<span class="required">*</span></label>
+                        <input id="name" type="text" name="name" placeholder="{{ trans('enter_name') }}" autocomplete="given-name" required>
                     </div>
 
                     <div class="field">
-                        <label for="surname">Фамилия<span class="required">*</span></label>
-                        <input id="surname" type="text" name="surname" placeholder="Введите фамилию" autocomplete="family-name" required>
+                        <label for="surname">{{ trans('surname') }}<span class="required">*</span></label>
+                        <input id="surname" type="text" name="surname" placeholder="{{ trans('enter_surname') }}" autocomplete="family-name" required>
                     </div>
                 </div>
 
                 <div class="row">
                     <div class="field">
-                        <label for="birthday">Дата рождения<span class="required">*</span></label>
+                        <label for="birthday">{{ trans('birthday') }}<span class="required">*</span></label>
                         <input id="birthday" type="date" name="birthday" autocomplete="bday" required>
                     </div>
 
                     <div class="field">
-                        <label for="phone">Номер телефона<span class="required">*</span></label>
+                        <label for="phone">{{ trans('phone_number') }}<span class="required">*</span></label>
                         <input id="phone" type="tel" name="phone" placeholder="+49 123 456789" autocomplete="tel" required>
                     </div>
                 </div>
 
                 <div class="field">
-                    <label for="email">Электронная почта<span class="required">*</span></label>
+                    <label for="email">{{ trans('email') }}<span class="required">*</span></label>
                     <input id="email" type="email" name="email" placeholder="example@email.com" autocomplete="email" required>
-                    <div class="hint">На этот адрес можно отправить подтверждение заказа.</div>
+                    <div class="hint">{{ trans('email_order_hint') }}</div>
                 </div>
             </div>
 
             <div class="section">
                 <div class="section-title">
                     <div class="section-number">2</div>
-                    АДРЕС ДОСТАВКИ
+                    {{ trans('delivery_address_section') }}
                 </div>
 
                 <div class="field">
-                    <label for="city">Город<span class="required">*</span></label>
-                    <input id="city" type="text" name="city" placeholder="Введите город" autocomplete="address-level2" required>
+                    <label for="city">{{ trans('city') }}<span class="required">*</span></label>
+                    <input id="city" type="text" name="city" placeholder="{{ trans('enter_city') }}" autocomplete="address-level2" required>
                 </div>
 
                 <div class="field">
-                    <label for="postal_code">Почтовый индекс<span class="required">*</span></label>
-                    <input id="postal_code" type="text" name="postal_code" placeholder="Например, 47051" autocomplete="postal-code" required>
+                    <label for="postal_code">{{ trans('postal_code') }}<span class="required">*</span></label>
+                    <input id="postal_code" type="text" name="postal_code" placeholder="{{ trans('postal_code_placeholder') }}" autocomplete="postal-code" required>
                 </div>
 
                 <div class="field">
-                    <label for="street">Улица<span class="required">*</span></label>
-                    <input id="street" type="text" name="street" placeholder="Введите улицу" autocomplete="street-address" required>
+                    <label for="street">{{ trans('street') }}<span class="required">*</span></label>
+                    <input id="street" type="text" name="street" placeholder="{{ trans('enter_street') }}" autocomplete="street-address" required>
                 </div>
 
                 <div class="row">
                     <div class="field">
-                        <label for="house">Дом<span class="required">*</span></label>
-                        <input id="house" type="number" name="house" placeholder="Например, 15" min="1" required>
+                        <label for="house">{{ trans('house_number') }}<span class="required">*</span></label>
+                        <input id="house" type="number" name="house" placeholder="{{ trans('house_number_placeholder') }}" min="1" required>
                     </div>
 
                     <div class="field">
-                        <label for="apartment">Квартира</label>
-                        <input id="apartment" type="number" name="apartment" placeholder="Например, 24" min="1">
+                        <label for="apartment">{{ trans('apartment_number') }}</label>
+                        <input id="apartment" type="number" name="apartment" placeholder="{{ trans('apartment_number_placeholder') }}" min="1">
                     </div>
                 </div>
             </div>
@@ -355,9 +354,9 @@
             <div id="formError" class="form-error"></div>
 
             <div class="bottom">
-                <a href="/r/{{ slug }}/delivery" class="cancel">Вернуться к меню</a>
+                <a href="/r/{{ slug }}/delivery" class="cancel">{{ trans('back_to_menu') }}</a>
                 <button id="submitButton" type="submit" class="continue">
-                    Перейти к оплате
+                    {{ trans('proceed_to_payment') }}
                     <span>→</span>
                 </button>
             </div>
@@ -367,6 +366,11 @@
 
 <script src="/static/api.js"></script>
 <script>
+    const i18n = {
+        error_delivery_confirm: "{{ trans('error_delivery_confirm') | escape }}",
+        error_send_data: "{{ trans('error_send_data') | escape }}"
+    };
+
     const SLUG = "{{ slug }}";
 
     const guestOrderForm = document.getElementById("guestOrderForm");
@@ -386,7 +390,7 @@
             });
 
             if (!response.ok) {
-                let message = "Не удалось подтвердить данные для доставки.";
+                let message = i18n.error_delivery_confirm;
                 try {
                     const data = await response.json();
                     message = data.detail || data.message || message;
@@ -413,7 +417,7 @@
 
             window.location.href = `/r/${SLUG}/delivery`;
         } catch {
-            formError.textContent = "Не удалось отправить данные. Проверьте соединение и попробуйте ещё раз.";
+            formError.textContent = i18n.error_send_data;
             formError.classList.add("active");
         } finally {
             submitButton.disabled = false;

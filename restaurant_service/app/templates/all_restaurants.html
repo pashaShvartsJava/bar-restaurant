@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#100e10">
-    <title>Заведения — Restaurant Platform</title>
+    <title>{{ trans('venues_page_title') }} — Restaurant Platform</title>
 
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -476,27 +476,25 @@
     <div class="ambient" aria-hidden="true"></div>
 
     <main class="container">
-        <nav class="top" aria-label="Навигация">
+        <nav class="top" aria-label="{{ trans('nav_aria_label') }}">
             <div class="brand">FDCPlatform</div>
 
             <a class="owner-link" href="/restaurant-platform">
-                Информация для владельцев
+                {{ trans('info_for_owners') }}
                 <span aria-hidden="true">→</span>
             </a>
         </nav>
 
         <header class="header">
-            <div class="eyebrow">Заведения FDCPlatform</div>
+            <div class="eyebrow">{{ trans('venues_eyebrow') }}</div>
 
             <h1>
-                Найдите <span>своё место</span><br>
-                на карте вкусов
+                {{ trans('venues_title_line1') }} <span>{{ trans('venues_title_span') }}</span><br>
+                {{ trans('venues_title_line2') }}
             </h1>
 
             <p class="subtitle">
-                Рестораны, бары и кафе, которые принимают заказы,
-                бронирования и гостей через FDCPlatform.
-                Выберите заведение и переходите на его страницу.
+                {{ trans('venues_subtitle') }}
             </p>
         </header>
 
@@ -515,27 +513,27 @@
                     type="search"
                     id="searchInput"
                     class="search-input"
-                    placeholder="Поиск по названию или описанию…"
+                    placeholder="{{ trans('search_placeholder_venues') }}"
                     autocomplete="off"
-                    aria-label="Поиск по названию или описанию"
+                    aria-label="{{ trans('search_placeholder_venues') }}"
                 >
             </div>
 
-            <select id="cityFilter" class="city-select" aria-label="Фильтр по городу">
-                <option value="">Все города</option>
+            <select id="cityFilter" class="city-select" aria-label="{{ trans('filter_by_city_aria') }}">
+                <option value="">{{ trans('all_cities') }}</option>
                 {% for city in cities %}
                     <option value="{{ city }}">{{ city }}</option>
                 {% endfor %}
             </select>
 
             <button type="button" id="clearFilters" class="search-clear">
-                Сбросить
+                {{ trans('reset_button') }}
             </button>
         </div>
 
         <div class="layout">
             <div class="main-col">
-                <section class="restaurants" id="restaurantsList" aria-label="Список заведений">
+                <section class="restaurants" id="restaurantsList" aria-label="{{ trans('venues_list_aria') }}">
                     {% for restaurant in restaurants %}
                         {% set slug = restaurant.slug if restaurant.slug is defined else restaurant.get('slug') %}
                         {% set name = restaurant.restaurant_name if restaurant.restaurant_name is defined else (restaurant.name if restaurant.name is defined else restaurant.get('name')) %}
@@ -573,7 +571,7 @@
                                 {% endif %}
 
                                 <span class="restaurant-footer">
-                                    Перейти в заведение
+                                    {{ trans('go_to_venue') }}
                                     <span class="arrow" aria-hidden="true">→</span>
                                 </span>
                             </div>
@@ -582,84 +580,80 @@
 
                     {% if not restaurants %}
                         <div class="empty-state">
-                            <strong>Пока нет заведений</strong>
-                            Здесь появятся рестораны, бары и кафе, которые уже подключены к платформе.
+                            <strong>{{ trans('no_venues_title') }}</strong>
+                            {{ trans('no_venues_text') }}
                         </div>
                     {% endif %}
                 </section>
 
                 <div class="empty-state" id="noResults" style="display:none;">
-                    <strong>Ничего не найдено</strong>
-                    Попробуйте изменить поисковый запрос или выбрать другой город.
+                    <strong>{{ trans('no_results_title') }}</strong>
+                    {{ trans('no_results_text') }}
                 </div>
             </div>
 
-            <aside class="side-col" aria-label="Информация о платформе">
+            <aside class="side-col" aria-label="{{ trans('platform_info_aria') }}">
                 <section class="side-box">
                     <span class="side-label">FDCPlatform</span>
-                    <h2>Как это работает</h2>
+                    <h2>{{ trans('how_it_works_title') }}</h2>
                     <p>
-                        Единая платформа для ресторанов, баров и кафе.
-                        Открывайте заведения, смотрите меню, бронируйте столики
-                        и оформляйте заказы — всё в одном месте.
+                        {{ trans('how_it_works_text') }}
                     </p>
 
                     <div class="benefit-list">
                         <div class="benefit">
                             <div class="benefit-icon">◇</div>
                             <div>
-                                <strong>Бронирования</strong>
-                                <p>Выбирайте столик и бронируйте без звонков.</p>
+                                <strong>{{ trans('benefit_reservations_title') }}</strong>
+                                <p>{{ trans('benefit_reservations_text') }}</p>
                             </div>
                         </div>
                         <div class="benefit">
                             <div class="benefit-icon">◌</div>
                             <div>
-                                <strong>Меню под рукой</strong>
-                                <p>Открывайте меню с телефона прямо за столом.</p>
+                                <strong>{{ trans('benefit_menu_title') }}</strong>
+                                <p>{{ trans('benefit_menu_text') }}</p>
                             </div>
                         </div>
                         <div class="benefit">
                             <div class="benefit-icon">⌁</div>
                             <div>
-                                <strong>Заказы и доставка</strong>
-                                <p>Оформляйте заказы на месте или домой.</p>
+                                <strong>{{ trans('benefit_orders_title') }}</strong>
+                                <p>{{ trans('benefit_orders_text') }}</p>
                             </div>
                         </div>
                     </div>
                 </section>
 
                 <section class="side-box auth-box">
-                    <span class="side-label">Для гостей</span>
-                    <h2>Войдите в аккаунт</h2>
+                    <span class="side-label">{{ trans('for_guests_label') }}</span>
+                    <h2>{{ trans('login_to_account_title') }}</h2>
                     <p>
-                        Чтобы отслеживать заказы, управлять бронированиями
-                        и получать поддержку, войдите или создайте аккаунт.
+                        {{ trans('login_to_account_text') }}
                     </p>
 
                     <div class="auth-actions">
-                        <a class="btn btn-primary" href="/login">Войти</a>
-                        <a class="btn btn-secondary" href="/registration">Зарегистрироваться</a>
+                        <a class="btn btn-primary" href="/login">{{ trans('login') }}</a>
+                        <a class="btn btn-secondary" href="/registration">{{ trans('register') }}</a>
                     </div>
 
                     <div class="auth-benefits">
-                        <p>Отслеживание заказов в приложении</p>
-                        <p>Управление бронированиями и историей</p>
-                        <p>Техническая поддержка и помощь</p>
-                        <p>Единый профиль во всех заведениях</p>
+                        <p>{{ trans('auth_benefit_orders_tracking') }}</p>
+                        <p>{{ trans('auth_benefit_manage_reservations') }}</p>
+                        <p>{{ trans('auth_benefit_support') }}</p>
+                        <p>{{ trans('auth_benefit_unified_profile') }}</p>
                     </div>
                 </section>
 
                 <section class="side-box">
-                    <span class="side-label">Владельцам</span>
-                    <h2>Подключите заведение</h2>
+                    <span class="side-label">{{ trans('for_owners_label') }}</span>
+                    <h2>{{ trans('connect_venue_title') }}</h2>
                     <p>
-                        Управляйте меню, заказами, бронированиями
-                        и финансами через одну панель.
+                        {{ trans('connect_venue_text') }}
                     </p>
                     <div style="margin-top:14px;">
                         <a class="btn btn-secondary" href="/restaurant-platform">
-                            Подробнее для владельцев →
+                            {{ trans('learn_more_for_owners') }} →
                         </a>
                     </div>
                 </section>
@@ -668,11 +662,11 @@
 
         <footer class="footer">
             <div class="footer-brand">RESTAURANT PLATFORM</div>
-            <div>Заведения платформы</div>
+            <div>{{ trans('footer_platform_venues') }}</div>
             <div class="footer-links">
-                <a href="/terms">Условия использования</a>
-                <a href="/privacy">Конфиденциальность</a>
-                <a href="/contact">Поддержка</a>
+                <a href="/terms">{{ trans('footer_terms') }}</a>
+                <a href="/privacy">{{ trans('footer_privacy') }}</a>
+                <a href="/contact">{{ trans('footer_support') }}</a>
             </div>
         </footer>
     </main>

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>FDCPlatform — Для владельцев ресторанов</title>
+    <title>FDCPlatform — {{ trans('landing_page_title') }}</title>
 
     <style>
     :root {
@@ -1279,18 +1279,18 @@
             </a>
 
             <div class="nav-links">
-                <a href="#features">Возможности</a>
-                <a href="#how-it-works">Как начать</a>
-                <a href="#advantages">Преимущества</a>
+                <a href="#features">{{ trans('nav_features') }}</a>
+                <a href="#how-it-works">{{ trans('nav_how_to_start') }}</a>
+                <a href="#advantages">{{ trans('nav_advantages') }}</a>
             </div>
 
             <div class="nav-actions">
                 <a href="/restaurants" class="nav-button list">
-                    К списку заведений
+                    {{ trans('nav_to_venues_list') }}
                 </a>
 
                 <a href="/choose_subscription" class="nav-button primary">
-                    Создать ресторан
+                    {{ trans('create_restaurant') }}
                 </a>
             </div>
         </nav>
@@ -1306,54 +1306,48 @@
                     <div class="hero-copy">
                         <div class="eyebrow">
                             <span class="eyebrow-dot"></span>
-                            Платформа для ресторанного бизнеса
+                            {{ trans('hero_eyebrow') }}
                         </div>
 
                         <h1>
-                            Ваш бизнес.<br>
-                            <span>В одном месте.</span>
+                            {{ trans('hero_title_line1') }}<br>
+                            <span>{{ trans('hero_title_line2') }}</span>
                         </h1>
 
                         <p class="hero-description">
-                            Управляйте рестораном через единую платформу:
-                            публикуйте меню, принимайте заказы, работайте
-                            с бронированиями и взаимодействуйте с клиентами.
-                            Всё необходимое для повседневной работы заведения
-                            в одной административной панели.
+                            {{ trans('hero_description') }}
                         </p>
 
                         <div class="hero-actions">
                             <a href="/choose_subscription" class="action-button">
-                                Создать ресторан
+                                {{ trans('create_restaurant') }}
                                 <span class="action-arrow">→</span>
                             </a>
 
                             <a href="/restaurants" class="action-button secondary">
-                                Посмотреть рестораны
+                                {{ trans('view_restaurants') }}
                                 <span class="action-arrow">↗</span>
                             </a>
                         </div>
 
                         <div class="renew-box">
                             <h2 class="renew-box-title">
-                                Уже есть ресторан на платформе?
+                                {{ trans('renew_box_title') }}
                             </h2>
 
                             <p class="renew-box-text">
-                                Отменили подписку своего ресторана, но хотите оформить новую?
-                                Восстановите доступ к управлению заведением — данные ресторана,
-                                меню и заказов сохранятся.
+                                {{ trans('renew_box_text') }}
                             </p>
 
                             <a href="/choose_subscription?mode=renew" class="renew-button">
                                 <span class="renew-icon">↻</span>
-                                Оформить новую подписку
+                                {{ trans('renew_box_button') }}
                             </a>
                         </div>
 
                         <div class="hero-note">
                             <span>✦</span>
-                            Начните с регистрации своего заведения
+                            {{ trans('hero_note') }}
                         </div>
                     </div>
 
@@ -1365,63 +1359,63 @@
                             </div>
 
                             <div class="preview-status">
-                                Панель управления
+                                {{ trans('preview_status') }}
                             </div>
                         </div>
 
                         <div class="preview-heading">
-                            <h3>Управление заведением</h3>
-                            <p>Все основные инструменты в одном месте</p>
+                            <h3>{{ trans('preview_heading') }}</h3>
+                            <p>{{ trans('preview_heading_desc') }}</p>
                         </div>
 
                         <div class="preview-section-title">
-                            Работа заведения
+                            {{ trans('preview_section_work') }}
                         </div>
 
                         <div class="preview-grid">
 
                             <div class="preview-card">
                                 <div class="preview-icon">🍸</div>
-                                <h4>Меню</h4>
-                                <p>Управление меню</p>
+                                <h4>{{ trans('preview_card_menu') }}</h4>
+                                <p>{{ trans('preview_card_menu_desc') }}</p>
                             </div>
 
                             <div class="preview-card">
                                 <div class="preview-icon">🛵</div>
-                                <h4>Заказы</h4>
-                                <p>Доставка</p>
+                                <h4>{{ trans('preview_card_orders') }}</h4>
+                                <p>{{ trans('preview_card_orders_desc') }}</p>
                             </div>
 
                             <div class="preview-card">
                                 <div class="preview-icon">▦</div>
-                                <h4>Бронь</h4>
-                                <p>Столики</p>
+                                <h4>{{ trans('preview_card_reservations') }}</h4>
+                                <p>{{ trans('preview_card_reservations_desc') }}</p>
                             </div>
 
                         </div>
 
                         <div class="preview-section-title" style="margin-top: 20px;">
-                            Клиенты и управление
+                            {{ trans('preview_section_clients') }}
                         </div>
 
                         <div class="preview-grid">
 
                             <div class="preview-card">
                                 <div class="preview-icon">💬</div>
-                                <h4>Поддержка</h4>
-                                <p>Общение</p>
+                                <h4>{{ trans('preview_card_support') }}</h4>
+                                <p>{{ trans('preview_card_support_desc') }}</p>
                             </div>
 
                             <div class="preview-card">
                                 <div class="preview-icon">♙</div>
-                                <h4>Клиенты</h4>
-                                <p>Пользователи</p>
+                                <h4>{{ trans('preview_card_clients') }}</h4>
+                                <p>{{ trans('preview_card_clients_desc') }}</p>
                             </div>
 
                             <div class="preview-card">
                                 <div class="preview-icon">♙</div>
-                                <h4>Администраторы</h4>
-                                <p>Доступы</p>
+                                <h4>{{ trans('preview_card_admins') }}</h4>
+                                <p>{{ trans('preview_card_admins_desc') }}</p>
                             </div>
 
                         </div>
@@ -1430,22 +1424,22 @@
                             <div class="preview-mini">
                                 <div class="preview-mini-icon">↺</div>
                                 <div>
-                                    <strong>История заказов</strong>
-                                    <span>Архив заказов</span>
+                                    <strong>{{ trans('preview_mini_history_title') }}</strong>
+                                    <span>{{ trans('preview_mini_history_desc') }}</span>
                                 </div>
                             </div>
 
                             <div class="preview-mini">
                                 <div class="preview-mini-icon">📊</div>
                                 <div>
-                                    <strong>Финансы и аналитика</strong>
-                                    <span>Продажи и статистика</span>
+                                    <strong>{{ trans('preview_mini_finance_title') }}</strong>
+                                    <span>{{ trans('preview_mini_finance_desc') }}</span>
                                 </div>
                             </div>
                         </div>
 
                         <div class="preview-caption">
-                            Пример структуры панели управления рестораном
+                            {{ trans('preview_caption') }}
                         </div>
                     </div>
 
@@ -1457,18 +1451,18 @@
         <div class="container">
             <div class="benefits-strip reveal">
                 <div class="benefit-item">
-                    <strong>Одна платформа</strong>
-                    <p>Основные процессы ресторана в одном интерфейсе</p>
+                    <strong>{{ trans('benefit_single_platform_title') }}</strong>
+                    <p>{{ trans('benefit_single_platform_desc') }}</p>
                 </div>
 
                 <div class="benefit-item">
-                    <strong>Собственная страница</strong>
-                    <p>Отдельная ссылка для каждого заведения</p>
+                    <strong>{{ trans('benefit_own_page_title') }}</strong>
+                    <p>{{ trans('benefit_own_page_desc') }}</p>
                 </div>
 
                 <div class="benefit-item">
-                    <strong>Единая система</strong>
-                    <p>Заказы, меню и клиенты связаны между собой</p>
+                    <strong>{{ trans('benefit_unified_system_title') }}</strong>
+                    <p>{{ trans('benefit_unified_system_desc') }}</p>
                 </div>
             </div>
         </div>
@@ -1480,18 +1474,16 @@
                 <div class="section-heading reveal">
                     <div class="eyebrow">
                         <span class="eyebrow-dot"></span>
-                        Возможности платформы
+                        {{ trans('features_eyebrow') }}
                     </div>
 
                     <h2>
-                        Всё необходимое<br>
-                        <span class="gold">для работы ресторана</span>
+                        {{ trans('features_title_line1') }}<br>
+                        <span class="gold">{{ trans('features_title_line2') }}</span>
                     </h2>
 
                     <p>
-                        Управляйте основными процессами заведения из
-                        административной панели, а клиенты смогут находить
-                        ваш ресторан и взаимодействовать с ним через платформу.
+                        {{ trans('features_subtitle') }}
                     </p>
                 </div>
 
@@ -1500,83 +1492,56 @@
 
                     <article class="feature-card reveal">
                         <div class="feature-icon">🍽</div>
-                        <h3>Управление меню</h3>
-                        <p>
-                            Добавляйте блюда, изменяйте описания и цены,
-                            поддерживайте актуальность меню для посетителей.
-                        </p>
+                        <h3>{{ trans('feature_menu_title') }}</h3>
+                        <p>{{ trans('feature_menu_desc') }}</p>
                     </article>
 
                     <article class="feature-card reveal">
                         <div class="feature-icon">🛵</div>
-                        <h3>Приём заказов</h3>
-                        <p>
-                            Просматривайте входящие заказы и управляйте
-                            их обработкой из единого рабочего интерфейса.
-                        </p>
+                        <h3>{{ trans('feature_orders_title') }}</h3>
+                        <p>{{ trans('feature_orders_desc') }}</p>
                     </article>
 
                     <article class="feature-card reveal">
                         <div class="feature-icon">▦</div>
-                        <h3>Бронирование столиков</h3>
-                        <p>
-                            Работайте с бронированиями, следите за заявками
-                            клиентов и организуйте посадку гостей.
-                        </p>
+                        <h3>{{ trans('feature_reservations_title') }}</h3>
+                        <p>{{ trans('feature_reservations_desc') }}</p>
                     </article>
 
                     <article class="feature-card reveal">
                         <div class="feature-icon">♙</div>
-                        <h3>Клиенты</h3>
-                        <p>
-                            Просматривайте данные зарегистрированных
-                            пользователей и работайте с клиентской базой.
-                        </p>
+                        <h3>{{ trans('feature_clients_title') }}</h3>
+                        <p>{{ trans('feature_clients_desc') }}</p>
                     </article>
 
                     <article class="feature-card reveal">
                         <div class="feature-icon">💬</div>
-                        <h3>Общение с клиентами</h3>
-                        <p>
-                            Используйте раздел поддержки для взаимодействия
-                            с пользователями и обработки их обращений.
-                        </p>
+                        <h3>{{ trans('feature_communication_title') }}</h3>
+                        <p>{{ trans('feature_communication_desc') }}</p>
                     </article>
 
                     <article class="feature-card reveal">
                         <div class="feature-icon">📊</div>
-                        <h3>Финансы и аналитика</h3>
-                        <p>
-                            Анализируйте продажи, изучайте историю заказов
-                            и получайте информацию о работе заведения.
-                        </p>
+                        <h3>{{ trans('feature_finance_analytics_title') }}</h3>
+                        <p>{{ trans('feature_finance_analytics_desc') }}</p>
                     </article>
 
                     <article class="feature-card reveal">
                         <div class="feature-icon">♙</div>
-                        <h3>Команда и доступы</h3>
-                        <p>
-                            Организуйте работу с администраторами и
-                            распределяйте доступ к управлению рестораном.
-                        </p>
+                        <h3>{{ trans('feature_team_access_title') }}</h3>
+                        <p>{{ trans('feature_team_access_desc') }}</p>
                     </article>
 
                     <article class="feature-card reveal">
                         <div class="feature-icon">🔗</div>
-                        <h3>Страница ресторана</h3>
-                        <p>
-                            Ваше заведение получает отдельную ссылку,
-                            по которой посетители смогут открыть его страницу.
-                        </p>
+                        <h3>{{ trans('feature_restaurant_page_title') }}</h3>
+                        <p>{{ trans('feature_restaurant_page_desc') }}</p>
                     </article>
 
                     <article class="feature-card reveal">
                         <div class="feature-icon">⚙</div>
-                        <h3>Управление заведением</h3>
-                        <p>
-                            Основные инструменты собраны в одном интерфейсе,
-                            чтобы повседневные задачи было проще выполнять.
-                        </p>
+                        <h3>{{ trans('feature_venue_management_title') }}</h3>
+                        <p>{{ trans('feature_venue_management_desc') }}</p>
                     </article>
 
                 </div>
@@ -1590,19 +1555,16 @@
                 <div class="section-heading reveal">
                     <div class="eyebrow">
                         <span class="eyebrow-dot"></span>
-                        Начало работы
+                        {{ trans('steps_eyebrow') }}
                     </div>
 
                     <h2>
-                        Запустите свой ресторан<br>
-                        <span class="gold">в несколько шагов</span>
+                        {{ trans('steps_title_line1') }}<br>
+                        <span class="gold">{{ trans('steps_title_line2') }}</span>
                     </h2>
 
                     <p>
-                        Пройдите регистрацию, подтвердите адрес электронной
-                        почты и выберите подходящий тариф. После завершения
-                        необходимых этапов вы сможете перейти к управлению
-                        своим заведением.
+                        {{ trans('steps_subtitle') }}
                     </p>
                 </div>
 
@@ -1611,38 +1573,26 @@
 
                     <article class="step reveal">
                         <div class="step-number">01</div>
-                        <h3>Создайте аккаунт</h3>
-                        <p>
-                            Укажите данные владельца и информацию
-                            о вашем ресторане.
-                        </p>
+                        <h3>{{ trans('step1_title') }}</h3>
+                        <p>{{ trans('step1_desc') }}</p>
                     </article>
 
                     <article class="step reveal">
                         <div class="step-number">02</div>
-                        <h3>Подтвердите почту</h3>
-                        <p>
-                            Подтвердите адрес электронной почты,
-                            чтобы продолжить регистрацию.
-                        </p>
+                        <h3>{{ trans('step2_title') }}</h3>
+                        <p>{{ trans('step2_desc') }}</p>
                     </article>
 
                     <article class="step reveal">
                         <div class="step-number">03</div>
-                        <h3>Выберите тариф</h3>
-                        <p>
-                            Ознакомьтесь с доступными условиями
-                            и завершите оформление подписки.
-                        </p>
+                        <h3>{{ trans('step3_title') }}</h3>
+                        <p>{{ trans('step3_desc') }}</p>
                     </article>
 
                     <article class="step reveal">
                         <div class="step-number">04</div>
-                        <h3>Управляйте рестораном</h3>
-                        <p>
-                            Войдите в административную панель
-                            и начните настраивать основные разделы.
-                        </p>
+                        <h3>{{ trans('step4_title') }}</h3>
+                        <p>{{ trans('step4_desc') }}</p>
                     </article>
 
                 </div>
@@ -1656,12 +1606,12 @@
                 <div class="section-heading reveal">
                     <div class="eyebrow">
                         <span class="eyebrow-dot"></span>
-                        Для владельцев заведений
+                        {{ trans('advantages_eyebrow') }}
                     </div>
 
                     <h2>
-                        Больше порядка<br>
-                        <span class="gold">в ежедневной работе</span>
+                        {{ trans('advantages_title_line1') }}<br>
+                        <span class="gold">{{ trans('advantages_title_line2') }}</span>
                     </h2>
                 </div>
 
@@ -1670,21 +1620,17 @@
 
                     <div class="advantages-intro reveal">
                         <h3>
-                            Сосредоточьтесь<br>
-                            на своём бизнесе.
+                            {{ trans('advantages_intro_line1') }}<br>
+                            {{ trans('advantages_intro_line2') }}
                         </h3>
 
                         <p>
-                            Вместо разрозненных инструментов используйте
-                            общую платформу для основных процессов ресторана.
-                            Владелец получает доступ к управлению заведением,
-                            а посетители могут находить рестораны через
-                            общую страницу платформы.
+                            {{ trans('advantages_intro_desc') }}
                         </p>
 
                         <div class="hero-actions">
                             <a href="/choose_subscription" class="action-button">
-                                Начать регистрацию
+                                {{ trans('start_registration') }}
                                 <span class="action-arrow">→</span>
                             </a>
                         </div>
@@ -1696,44 +1642,32 @@
                         <div class="advantage-row reveal">
                             <div class="check-icon">✓</div>
                             <div>
-                                <h4>Отдельная страница для ресторана</h4>
-                                <p>
-                                    Каждое заведение имеет собственную ссылку,
-                                    по которой клиенты могут открыть его страницу.
-                                </p>
+                                <h4>{{ trans('advantage1_title') }}</h4>
+                                <p>{{ trans('advantage1_desc') }}</p>
                             </div>
                         </div>
 
                         <div class="advantage-row reveal">
                             <div class="check-icon">✓</div>
                             <div>
-                                <h4>Единая административная панель</h4>
-                                <p>
-                                    Меню, заказы, бронирования, клиенты и
-                                    аналитика доступны из общего интерфейса.
-                                </p>
+                                <h4>{{ trans('advantage2_title') }}</h4>
+                                <p>{{ trans('advantage2_desc') }}</p>
                             </div>
                         </div>
 
                         <div class="advantage-row reveal">
                             <div class="check-icon">✓</div>
                             <div>
-                                <h4>Общая платформа для посетителей</h4>
-                                <p>
-                                    Пользователи могут просматривать список
-                                    доступных заведений и выбирать ресторан.
-                                </p>
+                                <h4>{{ trans('advantage3_title') }}</h4>
+                                <p>{{ trans('advantage3_desc') }}</p>
                             </div>
                         </div>
 
                         <div class="advantage-row reveal">
                             <div class="check-icon">✓</div>
                             <div>
-                                <h4>Управление доступом команды</h4>
-                                <p>
-                                    Возможность организовать работу владельцев
-                                    и сотрудников с соответствующими правами.
-                                </p>
+                                <h4>{{ trans('advantage4_title') }}</h4>
+                                <p>{{ trans('advantage4_desc') }}</p>
                             </div>
                         </div>
 
@@ -1749,27 +1683,26 @@
 
                     <div class="eyebrow">
                         <span class="eyebrow-dot"></span>
-                        Для вашего ресторана
+                        {{ trans('cta_eyebrow') }}
                     </div>
 
                     <h2 style="margin-top: 20px;">
-                        Готовы начать работу<br>
-                        <span class="gold">на своей платформе?</span>
+                        {{ trans('cta_title_line1') }}<br>
+                        <span class="gold">{{ trans('cta_title_line2') }}</span>
                     </h2>
 
                     <p>
-                        Создайте аккаунт владельца, добавьте свой ресторан
-                        и пройдите необходимые этапы регистрации.
+                        {{ trans('cta_subtitle') }}
                     </p>
 
                     <div class="hero-actions">
                         <a href="/restaurant/register" class="action-button">
-                            Зарегистрировать ресторан
+                            {{ trans('register_restaurant') }}
                             <span class="action-arrow">→</span>
                         </a>
 
                         <a href="/restaurants" class="action-button secondary">
-                            Перейти к ресторанам
+                            {{ trans('go_to_restaurants') }}
                             <span class="action-arrow">↗</span>
                         </a>
                     </div>
@@ -1790,14 +1723,14 @@
                 </div>
 
                 <p>
-                    Платформа для управления ресторанным бизнесом
+                    {{ trans('footer_tagline_restaurant') }}
                 </p>
 
                 <div class="footer-links">
-                    <a href="#features">Возможности</a>
-                    <a href="#how-it-works">Как начать</a>
-                    <a href="/restaurants">Все рестораны</a>
-                    <a href="/restaurant/register">Регистрация</a>
+                    <a href="#features">{{ trans('nav_features') }}</a>
+                    <a href="#how-it-works">{{ trans('nav_how_to_start') }}</a>
+                    <a href="/restaurants">{{ trans('all_restaurants') }}</a>
+                    <a href="/restaurant/register">{{ trans('registration_link') }}</a>
                 </div>
 
             </div>

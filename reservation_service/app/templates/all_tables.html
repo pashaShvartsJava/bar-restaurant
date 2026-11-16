@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Управление столиками</title>
+    <title>{{ trans('tables_management_page_title') }}</title>
     <style>
         * {
             margin: 0;
@@ -413,58 +413,58 @@
 <div class="page">
     <a href="/admin_panel" class="back">
         <span class="back-arrow">←</span>
-        Назад
+        {{ trans('back_button') }}
     </a>
     <header class="header">
         <div class="header-info">
-            <h1 class="title">Столики</h1>
-            <p class="subtitle">Управление столиками и их текущим состоянием.</p>
+            <h1 class="title">{{ trans('tables_management_page_title') }}</h1>
+            <p class="subtitle">{{ trans('tables_management_subtitle') }}</p>
         </div>
         <div class="header-actions">
-            <a href="/tables/reservations/history" class="btn">История бронирований</a>
-            <a href="/tables/generate_qr_code" class="btn">QR-код</a>
-            <a href="/tables/add_table" class="btn add">+ Добавить столик</a>
+            <a href="/tables/reservations/history" class="btn">{{ trans('reservations_history_page_title') }}</a>
+            <a href="/tables/generate_qr_code" class="btn">{{ trans('qr_code_button') }}</a>
+            <a href="/tables/add_table" class="btn add">+ {{ trans('add_table_button') }}</a>
         </div>
     </header>
     <section class="tables-card">
         <div id="formError" class="form-error"></div>
         {% if tables %}
             <div class="tables-header">
-                <div class="column-name">Столик</div>
-                <div class="column-name status-column">Статус</div>
-                <div class="column-name actions-column">Действия</div>
+                <div class="column-name">{{ trans('column_table') }}</div>
+                <div class="column-name status-column">{{ trans('column_status') }}</div>
+                <div class="column-name actions-column">{{ trans('column_actions') }}</div>
             </div>
             {% for table in tables %}
                 <div class="table-row">
                     <div class="table-info">
-                        <div class="table-number">Столик №{{ table.table_number }}</div>
-                        <div class="table-capacity">До {{ table.capacity }} гостей</div>
+                        <div class="table-number">{{ trans('table_number_prefix') }}{{ table.table_number }}</div>
+                        <div class="table-capacity">{{ trans('up_to_guests_prefix') }} {{ table.capacity }} {{ trans('guests_word') }}</div>
                     </div>
                     <div>
                         {% if table.status.value == "taken" %}
-                            <div class="table-status status-taken">Занят</div>
+                            <div class="table-status status-taken">{{ trans('table_status_taken') }}</div>
                         {% else %}
-                            <div class="table-status status-free">Свободен</div>
+                            <div class="table-status status-free">{{ trans('table_status_free') }}</div>
                         {% endif %}
                     </div>
                     <div class="table-actions">
                         {% if table.status.value == "taken" %}
                             <form class="table-action-form" action="/tables/end_session/{{ table.id }}" method="post">
-                                <button type="submit" class="action release">Освободить</button>
+                                <button type="submit" class="action release">{{ trans('action_release_table') }}</button>
                             </form>
                         {% else %}
                             <form class="table-action-form" action="/tables/start_session/{{ table.id }}" method="post">
-                                <button type="submit" class="action take">Занять</button>
+                                <button type="submit" class="action take">{{ trans('action_take_table') }}</button>
                             </form>
                         {% endif %}
-                        <a href="/tables/create_reservation?table_id={{ table.id }}" class="action reserve">Зарезервировать</a>
+                        <a href="/tables/create_reservation?table_id={{ table.id }}" class="action reserve">{{ trans('action_reserve_table') }}</a>
                     </div>
                 </div>
             {% endfor %}
         {% else %}
             <div class="empty-tables">
-                <div class="empty-title">Столиков пока нет</div>
-                <div class="empty-text">Добавьте первый столик, чтобы он появился в списке.</div>
+                <div class="empty-title">{{ trans('tables_empty_title') }}</div>
+                <div class="empty-text">{{ trans('tables_empty_text') }}</div>
             </div>
         {% endif %}
     </section>
@@ -474,6 +474,14 @@
 </div>
 <script src="/static/api.js"></script>
 <script>
+    const i18n = {
+        error_no_access: "{{ trans('error_no_access') | escape }}",
+        error_table_not_found: "{{ trans('error_table_not_found') | escape }}",
+        error_server: "{{ trans('error_server') | escape }}",
+        error_operation_failed: "{{ trans('error_operation_failed') | escape }}",
+        error_connection_tables: "{{ trans('error_connection_tables') | escape }}"
+    };
+
     const formError = document.getElementById("formError");
 
     function showError(message) {
@@ -497,17 +505,17 @@
         }
 
         if (response.status === 403) {
-            showError("У вас нет доступа к этому действию.");
+            showError(i18n.error_no_access);
             return false;
         }
 
         if (response.status === 404) {
-            showError("Столик не найден.");
+            showError(i18n.error_table_not_found);
             return false;
         }
 
         if (response.status >= 500) {
-            showError("Ошибка сервера. Попробуйте позже.");
+            showError(i18n.error_server);
             return false;
         }
 
@@ -522,17 +530,17 @@
                 showError(
                     messages.length
                         ? messages.join(", ")
-                        : "Не удалось выполнить операцию."
+                        : i18n.error_operation_failed
                 );
             } else {
                 showError(
                     data.detail ||
                     data.message ||
-                    "Не удалось выполнить операцию."
+                    i18n.error_operation_failed
                 );
             }
         } catch {
-            showError("Не удалось выполнить операцию.");
+            showError(i18n.error_operation_failed);
         }
 
         return false;
@@ -556,7 +564,7 @@
                     window.location.reload();
                 }
             } catch {
-                showError("Не удалось подключиться к серверу. Проверьте соединение.");
+                showError(i18n.error_connection_tables);
             } finally {
                 button.disabled = false;
             }

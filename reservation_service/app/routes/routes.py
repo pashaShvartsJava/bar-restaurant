@@ -308,11 +308,11 @@ async def get_available_tables(request : Request,
                                restaurant_id : UUID,
                                service : TableService = Depends(get_table_service_dependency),
                                internal_token : str = Header(..., alias="internal_token")):
-    await verify_internal_token(internal_token)
     payload = get_payload(request)
     required_roles(IdentityRole.OWNER, IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
+    await verify_internal_token(internal_token)
     current_plan_id = await get_plan_in_cache(str(restaurant_id))
-    await required_plans(current_plan_id, PlanId.ADVANCED, PlanId.PROFESSIONAL)
+    await required_plans(current_plan_id, PlanId.ADVANCED, PlanId.PROFESSIONAL, PlanId.BASIC, PlanId.ONLINE)
     available_tables = await service.find_all_available_tables(restaurant_id)
     return available_tables
 

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#171315">
-    <title>{{ restaurant.restaurant_name if restaurant else 'Restaurant' }} — Меню ресторана</title>
+    <title>{{ restaurant.restaurant_name if restaurant else 'Restaurant' }} — {{ trans('restaurant_menu_page_title') }}</title>
 
     <style>
         * {
@@ -725,7 +725,7 @@
             </a>
 
             <div class="table-badge" id="tableBadge">
-                Столик № {{ table_number }}
+                {{ trans('table_number_prefix') }} {{ table_number }}
             </div>
         </div>
     </nav>
@@ -739,11 +739,9 @@
                     {{ restaurant.restaurant_name if restaurant else 'MENU' }}
                 {% endif %}
             </div>
-            <h1>Меню ресторана</h1>
+            <h1>{{ trans('restaurant_menu_page_title') }}</h1>
             <p class="hero-description">
-                Выберите любимые блюда и напитки.
-                Добавьте их в корзину, а затем решите,
-                как вам удобнее оплатить заказ.
+                {{ trans('qr_menu_hero_desc') }}
             </p>
             <div class="hero-divider"></div>
         </header>
@@ -751,11 +749,10 @@
         <main class="menu-layout">
             <section class="menu-panel">
                 <header class="panel-header">
-                    <div class="panel-eyebrow">Наше меню</div>
-                    <h2 class="panel-title">Блюда и напитки</h2>
+                    <div class="panel-eyebrow">{{ trans('our_menu_eyebrow') }}</div>
+                    <h2 class="panel-title">{{ trans('dishes_and_drinks') }}</h2>
                     <p class="panel-description">
-                        Выбирайте позиции и количество.
-                        Стоимость заказа рассчитывается автоматически.
+                        {{ trans('qr_menu_panel_desc') }}
                     </p>
                 </header>
 
@@ -787,7 +784,7 @@
                                                 >
                                             {% else %}
                                                 <div class="dish-no-image">
-                                                    Нет<br>фото
+                                                    {{ trans('no_photo_short') }}
                                                 </div>
                                             {% endif %}
                                         </div>
@@ -801,7 +798,7 @@
                                                 {% if dish.description %}
                                                     {{ dish.description }}
                                                 {% else %}
-                                                    Приготовлено с заботой в {{ restaurant.restaurant_name if restaurant else 'ресторане' }}
+                                                    {{ trans('dish_prepared_with_care') }} {{ restaurant.restaurant_name if restaurant else trans('restaurant_default_name') }}
                                                 {% endif %}
                                             </p>
 
@@ -817,7 +814,7 @@
                                                         type="button"
                                                         class="quantity-button quantity-minus"
                                                         data-dish-id="{{ dish.id }}"
-                                                        aria-label="Уменьшить количество"
+                                                        aria-label="{{ trans('decrease_quantity_aria') }}"
                                                     >−</button>
 
                                                     <span
@@ -829,7 +826,7 @@
                                                         type="button"
                                                         class="quantity-button quantity-plus"
                                                         data-dish-id="{{ dish.id }}"
-                                                        aria-label="Увеличить количество"
+                                                        aria-label="{{ trans('increase_quantity_aria') }}"
                                                     >+</button>
                                                 </div>
 
@@ -838,11 +835,11 @@
                                                     class="add-button"
                                                     data-dish-id="{{ dish.id }}"
                                                 >
-                                                    Добавить
+                                                    {{ trans('add_to_cart') }}
                                                 </button>
                                             {% else %}
                                                 <span class="unavailable-label">
-                                                    Сейчас недоступно
+                                                    {{ trans('currently_unavailable') }}
                                                 </span>
                                             {% endif %}
                                         </div>
@@ -854,9 +851,9 @@
                 {% else %}
                     <div class="empty-cart">
                         <div class="empty-cart-icon">🍷</div>
-                        <div class="empty-cart-title">Меню пока пусто</div>
+                        <div class="empty-cart-title">{{ trans('menu_empty_yet') }}</div>
                         <div class="empty-cart-text">
-                            В данный момент нет доступных блюд.
+                            {{ trans('no_dishes_available_now') }}
                         </div>
                     </div>
                 {% endif %}
@@ -864,21 +861,21 @@
 
             <aside class="cart-panel">
                 <header class="cart-header">
-                    <h2 class="cart-title">Ваш заказ</h2>
-                    <span class="cart-count" id="cartCount">0 предметов</span>
+                    <h2 class="cart-title">{{ trans('your_order') }}</h2>
+                    <span class="cart-count" id="cartCount">{{ trans('cart_items_zero') }}</span>
                 </header>
 
                 <div class="cart-content" id="cartContent"></div>
 
                 <footer class="cart-footer">
                     <div class="total-row">
-                        <span class="total-label">К оплате</span>
+                        <span class="total-label">{{ trans('to_pay') }}</span>
                         <span class="total-price" id="cartTotal">0.00 €</span>
                     </div>
 
                     <div class="checkout-error" id="checkoutError"></div>
 
-                    <p class="payment-heading">Выберите способ оплаты</p>
+                    <p class="payment-heading">{{ trans('choose_payment_method') }}</p>
 
                     <button
                         type="button"
@@ -887,7 +884,7 @@
                         disabled
                     >
                         <span class="payment-icon">◷</span>
-                        Оплатить позже
+                        {{ trans('pay_later') }}
                     </button>
 
                     <button
@@ -897,7 +894,7 @@
                         disabled
                     >
                         <span class="payment-icon">◇</span>
-                        Оплатить сейчас онлайн
+                        {{ trans('pay_now_online') }}
                     </button>
 
                     <button
@@ -905,12 +902,11 @@
                         class="clear-button"
                         id="clearButton"
                     >
-                        Очистить корзину
+                        {{ trans('clear_cart') }}
                     </button>
 
                     <p class="payment-note">
-                        Позже — наличными или картой у сотрудника ресторана.
-                        Онлайн-оплата будет выполнена на защищённой странице оплаты.
+                        {{ trans('payment_note') }}
                     </p>
                 </footer>
             </aside>
@@ -921,12 +917,33 @@
             {% if restaurant and restaurant.slogan %}
                 {{ restaurant.slogan }}
             {% else %}
-                С любовью к грузинской кухне
+                {{ trans('love_georgian_cuisine') }}
             {% endif %}
         </footer>
     </div>
 
     <script>
+        const i18n = {
+            cart_items_one: "{{ trans('cart_items_one') | escape }}",
+            cart_items_few: "{{ trans('cart_items_few') | escape }}",
+            cart_items_many: "{{ trans('cart_items_many') | escape }}",
+            no_photo_short: "{{ trans('no_photo_short') | escape }}",
+            remove: "{{ trans('remove') | escape }}",
+            cart_empty_title_qr: "{{ trans('cart_empty_title_qr') | escape }}",
+            cart_empty_text_qr: "{{ trans('cart_empty_text_qr') | escape }}",
+            confirm_clear_cart_qr: "{{ trans('confirm_clear_cart_qr') | escape }}",
+            error_add_dishes_first: "{{ trans('error_add_dishes_first') | escape }}",
+            error_online_unavailable: "{{ trans('error_online_unavailable') | escape }}",
+            error_table_not_detected: "{{ trans('error_table_not_detected') | escape }}",
+            error_order_failed: "{{ trans('error_order_failed') | escape }}",
+            error_no_payment_link: "{{ trans('error_no_payment_link') | escape }}",
+            order_success_pay_at_staff: "{{ trans('order_success_pay_at_staff') | escape }}",
+            preparing_payment: "{{ trans('preparing_payment') | escape }}",
+            creating_order: "{{ trans('creating_order') | escape }}",
+            decrease_quantity_aria: "{{ trans('decrease_quantity_aria') | escape }}",
+            increase_quantity_aria: "{{ trans('increase_quantity_aria') | escape }}"
+        };
+
         const SLUG = "{{ slug }}";
         const TABLE_NUMBER = {{ table_number | tojson }};
         const RESTAURANT_ID = "{{ restaurant.id if restaurant else '' }}";
@@ -985,20 +1002,22 @@
             return clientId;
         }
 
-        function getRussianItemText(number) {
+        function getItemsText(number) {
             const value = Math.abs(number) % 100;
             const lastDigit = value % 10;
 
+            let template;
             if (value >= 11 && value <= 19) {
-                return `${number} предметов`;
+                template = i18n.cart_items_many;
+            } else if (lastDigit === 1) {
+                template = i18n.cart_items_one;
+            } else if (lastDigit >= 2 && lastDigit <= 4) {
+                template = i18n.cart_items_few;
+            } else {
+                template = i18n.cart_items_many;
             }
 
-            if (lastDigit === 1) return `${number} предмет`;
-            if (lastDigit >= 2 && lastDigit <= 4) {
-                return `${number} предмета`;
-            }
-
-            return `${number} предметов`;
+            return template.replace("{n}", number);
         }
 
         function escapeHTML(value) {
@@ -1083,7 +1102,7 @@
             const quantity = getTotalQuantity(cart);
             const total = getTotalPrice(cart);
 
-            cartCount.textContent = getRussianItemText(quantity);
+            cartCount.textContent = getItemsText(quantity);
             cartTotal.textContent = `${total.toFixed(2)} €`;
 
             const hasItems = cart.length > 0;
@@ -1094,10 +1113,9 @@
                 cartContent.innerHTML = `
                     <div class="empty-cart">
                         <div class="empty-cart-icon">🍷</div>
-                        <div class="empty-cart-title">Пока ничего нет</div>
+                        <div class="empty-cart-title">${i18n.cart_empty_title_qr}</div>
                         <div class="empty-cart-text">
-                            Добавьте блюда из меню,
-                            и они появятся здесь.
+                            ${i18n.cart_empty_text_qr}
                         </div>
                     </div>
                 `;
@@ -1122,7 +1140,7 @@
                             class="cart-item-image"
                         >
                     `
-                    : `<div class="cart-item-no-image">Нет<br>фото</div>`;
+                    : `<div class="cart-item-no-image">${i18n.no_photo_short}</div>`;
 
                 element.innerHTML = `
                     ${imageHTML}
@@ -1144,7 +1162,7 @@
                             <button
                                 type="button"
                                 data-minus="${item.dish_id}"
-                                aria-label="Уменьшить количество"
+                                aria-label="${i18n.decrease_quantity_aria}"
                             >−</button>
 
                             <span>${itemQuantity}</span>
@@ -1152,7 +1170,7 @@
                             <button
                                 type="button"
                                 data-plus="${item.dish_id}"
-                                aria-label="Увеличить количество"
+                                aria-label="${i18n.increase_quantity_aria}"
                             >+</button>
                         </div>
 
@@ -1160,7 +1178,7 @@
                             type="button"
                             class="remove-button"
                             data-remove="${item.dish_id}"
-                        >Убрать</button>
+                        >${i18n.remove}</button>
                     </div>
                 `;
 
@@ -1211,7 +1229,7 @@
 
             if (cart.length === 0) return;
 
-            if (confirm("Очистить корзину?")) {
+            if (confirm(i18n.confirm_clear_cart_qr)) {
                 localStorage.removeItem(CART_STORAGE_KEY);
                 updateInterface();
             }
@@ -1234,15 +1252,15 @@
             const cart = getCart();
 
             if (cart.length === 0) {
-                showCheckoutError("Сначала добавьте блюда в корзину.");
+                showCheckoutError(i18n.error_add_dishes_first);
                 return;
             }
 
             if (!Number.isInteger(Number(TABLE_NUMBER)) || Number(TABLE_NUMBER) <= 0) {
                 showCheckoutError(
                     paymentType === "online"
-                        ? "Онлайн-оплата пока недоступна."
-                        : "Не удалось определить номер столика."
+                        ? i18n.error_online_unavailable
+                        : i18n.error_table_not_detected
                 );
                 return;
             }
@@ -1256,8 +1274,8 @@
 
                 showCheckoutError(
                     paymentType === "online"
-                        ? "Онлайн-оплата пока недоступна."
-                        : "Не удалось оформить заказ. Попробуйте ещё раз."
+                        ? i18n.error_online_unavailable
+                        : i18n.error_order_failed
                 );
                 return;
             }
@@ -1290,9 +1308,9 @@
             const previousOnlineText = payOnlineButton.innerHTML;
 
             if (paymentType === "online") {
-                payOnlineButton.textContent = "Подготовка оплаты...";
+                payOnlineButton.textContent = i18n.preparing_payment;
             } else {
-                payLaterButton.textContent = "Создание заказа...";
+                payLaterButton.textContent = i18n.creating_order;
             }
 
             try {
@@ -1331,7 +1349,7 @@
                         !/^https?:\/\//i.test(paymentUrl)
                     ) {
                         showCheckoutError(
-                            "Заказ создан, но ссылка на оплату не получена. Позовите, пожалуйста, сотрудника для проверки заказа."
+                            i18n.error_no_payment_link
                         );
                         return;
                     }
@@ -1344,7 +1362,7 @@
                 updateInterface();
 
                 showCheckoutError(
-                    "Заказ успешно оформлен. Оплатите его у сотрудника ресторана.",
+                    i18n.order_success_pay_at_staff,
                     true
                 );
 
@@ -1358,8 +1376,8 @@
 
                 showCheckoutError(
                     paymentType === "online"
-                        ? "Онлайн-оплата пока недоступна."
-                        : "Не удалось оформить заказ. Попробуйте ещё раз."
+                        ? i18n.error_online_unavailable
+                        : i18n.error_order_failed
                 );
 
             } finally {

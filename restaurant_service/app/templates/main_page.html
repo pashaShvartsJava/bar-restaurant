@@ -695,20 +695,20 @@
 
     <a href="/restaurants" class="back-to-list">
         <span class="arrow" aria-hidden="true">←</span>
-        К списку заведений
+        {{ trans('back_to_venues_list') }}
     </a>
 
     <div class="quick-menu">
         <a href="/login" class="quick-button login">
-            Войти
+            {{ trans('login') }}
         </a>
 
         <a href="/registration" class="quick-button registration">
-            Регистрация
+            {{ trans('registration_short') }}
         </a>
 
         <a href="#about" class="quick-button about">
-            О заведении
+            {{ trans('about_venue_link') }}
         </a>
     </div>
 
@@ -724,7 +724,7 @@
             {% if restaurant.slogan %}
             <p>{{ restaurant.slogan }}</p>
             {% else %}
-            <p>Добро пожаловать</p>
+            <p>{{ trans('welcome_default') }}</p>
             {% endif %}
 
             {% if restaurant.city %}
@@ -748,7 +748,7 @@
                 {% if restaurant.tagline %}
                     {{ restaurant.tagline }}
                 {% else %}
-                    Заведение с характером
+                    {{ trans('tagline_default') }}
                 {% endif %}
             </h2>
 
@@ -756,8 +756,7 @@
                 {% if restaurant.short_description %}
                     {{ restaurant.short_description }}
                 {% else %}
-                    Всё необходимое доступно прямо с телефона:
-                    меню, бронирование и заказ.
+                    {{ trans('short_description_default') }}
                 {% endif %}
             </p>
         </section>
@@ -765,7 +764,7 @@
         <section class="section">
 
             <div class="section-title">
-                <h2>Основное</h2>
+                <h2>{{ trans('section_main') }}</h2>
                 <div class="section-line"></div>
             </div>
 
@@ -778,11 +777,11 @@
                     <div class="icon">◇</div>
 
                     <h3>
-                        Забронировать столик
+                        {{ trans('reserve_table_card_title') }}
                     </h3>
 
                     <p>
-                        Выберите удобный столик
+                        {{ trans('reserve_table_card_desc') }}
                     </p>
                 </a>
 
@@ -793,11 +792,11 @@
                     <div class="icon">⌁</div>
 
                     <h3>
-                        Заказать домой
+                        {{ trans('order_home_card_title') }}
                     </h3>
 
                     <p>
-                        Доставка из заведения
+                        {{ trans('order_home_card_desc') }}
                     </p>
                 </a>
 
@@ -806,13 +805,13 @@
             {% if restaurant.accepts_reservations or restaurant.accepts_delivery or restaurant.accepts_orders_on_site %}
             <div class="features-badges">
                 {% if restaurant.accepts_reservations %}
-                    <span class="feature-badge">Принимает бронирования</span>
+                    <span class="feature-badge">{{ trans('accepts_reservations_label') }}</span>
                 {% endif %}
                 {% if restaurant.accepts_delivery %}
-                    <span class="feature-badge">Принимает доставку</span>
+                    <span class="feature-badge">{{ trans('accepts_delivery_label') }}</span>
                 {% endif %}
                 {% if restaurant.accepts_orders_on_site %}
-                    <span class="feature-badge">Принимает заказы в зале</span>
+                    <span class="feature-badge">{{ trans('accepts_orders_in_hall_label') }}</span>
                 {% endif %}
             </div>
             {% endif %}
@@ -825,7 +824,7 @@
         >
 
             <div class="section-title">
-                <h2>О заведении</h2>
+                <h2>{{ trans('section_about') }}</h2>
                 <div class="section-line"></div>
             </div>
 
@@ -835,7 +834,7 @@
                     {% if restaurant.about_title %}
                         {{ restaurant.about_title }}
                     {% else %}
-                        Заведение, где всё просто
+                        {{ trans('about_title_default') }}
                     {% endif %}
                 </h2>
 
@@ -843,9 +842,7 @@
                     {% if restaurant.description %}
                         {{ restaurant.description }}
                     {% else %}
-                        Выбирайте столик, смотрите меню, оформляйте заказ
-                        и оставайтесь в атмосфере вечера. Всё необходимое
-                        доступно прямо с телефона.
+                        {{ trans('about_text_default') }}
                     {% endif %}
                 </p>
 
@@ -857,12 +854,11 @@
                         </div>
 
                         <h3>
-                            Онлайн-бронирование
+                            {{ trans('advantage_booking_title') }}
                         </h3>
 
                         <p>
-                            Выберите удобный столик и забронируйте его
-                            без лишних звонков.
+                            {{ trans('advantage_booking_text') }}
                         </p>
                     </div>
 
@@ -872,12 +868,11 @@
                         </div>
 
                         <h3>
-                            Меню всегда рядом
+                            {{ trans('advantage_menu_title') }}
                         </h3>
 
                         <p>
-                            Откройте меню с телефона и быстро найдите
-                            нужные блюда и напитки.
+                            {{ trans('advantage_menu_text') }}
                         </p>
                     </div>
 
@@ -887,12 +882,11 @@
                         </div>
 
                         <h3>
-                            Удобный заказ
+                            {{ trans('advantage_order_title') }}
                         </h3>
 
                         <p>
-                            Оформляйте заказ прямо со своего устройства,
-                            не отвлекаясь от вечера.
+                            {{ trans('advantage_order_text') }}
                         </p>
                     </div>
 
@@ -906,20 +900,20 @@
         <section class="section">
 
             <div class="section-title">
-                <h2>Режим работы</h2>
+                <h2>{{ trans('section_working_hours') }}</h2>
                 <div class="section-line"></div>
             </div>
 
             <div class="working-hours-box">
                 <div class="working-hours-list">
                     {% set days = [
-                        ("monday", "Понедельник"),
-                        ("tuesday", "Вторник"),
-                        ("wednesday", "Среда"),
-                        ("thursday", "Четверг"),
-                        ("friday", "Пятница"),
-                        ("saturday", "Суббота"),
-                        ("sunday", "Воскресенье")
+                        ("monday", trans('day_monday')),
+                        ("tuesday", trans('day_tuesday')),
+                        ("wednesday", trans('day_wednesday')),
+                        ("thursday", trans('day_thursday')),
+                        ("friday", trans('day_friday')),
+                        ("saturday", trans('day_saturday')),
+                        ("sunday", trans('day_sunday'))
                     ] %}
                     {% for day_key, day_label in days %}
                         {% set hours = restaurant.working_hours.get(day_key, {}) if restaurant.working_hours else {} %}
@@ -930,9 +924,9 @@
                                 {% if hours.get('from') and hours.get('to') %}
                                     {{ hours.get('from') }} — {{ hours.get('to') }}
                                 {% elif hours.get('from') %}
-                                    с {{ hours.get('from') }}
+                                    {{ trans('from_time_prefix') }} {{ hours.get('from') }}
                                 {% elif hours.get('to') %}
-                                    до {{ hours.get('to') }}
+                                    {{ trans('until_time_prefix') }} {{ hours.get('to') }}
                                 {% else %}
                                     —
                                 {% endif %}
@@ -949,7 +943,7 @@
         <section class="section">
 
             <div class="section-title">
-                <h2>Контакты</h2>
+                <h2>{{ trans('section_contacts') }}</h2>
                 <div class="section-line"></div>
             </div>
 
@@ -958,7 +952,7 @@
                 {% if restaurant.phone %}
                 <div class="contact">
                     <span class="contact-label">
-                        Телефон
+                        {{ trans('contact_phone_label') }}
                     </span>
 
                     <div class="contact-value">
@@ -972,7 +966,7 @@
                 {% if restaurant.email %}
                 <div class="contact">
                     <span class="contact-label">
-                        Почта
+                        {{ trans('contact_email_label') }}
                     </span>
 
                     <div class="contact-value">
@@ -986,7 +980,7 @@
                 {% if restaurant.address %}
                 <div class="contact">
                     <span class="contact-label">
-                        Адрес
+                        {{ trans('contact_address_label') }}
                     </span>
 
                     <div class="contact-value">

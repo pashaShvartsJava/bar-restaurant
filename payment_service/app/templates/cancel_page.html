@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Payment Cancelled</title>
+    <title>{{ trans('payment_cancelled_page_title') }}</title>
     <style>
         * {
             box-sizing: border-box;
@@ -176,15 +176,14 @@
             <div class="header-label">PAYMENT NOT COMPLETED</div>
 
             <div class="notice">
-                You can return to the order and try the payment again.
-                If the amount was charged, please contact us before making another payment.
+                {{ trans('payment_cancelled_notice') }}
             </div>
 
             <div class="bottom">
     {% if request.cookies.get("access_token") %}
-        <a href="/menu_page/urders/users" class="save">Попробовать ещё раз</a>
+        <a href="/menu_page/urders/users" class="save">{{ trans('try_again') }}</a>
     {% else %}
-        <a href="/orders/create/guest" class="save">Попробовать ещё раз</a>
+        <a href="/orders/create/guest" class="save">{{ trans('try_again') }}</a>
     {% endif %}
 </div>
         </div>

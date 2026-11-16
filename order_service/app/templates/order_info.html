@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Информация о заказе | BAR. ADMIN</title>
+    <title>{{ trans('order_info_page_title') }} | BAR. ADMIN</title>
 
     <style>
 
@@ -469,7 +469,7 @@ body {
         <a
             href="/orders/get_orders"
             class="back">
-            ← Вернуться к заказам
+            ← {{ trans('back_to_orders') }}
         </a>
 
         <span class="brand">
@@ -486,11 +486,11 @@ body {
         </div>
 
         <h1>
-            Информация о заказе
+            {{ trans('order_info_page_title') }}
         </h1>
 
         <div class="description">
-            Полная информация о заказе
+            {{ trans('order_info_page_description') }}
         </div>
 
     </div>
@@ -506,7 +506,7 @@ body {
             <div>
 
                 <div class="order-number-label">
-                    Номер заказа
+                    {{ trans('order_number_label') }}
                 </div>
 
                 <div class="order-number">
@@ -521,56 +521,56 @@ body {
                 {% if order.status.value == "pending" %}
 
                     <span class="status pending">
-                        Ожидает
+                        {{ trans('status_pending') }}
 
                     </span>
 
                 {% elif order.status.value == "confirmed_address" %}
 
                     <span class="status confirmed">
-                        Адрес подтверждён
+                        {{ trans('status_confirmed_address') }}
                     </span>
 
                 {% elif order.status.value == "paid" %}
 
                     <span class="status paid">
-                        Оплачен
+                        {{ trans('status_paid') }}
                     </span>
 
                 {% elif order.status.value == "prepared" %}
 
                     <span class="status prepared">
-                        Готовится
+                        {{ trans('status_prepared') }}
                     </span>
 
                 {% elif order.status.value == "delivering" %}
 
                     <span class="status delivering">
-                        Доставляется
+                        {{ trans('status_delivering') }}
                     </span>
 
                 {% elif order.status.value == "completed" %}
 
                     <span class="status completed">
-                        Завершён
+                        {{ trans('status_completed') }}
                     </span>
 
                 {% elif order.status.value == "cancelled_before" %}
 
                     <span class="status cancelled">
-                        Отменён до оплаты
+                        {{ trans('status_cancelled_before') }}
                     </span>
 
                 {% elif order.status.value == "cancelled_after" %}
 
                     <span class="status cancelled">
-                        Отменён после оплаты
+                        {{ trans('status_cancelled_after') }}
                     </span>
 
                 {% elif order.status.value == "expired" %}
 
                     <span class="status expired">
-                        Истёк
+                        {{ trans('status_expired') }}
                     </span>
 
                 {% endif %}
@@ -585,7 +585,7 @@ body {
         <section class="section">
 
             <div class="section-title">
-                Заказ
+                {{ trans('order_section_title') }}
             </div>
 
             <div class="info-grid">
@@ -593,7 +593,7 @@ body {
                 <div class="info-item">
 
                     <div class="info-label">
-                        Клиент
+                        {{ trans('th_client') }}
                     </div>
 
                     <div class="info-value">
@@ -606,7 +606,7 @@ body {
                 <div class="info-item">
 
                     <div class="info-label">
-                        Сумма заказа
+                        {{ trans('order_sum_label') }}
                     </div>
 
                     <div class="info-value">
@@ -619,7 +619,7 @@ body {
                 <div class="info-item">
 
                     <div class="info-label">
-                        Создан
+                        {{ trans('order_created_label') }}
                     </div>
 
                     <div class="info-value">
@@ -632,7 +632,7 @@ body {
                 <div class="info-item">
 
                     <div class="info-label">
-                        Последнее изменение статуса
+                        {{ trans('order_last_status_change_label') }}
                     </div>
 
                     <div class="info-value">
@@ -651,7 +651,7 @@ body {
         <section class="section">
 
             <div class="section-title">
-                Адрес доставки
+                {{ trans('delivery_address_section') }}
             </div>
 
             {% if order.address %}
@@ -660,7 +660,7 @@ body {
 
                     <div class="info-item">
                         <div class="info-label">
-                            Город
+                            {{ trans('city') }}
                         </div>
 
                         <div class="info-value">
@@ -671,7 +671,7 @@ body {
 
                     <div class="info-item">
                         <div class="info-label">
-                            Почтовый индекс
+                            {{ trans('postal_code') }}
                         </div>
 
                         <div class="info-value">
@@ -682,7 +682,7 @@ body {
 
                     <div class="info-item">
                         <div class="info-label">
-                            Улица
+                            {{ trans('street') }}
                         </div>
 
                         <div class="info-value">
@@ -693,7 +693,7 @@ body {
 
                     <div class="info-item">
                         <div class="info-label">
-                            Номер дома
+                            {{ trans('house_number') }}
                         </div>
 
                         <div class="info-value">
@@ -704,7 +704,7 @@ body {
 
                     <div class="info-item">
                         <div class="info-label">
-                            Квартира
+                            {{ trans('apartment_number') }}
                         </div>
 
                         <div class="info-value">
@@ -713,7 +713,7 @@ body {
                                 {{ order.address.apartment }}
                             {% else %}
                                 <span class="info-value muted">
-                                    Не указана
+                                    {{ trans('not_specified') }}
                                 </span>
                             {% endif %}
 
@@ -724,7 +724,7 @@ body {
                     <div class="info-item address-full">
 
                         <div class="info-label">
-                            Полный адрес
+                            {{ trans('full_address_label') }}
                         </div>
 
                         <div class="info-value">
@@ -735,7 +735,7 @@ body {
                             {{ order.address.house }}
 
                             {% if order.address.apartment %}
-                                , кв. {{ order.address.apartment }}
+                                , {{ trans('apartment_short') }} {{ order.address.apartment }}
                             {% endif %}
 
                         </div>
@@ -747,7 +747,7 @@ body {
             {% else %}
 
                 <div class="info-value muted">
-                    Адрес доставки ещё не указан
+                    {{ trans('delivery_address_not_specified') }}
                 </div>
 
             {% endif %}
@@ -760,7 +760,7 @@ body {
         <section class="section">
 
             <div class="section-title">
-                Состав заказа
+                {{ trans('order_composition_title') }}
             </div>
 
             <div class="items">
@@ -786,7 +786,7 @@ body {
                 {% else %}
 
                     <div class="info-value muted">
-                        В заказе нет позиций
+                        {{ trans('order_no_items') }}
                     </div>
 
                 {% endfor %}
@@ -797,7 +797,7 @@ body {
             <div class="total">
 
                 <div class="total-label">
-                    Итоговая сумма
+                    {{ trans('order_total_label') }}
                 </div>
 
                 <div class="total-value">

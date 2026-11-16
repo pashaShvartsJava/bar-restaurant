@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Payment Successful</title>
+    <title>{{ trans('payment_success_page_title') }}</title>
     <style>
         * {
             box-sizing: border-box;
@@ -155,26 +155,25 @@
         <div class="card">
             <div class="icon">✓</div>
 
-            <div class="header-label">PAYMENT CONFIRMED</div>
+            <div class="header-label">{{ trans('payment_confirmed_label') }}</div>
 
-            <h1>Thank you for your order</h1>
+            <h1>{{ trans('thank_you_for_order') }}</h1>
 
             <div class="description">
-                Your payment has been successfully processed.
-                We have received your order and will start preparing it shortly.
+                {{ trans('payment_success_description') }}
             </div>
 
             <div class="order">
-                <div class="order-label">ORDER</div>
+                <div class="order-label">{{ trans('order_label_upper') }}</div>
                 <div class="order-number">#{{ order_number }}</div>
-                <div class="status">PAID</div>
+                <div class="status">{{ trans('status_paid_upper') }}</div>
             </div>
 
 <div class="bottom">
     {% if request.cookies.get("access_token") %}
-        <a href="/user/my_profile" class="save">BACK TO MENU</a>
+        <a href="/user/my_profile" class="save">{{ trans('back_to_menu_upper') }}</a>
     {% else %}
-        <a href="/bar_name" class="save">BACK TO MENU</a>
+        <a href="/bar_name" class="save">{{ trans('back_to_menu_upper') }}</a>
     {% endif %}
 </div>
 

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#100e10">
-    <title>Выбор тарифа — FDCPlatform</title>
+    <title>{{ trans('pricing_page_title') }} — FDCPlatform</title>
 
     <style>
         * {
@@ -1135,10 +1135,10 @@
     <div class="ambient" aria-hidden="true"></div>
 
     <main class="container">
-        <nav class="top" aria-label="Навигация">
+        <nav class="top" aria-label="{{ trans('nav_aria_label') }}">
             <a class="back" href="/restaurant-platform">
                 <span class="back-arrow" aria-hidden="true">←</span>
-                Вернуться к настройке
+                {{ trans('back_to_setup') }}
             </a>
 
             <div class="brand">FDCPlatform</div>
@@ -1151,44 +1151,40 @@
                     <path d="M8 10V7a4 4 0 0 1 8 0v3"/>
                     <path d="M12 14v3"/>
                 </svg>
-                Безопасное оформление
+                {{ trans('secure_checkout') }}
             </div>
         </nav>
 
         <header class="header">
             <div class="eyebrow">
                 {% if mode == 'renew' %}
-                    Продление подписки
+                    {{ trans('eyebrow_renew') }}
                 {% else %}
-                    Выберите свой план
+                    {{ trans('eyebrow_choose_plan') }}
                 {% endif %}
             </div>
 
             <h1>
                 {% if mode == 'renew' %}
-                    Новая подписка<br>
-                    для <span>вашего ресторана</span>
+                    {{ trans('hero_renew_line1') }}<br>
+                    {{ trans('hero_restaurant_prefix') }} <span>{{ trans('hero_restaurant_word') }}</span>
                 {% else %}
-                    Больше возможностей<br>
-                    для <span>вашего ресторана</span>
+                    {{ trans('hero_choose_line1') }}<br>
+                    {{ trans('hero_restaurant_prefix') }} <span>{{ trans('hero_restaurant_word') }}</span>
                 {% endif %}
             </h1>
 
             <p class="subtitle">
                 {% if mode == 'renew' %}
-                    Выберите тариф, чтобы оформить новую подписку
-                    для уже существующего ресторана. Все данные ресторана,
-                    меню и заказов сохранятся.
+                    {{ trans('subtitle_renew') }}
                 {% else %}
-                    Всё необходимое для управления заведением,
-                    приёма заказов и роста бизнеса — в одном месте.
-                    Выберите тариф, который подходит именно вам.
+                    {{ trans('subtitle_new') }}
                 {% endif %}
             </p>
 
             <div class="billing">
                 <span class="billing-label active" id="monthlyLabel">
-                    Ежемесячно
+                    {{ trans('billing_monthly') }}
                 </span>
 
                 <button
@@ -1197,62 +1193,54 @@
                     type="button"
                     role="switch"
                     aria-checked="false"
-                    aria-label="Переключить период оплаты"
+                    aria-label="{{ trans('billing_toggle_aria') }}"
                 >
                     <span class="toggle-knob"></span>
                 </button>
 
                 <span class="billing-label" id="yearlyLabel">
-                    Ежегодно
+                    {{ trans('billing_yearly') }}
                 </span>
 
                 <span class="save-badge" id="saveBadge">
-                    Экономия 12,5%
+                    {{ trans('save_badge') }}
                 </span>
             </div>
         </header>
 
         {% if mode == 'renew' %}
-        <section class="renew-banner" aria-label="Продление подписки">
+        <section class="renew-banner" aria-label="{{ trans('renew_banner_aria') }}">
             <div class="renew-banner-icon" aria-hidden="true">↻</div>
 
             <div class="renew-banner-content">
-                <strong>Оформление новой подписки</strong>
+                <strong>{{ trans('renew_banner_title') }}</strong>
                 <span>
-                    Пробный период для продления недоступен.
-                    Оплата начнётся сразу после оформления подписки.
-                    Перед оплатой мы попросим указать название вашего ресторана,
-                    чтобы привязать подписку к существующему заведению.
+                    {{ trans('renew_banner_desc') }}
                 </span>
             </div>
         </section>
         {% else %}
-        <section class="trial-banner" aria-label="Пробный период">
+        <section class="trial-banner" aria-label="{{ trans('trial_banner_aria') }}">
             <div class="trial-icon" aria-hidden="true">✦</div>
 
             <div class="trial-content">
-                <strong>Пробный период на любом тарифе</strong>
+                <strong>{{ trans('trial_banner_title') }}</strong>
                 <span>
-                    Попробуйте все возможности выбранного плана.
-                    Длительность пробного периода зависит от тарифа:
-                    Basic — 3 дня, Online — 3 дня,
-                    Advanced — 7 дней, Professional Business — 14 дней.
-                    Подписка начнёт оплачиваться после окончания пробного периода.
+                    {{ trans('trial_banner_desc') }}
                 </span>
             </div>
 
-            <div class="trial-badge">3 / 3 / 7 / 14 DAYS</div>
+            <div class="trial-badge">3 / 3 / 7 / 14 {{ trans('days_upper') }}</div>
         </section>
         {% endif %}
 
-        <section class="plans" aria-label="Тарифные планы">
+        <section class="plans" aria-label="{{ trans('plans_aria') }}">
             <article class="plan">
                 <div class="plan-top">
                     <div class="plan-number">01 / BASIC</div>
-                    <h2>Basic</h2>
+                    <h2>{{ trans('plan_basic_name') }}</h2>
                     <p class="plan-description">
-                        Для небольших заведений без доставки и онлайн-оплат.
-                        Сайт, меню и управление заказами.
+                        {{ trans('plan_basic_desc') }}
                     </p>
                 </div>
 
@@ -1260,50 +1248,46 @@
                     <div class="price-line">
                         <span class="currency">€</span>
                         <span class="price">39,99</span>
-                        <span class="period">/ месяц</span>
+                        <span class="period">{{ trans('period_per_month') }}</span>
                     </div>
                     <p class="price-note">
                         {% if mode == 'renew' %}
-                            Затем 39,99 € в месяц
-                            <br>
-                            Комиссия 11% с каждого онлайн-заказа
+                            {{ trans('price_note_renew_basic') }}
                         {% else %}
-                            <strong>3 дня бесплатно</strong>
+                            <strong>{{ trans('trial_3_days_free') }}</strong>
                             <br>
-                            Затем 39,99 € в месяц
-                            <br>
-                            Комиссия 11% с каждого онлайн-заказа
+                            {{ trans('price_note_new_basic') }}
                         {% endif %}
                     </p>
                 </div>
 
                 <div class="plan-features">
-                    <p class="features-heading">В тариф включено</p>
+                    <p class="features-heading">{{ trans('features_included') }}</p>
                     <ul class="feature-list">
                         <li>
                             <span class="check">✓</span>
                             <span>
-                                <strong>Сайт заведения</strong>
-                                <small>Основные настройки сайта</small>
+                                <strong>{{ trans('feature_site_title') }}</strong>
+                                <small>{{ trans('feature_site_desc') }}</small>
                             </span>
                         </li>
                         <li>
                             <span class="check">✓</span>
-                            <span>Управление меню и ценами</span>
+                            <span>{{ trans('feature_menu_prices') }}</span>
                         </li>
                         <li>
                             <span class="check">✓</span>
-                            <span>Управление заказами</span>
+                            <span>{{ trans('feature_orders') }}</span>
                         </li>
                         <li>
                             <span class="check">✓</span>
-                            <span>Управление администрацией</span>
+                            <span>{{ trans('feature_admin_management') }}</span>
                         </li>
                         <li>
                             <span class="check">✓</span>
                             <span>
-                                Техподдержка FDCPlatform
-                                <small>Взаимодействие с клиентами через платформу</small>
+                                {{ trans('feature_support_fdc') }}
+                                <small>{{ trans('feature_support_fdc_desc') }}</small>
                             </span>
                         </li>
                     </ul>
@@ -1313,15 +1297,14 @@
 
                 <div class="plan-bottom">
                     <button class="select-plan" data-plan="basic" type="button">
-                        Выбрать Basic
+                        {{ trans('select_plan_basic') }}
                         <span class="arrow">→</span>
                     </button>
                     <p class="plan-footnote">
                         {% if mode == 'renew' %}
-                            Оплата сразу после оформления подписки.
+                            {{ trans('footnote_renew_basic') }}
                         {% else %}
-                            После 3-дневного пробного периода взимается
-                            ежемесячная плата и комиссия за онлайн-заказы.
+                            {{ trans('footnote_new_basic') }}
                         {% endif %}
                     </p>
                 </div>
@@ -1330,10 +1313,9 @@
             <article class="plan">
                 <div class="plan-top">
                     <div class="plan-number">02 / ONLINE</div>
-                    <h2>Online</h2>
+                    <h2>{{ trans('plan_online_name') }}</h2>
                     <p class="plan-description">
-                        Для заведений с доставкой и онлайн-оплатой.
-                        Всё из Basic плюс доставка и клиенты.
+                        {{ trans('plan_online_desc') }}
                     </p>
                 </div>
 
@@ -1341,46 +1323,42 @@
                     <div class="price-line">
                         <span class="currency">€</span>
                         <span class="price">59,99</span>
-                        <span class="period">/ месяц</span>
+                        <span class="period">{{ trans('period_per_month') }}</span>
                     </div>
                     <p class="price-note">
                         {% if mode == 'renew' %}
-                            Затем 59,99 € в месяц
-                            <br>
-                            Комиссия 9% с каждого онлайн-заказа
+                            {{ trans('price_note_renew_online') }}
                         {% else %}
-                            <strong>3 дня бесплатно</strong>
+                            <strong>{{ trans('trial_3_days_free') }}</strong>
                             <br>
-                            Затем 59,99 € в месяц
-                            <br>
-                            Комиссия 9% с каждого онлайн-заказа
+                            {{ trans('price_note_new_online') }}
                         {% endif %}
                     </p>
                 </div>
 
                 <div class="plan-features">
-                    <p class="features-heading">Всё из Basic, плюс</p>
+                    <p class="features-heading">{{ trans('features_basic_plus') }}</p>
                     <ul class="feature-list">
                         <li>
                             <span class="check">✓</span>
                             <span>
-                                <strong>Онлайн-доставка</strong>
-                                <small>Приём заказов через интернет</small>
+                                <strong>{{ trans('feature_delivery_title') }}</strong>
+                                <small>{{ trans('feature_delivery_desc') }}</small>
                             </span>
                         </li>
                         <li>
                             <span class="check">✓</span>
-                            <span>История онлайн-оплат</span>
+                            <span>{{ trans('feature_online_payments_history') }}</span>
                         </li>
                         <li>
                             <span class="check">✓</span>
-                            <span>Управление зарегистрированными клиентами</span>
+                            <span>{{ trans('feature_registered_clients') }}</span>
                         </li>
                         <li>
                             <span class="check">✓</span>
                             <span>
-                                Собственная техподдержка
-                                <small>Общение с клиентами напрямую</small>
+                                {{ trans('feature_own_support') }}
+                                <small>{{ trans('feature_own_support_desc') }}</small>
                             </span>
                         </li>
                     </ul>
@@ -1390,15 +1368,14 @@
 
                 <div class="plan-bottom">
                     <button class="select-plan" data-plan="online" type="button">
-                        Выбрать Online
+                        {{ trans('select_plan_online') }}
                         <span class="arrow">→</span>
                     </button>
                     <p class="plan-footnote">
                         {% if mode == 'renew' %}
-                            Оплата сразу после оформления подписки.
+                            {{ trans('footnote_renew_online') }}
                         {% else %}
-                            После 3-дневного пробного периода — 59,99 € в месяц.
-                            Комиссия 9% с онлайн-заказов.
+                            {{ trans('footnote_new_online') }}
                         {% endif %}
                     </p>
                 </div>
@@ -1407,10 +1384,9 @@
             <article class="plan">
                 <div class="plan-top">
                     <div class="plan-number">03 / ADVANCED</div>
-                    <h2>Advanced</h2>
+                    <h2>{{ trans('plan_advanced_name') }}</h2>
                     <p class="plan-description">
-                        Для заведений с посадкой в зале. Управление столиками
-                        и бронями по звонку, почте или соцсетям.
+                        {{ trans('plan_advanced_desc') }}
                     </p>
                 </div>
 
@@ -1418,43 +1394,39 @@
                     <div class="price-line">
                         <span class="currency">€</span>
                         <span class="price">119,99</span>
-                        <span class="period">/ месяц</span>
+                        <span class="period">{{ trans('period_per_month') }}</span>
                     </div>
                     <p class="price-note">
                         {% if mode == 'renew' %}
-                            Затем 119,99 € в месяц
-                            <br>
-                            Комиссия 5% с каждого онлайн-заказа
+                            {{ trans('price_note_renew_advanced') }}
                         {% else %}
-                            <strong>7 дней бесплатно</strong>
+                            <strong>{{ trans('trial_7_days_free') }}</strong>
                             <br>
-                            Затем 119,99 € в месяц
-                            <br>
-                            Комиссия 5% с каждого онлайн-заказа
+                            {{ trans('price_note_new_advanced') }}
                         {% endif %}
                     </p>
                 </div>
 
                 <div class="plan-features">
-                    <p class="features-heading">Всё из Online, плюс</p>
+                    <p class="features-heading">{{ trans('features_online_plus') }}</p>
                     <ul class="feature-list">
                         <li>
                             <span class="check">✓</span>
                             <span>
-                                <strong>Управление столиками</strong>
-                                <small>Столики, посадка, статусы</small>
+                                <strong>{{ trans('feature_tables_title') }}</strong>
+                                <small>{{ trans('feature_tables_desc') }}</small>
                             </span>
                         </li>
                         <li>
                             <span class="check">✓</span>
                             <span>
-                                <strong>Управление бронями</strong>
-                                <small>Брони по звонку, почте или соцсетям</small>
+                                <strong>{{ trans('feature_reservations_title') }}</strong>
+                                <small>{{ trans('feature_reservations_desc') }}</small>
                             </span>
                         </li>
                         <li>
                             <span class="check">✓</span>
-                            <span>Заказы со столиков</span>
+                            <span>{{ trans('feature_table_orders') }}</span>
                         </li>
                     </ul>
                 </div>
@@ -1463,29 +1435,27 @@
 
                 <div class="plan-bottom">
                     <button class="select-plan" data-plan="advanced" type="button">
-                        Выбрать Advanced
+                        {{ trans('select_plan_advanced') }}
                         <span class="arrow">→</span>
                     </button>
                     <p class="plan-footnote">
                         {% if mode == 'renew' %}
-                            Оплата сразу после оформления подписки.
+                            {{ trans('footnote_renew_advanced') }}
                         {% else %}
-                            После 7-дневного пробного периода — 119,99 € в месяц.
-                            Комиссия 5% с онлайн-заказов.
+                            {{ trans('footnote_new_advanced') }}
                         {% endif %}
                     </p>
                 </div>
             </article>
 
             <article class="plan featured">
-                <div class="popular">Полный доступ</div>
+                <div class="popular">{{ trans('full_access_badge') }}</div>
 
                 <div class="plan-top">
                     <div class="plan-number">04 / PROFESSIONAL</div>
-                    <h2>Professional Business</h2>
+                    <h2>{{ trans('plan_professional_name') }}</h2>
                     <p class="plan-description">
-                        Полный набор инструментов: онлайн-бронирование,
-                        финансы, аналитика и минимальная комиссия.
+                        {{ trans('plan_professional_desc') }}
                     </p>
                 </div>
 
@@ -1493,52 +1463,48 @@
                     <div class="price-line">
                         <span class="currency">€</span>
                         <span class="price" id="proPrice">199,99</span>
-                        <span class="period" id="proPeriod">/ месяц</span>
+                        <span class="period" id="proPeriod">{{ trans('period_per_month') }}</span>
                     </div>
                     <p class="price-note" id="proPriceNote"
-                       data-monthly-normal="{% if mode == 'renew' %}Затем 199,99 € в месяц<br>Комиссия 1% с каждого онлайн-заказа{% else %}<strong>14 дней бесплатно</strong><br>Затем 199,99 € в месяц<br>Комиссия 1% с каждого онлайн-заказа{% endif %}"
-                       data-yearly-normal="{% if mode == 'renew' %}Затем 2 099,99 € за год<br>Экономия 299,89 € в год{% else %}<strong>14 дней бесплатно</strong><br>Затем 2 099,99 € за год<br>Экономия 299,89 € в год{% endif %}">
+                       data-monthly-normal="{% if mode == 'renew' %}{{ trans('pro_note_renew_monthly') }}{% else %}<strong>{{ trans('trial_14_days_free') }}</strong><br>{{ trans('pro_note_new_monthly') }}{% endif %}"
+                       data-yearly-normal="{% if mode == 'renew' %}{{ trans('pro_note_renew_yearly') }}{% else %}<strong>{{ trans('trial_14_days_free') }}</strong><br>{{ trans('pro_note_new_yearly') }}{% endif %}">
                         {% if mode == 'renew' %}
-                            Затем 199,99 € в месяц
-                            <br>
-                            Комиссия 1% с каждого онлайн-заказа
+                            {{ trans('pro_note_renew_monthly') }}
                         {% else %}
-                            <strong>14 дней бесплатно</strong>
+                            <strong>{{ trans('trial_14_days_free') }}</strong>
                             <br>
-                            Затем 199,99 € в месяц
-                            <br>
-                            Комиссия 1% с каждого онлайн-заказа
+                            {{ trans('pro_note_new_monthly') }}
                         {% endif %}
                     </p>
                 </div>
 
                 <div class="plan-features">
-                    <p class="features-heading">Всё из Advanced, плюс</p>
+                    <p class="features-heading">{{ trans('features_advanced_plus') }}</p>
                     <ul class="feature-list">
                         <li>
                             <span class="check">✓</span>
                             <span>
-                                <strong>Онлайн-бронирование</strong>
-                                <small>Гости бронируют столики сами</small>
+                                <strong>{{ trans('feature_online_booking_title') }}</strong>
+                                <small>{{ trans('feature_online_booking_desc') }}</small>
                             </span>
                         </li>
                         <li>
                             <span class="check">✓</span>
                             <span>
-                                <strong>Финансы</strong>
-                                <small>Контроль финансовых показателей</small>
+                                <strong>{{ trans('feature_finance_title') }}</strong>
+                                <small>{{ trans('feature_finance_desc') }}</small>
                             </span>
                         </li>
                         <li>
                             <span class="check">✓</span>
                             <span>
-                                <strong>Расширенная аналитика</strong>
-                                <small>Выручка, динамика и эффективность</small>
+                                <strong>{{ trans('feature_analytics_title') }}</strong>
+                                <small>{{ trans('feature_analytics_desc') }}</small>
                             </span>
                         </li>
                         <li>
                             <span class="check">✓</span>
-                            <span>Все возможности платформы</span>
+                            <span>{{ trans('feature_all_platform') }}</span>
                         </li>
                     </ul>
                 </div>
@@ -1547,139 +1513,139 @@
 
                 <div class="plan-bottom">
                     <button class="select-plan" data-plan="professional" type="button">
-                        Выбрать Professional
+                        {{ trans('select_plan_professional') }}
                         <span class="arrow">→</span>
                     </button>
                     <p class="plan-footnote" id="proFootnote">
                         {% if mode == 'renew' %}
-                            Оплата сразу после оформления подписки.
+                            {{ trans('pro_footnote_renew') }}
                         {% else %}
-                            Оплата после 14-дневного пробного периода.
+                            {{ trans('pro_footnote_new') }}
                         {% endif %}
                     </p>
                 </div>
             </article>
         </section>
 
-        <section class="comparison" aria-label="Сравнение тарифов">
+        <section class="comparison" aria-label="{{ trans('comparison_aria') }}">
             <div class="section-heading">
-                <div class="eyebrow">Возможности платформы</div>
-                <h2>Сравните тарифы</h2>
-                <p>Найдите инструменты, которые нужны вашему бизнесу.</p>
+                <div class="eyebrow">{{ trans('comparison_eyebrow') }}</div>
+                <h2>{{ trans('comparison_title') }}</h2>
+                <p>{{ trans('comparison_subtitle') }}</p>
             </div>
 
             <div class="comparison-wrap">
                 <table>
                     <thead>
                         <tr>
-                            <th>Возможность</th>
-                            <th>Basic</th>
-                            <th>Online</th>
-                            <th>Advanced</th>
-                            <th>Professional</th>
+                            <th>{{ trans('compare_feature_col') }}</th>
+                            <th>{{ trans('plan_basic_name') }}</th>
+                            <th>{{ trans('plan_online_name') }}</th>
+                            <th>{{ trans('plan_advanced_name') }}</th>
+                            <th>{{ trans('plan_professional_short') }}</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td>Сайт заведения и основные настройки</td>
+                            <td>{{ trans('compare_site_settings') }}</td>
                             <td class="yes">✓</td>
                             <td class="yes">✓</td>
                             <td class="yes">✓</td>
                             <td class="yes">✓</td>
                         </tr>
                         <tr>
-                            <td>Управление меню и ценами</td>
+                            <td>{{ trans('feature_menu_prices') }}</td>
                             <td class="yes">✓</td>
                             <td class="yes">✓</td>
                             <td class="yes">✓</td>
                             <td class="yes">✓</td>
                         </tr>
                         <tr>
-                            <td>Управление заказами</td>
+                            <td>{{ trans('feature_orders') }}</td>
                             <td class="yes">✓</td>
                             <td class="yes">✓</td>
                             <td class="yes">✓</td>
                             <td class="yes">✓</td>
                         </tr>
                         <tr>
-                            <td>Управление администрацией</td>
+                            <td>{{ trans('feature_admin_management') }}</td>
                             <td class="yes">✓</td>
                             <td class="yes">✓</td>
                             <td class="yes">✓</td>
                             <td class="yes">✓</td>
                         </tr>
                         <tr>
-                            <td>Онлайн-доставка</td>
+                            <td>{{ trans('feature_delivery_short') }}</td>
                             <td class="no">—</td>
                             <td class="yes">✓</td>
                             <td class="yes">✓</td>
                             <td class="yes">✓</td>
                         </tr>
                         <tr>
-                            <td>История онлайн-оплат</td>
+                            <td>{{ trans('feature_online_payments_history') }}</td>
                             <td class="no">—</td>
                             <td class="yes">✓</td>
                             <td class="yes">✓</td>
                             <td class="yes">✓</td>
                         </tr>
                         <tr>
-                            <td>Управление зарегистрированными клиентами</td>
+                            <td>{{ trans('feature_registered_clients') }}</td>
                             <td class="no">—</td>
                             <td class="yes">✓</td>
                             <td class="yes">✓</td>
                             <td class="yes">✓</td>
                         </tr>
                         <tr>
-                            <td>Собственная техподдержка</td>
+                            <td>{{ trans('feature_own_support') }}</td>
                             <td class="no">—</td>
                             <td class="yes">✓</td>
                             <td class="yes">✓</td>
                             <td class="yes">✓</td>
                         </tr>
                         <tr>
-                            <td>Управление столиками</td>
+                            <td>{{ trans('feature_tables_title') }}</td>
                             <td class="no">—</td>
                             <td class="no">—</td>
                             <td class="yes">✓</td>
                             <td class="yes">✓</td>
                         </tr>
                         <tr>
-                            <td>Управление бронями (без онлайн-записи)</td>
+                            <td>{{ trans('feature_reservations_short') }}</td>
                             <td class="no">—</td>
                             <td class="no">—</td>
                             <td class="yes">✓</td>
                             <td class="yes">✓</td>
                         </tr>
                         <tr>
-                            <td>Заказы со столиков</td>
+                            <td>{{ trans('feature_table_orders') }}</td>
                             <td class="no">—</td>
                             <td class="no">—</td>
                             <td class="yes">✓</td>
                             <td class="yes">✓</td>
                         </tr>
                         <tr>
-                            <td>Онлайн-бронирование</td>
+                            <td>{{ trans('feature_online_booking_short') }}</td>
                             <td class="no">—</td>
                             <td class="no">—</td>
                             <td class="no">—</td>
                             <td class="yes">✓</td>
                         </tr>
                         <tr>
-                            <td>Финансы</td>
+                            <td>{{ trans('feature_finance_title') }}</td>
                             <td class="no">—</td>
                             <td class="no">—</td>
                             <td class="no">—</td>
                             <td class="yes">✓</td>
                         </tr>
                         <tr>
-                            <td>Расширенная аналитика</td>
+                            <td>{{ trans('feature_analytics_short') }}</td>
                             <td class="no">—</td>
                             <td class="no">—</td>
                             <td class="no">—</td>
                             <td class="yes">✓</td>
                         </tr>
                         <tr>
-                            <td>Комиссия платформы с онлайн-заказов</td>
+                            <td>{{ trans('compare_commission') }}</td>
                             <td>11%</td>
                             <td>9%</td>
                             <td>5%</td>
@@ -1687,19 +1653,19 @@
                         </tr>
                         {% if mode != 'renew' %}
                         <tr>
-                            <td>Бесплатный пробный период</td>
-                            <td class="yes">3 дня</td>
-                            <td class="yes">3 дня</td>
-                            <td class="yes">7 дней</td>
-                            <td class="yes">14 дней</td>
+                            <td>{{ trans('compare_trial') }}</td>
+                            <td class="yes">{{ trans('trial_3_days') }}</td>
+                            <td class="yes">{{ trans('trial_3_days') }}</td>
+                            <td class="yes">{{ trans('trial_7_days') }}</td>
+                            <td class="yes">{{ trans('trial_14_days') }}</td>
                         </tr>
                         {% else %}
                         <tr>
-                            <td>Оплата после оформления</td>
-                            <td class="yes">Сразу</td>
-                            <td class="yes">Сразу</td>
-                            <td class="yes">Сразу</td>
-                            <td class="yes">Сразу</td>
+                            <td>{{ trans('compare_payment_after') }}</td>
+                            <td class="yes">{{ trans('payment_immediately') }}</td>
+                            <td class="yes">{{ trans('payment_immediately') }}</td>
+                            <td class="yes">{{ trans('payment_immediately') }}</td>
+                            <td class="yes">{{ trans('payment_immediately') }}</td>
                         </tr>
                         {% endif %}
                     </tbody>
@@ -1709,40 +1675,29 @@
             <div class="commission-note">
                 <span class="note-icon" aria-hidden="true">ⓘ</span>
                 <p>
-                    <strong>О комиссии тарифов.</strong>
-                    К стоимости подписки добавляется комиссия с каждого
-                    онлайн-заказа: 11% на Basic, 9% на Online,
-                    5% на Advanced и 1% на Professional Business.
-                    Условия расчёта комиссии, возвратов и платёжных сборов
-                    указываются отдельно в условиях тарифа.
+                    <strong>{{ trans('commission_note_lead') }}</strong>
+                    {{ trans('commission_note_body') }}
                 </p>
             </div>
         </section>
 
         <section class="faq">
             <div class="section-heading">
-                <div class="eyebrow">Есть вопросы?</div>
-                <h2>Перед тем как начать</h2>
-                <p>Коротко о подписке и выборе тарифа.</p>
+                <div class="eyebrow">{{ trans('faq_eyebrow') }}</div>
+                <h2>{{ trans('faq_title') }}</h2>
+                <p>{{ trans('faq_subtitle') }}</p>
             </div>
 
             <div class="faq-list">
                 <article class="faq-item">
                     <button class="faq-question" type="button" aria-expanded="false">
-                        Как работает бесплатный пробный период?
+                        {{ trans('faq_q1') }}
                         <span class="faq-plus">+</span>
                     </button>
                     <div class="faq-answer">
                         <div>
                             <p>
-                                Длительность пробного периода зависит от тарифа:
-                                Basic — 3 дня, Online — 3 дня,
-                                Advanced — 7 дней, Professional Business — 14 дней.
-                                После его окончания начнётся оплата выбранной
-                                подписки согласно условиям оформления.
-                                Возможность отменить подписку и условия
-                                предоставления пробного периода отображаются
-                                перед подтверждением оплаты.
+                                {{ trans('faq_a1') }}
                             </p>
                         </div>
                     </div>
@@ -1750,16 +1705,13 @@
 
                 <article class="faq-item">
                     <button class="faq-question" type="button" aria-expanded="false">
-                        Можно ли позже изменить тариф?
+                        {{ trans('faq_q2') }}
                         <span class="faq-plus">+</span>
                     </button>
                     <div class="faq-answer">
                         <div>
                             <p>
-                                Да. Вы сможете перейти на другой тариф.
-                                Правила перерасчёта и дата вступления
-                                изменений в силу будут зависеть от настроек
-                                подписки и условий оплаты.
+                                {{ trans('faq_a2') }}
                             </p>
                         </div>
                     </div>
@@ -1767,17 +1719,13 @@
 
                 <article class="faq-item">
                     <button class="faq-question" type="button" aria-expanded="false">
-                        Как работает комиссия за онлайн-заказы?
+                        {{ trans('faq_q3') }}
                         <span class="faq-plus">+</span>
                     </button>
                     <div class="faq-answer">
                         <div>
                             <p>
-                                На Basic взимается комиссия 11% с онлайн-заказов,
-                                на Online — 9%, на Advanced — 5%,
-                                на Professional Business — 1%.
-                                Условия расчёта, возвраты и платёжные сборы
-                                определяются отдельно.
+                                {{ trans('faq_a3') }}
                             </p>
                         </div>
                     </div>
@@ -1785,16 +1733,13 @@
 
                 <article class="faq-item">
                     <button class="faq-question" type="button" aria-expanded="false">
-                        Что входит в годовую подписку Professional?
+                        {{ trans('faq_q4') }}
                         <span class="faq-plus">+</span>
                     </button>
                     <div class="faq-answer">
                         <div>
                             <p>
-                                Годовой вариант стоит 2 099,99 € за год
-                                и включает те же функции, что и ежемесячный
-                                Professional Business. Экономия относительно
-                                оплаты за каждый месяц составляет 299,89 € в год.
+                                {{ trans('faq_a4') }}
                             </p>
                         </div>
                     </div>
@@ -1802,18 +1747,13 @@
 
                 <article class="faq-item">
                     <button class="faq-question" type="button" aria-expanded="false">
-                        Когда активируется мой тариф?
+                        {{ trans('faq_q5') }}
                         <span class="faq-plus">+</span>
                     </button>
                     <div class="faq-answer">
                         <div>
                             <p>
-                                После успешного оформления пробного периода
-                                сервер сохраняет статус подписки. Доступ к
-                                функциям должен определяться сервером на
-                                основании подтверждённых событий Stripe,
-                                а не только перехода пользователя на страницу
-                                успешного оформления.
+                                {{ trans('faq_a5') }}
                             </p>
                         </div>
                     </div>
@@ -1824,12 +1764,12 @@
         <footer class="footer">
             <div class="footer-brand">FDCPlatform</div>
 
-            <div>Инструменты для современного ресторанного бизнеса</div>
+            <div>{{ trans('footer_tagline') }}</div>
 
             <div class="footer-links">
-                <a href="/terms">Условия использования</a>
-                <a href="/privacy">Конфиденциальность</a>
-                <a href="/contact">Поддержка</a>
+                <a href="/terms">{{ trans('footer_terms') }}</a>
+                <a href="/privacy">{{ trans('footer_privacy') }}</a>
+                <a href="/contact">{{ trans('footer_support') }}</a>
             </div>
         </footer>
     </main>
@@ -1837,21 +1777,20 @@
     <div class="restaurant-modal-overlay" id="restaurantModal">
         <div class="restaurant-modal">
             <div class="restaurant-modal-header">
-                <h2 class="restaurant-modal-title">Найдите свой ресторан</h2>
-                <button type="button" class="restaurant-modal-close" id="restaurantModalClose" aria-label="Закрыть">&times;</button>
+                <h2 class="restaurant-modal-title">{{ trans('modal_find_restaurant_title') }}</h2>
+                <button type="button" class="restaurant-modal-close" id="restaurantModalClose" aria-label="{{ trans('modal_close_aria') }}">&times;</button>
             </div>
 
             <div class="restaurant-modal-body">
                 <p class="restaurant-modal-text">
-                    Введите название ресторана, для которого хотите оформить новую подписку.
-                    Мы проверим, можно ли привязать новую подписку к этому ресторану.
+                    {{ trans('modal_find_restaurant_desc') }}
                 </p>
 
                 <input
                     type="text"
                     class="restaurant-input"
                     id="restaurantNameInput"
-                    placeholder="Название ресторана"
+                    placeholder="{{ trans('modal_restaurant_placeholder') }}"
                     autocomplete="off"
                 >
 
@@ -1860,16 +1799,31 @@
 
             <div class="restaurant-modal-footer">
                 <button type="button" class="restaurant-cancel-btn" id="restaurantModalCancel">
-                    Отмена
+                    {{ trans('modal_cancel') }}
                 </button>
                 <button type="button" class="restaurant-confirm-btn" id="restaurantModalConfirm">
-                    Найти и перейти к оплате
+                    {{ trans('modal_confirm') }}
                 </button>
             </div>
         </div>
     </div>
 <script src="/static/api.js"></script>
 <script>
+    const i18n = {
+        btn_processing: "{{ trans('btn_processing') | escape }}",
+        modal_confirm_default: "{{ trans('modal_confirm') | escape }}",
+        error_enter_restaurant: "{{ trans('error_enter_restaurant') | escape }}",
+        error_restaurant_not_found: "{{ trans('error_restaurant_not_found') | escape }}",
+        error_no_checkout_url: "{{ trans('error_no_checkout_url') | escape }}",
+        error_connection: "{{ trans('error_connection') | escape }}",
+        period_per_month: "{{ trans('period_per_month') | escape }}",
+        period_per_year: "{{ trans('period_per_year') | escape }}",
+        footnote_pro_yearly_renew: "{{ trans('footnote_pro_yearly_renew') | escape }}",
+        footnote_pro_yearly_new: "{{ trans('footnote_pro_yearly_new') | escape }}",
+        footnote_pro_monthly_renew: "{{ trans('footnote_pro_monthly_renew') | escape }}",
+        footnote_pro_monthly_new: "{{ trans('footnote_pro_monthly_new') | escape }}"
+    };
+
     const PLANS = {
         basic: {
             name: "Basic",
@@ -1927,18 +1881,18 @@
         window.setTimeout(() => {
             if (yearly) {
                 proPrice.textContent = "2 099,99";
-                proPeriod.textContent = "/ год";
+                proPeriod.textContent = i18n.period_per_year;
                 proPriceNote.innerHTML = proPriceNote.dataset.yearlyNormal;
                 proFootnote.textContent = IS_RENEW
-                    ? "Годовая оплата сразу после оформления подписки."
-                    : "Годовая оплата после 14-дневного пробного периода.";
+                    ? i18n.footnote_pro_yearly_renew
+                    : i18n.footnote_pro_yearly_new;
             } else {
                 proPrice.textContent = "199,99";
-                proPeriod.textContent = "/ месяц";
+                proPeriod.textContent = i18n.period_per_month;
                 proPriceNote.innerHTML = proPriceNote.dataset.monthlyNormal;
                 proFootnote.textContent = IS_RENEW
-                    ? "Оплата сразу после оформления подписки."
-                    : "Ежемесячная оплата после 14-дневного пробного периода.";
+                    ? i18n.footnote_pro_monthly_renew
+                    : i18n.footnote_pro_monthly_new;
             }
 
             proPrice.style.opacity = "1";
@@ -2029,13 +1983,13 @@
         clearModalError();
 
         if (!name) {
-            showModalError("Введите название ресторана.", "warning");
+            showModalError(i18n.error_enter_restaurant, "warning");
             restaurantNameInput.focus();
             return;
         }
 
         restaurantModalConfirm.disabled = true;
-        restaurantModalConfirm.textContent = "Обработка...";
+        restaurantModalConfirm.textContent = i18n.btn_processing;
 
         try {
             const params = new URLSearchParams({
@@ -2058,7 +2012,7 @@
                 showModalError(
                     data?.detail ||
                     data?.message ||
-                    "Ресторан с таким названием не найден.",
+                    i18n.error_restaurant_not_found,
                     "danger"
                 );
                 return;
@@ -2075,7 +2029,7 @@
 
             if (!checkoutUrl) {
                 showModalError(
-                    "Сервер не вернул ссылку на оплату.",
+                    i18n.error_no_checkout_url,
                     "danger"
                 );
                 return;
@@ -2085,12 +2039,12 @@
         } catch (error) {
             console.error("RENEW SUBSCRIPTION ERROR:", error);
             showModalError(
-                "Не удалось подключиться к серверу.",
+                i18n.error_connection,
                 "danger"
             );
         } finally {
             restaurantModalConfirm.disabled = false;
-            restaurantModalConfirm.textContent = "Найти и перейти к оплате";
+            restaurantModalConfirm.textContent = i18n.modal_confirm_default;
         }
     });
 

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>История заказов</title>
+    <title>{{ trans('user_order_history_page_title') }}</title>
     <style>
         * {
             margin: 0;
@@ -342,25 +342,25 @@
 <body>
 <div class="container">
     <div class="top">
-        <a href="/user/my_profile" class="back">← НАЗАД</a>
+        <a href="/user/my_profile" class="back">← {{ trans('nav_back_upper') }}</a>
         <div class="brand">RESTAURANT</div>
     </div>
 
     <div class="header">
         <div class="header-label">ORDER HISTORY</div>
-        <h1>История заказов</h1>
-        <p class="description">Ваши завершённые заказы</p>
+        <h1>{{ trans('user_order_history_page_title') }}</h1>
+        <p class="description">{{ trans('user_order_history_description') }}</p>
     </div>
 
     {% if orders %}
     <div class="orders">
         <div class="table-header">
-            <div>Номер заказа</div>
-            <div>Статус</div>
-            <div>Создан</div>
-            <div>Сумма</div>
-            <div>Адрес</div>
-            <div>Состав заказа</div>
+            <div>{{ trans('th_order_number') }}</div>
+            <div>{{ trans('th_status') }}</div>
+            <div>{{ trans('th_created') }}</div>
+            <div>{{ trans('th_sum') }}</div>
+            <div>{{ trans('th_address') }}</div>
+            <div>{{ trans('th_order_composition') }}</div>
         </div>
 
         {% for order in orders %}
@@ -371,7 +371,7 @@
 
             <div>
                 <span class="status completed">
-                    Завершён
+                    {{ trans('status_completed') }}
                 </span>
             </div>
 
@@ -396,12 +396,12 @@
                     <div class="address-details">
                         {{ order.address.postal_code }}
                         {% if order.address.apartment %}
-                            · кв. {{ order.address.apartment }}
+                            · {{ trans('apartment_short') }} {{ order.address.apartment }}
                         {% endif %}
                     </div>
                 {% else %}
                     <div class="address-main">
-                        Адрес не указан
+                        {{ trans('address_not_specified') }}
                     </div>
                 {% endif %}
             </div>
@@ -428,9 +428,9 @@
     </div>
     {% else %}
     <div class="empty">
-        <div class="empty-title">История заказов пуста</div>
+        <div class="empty-title">{{ trans('user_order_history_empty_title') }}</div>
         <div class="empty-description">
-            У вас пока нет завершённых заказов.
+            {{ trans('user_order_history_empty_description') }}
         </div>
     </div>
     {% endif %}

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Чат с клиентом</title>
+    <title>{{ trans('chat_page_title') }}</title>
     <style>
         * { box-sizing: border-box; }
         body {
@@ -306,19 +306,19 @@
     <div class="chat-card">
         <div class="chat-header">
             <div class="chat-header-left">
-                <button class="back-button" id="backButton" type="button" title="Назад">←</button>
+                <button class="back-button" id="backButton" type="button" title="{{ trans('back_button') }}">←</button>
                 <div class="chat-header-info">
-                    <h1 class="chat-title">Чат с клиентом</h1>
-                    <p class="chat-subtitle">Клиент #{{ conversation.user_id }}</p>
+                    <h1 class="chat-title">{{ trans('chat_page_title') }}</h1>
+                    <p class="chat-subtitle">{{ trans('client_label') }} #{{ conversation.user_id }}</p>
                 </div>
             </div>
             <div class="chat-header-right">
                 <div class="connection-status">
                     <span class="status-dot" id="statusDot"></span>
-                    <span id="statusText">Подключение...</span>
+                    <span id="statusText">{{ trans('status_connecting') }}</span>
                 </div>
                 <form id="finishForm" action="/support/admin/{{ conversation.id }}/free_conversation" method="post">
-                    <button class="finish-button" id="finishButton" type="submit">Завершить сессию</button>
+                    <button class="finish-button" id="finishButton" type="submit">{{ trans('finish_session_button') }}</button>
                 </form>
             </div>
         </div>
@@ -330,7 +330,7 @@
                         <div class="message">
                             <div class="message-text">{{ message.text }}</div>
                             <div class="message-meta">
-                                <span>{% if role == 'admin' or role == 'moderator' %}Вы{% else %}Клиент{% endif %}</span>
+                                <span>{% if role == 'admin' or role == 'moderator' %}{{ trans('sender_you') }}{% else %}{{ trans('sender_client') }}{% endif %}</span>
                                 <span>{{ message.created_at.strftime('%H:%M') }}</span>
                             </div>
                         </div>
@@ -339,19 +339,28 @@
             {% else %}
                 <div class="empty-chat" id="emptyChat">
                     <div class="empty-chat-icon">💬</div>
-                    <div class="empty-chat-title">Начните диалог</div>
-                    <div class="empty-chat-text">Отправьте клиенту сообщение, чтобы начать диалог.</div>
+                    <div class="empty-chat-title">{{ trans('chat_empty_title') }}</div>
+                    <div class="empty-chat-text">{{ trans('chat_empty_text') }}</div>
                 </div>
             {% endif %}
         </div>
         <form class="chat-form" id="chatForm">
-            <textarea class="message-input" id="messageInput" placeholder="Введите сообщение..." rows="1" autocomplete="off"></textarea>
-            <button class="send-button" id="sendButton" type="submit" disabled>Отправить</button>
+            <textarea class="message-input" id="messageInput" placeholder="{{ trans('message_placeholder') }}" rows="1" autocomplete="off"></textarea>
+            <button class="send-button" id="sendButton" type="submit" disabled>{{ trans('send_button') }}</button>
         </form>
     </div>
 </div>
 <script src="/static/api.js"></script>
 <script>
+    const i18n = {
+        status_connected: "{{ trans('status_connected') | escape }}",
+        status_disconnected: "{{ trans('status_disconnected') | escape }}",
+        status_error: "{{ trans('status_connection_error') | escape }}",
+        sender_you: "{{ trans('sender_you') | escape }}",
+        sender_client: "{{ trans('sender_client') | escape }}",
+        locale: "{{ current_lang if current_lang else 'ru' }}"
+    };
+
     const conversationId = {{ conversation.id }};
     const messagesContainer = document.getElementById("messages");
     const messageInput = document.getElementById("messageInput");
@@ -379,7 +388,7 @@
 
     socket.onopen = function() {
         statusDot.classList.remove("disconnected");
-        statusText.textContent = "Подключено";
+        statusText.textContent = i18n.status_connected;
         sendButton.disabled = false;
 
         if (lastUserMessageId !== null) {
@@ -392,13 +401,13 @@
 
     socket.onclose = function() {
         statusDot.classList.add("disconnected");
-        statusText.textContent = "Не подключено";
+        statusText.textContent = i18n.status_disconnected;
         sendButton.disabled = true;
     };
 
     socket.onerror = function() {
         statusDot.classList.add("disconnected");
-        statusText.textContent = "Ошибка подключения";
+        statusText.textContent = i18n.status_error;
         sendButton.disabled = true;
     };
 
@@ -483,7 +492,7 @@
         meta.className = "message-meta";
 
         const sender = document.createElement("span");
-        sender.textContent = isAdmin ? "Вы" : "Клиент";
+        sender.textContent = isAdmin ? i18n.sender_you : i18n.sender_client;
 
         const time = document.createElement("span");
         time.textContent = formatTime(message.created_at);
@@ -503,10 +512,17 @@
     function formatTime(dateString) {
         const date = new Date(dateString);
 
-        return date.toLocaleTimeString("ru-RU", {
-            hour: "2-digit",
-            minute: "2-digit"
-        });
+        try {
+            return date.toLocaleTimeString(i18n.locale, {
+                hour: "2-digit",
+                minute: "2-digit"
+            });
+        } catch {
+            return date.toLocaleTimeString("ru-RU", {
+                hour: "2-digit",
+                minute: "2-digit"
+            });
+        }
     }
 
     backButton.addEventListener("click", function() {

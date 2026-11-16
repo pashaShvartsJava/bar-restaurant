@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Техническая поддержка</title>
+    <title>{{ trans('support_page_title') }}</title>
 
     <style>
         * {
@@ -272,17 +272,17 @@
 <div class="container">
 
     <div class="top">
-        <a href="/admin_panel" class="back">← НАЗАД</a>
+        <a href="/admin_panel" class="back">← {{ trans('nav_back_upper') }}</a>
         <div class="brand">SUPPORT</div>
     </div>
 
     <div class="header">
-        <div class="header-label">ТЕХНИЧЕСКАЯ ПОДДЕРЖКА</div>
+        <div class="header-label">{{ trans('support_page_eyebrow') }}</div>
 
-        <h1>Чаты</h1>
+        <h1>{{ trans('support_chats_title') }}</h1>
 
         <p class="description">
-            Клиенты, которым требуется техническая помощь.
+            {{ trans('support_chats_description') }}
         </p>
     </div>
 
@@ -291,8 +291,8 @@
     <div class="clients">
 
         <div class="table-header">
-            <div>Клиент</div>
-            <div>Номер чата</div>
+            <div>{{ trans('th_client') }}</div>
+            <div>{{ trans('th_chat_number') }}</div>
             <div></div>
         </div>
 
@@ -313,7 +313,7 @@
                     href="/support/admin?identity_id={{ conversation.user_id }}"
                     class="action"
                 >
-                    Открыть чат
+                    {{ trans('open_chat_button') }}
                 </a>
             </div>
 
@@ -327,11 +327,11 @@
 
     <div class="empty">
         <div class="empty-title">
-            Сейчас помощь никому не требуется
+            {{ trans('support_empty_title') }}
         </div>
 
         <div class="empty-description">
-            Чатов с непрочитанными сообщениями нет.
+            {{ trans('support_empty_description') }}
         </div>
     </div>
 

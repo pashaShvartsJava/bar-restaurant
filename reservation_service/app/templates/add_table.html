@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Добавление столика</title>
+    <title>{{ trans('add_table_page_title') }}</title>
 <style>
     * {
         box-sizing: border-box;
@@ -224,34 +224,42 @@
 <div class="page">
 <a href="/tables" class="back">
     <span class="back-arrow">←</span>
-    Назад к столикам
+    {{ trans('back_to_tables') }}
 </a>
 <header class="header">
-    <h1 class="title">Добавление столика</h1>
-    <p class="subtitle">Укажите номер столика и максимальное количество гостей.</p>
+    <h1 class="title">{{ trans('add_table_page_title') }}</h1>
+    <p class="subtitle">{{ trans('add_table_subtitle') }}</p>
 </header>
 <div class="card">
     <div id="formError" class="form-error"></div>
     <form id="addTableForm" action="/tables/add_table" method="post">
         <div class="field">
-            <label for="table_number">НОМЕР СТОЛИКА</label>
-            <input type="number" id="table_number" name="table_number" min="1" required placeholder="Например, 12">
-            <div class="hint">Номер должен быть уникальным.</div>
+            <label for="table_number">{{ trans('table_number_label_upper') }}</label>
+            <input type="number" id="table_number" name="table_number" min="1" required placeholder="{{ trans('table_number_example_placeholder') }}">
+            <div class="hint">{{ trans('table_number_unique_hint') }}</div>
         </div>
         <div class="field">
-            <label for="capacity">ВМЕСТИМОСТЬ</label>
-            <input type="number" id="capacity" name="capacity" min="1" required placeholder="Например, 4">
-            <div class="hint">Максимальное количество гостей за столиком.</div>
+            <label for="capacity">{{ trans('capacity_label_upper') }}</label>
+            <input type="number" id="capacity" name="capacity" min="1" required placeholder="{{ trans('capacity_example_placeholder') }}">
+            <div class="hint">{{ trans('capacity_hint') }}</div>
         </div>
         <div class="form-actions">
-            <a href="/tables" class="button cancel">Отмена</a>
-            <button type="submit" class="button save">Добавить столик</button>
+            <a href="/tables" class="button cancel">{{ trans('cancel') }}</a>
+            <button type="submit" class="button save">{{ trans('add_table_button') }}</button>
         </div>
     </form>
 </div>
 </div>
 <script src="/static/api.js"></script>
 <script>
+    const i18n = {
+        error_no_permission: "{{ trans('error_no_permission_add_table') | escape }}",
+        error_table_exists: "{{ trans('error_table_exists') | escape }}",
+        error_server: "{{ trans('error_server') | escape }}",
+        error_add_table: "{{ trans('error_add_table') | escape }}",
+        error_connection: "{{ trans('error_connection_table') | escape }}"
+    };
+
     const addTableForm = document.getElementById("addTableForm");
     const formError = document.getElementById("formError");
     const submitButton = addTableForm.querySelector(".save");
@@ -277,17 +285,17 @@
         }
 
         if (response.status === 403) {
-            showError("У вас нет прав для добавления столика.");
+            showError(i18n.error_no_permission);
             return false;
         }
 
         if (response.status === 409) {
-            showError("Столик с таким номером уже существует.");
+            showError(i18n.error_table_exists);
             return false;
         }
 
         if (response.status >= 500) {
-            showError("Ошибка сервера. Попробуйте позже.");
+            showError(i18n.error_server);
             return false;
         }
 
@@ -302,17 +310,17 @@
                 showError(
                     messages.length
                         ? messages.join(", ")
-                        : "Не удалось добавить столик."
+                        : i18n.error_add_table
                 );
             } else {
                 showError(
                     data.detail ||
                     data.message ||
-                    "Не удалось добавить столик."
+                    i18n.error_add_table
                 );
             }
         } catch {
-            showError("Не удалось добавить столик.");
+            showError(i18n.error_add_table);
         }
 
         return false;
@@ -333,7 +341,7 @@
                 window.location.href = "/tables";
             }
         } catch {
-            showError("Не удалось подключиться к серверу. Проверьте соединение.");
+            showError(i18n.error_connection);
         } finally {
             submitButton.disabled = false;
         }

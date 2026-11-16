@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Меню — {{ restaurant.restaurant_name if restaurant else 'Restaurant' }}</title>
+    <title>{{ trans('menu_page_title') }} — {{ restaurant.restaurant_name if restaurant else 'Restaurant' }}</title>
 <style>
 * {
     margin: 0;
@@ -685,19 +685,19 @@ body::before {
 <div class="page">
     <header class="header">
         <div class="header-info">
-            <h1 class="title">Меню</h1>
+            <h1 class="title">{{ trans('menu_page_title') }}</h1>
             <div class="subtitle">
-                Выберите блюда и добавьте их в корзину
+                {{ trans('menu_user_subtitle') }}
                 {% if restaurant and restaurant.restaurant_name %}
                     — {{ restaurant.restaurant_name }}
                 {% endif %}
             </div>
         </div>
         <div class="header-actions">
-            <a href="/user/my_profile" class="btn">Вернуться в аккаунт</a>
+            <a href="/user/my_profile" class="btn">{{ trans('back_to_account') }}</a>
             <button type="button" class="cart-button" id="cartButton">
                 <span class="cart-icon">🛒</span>
-                <span>Корзина</span>
+                <span>{{ trans('cart') }}</span>
                 <span class="cart-badge" id="cartBadge">0</span>
             </button>
         </div>
@@ -712,7 +712,7 @@ body::before {
                     <section class="category">
                         <div class="category-header">
                             <h2 class="category-name">{{ category.category_name }}</h2>
-                            <span class="dish-count">{{ category.dishes|length }} блюд</span>
+                            <span class="dish-count">{{ category.dishes|length }} {{ trans('dishes_unit') }}</span>
                         </div>
                         <div class="dishes">
                             {% for dish in category.dishes %}
@@ -728,7 +728,7 @@ body::before {
                                         {% if dish.image_url %}
                                             <img src="{{ dish.image_url }}" alt="{{ dish.dish_name }}" class="dish-image">
                                         {% else %}
-                                            <div class="no-image">Нет<br>фото</div>
+                                            <div class="no-image">{{ trans('no_photo_short') }}</div>
                                         {% endif %}
                                     </div>
                                     <div class="dish-info">
@@ -736,7 +736,7 @@ body::before {
                                         {% if dish.description %}
                                             <div class="dish-description">{{ dish.description }}</div>
                                         {% else %}
-                                            <div class="dish-description no-description">Описание отсутствует</div>
+                                            <div class="dish-description no-description">{{ trans('no_description') }}</div>
                                         {% endif %}
                                     </div>
                                     <div class="dish-price">
@@ -750,10 +750,10 @@ body::before {
                                                 <span class="quantity-value" data-quantity-id="{{ dish.id }}">0</span>
                                                 <button type="button" class="quantity-button quantity-plus" data-dish-id="{{ dish.id }}">+</button>
                                             </div>
-                                            <button type="button" class="add-to-cart" data-dish-id="{{ dish.id }}">Добавить</button>
-                                            <button type="button" class="remove-dish" data-dish-id="{{ dish.id }}" title="Убрать блюдо из корзины">🗑</button>
+                                            <button type="button" class="add-to-cart" data-dish-id="{{ dish.id }}">{{ trans('add_to_cart') }}</button>
+                                            <button type="button" class="remove-dish" data-dish-id="{{ dish.id }}" title="{{ trans('remove_from_cart_title') }}">🗑</button>
                                         {% else %}
-                                            <div class="dish-status">Недоступно</div>
+                                            <div class="dish-status">{{ trans('unavailable') }}</div>
                                         {% endif %}
                                     </div>
                                 </article>
@@ -773,26 +773,39 @@ body::before {
 <aside class="cart-sidebar" id="cartSidebar">
     <header class="cart-header">
         <div>
-            <span class="cart-title">Корзина</span>
-            <span class="cart-header-count" id="cartHeaderCount">0 предметов</span>
+            <span class="cart-title">{{ trans('cart') }}</span>
+            <span class="cart-header-count" id="cartHeaderCount">{{ trans('cart_items_zero') }}</span>
         </div>
-        <button type="button" class="cart-close" id="cartClose" title="Свернуть корзину">×</button>
+        <button type="button" class="cart-close" id="cartClose" title="{{ trans('collapse_cart') }}">×</button>
     </header>
 
     <div class="cart-content" id="cartContent"></div>
 
     <footer class="cart-footer">
         <div class="cart-total">
-            <span class="cart-total-label">Итого</span>
+            <span class="cart-total-label">{{ trans('total') }}</span>
             <span class="cart-total-price" id="cartTotalPrice">0.00 {{ currency_symbol }}</span>
         </div>
-        <button type="button" class="checkout-button" id="checkoutButton">Оформить заказ</button>
-        <button type="button" class="clear-cart-button" id="clearCartButton">Очистить корзину</button>
+        <button type="button" class="checkout-button" id="checkoutButton">{{ trans('checkout') }}</button>
+        <button type="button" class="clear-cart-button" id="clearCartButton">{{ trans('clear_cart') }}</button>
     </footer>
 </aside>
 
 <script src="/static/api.js"></script>
 <script>
+const i18n = {
+    cart_empty: "{{ trans('cart_empty') | escape }}",
+    cart_empty_desc: "{{ trans('cart_empty_desc') | escape }}",
+    cart_items_one: "{{ trans('cart_items_one') | escape }}",
+    cart_items_few: "{{ trans('cart_items_few') | escape }}",
+    cart_items_many: "{{ trans('cart_items_many') | escape }}",
+    no_photo_short: "{{ trans('no_photo_short') | escape }}",
+    remove: "{{ trans('remove') | escape }}",
+    error_cart_empty: "{{ trans('error_cart_empty') | escape }}",
+    error_checkout: "{{ trans('error_checkout') | escape }}",
+    error_connection: "{{ trans('error_connection') | escape }}"
+};
+
 const SLUG = "{{ slug }}";
 const CURRENCY_SYMBOL = "{{ currency_symbol }}";
 const CART_STORAGE_KEY = `restaurant_cart_${SLUG}`;
@@ -918,20 +931,22 @@ function getTotalPrice() {
     }, 0);
 }
 
-function getRussianItemText(number) {
+function getItemsText(number) {
     const value = Math.abs(number) % 100;
     const lastDigit = value % 10;
 
+    let template;
     if (value >= 11 && value <= 19) {
-        return `${number} предметов`;
+        template = i18n.cart_items_many;
+    } else if (lastDigit === 1) {
+        template = i18n.cart_items_one;
+    } else if (lastDigit >= 2 && lastDigit <= 4) {
+        template = i18n.cart_items_few;
+    } else {
+        template = i18n.cart_items_many;
     }
-    if (lastDigit === 1) {
-        return `${number} предмет`;
-    }
-    if (lastDigit >= 2 && lastDigit <= 4) {
-        return `${number} предмета`;
-    }
-    return `${number} предметов`;
+
+    return template.replace("{n}", number);
 }
 
 function updateDishQuantities() {
@@ -944,7 +959,7 @@ function updateCartHeader() {
     const totalQuantity = getTotalQuantity();
     cartBadge.textContent = totalQuantity;
     cartBadge.classList.toggle("visible", totalQuantity > 0);
-    cartHeaderCount.textContent = getRussianItemText(totalQuantity);
+    cartHeaderCount.textContent = getItemsText(totalQuantity);
 }
 
 function escapeHTML(value) {
@@ -963,8 +978,8 @@ function renderCart() {
         cartContent.innerHTML = `
             <div class="empty-cart">
                 <div class="empty-cart-icon">🛒</div>
-                <div class="empty-cart-title">Корзина пуста</div>
-                <div class="empty-cart-text">Добавьте блюда из меню, чтобы оформить заказ.</div>
+                <div class="empty-cart-title">${i18n.cart_empty}</div>
+                <div class="empty-cart-text">${i18n.cart_empty_desc}</div>
             </div>
         `;
         return;
@@ -985,7 +1000,7 @@ function renderCart() {
 
         const imageHTML = dish.image
             ? `<img src="${escapeHTML(dish.image)}" alt="${escapeHTML(dish.name)}" class="cart-item-image">`
-            : `<div class="cart-item-no-image">Нет<br>фото</div>`;
+            : `<div class="cart-item-no-image">${i18n.no_photo_short}</div>`;
 
         cartItem.innerHTML = `
             ${imageHTML}
@@ -1002,7 +1017,7 @@ function renderCart() {
                     <span class="cart-quantity-value">${quantity}</span>
                     <button type="button" data-cart-plus="${dish.id}">+</button>
                 </div>
-                <button type="button" class="cart-item-remove" data-cart-remove="${dish.id}">Убрать</button>
+                <button type="button" class="cart-item-remove" data-cart-remove="${dish.id}">${i18n.remove}</button>
             </div>
         `;
 
@@ -1095,7 +1110,7 @@ checkoutButton.addEventListener("click", async () => {
     const cart = getCart();
 
     if (cart.length === 0) {
-        showFormError("Корзина пуста.");
+        showFormError(i18n.error_cart_empty);
         return;
     }
 
@@ -1135,7 +1150,7 @@ checkoutButton.addEventListener("click", async () => {
             } else if (data && Array.isArray(data.detail)) {
                 showFormError(data.detail.map(error => error.msg).join(", "));
             } else {
-                showFormError(text || "Не удалось оформить заказ.");
+                showFormError(text || i18n.error_checkout);
             }
 
             return;
@@ -1144,7 +1159,7 @@ checkoutButton.addEventListener("click", async () => {
         window.location.href = `/r/${SLUG}/users/confirm_address`;
     } catch (error) {
         console.error("ORDER ERROR:", error);
-        showFormError("Не удалось подключиться к серверу.");
+        showFormError(i18n.error_connection);
     } finally {
         checkoutButton.disabled = false;
     }

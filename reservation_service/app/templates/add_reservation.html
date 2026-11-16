@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Новое бронирование</title>
+    <title>{{ trans('new_reservation_page_title') }}</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -178,23 +178,23 @@
 <div class="page">
     <a href="/tables" class="back">
         <span class="back-arrow">←</span>
-        Назад к столикам
+        {{ trans('back_to_tables') }}
     </a>
     <header class="header">
-        <h1 class="title">Новое бронирование</h1>
-        <p class="subtitle">Создание нового бронирования для выбранного столика.</p>
+        <h1 class="title">{{ trans('new_reservation_page_title') }}</h1>
+        <p class="subtitle">{{ trans('new_reservation_subtitle') }}</p>
     </header>
     <main class="content">
         <section class="card">
             <div class="card-header">
-                <div class="card-title">Создание бронирования</div>
+                <div class="card-title">{{ trans('reservation_creation_section') }}</div>
             </div>
             <div class="reservation-form">
                 {% if error %}
                     <div class="error-message">
                         <span class="error-icon">!</span>
                         <div class="error-content">
-                            <strong>Не удалось создать бронирование</strong>
+                            <strong>{{ trans('reservation_create_error_title') }}</strong>
                             <p>{{ error }}</p>
                         </div>
                     </div>
@@ -202,55 +202,55 @@
                     <div id="formError" class="error-message hidden">
                         <span class="error-icon">!</span>
                         <div class="error-content">
-                            <strong>Не удалось создать бронирование</strong>
+                            <strong>{{ trans('reservation_create_error_title') }}</strong>
                             <p id="formErrorText"></p>
                         </div>
                     </div>
                 {% endif %}
                 <div class="table-info">
-                    <div class="table-label">Выбранный столик</div>
-                    <div class="table-number">Столик №{{ table.table_number }}</div>
-                    <div class="table-capacity">Вместимость: до {{ table.capacity }} гостей</div>
+                    <div class="table-label">{{ trans('selected_table_label') }}</div>
+                    <div class="table-number">{{ trans('table_number_prefix') }}{{ table.table_number }}</div>
+                    <div class="table-capacity">{{ trans('table_capacity_prefix') }} {{ table.capacity }} {{ trans('guests_word') }}</div>
                 </div>
                 <form id="reservationForm" action="/tables/create_reservation" method="post">
                     <input type="hidden" name="table_id" value="{{ table.id }}">
                     <div class="field">
-                        <label for="name">Имя</label>
+                        <label for="name">{{ trans('name') }}</label>
                         <input type="text" id="name" name="name" required>
                     </div>
                     <div class="field">
-                        <label for="surname">Фамилия</label>
+                        <label for="surname">{{ trans('surname') }}</label>
                         <input type="text" id="surname" name="surname" required>
                     </div>
                     <div class="field">
-                        <label for="phone">Номер телефона</label>
+                        <label for="phone">{{ trans('phone_number') }}</label>
                         <input type="tel" id="phone" name="phone" required>
                     </div>
                     <div class="field">
-                        <label for="reservation_start">Начало бронирования</label>
+                        <label for="reservation_start">{{ trans('reservation_start_label') }}</label>
                         <input type="datetime-local" id="reservation_start" name="reservation_start" required>
                     </div>
                     <div class="field">
-                        <label for="reservation_end">Конец бронирования</label>
+                        <label for="reservation_end">{{ trans('reservation_end_label') }}</label>
                         <input type="datetime-local" id="reservation_end" name="reservation_end" required>
                     </div>
                     <div class="form-actions">
-                        <a href="/tables" class="button cancel">Отмена</a>
-                        <button type="submit" class="button save">Забронировать</button>
+                        <a href="/tables" class="button cancel">{{ trans('cancel') }}</a>
+                        <button type="submit" class="button save">{{ trans('book_button') }}</button>
                     </div>
                 </form>
             </div>
         </section>
         <section class="card">
             <div class="card-header">
-                <div class="card-title">Бронирования столика</div>
+                <div class="card-title">{{ trans('table_reservations_section') }}</div>
             </div>
             {% if table.reservations %}
                 <div class="reservations-list">
                     {% for reservation in table.reservations %}
                         <div class="reservation-item">
                             <div class="reservation-main">
-                                <div class="reservation-table">Столик №{{ table.table_number }}</div>
+                                <div class="reservation-table">{{ trans('table_number_prefix') }}{{ table.table_number }}</div>
                                 <div class="reservation-customer">
                                     <div class="customer-name">{{ reservation.name }} {{ reservation.surname }}</div>
                                     <div class="customer-phone">{{ reservation.phone }}</div>
@@ -261,7 +261,7 @@
                                     {{ reservation.reservation_end.strftime("%H:%M") }}
                                 </div>
                                 <div class="reservation-number">
-                                    Бронирование №
+                                    {{ trans('reservation_number_label') }}
                                     <span class="reservation-number-value">{{ reservation.reservation_number }}</span>
                                 </div>
                             </div>
@@ -270,8 +270,8 @@
                 </div>
             {% else %}
                 <div class="empty-reservations">
-                    <div class="empty-title">Бронирований пока нет</div>
-                    <div class="empty-text">Для этого столика ещё нет созданных бронирований.</div>
+                    <div class="empty-title">{{ trans('no_reservations_title') }}</div>
+                    <div class="empty-text">{{ trans('no_reservations_text') }}</div>
                 </div>
             {% endif %}
         </section>
@@ -282,6 +282,15 @@
 </div>
 <script src="/static/api.js"></script>
 <script>
+    const i18n = {
+        error_no_permission: "{{ trans('error_no_permission_reservation') | escape }}",
+        error_table_not_found: "{{ trans('error_table_not_found') | escape }}",
+        error_time_conflict: "{{ trans('error_time_conflict') | escape }}",
+        error_server: "{{ trans('error_server') | escape }}",
+        error_create_reservation: "{{ trans('error_create_reservation') | escape }}",
+        error_connection: "{{ trans('error_connection_reservation') | escape }}"
+    };
+
     const reservationForm = document.getElementById("reservationForm");
     const submitButton = reservationForm.querySelector(".button.save");
     const formError = document.getElementById("formError");
@@ -314,22 +323,22 @@
         }
 
         if (response.status === 403) {
-            showError("У вас нет прав для создания бронирования.");
+            showError(i18n.error_no_permission);
             return false;
         }
 
         if (response.status === 404) {
-            showError("Столик не найден.");
+            showError(i18n.error_table_not_found);
             return false;
         }
 
         if (response.status === 409) {
-            showError("На выбранное время столик уже забронирован.");
+            showError(i18n.error_time_conflict);
             return false;
         }
 
         if (response.status >= 500) {
-            showError("Ошибка сервера. Попробуйте позже.");
+            showError(i18n.error_server);
             return false;
         }
 
@@ -344,17 +353,17 @@
                 showError(
                     messages.length
                         ? messages.join(", ")
-                        : "Не удалось создать бронирование."
+                        : i18n.error_create_reservation
                 );
             } else {
                 showError(
                     data.detail ||
                     data.message ||
-                    "Не удалось создать бронирование."
+                    i18n.error_create_reservation
                 );
             }
         } catch {
-            showError("Не удалось создать бронирование.");
+            showError(i18n.error_create_reservation);
         }
 
         return false;
@@ -375,7 +384,7 @@
                 window.location.href = "/tables";
             }
         } catch {
-            showError("Не удалось подключиться к серверу. Проверьте соединение.");
+            showError(i18n.error_connection);
         } finally {
             submitButton.disabled = false;
         }

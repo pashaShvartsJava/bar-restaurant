@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#1b1518">
-    <title>Бронирование столика | {{ restaurant.restaurant_name if restaurant else 'Restaurant' }}</title>
+    <title>{{ trans('reservation_page_title') }} | {{ restaurant.restaurant_name if restaurant else 'Restaurant' }}</title>
 
     <style>
         * {
@@ -453,20 +453,17 @@
 
     <aside class="side">
         <div class="side-card">
-            <span class="side-label">{{ restaurant.restaurant_name if restaurant else 'Заведение' }}</span>
-            <h3>Бронирование</h3>
+            <span class="side-label">{{ restaurant.restaurant_name if restaurant else trans('venue_default_name') }}</span>
+            <h3>{{ trans('reservation_side_title') }}</h3>
             <p>
-                Выберите количество гостей и удобное
-                время. Мы проверим доступность столиков
-                непосредственно перед бронированием.
+                {{ trans('reservation_side_description') }}
             </p>
         </div>
 
         <div class="side-card">
-            <span class="side-label">БРОНЬ</span>
+            <span class="side-label">{{ trans('reservation_label') }}</span>
             <p class="quote">
-                «Хороший вечер начинается
-                с правильного стола»
+                {{ trans('reservation_side_quote') }}
             </p>
         </div>
     </aside>
@@ -477,13 +474,13 @@
             {{ restaurant.restaurant_name if restaurant else 'RESTAURANT' }}
         </div>
 
-        <h1>Забронировать столик</h1>
+        <h1>{{ trans('reservation_title') }}</h1>
 
         <div class="subtitle">
             {% if restaurant and restaurant.slogan %}
                 {{ restaurant.slogan }}
             {% else %}
-                Укажите количество гостей и желаемое время
+                {{ trans('reservation_subtitle_default') }}
             {% endif %}
             {% if restaurant and restaurant.city %}
                 <span class="subtitle-city">{{ restaurant.city }}</span>
@@ -494,7 +491,7 @@
 
         {% if restaurant and not restaurant.accepts_reservations %}
         <div class="message error" style="display:block;">
-            Заведение временно не принимает бронирования. Попробуйте позже.
+            {{ trans('reservation_not_accepted') }}
         </div>
         {% else %}
 
@@ -507,7 +504,7 @@
 
                 <div class="field">
                     <label for="peopleAmount">
-                        Количество гостей
+                        {{ trans('people_amount_label') }}
                         <span class="required">*</span>
                     </label>
 
@@ -524,7 +521,7 @@
 
                 <div class="field">
                     <label for="requestedDatetime">
-                        Дата и время
+                        {{ trans('datetime_label') }}
                         <span class="required">*</span>
                     </label>
 
@@ -543,7 +540,7 @@
                 type="submit"
                 class="btn"
             >
-                Найти свободные столики
+                {{ trans('find_free_tables_button') }}
             </button>
         </form>
 
@@ -553,7 +550,7 @@
 
                 <div class="field">
                     <label for="firstName">
-                        Имя
+                        {{ trans('name') }}
                         <span class="required">*</span>
                     </label>
 
@@ -562,7 +559,7 @@
                         type="text"
                         name="name"
                         minlength="2"
-                        placeholder="Имя"
+                        placeholder="{{ trans('name') }}"
                         autocomplete="given-name"
                         required
                     >
@@ -570,7 +567,7 @@
 
                 <div class="field">
                     <label for="lastName">
-                        Фамилия
+                        {{ trans('surname') }}
                         <span class="required">*</span>
                     </label>
 
@@ -579,7 +576,7 @@
                         type="text"
                         name="surname"
                         minlength="2"
-                        placeholder="Фамилия"
+                        placeholder="{{ trans('surname') }}"
                         autocomplete="family-name"
                         required
                     >
@@ -589,7 +586,7 @@
 
             <div class="field">
                 <label for="phone">
-                    Номер телефона
+                    {{ trans('phone_number') }}
                     <span class="required">*</span>
                 </label>
 
@@ -598,7 +595,7 @@
                     type="tel"
                     name="phone_number"
                     pattern="^\+?[1-9][0-9]{7,14}$"
-                    title="Введите номер в международном формате, например +491701234567"
+                    title="{{ trans('phone_international_format_hint') }}"
                     placeholder="+491701234567"
                     autocomplete="tel"
                     required
@@ -626,7 +623,7 @@
                 type="button"
                 class="btn"
             >
-                Подтвердить бронирование
+                {{ trans('confirm_reservation_button') }}
             </button>
 
         </div>
@@ -634,14 +631,13 @@
         <div class="divider"></div>
 
         <div class="info">
-            После проверки доступности можно будет
-            перейти к подтверждению бронирования.
+            {{ trans('reservation_info_after_check') }}
         </div>
 
         {% endif %}
 
         <a href="/r/{{ slug }}" class="back-link">
-            ← Вернуться в {{ restaurant.restaurant_name if restaurant else 'заведение' }}
+            ← {{ trans('back_to_restaurant') }} {{ restaurant.restaurant_name if restaurant else trans('venue_default_name_lower') }}
         </a>
 
     </main>
@@ -649,18 +645,18 @@
     <aside class="side">
 
         <div class="side-card">
-            <span class="side-label">ВАША БРОНЬ</span>
+            <span class="side-label">{{ trans('your_reservation_label') }}</span>
 
             <div class="reservation-info">
                 <div class="reservation-icon">◇</div>
 
                 <div>
                     <div class="reservation-name">
-                        Столик в {{ restaurant.restaurant_name if restaurant else 'заведении' }}
+                        {{ trans('table_in_venue') }} {{ restaurant.restaurant_name if restaurant else trans('venue_default_name_lower') }}
                     </div>
 
                     <div class="reservation-description">
-                        Проверка доступности онлайн
+                        {{ trans('online_availability_check') }}
                     </div>
                 </div>
             </div>
@@ -669,11 +665,10 @@
         <div class="side-card">
             <span class="side-label">BAR SPIRIT</span>
 
-            <h3>Ваш вечер начинается здесь</h3>
+            <h3>{{ trans('evening_starts_here') }}</h3>
 
             <p>
-                Сначала проверяем свободные столики,
-                затем оформляем бронирование.
+                {{ trans('reservation_side_check_first') }}
             </p>
         </div>
 
@@ -682,6 +677,26 @@
 </div>
 
 <script>
+    const i18n = {
+        error_server_response_title: "{{ trans('error_server_response_title') | escape }}",
+        error_server_invalid_response: "{{ trans('error_server_invalid_response') | escape }}",
+        error_invalid_search_data: "{{ trans('error_invalid_search_data') | escape }}",
+        error_reservation_expired: "{{ trans('error_reservation_expired') | escape }}",
+        error_all_tables_taken: "{{ trans('error_all_tables_taken') | escape }}",
+        error_check_people_date: "{{ trans('error_check_people_date') | escape }}",
+        error_server_title: "{{ trans('error_server_title') | escape }}",
+        error_retry_later: "{{ trans('error_retry_later') | escape }}",
+        error_availability_check: "{{ trans('error_availability_check') | escape }}",
+        error_params_changed: "{{ trans('error_params_changed') | escape }}",
+        success_tables_available: "{{ trans('success_tables_available') | escape }}",
+        error_connection_title: "{{ trans('error_connection_title') | escape }}",
+        error_connection_body: "{{ trans('error_connection_reservation') | escape }}",
+        error_search_params_changed: "{{ trans('error_search_params_changed') | escape }}",
+        error_confirm_title: "{{ trans('error_confirm_title') | escape }}",
+        error_retry_operation: "{{ trans('error_retry_operation') | escape }}",
+        success_reservation_confirmed: "{{ trans('success_reservation_confirmed') | escape }}"
+    };
+
     const SLUG = "{{ slug }}";
     const CONFIRM_URL = `/r/${SLUG}/tables/confirm_reservation`;
     const RESTAURANT_TIMEZONE = "{{ restaurant.timezone if restaurant and restaurant.timezone else 'UTC' }}";
@@ -713,7 +728,7 @@
             const minDate = formatter.format(now).replace(" ", "T");
             requestedDatetime.min = minDate;
         } catch (e) {
-            console.warn("Не удалось установить timezone для datetime-local:", e);
+            console.warn("Failed to set timezone for datetime-local:", e);
         }
     }
 
@@ -833,8 +848,8 @@
                         data = JSON.parse(responseText);
                     } catch {
                         showServerError(
-                            "Ошибка ответа сервера",
-                            "Сервер вернул некорректный ответ."
+                            i18n.error_server_response_title,
+                            i18n.error_server_invalid_response
                         );
                         return;
                     }
@@ -843,7 +858,7 @@
                 if (response.status === 405) {
                     showMessage(
                         "error",
-                        data.detail || "Некорректные данные поиска. Повторите поиск столика."
+                        data.detail || i18n.error_invalid_search_data
                     );
                     hideContactFields();
                     return;
@@ -852,7 +867,7 @@
                 if (response.status === 406) {
                     showMessage(
                         "error",
-                        data.detail || "Срок действия бронирования истёк. Повторите поиск столика."
+                        data.detail || i18n.error_reservation_expired
                     );
                     hideContactFields();
                     return;
@@ -861,10 +876,7 @@
                 if (response.status === 409) {
                     showMessage(
                         "error",
-                        getErrorDetail(
-                            data,
-                            "К сожалению, все столики уже заняты. Попробуйте выбрать другое время."
-                        )
+                        getErrorDetail(data, i18n.error_all_tables_taken)
                     );
                     return;
                 }
@@ -872,32 +884,23 @@
                 if (response.status === 422) {
                     showMessage(
                         "error",
-                        getErrorDetail(
-                            data,
-                            "Проверьте количество гостей и выбранную дату."
-                        )
+                        getErrorDetail(data, i18n.error_check_people_date)
                     );
                     return;
                 }
 
                 if (response.status >= 500) {
                     showServerError(
-                        "Ошибка сервера",
-                        getErrorDetail(
-                            data,
-                            "Попробуйте повторить операцию позже."
-                        )
+                        i18n.error_server_title,
+                        getErrorDetail(data, i18n.error_retry_later)
                     );
                     return;
                 }
 
                 if (!response.ok) {
                     showServerError(
-                        "Ошибка",
-                        getErrorDetail(
-                            data,
-                            "Не удалось проверить доступность столика."
-                        )
+                        "Error",
+                        getErrorDetail(data, i18n.error_availability_check)
                     );
                     return;
                 }
@@ -908,7 +911,7 @@
                 ) {
                     showMessage(
                         "error",
-                        "Параметры поиска изменились. Повторите поиск свободных столиков."
+                        i18n.error_params_changed
                     );
                     return;
                 }
@@ -917,17 +920,17 @@
 
                 showMessage(
                     "success",
-                    data.message || "На данное время есть свободные столики."
+                    data.message || i18n.success_tables_available
                 );
 
                 contactFields.style.display = "block";
 
             } catch (error) {
-                console.error("Ошибка запроса:", error);
+                console.error("Search error:", error);
 
                 showServerError(
-                    "Ошибка соединения",
-                    "Не удалось связаться с сервером. Попробуйте повторить операцию позже."
+                    i18n.error_connection_title,
+                    i18n.error_connection_body
                 );
 
             } finally {
@@ -948,7 +951,7 @@
 
                 showMessage(
                     "error",
-                    "Параметры поиска изменились. Сначала повторите поиск свободных столиков."
+                    i18n.error_search_params_changed
                 );
                 return;
             }
@@ -989,8 +992,8 @@
                         data = JSON.parse(responseText);
                     } catch {
                         showServerError(
-                            "Ошибка ответа сервера",
-                            "Сервер вернул некорректный ответ."
+                            i18n.error_server_response_title,
+                            i18n.error_server_invalid_response
                         );
                         return;
                     }
@@ -998,28 +1001,25 @@
 
                 if (!response.ok) {
                     showServerError(
-                        "Не удалось подтвердить бронирование",
-                        getErrorDetail(
-                            data,
-                            "Попробуйте повторить операцию."
-                        )
+                        i18n.error_confirm_title,
+                        getErrorDetail(data, i18n.error_retry_operation)
                     );
                     return;
                 }
 
                 showMessage(
                     "success",
-                    data.message || "Бронирование успешно подтверждено."
+                    data.message || i18n.success_reservation_confirmed
                 );
 
                 hideContactFields();
 
             } catch (error) {
-                console.error("Ошибка подтверждения:", error);
+                console.error("Confirmation error:", error);
 
                 showServerError(
-                    "Ошибка соединения",
-                    "Не удалось связаться с сервером. Попробуйте повторить операцию позже."
+                    i18n.error_connection_title,
+                    i18n.error_connection_body
                 );
 
             } finally {

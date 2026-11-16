@@ -6,7 +6,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Регистрация | Bar & Lounge</title>
+    <title>{{ trans('registration_title') }} | Bar & Lounge</title>
 
     <style>
         * {
@@ -453,14 +453,11 @@
         </div>
 
         <h3>
-            Добро пожаловать
+            {{ trans('welcome') }}
         </h3>
 
         <p>
-            Создайте аккаунт,
-            чтобы пользоваться
-            всеми возможностями
-            нашего бара.
+            {{ trans('side_welcome_desc') }}
         </p>
 
     </div>
@@ -472,9 +469,7 @@
         </div>
 
         <p>
-            Хорошая музыка,
-            авторские коктейли
-            и приятная компания.
+            {{ trans('side_atmosphere_desc') }}
         </p>
 
     </div>
@@ -488,11 +483,11 @@
     </div>
 
     <h1>
-        Регистрация
+        {{ trans('registration_title') }}
     </h1>
 
     <div class="subtitle">
-        Создайте аккаунт в несколько шагов
+        {{ trans('registration_subtitle') }}
     </div>
 
     <div class="steps">
@@ -541,7 +536,7 @@
         >
 
             <div class="step-title">
-                Личные данные
+                {{ trans('personal_data') }}
             </div>
 
             <div class="row">
@@ -549,14 +544,14 @@
                 <div class="field">
 
                     <label>
-                        Имя
+                        {{ trans('name') }}
                         <span class="required">*</span>
                     </label>
 
                     <input
                         type="text"
                         name="name"
-                        placeholder="Имя"
+                        placeholder="{{ trans('name') }}"
                         required
                     >
 
@@ -565,14 +560,14 @@
                 <div class="field">
 
                     <label>
-                        Фамилия
+                        {{ trans('surname') }}
                         <span class="required">*</span>
                     </label>
 
                     <input
                         type="text"
                         name="surname"
-                        placeholder="Фамилия"
+                        placeholder="{{ trans('surname') }}"
                         required
                     >
 
@@ -583,7 +578,7 @@
             <div class="field">
 
                 <label>
-                    Номер телефона
+                    {{ trans('phone_number') }}
                     <span class="required">*</span>
                 </label>
 
@@ -599,7 +594,7 @@
             <div class="field">
 
                 <label>
-                    Дата рождения
+                    {{ trans('birthday') }}
                     <span class="required">*</span>
                 </label>
 
@@ -616,7 +611,7 @@
                 class="next-button"
                 id="buttonStep2"
             >
-                Перейти ко второму шагу →
+                {{ trans('go_to_step_two') }} →
             </button>
 
         </div>
@@ -627,20 +622,20 @@
         >
 
             <div class="step-title">
-                Адрес
+                {{ trans('address') }}
             </div>
 
             <div class="field">
 
                 <label>
-                    Город
+                    {{ trans('city') }}
                     <span class="required">*</span>
                 </label>
 
                 <input
                     type="text"
                     name="city"
-                    placeholder="Город"
+                    placeholder="{{ trans('city') }}"
                     required
                 >
 
@@ -649,14 +644,14 @@
             <div class="field">
 
                 <label>
-                    Почтовый индекс
+                    {{ trans('postal_code') }}
                     <span class="required">*</span>
                 </label>
 
                 <input
                     type="text"
                     name="postal_code"
-                    placeholder="Почтовый индекс"
+                    placeholder="{{ trans('postal_code') }}"
                     required
                 >
 
@@ -665,14 +660,14 @@
             <div class="field">
 
                 <label>
-                    Улица
+                    {{ trans('street') }}
                     <span class="required">*</span>
                 </label>
 
                 <input
                     type="text"
                     name="street"
-                    placeholder="Улица"
+                    placeholder="{{ trans('street') }}"
                     required
                 >
 
@@ -683,14 +678,14 @@
                 <div class="field">
 
                     <label>
-                        Номер дома
+                        {{ trans('house_number') }}
                         <span class="required">*</span>
                     </label>
 
                     <input
                         type="text"
                         name="house"
-                        placeholder="Дом"
+                        placeholder="{{ trans('house_number') }}"
                         required
                     >
 
@@ -699,16 +694,16 @@
                 <div class="field">
 
                     <label>
-                        Номер квартиры
+                        {{ trans('apartment_number') }}
                         <span class="optional">
-                            (необязательно)
+                            {{ trans('optional') }}
                         </span>
                     </label>
 
                     <input
                         type="text"
                         name="apartment"
-                        placeholder="Квартира"
+                        placeholder="{{ trans('apartment_number') }}"
                     >
 
                 </div>
@@ -720,7 +715,7 @@
                 class="next-button"
                 id="buttonStep3"
             >
-                Перейти к третьему шагу →
+                {{ trans('go_to_step_three') }} →
             </button>
 
             <button
@@ -728,7 +723,7 @@
                 class="back-button"
                 id="buttonBack1"
             >
-                ← Назад
+                ← {{ trans('back') }}
             </button>
 
         </div>
@@ -739,7 +734,7 @@
         >
 
             <div class="step-title">
-                Данные аккаунта
+                {{ trans('account_data') }}
             </div>
 
             <div class="field">
@@ -761,14 +756,14 @@
             <div class="field">
 
                 <label>
-                    Пароль
+                    {{ trans('password') }}
                     <span class="required">*</span>
                 </label>
 
                 <input
                     type="password"
                     name="password"
-                    placeholder="Минимум 8 символов"
+                    placeholder="{{ trans('password_min_8_chars') }}"
                     minlength="8"
                     maxlength="64"
                     required
@@ -779,14 +774,14 @@
             <div class="field">
 
                 <label>
-                    Подтверждение пароля
+                    {{ trans('password_confirm') }}
                     <span class="required">*</span>
                 </label>
 
                 <input
                     type="password"
                     id="passwordConfirm"
-                    placeholder="Повторите пароль"
+                    placeholder="{{ trans('enter_password_again') }}"
                     minlength="8"
                     maxlength="64"
                     required
@@ -799,7 +794,7 @@
                 class="register-button"
                 id="registerButton"
             >
-                Зарегистрироваться
+                {{ trans('register') }}
             </button>
 
             <button
@@ -807,7 +802,7 @@
                 class="back-button"
                 id="buttonBack2"
             >
-                ← Назад
+                ← {{ trans('back') }}
             </button>
 
         </div>
@@ -816,10 +811,10 @@
 
     <div class="footer">
 
-        Уже есть аккаунт?
+        {{ trans('already_have_account') }}
 
         <a href="/login">
-            Войти
+            {{ trans('login') }}
         </a>
 
     </div>
@@ -827,7 +822,7 @@
             href="/restaurants"
             class="back-link"
         >
-            ← Вернуться на главную
+            ← {{ trans('back_to_main') }}
         </a>
 
 </div>
@@ -837,18 +832,15 @@
     <div class="side-box">
 
         <div class="side-label">
-            ДЛЯ ГОСТЕЙ
+            {{ trans('for_guests_label') }}
         </div>
 
         <h3>
-            Всё в одном месте
+            {{ trans('everything_in_one_place') }}
         </h3>
 
         <p>
-            После регистрации
-            вам будут доступны
-            заказы, история заказов
-            и поддержка.
+            {{ trans('side_guest_features_desc') }}
         </p>
 
     </div>
@@ -860,10 +852,7 @@
         </div>
 
         <p>
-            Напитки.
-            Музыка.
-            Люди.
-            Хороший вечер.
+            {{ trans('side_bar_spirit_desc') }}
         </p>
 
     </div>
@@ -872,11 +861,34 @@
 
 </div>
 
-</div>
-
 <script src="/static/api.js"></script>
 
 <script>
+    const i18n = {
+        validation_required: "{{ trans('validation_required') | escape }}",
+        validation_email: "{{ trans('validation_email') | escape }}",
+        validation_min_chars: "{{ trans('validation_min_chars') | escape }}",
+        validation_max_chars: "{{ trans('validation_max_chars') | escape }}",
+        validation_range_underflow: "{{ trans('validation_range_underflow') | escape }}",
+        invalid_value: "{{ trans('invalid_value') | escape }}",
+        check_input_data: "{{ trans('check_input_data') | escape }}",
+        error_process_response: "{{ trans('error_process_response') | escape }}",
+        error_no_access: "{{ trans('error_no_access') | escape }}",
+        error_not_found: "{{ trans('error_not_found') | escape }}",
+        error_server: "{{ trans('error_server') | escape }}",
+        error_registration_failed: "{{ trans('error_registration_failed') | escape }}",
+        error_connection: "{{ trans('error_connection') | escape }}",
+        error_enter_password: "{{ trans('error_enter_password') | escape }}",
+        error_password_mismatch: "{{ trans('error_password_mismatch') | escape }}",
+        err_field_required: "{{ trans('err_field_required') | escape }}",
+        err_valid_email: "{{ trans('err_valid_email') | escape }}",
+        err_min_2_chars: "{{ trans('err_min_2_chars') | escape }}",
+        err_password_min_8: "{{ trans('err_password_min_8') | escape }}",
+        err_password_max_64: "{{ trans('err_password_max_64') | escape }}",
+        err_valid_integer: "{{ trans('err_valid_integer') | escape }}",
+        err_greater_than_zero: "{{ trans('err_greater_than_zero') | escape }}"
+    };
+
     const form = document.getElementById("registrationForm");
 
     const step1 = document.getElementById("step1");
@@ -960,26 +972,26 @@
 
     function getValidationMessage(input) {
         if (input.validity.valueMissing) {
-            return "Заполните это поле.";
+            return i18n.validation_required;
         }
 
         if (input.validity.typeMismatch) {
-            return "Введите корректный email.";
+            return i18n.validation_email;
         }
 
         if (input.validity.tooShort) {
-            return `Минимум ${input.minLength} символов.`;
+            return i18n.validation_min_chars.replace("{min}", input.minLength);
         }
 
         if (input.validity.tooLong) {
-            return `Максимум ${input.maxLength} символов.`;
+            return i18n.validation_max_chars.replace("{max}", input.maxLength);
         }
 
         if (input.validity.rangeUnderflow) {
-            return "Значение должно быть больше нуля.";
+            return i18n.validation_range_underflow;
         }
 
-        return "Некорректное значение.";
+        return i18n.invalid_value;
     }
 
     function validateStep(step) {
@@ -1088,7 +1100,7 @@
                 showGeneralError(
                     data.detail ||
                     data.message ||
-                    "Проверьте введённые данные."
+                    i18n.check_input_data
                 );
 
                 return;
@@ -1134,7 +1146,7 @@
             console.error(error);
 
             showGeneralError(
-                "Не удалось обработать ответ сервера."
+                i18n.error_process_response
             );
         }
     }
@@ -1155,7 +1167,7 @@
 
         if (response.status === 403) {
             showGeneralError(
-                "У вас нет доступа к этому действию."
+                i18n.error_no_access
             );
 
             return false;
@@ -1163,7 +1175,7 @@
 
         if (response.status === 404) {
             showGeneralError(
-                "Страница не найдена."
+                i18n.error_not_found
             );
 
             return false;
@@ -1171,14 +1183,14 @@
 
         if (response.status >= 500) {
             showGeneralError(
-                "Ошибка сервера. Попробуйте позже."
+                i18n.error_server
             );
 
             return false;
         }
 
         showGeneralError(
-            "Не удалось выполнить регистрацию."
+            i18n.error_registration_failed
         );
 
         return false;
@@ -1204,7 +1216,7 @@
             if (!password.value) {
                 showFieldError(
                     password,
-                    "Введите пароль."
+                    i18n.error_enter_password
                 );
 
                 password.focus();
@@ -1215,7 +1227,7 @@
             if (password.value.length < password.minLength) {
                 showFieldError(
                     password,
-                    `Минимум ${password.minLength} символов.`
+                    i18n.validation_min_chars.replace("{min}", password.minLength)
                 );
 
                 password.focus();
@@ -1226,7 +1238,7 @@
             if (password.value !== confirm.value) {
                 showFieldError(
                     confirm,
-                    "Пароли не совпадают."
+                    i18n.error_password_mismatch
                 );
 
                 confirm.focus();
@@ -1256,7 +1268,7 @@
                 );
 
                 showGeneralError(
-                    "Не удалось подключиться к серверу. Проверьте соединение."
+                    i18n.error_connection
                 );
             }
         }
@@ -1264,29 +1276,14 @@
 
     function translateError(message) {
         const translations = {
-            "Field required":
-                "Поле обязательно для заполнения",
-
-            "value is not a valid email address":
-                "Введите корректный email",
-
-            "value is not a valid email":
-                "Введите корректный email",
-
-            "String should have at least 2 characters":
-                "Минимум 2 символа",
-
-            "String should have at least 8 characters":
-                "Пароль должен содержать минимум 8 символов",
-
-            "String should have at most 64 characters":
-                "Пароль должен содержать максимум 64 символа",
-
-            "Input should be a valid integer":
-                "Введите целое число",
-
-            "Input should be greater than 0":
-                "Значение должно быть больше нуля"
+            "Field required": i18n.err_field_required,
+            "value is not a valid email address": i18n.err_valid_email,
+            "value is not a valid email": i18n.err_valid_email,
+            "String should have at least 2 characters": i18n.err_min_2_chars,
+            "String should have at least 8 characters": i18n.err_password_min_8,
+            "String should have at most 64 characters": i18n.err_password_max_64,
+            "Input should be a valid integer": i18n.err_valid_integer,
+            "Input should be greater than 0": i18n.err_greater_than_zero
         };
 
         return translations[message] || message;

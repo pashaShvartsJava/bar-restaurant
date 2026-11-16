@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Заказы</title>
+    <title>{{ trans('orders_page_title') }}</title>
 
     <style>
         * {
@@ -1271,70 +1271,69 @@
 <body>
 <div class="container">
     <div class="top">
-        <a href="/admin_panel" class="back">← НАЗАД</a>
+        <a href="/admin_panel" class="back">← {{ trans('nav_back_upper') }}</a>
         <div class="brand">RESTAURANT ADMIN</div>
     </div>
 
     <div class="header">
         <div class="header-label">ORDER MANAGEMENT</div>
-        <h1>Заказы</h1>
-        <p class="description">Все зарегистрированные заказы ресторана</p>
+        <h1>{{ trans('orders_page_title') }}</h1>
+        <p class="description">{{ trans('orders_page_description') }}</p>
     </div>
 
     <div class="controls">
         <form class="search-form" method="GET" action="/orders/get_orders/search_or_sorting">
             <input class="search-input" name="search" type="text"
-                   placeholder="Введите номер заказа" value="{{ search or '' }}">
-            <button class="search-button" type="submit">Найти</button>
-            <a class="reset-button" href="/orders/get_orders">Сбросить</a>
+                   placeholder="{{ trans('search_order_placeholder') }}" value="{{ search or '' }}">
+            <button class="search-button" type="submit">{{ trans('search_button') }}</button>
+            <a class="reset-button" href="/orders/get_orders">{{ trans('reset_button') }}</a>
         </form>
-        <button class="sort-button" type="button" onclick="openSort()">Сортировать</button>
+        <button class="sort-button" type="button" onclick="openSort()">{{ trans('sort_button') }}</button>
     </div>
 
     <div class="orders-toolbar">
         <button type="button" class="history-link" onclick="window.location.href='/orders/history'">
-            История заказов
+            {{ trans('order_history') }}
         </button>
         <a href="/orders/create_order_manually" class="toolbar-button create-order-button">
-            + Создать заказ вручную
+            + {{ trans('create_order_manually') }}
         </a>
 
         <button type="button" class="toolbar-button merge-orders-button"
                 id="openMergeButton" onclick="openMergeMode()">
-            Объединить заказы
+            {{ trans('merge_orders') }}
         </button>
     </div>
 
     <div class="merge-panel" id="mergePanel">
-        <div class="merge-panel-title">Объединение заказов</div>
+        <div class="merge-panel-title">{{ trans('merge_orders_title') }}</div>
 
         <p class="merge-panel-description">
-            Выберите два или более неоплаченных заказа со столиками.
-            Укажите номер столика для итогового заказа.
+            {{ trans('merge_orders_description') }}
         </p>
 
         <div class="merge-selection-list" id="mergeSelectionList"></div>
 
         <div class="merge-table-field">
-            <label for="mergeTableNumber">Номер столика для итогового заказа</label>
+            <label for="mergeTableNumber">{{ trans('merge_table_number_label') }}</label>
             <input id="mergeTableNumber" type="number" min="1" step="1"
-                   placeholder="Введите номер столика">
+                   placeholder="{{ trans('merge_table_number_placeholder') }}">
         </div>
 
         <div class="merge-actions">
             <span class="merge-selected-count" id="mergeSelectedCount">
-                Выбрано заказов: 0
+                {{ trans('merge_selected_count') }}
             </span>
 
             <button type="button" class="merge-confirm-button"
                     id="mergeConfirmButton" disabled
                     onclick="confirmMergeSelection()">
-                Подтвердить объединение
+                {{ trans('merge_confirm_button') }}
             </button>
 
             <button type="button" class="merge-cancel-button"
                     onclick="closeMergeMode()">
-                Отмена
+                {{ trans('cancel') }}
             </button>
         </div>
     </div>
@@ -1342,14 +1341,14 @@
     {% if orders %}
     <div class="orders">
         <div class="table-header">
-            <div>Номер заказа</div>
-            <div>Клиент</div>
-            <div>Столик</div>
-            <div>Статус</div>
-            <div>Создан</div>
-            <div>Статус изменён</div>
-            <div>Сумма</div>
-            <div>Действия</div>
+            <div>{{ trans('th_order_number') }}</div>
+            <div>{{ trans('th_client') }}</div>
+            <div>{{ trans('th_table') }}</div>
+            <div>{{ trans('th_status') }}</div>
+            <div>{{ trans('th_created') }}</div>
+            <div>{{ trans('th_status_changed') }}</div>
+            <div>{{ trans('th_sum') }}</div>
+            <div>{{ trans('th_actions') }}</div>
         </div>
 
         {% for order in orders %}
@@ -1360,34 +1359,34 @@
 
             <div class="order-table-number">
                 {% if order.table_number %}
-                    Столик № {{ order.table_number }}
+                    {{ trans('table_number_prefix') }} {{ order.table_number }}
                 {% else %}
-                    Заказ на доставку
+                    {{ trans('delivery_order') }}
                 {% endif %}
             </div>
 
             <div>
                 <span class="status {{ current_status }}">
                     {% if current_status == "pending" %}
-                        Ожидает
+                        {{ trans('status_pending') }}
                     {% elif current_status == "internal_order" %}
-                        Заказано
+                        {{ trans('status_internal_order') }}
                     {% elif current_status == "confirmed_address" %}
-                        Адрес подтверждён
+                        {{ trans('status_confirmed_address') }}
                     {% elif current_status == "paid" %}
-                        Оплачен
+                        {{ trans('status_paid') }}
                     {% elif current_status == "preparing" %}
-                        Готовится
+                        {{ trans('status_preparing') }}
                     {% elif current_status == "delivering" %}
-                        Доставляется
+                        {{ trans('status_delivering') }}
                     {% elif current_status == "completed" %}
-                        Завершён
+                        {{ trans('status_completed') }}
                     {% elif current_status == "cancelled_before" %}
-                        Отменён до оплаты
+                        {{ trans('status_cancelled_before') }}
                     {% elif current_status == "cancelled_after" %}
-                        Отменён после оплаты
+                        {{ trans('status_cancelled_after') }}
                     {% elif current_status == "expired" %}
-                        Истёк
+                        {{ trans('status_expired') }}
                     {% else %}
                         {{ current_status }}
                     {% endif %}
@@ -1405,91 +1404,91 @@
             <div class="order-sum">{{ order.sum }} €</div>
 
             <div class="status-action">
-                <a class="action" href="/orders/{{ order.id }}">Информация</a>
+                <a class="action" href="/orders/{{ order.id }}">{{ trans('action_info') }}</a>
 
                 {% if current_status == "internal_order" and order.table_number %}
                     <button class="action split-order-button" type="button"
                             data-order-id="{{ order.id }}"
                             onclick="openSplitModal(this.dataset.orderId)">
-                        Разделить заказ
+                        {{ trans('action_split_order') }}
                     </button>
 
                     <button class="change-status-button" type="button"
                             onclick="toggleStatusMenu('{{ order.order_number }}')">
-                        Статус
+                        {{ trans('action_status') }}
                     </button>
 
                     <div class="status-menu" id="status-menu-{{ order.order_number }}">
                         <button class="status-option" type="button"
                                 onclick="changeOrderStatus('{{ order.order_number }}', 'paid')">
-                            Оплачен
+                            {{ trans('status_paid') }}
                         </button>
                         <button class="status-option" type="button"
                                 onclick="changeOrderStatus('{{ order.order_number }}', 'cancelled_before')">
-                            Отменён до оплаты
+                            {{ trans('status_cancelled_before') }}
                         </button>
                     </div>
 
                 {% elif current_status == "paid" and not order.table_number %}
                     <button class="change-status-button" type="button"
                             onclick="toggleStatusMenu('{{ order.order_number }}')">
-                        Статус
+                        {{ trans('action_status') }}
                     </button>
 
                     <div class="status-menu" id="status-menu-{{ order.order_number }}">
                         <button class="status-option" type="button"
                                 onclick="changeOrderStatus('{{ order.order_number }}', 'preparing')">
-                            Готовится
+                            {{ trans('status_preparing') }}
                         </button>
                         <button class="status-option" type="button"
                                 onclick="changeOrderStatus('{{ order.order_number }}', 'delivering')">
-                            Доставляется
+                            {{ trans('status_delivering') }}
                         </button>
                         <button class="status-option" type="button"
                                 onclick="changeOrderStatus('{{ order.order_number }}', 'completed')">
-                            Завершён
+                            {{ trans('status_completed') }}
                         </button>
                         <button class="status-option" type="button"
                                 onclick="changeOrderStatus('{{ order.order_number }}', 'cancelled_after')">
-                            Отменён после оплаты
+                            {{ trans('status_cancelled_after') }}
                         </button>
                     </div>
 
                 {% elif current_status == "preparing" and not order.table_number %}
                     <button class="change-status-button" type="button"
                             onclick="toggleStatusMenu('{{ order.order_number }}')">
-                        Статус
+                        {{ trans('action_status') }}
                     </button>
 
                     <div class="status-menu" id="status-menu-{{ order.order_number }}">
                         <button class="status-option" type="button"
                                 onclick="changeOrderStatus('{{ order.order_number }}', 'delivering')">
-                            Доставляется
+                            {{ trans('status_delivering') }}
                         </button>
                         <button class="status-option" type="button"
                                 onclick="changeOrderStatus('{{ order.order_number }}', 'completed')">
-                            Завершён
+                            {{ trans('status_completed') }}
                         </button>
                         <button class="status-option" type="button"
                                 onclick="changeOrderStatus('{{ order.order_number }}', 'cancelled_after')">
-                            Отменён после оплаты
+                            {{ trans('status_cancelled_after') }}
                         </button>
                     </div>
 
                 {% elif current_status == "delivering" and not order.table_number %}
                     <button class="change-status-button" type="button"
                             onclick="toggleStatusMenu('{{ order.order_number }}')">
-                        Статус
+                        {{ trans('action_status') }}
                     </button>
 
                     <div class="status-menu" id="status-menu-{{ order.order_number }}">
                         <button class="status-option" type="button"
                                 onclick="changeOrderStatus('{{ order.order_number }}', 'completed')">
-                            Завершён
+                            {{ trans('status_completed') }}
                         </button>
                         <button class="status-option" type="button"
                                 onclick="changeOrderStatus('{{ order.order_number }}', 'cancelled_after')">
-                            Отменён после оплаты
+                            {{ trans('status_cancelled_after') }}
                         </button>
                     </div>
                 {% endif %}
@@ -1500,8 +1499,8 @@
 
     {% else %}
     <div class="empty">
-        <div class="empty-title">Заказы не найдены</div>
-        <div class="empty-description">По заданным параметрам заказы отсутствуют.</div>
+        <div class="empty-title">{{ trans('orders_empty_title') }}</div>
+        <div class="empty-description">{{ trans('orders_empty_description') }}</div>
     </div>
     {% endif %}
 
@@ -1514,27 +1513,27 @@
         <div class="split-modal-header">
             <div>
                 <h2 class="split-modal-heading" id="splitModalTitle">
-                    Разделение заказа
+                    {{ trans('split_modal_title') }}
                 </h2>
                 <p class="split-modal-subtitle" id="splitModalSubtitle"></p>
             </div>
 
             <button class="split-modal-close" type="button"
-                    aria-label="Закрыть" onclick="closeSplitModal()">
+                    aria-label="{{ trans('close_aria') }}" onclick="closeSplitModal()">
                 &times;
             </button>
         </div>
 
         <div class="split-modal-body">
             <div class="split-settings">
-                <label for="splitCount">Количество новых заказов</label>
+                <label for="splitCount">{{ trans('split_count_label') }}</label>
 
                 <input class="split-count-input" type="number"
                        id="splitCount" min="2" max="20" step="1" value="2">
 
                 <button class="split-build-button" type="button"
                         onclick="renderSplitOrders()">
-                    Сформировать заказы
+                    {{ trans('split_build_button') }}
                 </button>
             </div>
 
@@ -1547,12 +1546,12 @@
         <div class="split-modal-footer">
             <button class="split-cancel-button" type="button"
                     onclick="closeSplitModal()">
-                Отмена
+                {{ trans('cancel') }}
             </button>
 
             <button class="split-confirm-button" type="button"
                     id="confirmSplitButton" onclick="confirmSplit()">
-                Подтвердить разделение
+                {{ trans('split_confirm_button') }}
             </button>
         </div>
     </div>
@@ -1560,28 +1559,28 @@
 
 <div class="sort-overlay" id="sortOverlay" onclick="closeSortByOverlay(event)">
     <div class="sort-panel" onclick="event.stopPropagation()">
-        <div class="sort-title">Сортировка и фильтры</div>
+        <div class="sort-title">{{ trans('sort_title') }}</div>
 
         <form method="GET" action="/orders/get_orders/search_or_sorting">
             <div class="sort-field">
-                <label for="filterStatus">Статус</label>
+                <label for="filterStatus">{{ trans('sort_filter_status') }}</label>
                 <select id="filterStatus" name="status">
-                    <option value="">Все статусы</option>
-                    <option value="pending" {% if status == "pending" %}selected{% endif %}>Ожидает</option>
-                    <option value="internal_order" {% if status == "internal_order" %}selected{% endif %}>Заказано</option>
-                    <option value="confirmed_address" {% if status == "confirmed_address" %}selected{% endif %}>Адрес подтверждён</option>
-                    <option value="paid" {% if status == "paid" %}selected{% endif %}>Оплачен</option>
-                    <option value="preparing" {% if status == "preparing" %}selected{% endif %}>Готовится</option>
-                    <option value="delivering" {% if status == "delivering" %}selected{% endif %}>Доставляется</option>
-                    <option value="completed" {% if status == "completed" %}selected{% endif %}>Завершён</option>
-                    <option value="cancelled_before" {% if status == "cancelled_before" %}selected{% endif %}>Отменён до оплаты</option>
-                    <option value="cancelled_after" {% if status == "cancelled_after" %}selected{% endif %}>Отменён после оплаты</option>
-                    <option value="expired" {% if status == "expired" %}selected{% endif %}>Истёк</option>
+                    <option value="">{{ trans('status_all') }}</option>
+                    <option value="pending" {% if status == "pending" %}selected{% endif %}>{{ trans('status_pending') }}</option>
+                    <option value="internal_order" {% if status == "internal_order" %}selected{% endif %}>{{ trans('status_internal_order') }}</option>
+                    <option value="confirmed_address" {% if status == "confirmed_address" %}selected{% endif %}>{{ trans('status_confirmed_address') }}</option>
+                    <option value="paid" {% if status == "paid" %}selected{% endif %}>{{ trans('status_paid') }}</option>
+                    <option value="preparing" {% if status == "preparing" %}selected{% endif %}>{{ trans('status_preparing') }}</option>
+                    <option value="delivering" {% if status == "delivering" %}selected{% endif %}>{{ trans('status_delivering') }}</option>
+                    <option value="completed" {% if status == "completed" %}selected{% endif %}>{{ trans('status_completed') }}</option>
+                    <option value="cancelled_before" {% if status == "cancelled_before" %}selected{% endif %}>{{ trans('status_cancelled_before') }}</option>
+                    <option value="cancelled_after" {% if status == "cancelled_after" %}selected{% endif %}>{{ trans('status_cancelled_after') }}</option>
+                    <option value="expired" {% if status == "expired" %}selected{% endif %}>{{ trans('status_expired') }}</option>
                 </select>
             </div>
 
             <div class="sort-field">
-                <label>Дата создания</label>
+                <label>{{ trans('sort_created_at') }}</label>
                 <div class="sort-row">
                     <input type="date" name="date_from" value="{{ date_from or '' }}">
                     <input type="date" name="date_to" value="{{ date_to or '' }}">
@@ -1589,22 +1588,22 @@
             </div>
 
             <div class="sort-field">
-                <label>Сумма</label>
+                <label>{{ trans('sort_sum') }}</label>
                 <div class="sort-row">
                     <input type="number" name="sum_from" min="0" step="0.01"
-                           placeholder="От" value="{{ sum_from or '' }}">
+                           placeholder="{{ trans('sort_sum_from') }}" value="{{ sum_from or '' }}">
                     <input type="number" name="sum_to" min="0" step="0.01"
-                           placeholder="До" value="{{ sum_to or '' }}">
+                           placeholder="{{ trans('sort_sum_to') }}" value="{{ sum_to or '' }}">
                 </div>
             </div>
 
             <div class="sort-field">
-                <label for="sortOrder">Сортировка</label>
+                <label for="sortOrder">{{ trans('sort_order_label') }}</label>
                 <select id="sortOrder" name="sort">
-                    <option value="created_desc" {% if sort == "created_desc" or not sort %}selected{% endif %}>Сначала новые</option>
-                    <option value="created_asc" {% if sort == "created_asc" %}selected{% endif %}>Сначала старые</option>
-                    <option value="sum_desc" {% if sort == "sum_desc" %}selected{% endif %}>Сумма: по убыванию</option>
-                    <option value="sum_asc" {% if sort == "sum_asc" %}selected{% endif %}>Сумма: по возрастанию</option>
+                    <option value="created_desc" {% if sort == "created_desc" or not sort %}selected{% endif %}>{{ trans('sort_created_desc') }}</option>
+                    <option value="created_asc" {% if sort == "created_asc" %}selected{% endif %}>{{ trans('sort_created_asc') }}</option>
+                    <option value="sum_desc" {% if sort == "sum_desc" %}selected{% endif %}>{{ trans('sort_sum_desc') }}</option>
+                    <option value="sum_asc" {% if sort == "sum_asc" %}selected{% endif %}>{{ trans('sort_sum_asc') }}</option>
                 </select>
             </div>
 
@@ -1613,12 +1612,12 @@
             {% endif %}
 
             <div class="sort-actions">
-                <button class="sort-apply" type="submit">Применить</button>
+                <button class="sort-apply" type="submit">{{ trans('sort_apply') }}</button>
                 <a class="sort-reset" href="/orders/get_orders"
                    style="display:flex;align-items:center;justify-content:center;text-decoration:none;">
-                    Сбросить
+                    {{ trans('reset_button') }}
                 </a>
-                <button class="sort-close" type="button" onclick="closeSort()">Закрыть</button>
+                <button class="sort-close" type="button" onclick="closeSort()">{{ trans('sort_close') }}</button>
             </div>
         </form>
     </div>
@@ -1626,7 +1625,53 @@
 
 <script src="/static/api.js"></script>
 <script>
-    function showError(message, title = "Ошибка") {
+    const i18n = {
+        error_title: "{{ trans('error_title') | escape }}",
+        error_status_change: "{{ trans('error_status_change') | escape }}",
+        error_search_sort: "{{ trans('error_search_sort') | escape }}",
+        error_select_two_orders: "{{ trans('error_select_two_orders') | escape }}",
+        error_invalid_table: "{{ trans('error_invalid_table') | escape }}",
+        error_merge_failed: "{{ trans('error_merge_failed') | escape }}",
+        error_split_order_not_found: "{{ trans('error_split_order_not_found') | escape }}",
+        error_split_table_required: "{{ trans('error_split_table_required') | escape }}",
+        error_split_no_items: "{{ trans('error_split_no_items') | escape }}",
+        error_split_count_range: "{{ trans('error_split_count_range') | escape }}",
+        error_split_count_too_many: "{{ trans('error_split_count_too_many') | escape }}",
+        error_split_source_not_selected: "{{ trans('error_split_source_not_selected') | escape }}",
+        error_split_build_first: "{{ trans('error_split_build_first') | escape }}",
+        error_split_quantity_invalid: "{{ trans('error_split_quantity_invalid') | escape }}",
+        error_split_item_not_found: "{{ trans('error_split_item_not_found') | escape }}",
+        error_split_order_index_invalid: "{{ trans('error_split_order_index_invalid') | escape }}",
+        error_split_exceeds_source: "{{ trans('error_split_exceeds_source') | escape }}",
+        error_split_over_allocated: "{{ trans('error_split_over_allocated') | escape }}",
+        error_split_dish_id_invalid: "{{ trans('error_split_dish_id_invalid') | escape }}",
+        error_split_price_invalid: "{{ trans('error_split_price_invalid') | escape }}",
+        error_split_not_fully_allocated: "{{ trans('error_split_not_fully_allocated') | escape }}",
+        error_split_order_empty: "{{ trans('error_split_order_empty') | escape }}",
+        error_split_table_invalid: "{{ trans('error_split_table_invalid') | escape }}",
+        error_split_old_order_invalid: "{{ trans('error_split_old_order_invalid') | escape }}",
+        error_split_generic: "{{ trans('error_split_generic') | escape }}",
+        error_server_status: "{{ trans('error_server_status') | escape }}",
+        error_validation: "{{ trans('error_validation') | escape }}",
+        processing: "{{ trans('processing') | escape }}",
+        split_confirm_button: "{{ trans('split_confirm_button') | escape }}",
+        split_modal_title: "{{ trans('split_modal_title') | escape }}",
+        split_modal_subtitle_prefix: "{{ trans('split_modal_subtitle_prefix') | escape }}",
+        merge_empty: "{{ trans('merge_empty') | escape }}",
+        merge_order_number_prefix: "{{ trans('merge_order_number_prefix') | escape }}",
+        merge_selected_count_template: "{{ trans('merge_selected_count_template') | escape }}",
+        split_new_order_prefix: "{{ trans('split_new_order_prefix') | escape }}",
+        split_table_label_prefix: "{{ trans('split_table_label_prefix') | escape }}",
+        split_source_has_prefix: "{{ trans('split_source_has_prefix') | escape }}",
+        split_quantity_label: "{{ trans('split_quantity_label') | escape }}",
+        split_allocated_prefix: "{{ trans('split_allocated_prefix') | escape }}",
+        split_allocated_of: "{{ trans('split_allocated_of') | escape }}",
+        split_total_portions_prefix: "{{ trans('split_total_portions_prefix') | escape }}",
+        split_confirm_dialog_template: "{{ trans('split_confirm_dialog_template') | escape }}",
+        close_aria: "{{ trans('close_aria') | escape }}"
+    };
+
+    function showError(message, title = i18n.error_title) {
         const toast = document.createElement("div");
         toast.className = "error-toast";
         toast.setAttribute("role", "alert");
@@ -1651,7 +1696,7 @@
         close.className = "error-toast-close";
         close.type = "button";
         close.textContent = "×";
-        close.setAttribute("aria-label", "Закрыть уведомление");
+        close.setAttribute("aria-label", i18n.close_aria);
 
         content.append(heading, text);
         toast.append(icon, content, close);
@@ -1716,15 +1761,15 @@
 
             if (!response.ok) {
                 const errorText = await response.text();
-                console.error("Ошибка изменения статуса:", errorText);
-                showError("Не удалось изменить статус заказа.");
+                console.error("Status change error:", errorText);
+                showError(i18n.error_status_change);
                 return;
             }
 
             location.reload();
         } catch (error) {
-            console.error("Ошибка изменения статуса:", error);
-            showError("Не удалось изменить статус заказа.");
+            console.error("Status change error:", error);
+            showError(i18n.error_status_change);
         }
     }
 
@@ -1760,7 +1805,7 @@
                 });
 
                 if (!response.ok) {
-                    showError("Не удалось выполнить поиск или сортировку.");
+                    showError(i18n.error_search_sort);
                     return;
                 }
 
@@ -1768,8 +1813,8 @@
                 document.write(await response.text());
                 document.close();
             } catch (error) {
-                console.error("Ошибка поиска или сортировки:", error);
-                showError("Не удалось выполнить поиск или сортировку.");
+                console.error("Search/sort error:", error);
+                showError(i18n.error_search_sort);
             }
         });
     });
@@ -1833,7 +1878,7 @@
         if (mergeOrders.length === 0) {
             mergeSelectionList.innerHTML = `
                 <div class="merge-empty">
-                    Нет неоплаченных заказов со столиками для выбора.
+                    ${i18n.merge_empty}
                 </div>
             `;
             updateMergeSelection();
@@ -1853,13 +1898,13 @@
                         <span class="merge-checkbox">✓</span>
                         <span class="merge-order-info">
                             <span class="merge-order-number">
-                                Заказ № ${escapeMergeHTML(order.orderNumber)}
+                                ${i18n.merge_order_number_prefix} ${escapeMergeHTML(order.orderNumber)}
                             </span>
                             <span class="merge-order-meta">
-                                Столик № ${escapeMergeHTML(order.tableNumber)}
+                                ${i18n.split_table_label_prefix} ${escapeMergeHTML(order.tableNumber)}
                             </span>
                             <span class="merge-order-meta">
-                                Создан: ${escapeMergeHTML(order.createdAt)}
+                                ${i18n.th_created}: ${escapeMergeHTML(order.createdAt)}
                             </span>
                             <span class="merge-order-price">
                                 ${Number(order.sum).toFixed(2)} €
@@ -1887,7 +1932,7 @@
 
     function updateMergeSelection() {
         mergeSelectedCount.textContent =
-            `Выбрано заказов: ${selectedMergeOrders.size}`;
+            i18n.merge_selected_count_template.replace("{n}", selectedMergeOrders.size);
 
         mergeConfirmButton.disabled = selectedMergeOrders.size < 2;
     }
@@ -1898,7 +1943,7 @@
         );
 
         if (selectedOrders.length < 2) {
-            showError("Выберите как минимум два заказа.");
+            showError(i18n.error_select_two_orders);
             return;
         }
 
@@ -1906,7 +1951,7 @@
         const tableNumber = Number(rawTableNumber);
 
         if (!rawTableNumber || !Number.isInteger(tableNumber) || tableNumber < 1) {
-            showError("Введите корректный номер столика.");
+            showError(i18n.error_invalid_table);
             mergeTableNumberInput.focus();
             return;
         }
@@ -1930,15 +1975,15 @@
 
             if (!response.ok) {
                 const errorText = await response.text();
-                console.error("Ошибка объединения заказов:", errorText);
-                showError("Не удалось объединить заказы.");
+                console.error("Merge orders error:", errorText);
+                showError(i18n.error_merge_failed);
                 return;
             }
 
             location.reload();
         } catch (error) {
-            console.error("Ошибка объединения заказов:", error);
-            showError("Не удалось объединить заказы.");
+            console.error("Merge orders error:", error);
+            showError(i18n.error_merge_failed);
         } finally {
             mergeConfirmButton.disabled = selectedMergeOrders.size < 2;
         }
@@ -2006,29 +2051,29 @@
         );
 
         if (!currentSplitOrder) {
-            showError("Не удалось найти данные исходного заказа.");
+            showError(i18n.error_split_order_not_found);
             return;
         }
 
         if (!currentSplitOrder.tableNumber) {
-            showError("Разделить можно только заказ со столиком.");
+            showError(i18n.error_split_table_required);
             return;
         }
 
         if (!currentSplitOrder.items.length) {
-            showError("В этом заказе нет блюд для разделения.");
+            showError(i18n.error_split_no_items);
             return;
         }
 
         document.getElementById("splitModalTitle").textContent =
-            "Разделение заказа";
+            i18n.split_modal_title;
 
         document.getElementById("splitModalSubtitle").textContent =
-            "Заказ № " + currentSplitOrder.orderNumber;
+            i18n.split_modal_subtitle_prefix + " " + currentSplitOrder.orderNumber;
 
         splitCountInput.value = "2";
         confirmSplitButton.disabled = false;
-        confirmSplitButton.textContent = "Подтвердить разделение";
+        confirmSplitButton.textContent = i18n.split_confirm_button;
 
         splitModal.classList.add("active");
         document.body.style.overflow = "hidden";
@@ -2062,9 +2107,7 @@
         const count = Number(splitCountInput.value);
 
         if (!Number.isInteger(count) || count < 2 || count > 20) {
-            showSplitValidation(
-                "Количество новых заказов должно быть целым числом от 2 до 20."
-            );
+            showSplitValidation(i18n.error_split_count_range);
             return;
         }
 
@@ -2075,9 +2118,9 @@
 
         if (count > totalPortions) {
             showSplitValidation(
-                "Нельзя создать " + count + " непустых заказов: " +
-                "в исходном заказе всего " + totalPortions +
-                " порций. Уменьшите количество новых заказов."
+                i18n.error_split_count_too_many
+                    .replace("{count}", count)
+                    .replace("{total}", totalPortions)
             );
             return;
         }
@@ -2090,13 +2133,13 @@
             card.dataset.orderIndex = String(orderIndex);
 
             const heading = document.createElement("h3");
-            heading.textContent = "Новый заказ №" + (orderIndex + 1);
+            heading.textContent = i18n.split_new_order_prefix + " " + (orderIndex + 1);
             card.appendChild(heading);
 
             const tableLabel = document.createElement("p");
             tableLabel.className = "split-table-label";
             tableLabel.textContent =
-                "Столик №" + currentSplitOrder.tableNumber;
+                i18n.split_table_label_prefix + " " + currentSplitOrder.tableNumber;
             card.appendChild(tableLabel);
 
             currentSplitOrder.items.forEach(item => {
@@ -2111,14 +2154,14 @@
                 const available = document.createElement("span");
                 available.className = "split-item-available";
                 available.textContent =
-                    "В исходном заказе: " + item.quantity + " шт.";
+                    i18n.split_source_has_prefix + " " + item.quantity;
                 itemBlock.appendChild(available);
 
                 const quantityRow = document.createElement("div");
                 quantityRow.className = "split-quantity-row";
 
                 const label = document.createElement("label");
-                label.textContent = "Количество:";
+                label.textContent = i18n.split_quantity_label;
 
                 const input = document.createElement("input");
                 input.type = "number";
@@ -2132,7 +2175,7 @@
 
                 input.setAttribute(
                     "aria-label",
-                    item.name + ", новый заказ " + (orderIndex + 1)
+                    item.name + ", " + i18n.split_new_order_prefix + " " + (orderIndex + 1)
                 );
 
                 input.addEventListener("input", () => {
@@ -2149,7 +2192,7 @@
                 allocation.className = "split-item-allocation";
                 allocation.dataset.itemId = String(item.id);
                 allocation.textContent =
-                    "Распределено: 0 из " + item.quantity;
+                    i18n.split_allocated_prefix + " 0 " + i18n.split_allocated_of + " " + item.quantity;
                 itemBlock.appendChild(allocation);
 
                 card.appendChild(itemBlock);
@@ -2157,7 +2200,7 @@
 
             const total = document.createElement("div");
             total.className = "split-order-total";
-            total.textContent = "Всего порций: 0";
+            total.textContent = i18n.split_total_portions_prefix + " 0";
             card.appendChild(total);
 
             splitOrdersContainer.appendChild(card);
@@ -2189,7 +2232,7 @@
             if (String(element.dataset.itemId) !== String(item.id)) return;
 
             element.textContent =
-                "Распределено: " + allocated + " из " + item.quantity;
+                i18n.split_allocated_prefix + " " + allocated + " " + i18n.split_allocated_of + " " + item.quantity;
 
             element.style.color = allocated === item.quantity
                 ? "#a78bfa"
@@ -2211,7 +2254,7 @@
         });
 
         card.querySelector(".split-order-total").textContent =
-            "Всего порций: " + total;
+            i18n.split_total_portions_prefix + " " + total;
 
         card.classList.toggle("has-items", total > 0);
     }
@@ -2230,28 +2273,21 @@
 
     function collectSplitPayload() {
         if (!currentSplitOrder) {
-            throw new Error("Исходный заказ не выбран.");
+            throw new Error(i18n.error_split_source_not_selected);
         }
 
         const count = Number(splitCountInput.value);
 
         if (!Number.isInteger(count) || count < 2 || count > 20) {
-            throw new Error(
-                "Количество новых заказов должно быть целым числом от 2 до 20."
-            );
+            throw new Error(i18n.error_split_count_range);
         }
 
         const cards = splitOrdersContainer.querySelectorAll(".split-order-card");
 
         if (cards.length !== count) {
-            throw new Error("Сформируйте новые заказы перед подтверждением.");
+            throw new Error(i18n.error_split_build_first);
         }
 
-        /*
-         * ВАЖНО:
-         * Используем list_order_guest_dto, поскольку именно это поле
-         * ожидает DTO на бэкенде согласно ошибке FastAPI.
-         */
         const payload = {
             table_number: Number(currentSplitOrder.tableNumber),
             old_order_id: Number(currentSplitOrder.id),
@@ -2280,9 +2316,7 @@
                 !Number.isInteger(quantity) ||
                 quantity < 0
             ) {
-                throw new Error(
-                    "Количество порций должно быть целым неотрицательным числом."
-                );
+                throw new Error(i18n.error_split_quantity_invalid);
             }
 
             const itemId = String(input.dataset.itemId);
@@ -2293,7 +2327,7 @@
             );
 
             if (!sourceItem) {
-                throw new Error("Не удалось найти блюдо исходного заказа.");
+                throw new Error(i18n.error_split_item_not_found);
             }
 
             if (
@@ -2301,13 +2335,12 @@
                 orderIndex < 0 ||
                 orderIndex >= count
             ) {
-                throw new Error("Некорректный номер нового заказа.");
+                throw new Error(i18n.error_split_order_index_invalid);
             }
 
             if (quantity > sourceItem.quantity) {
                 throw new Error(
-                    "Количество блюда «" + sourceItem.name +
-                    "» превышает количество в исходном заказе."
+                    i18n.error_split_exceeds_source.replace("{name}", sourceItem.name)
                 );
             }
 
@@ -2315,8 +2348,7 @@
 
             if (assigned > sourceItem.quantity) {
                 throw new Error(
-                    "Для блюда «" + sourceItem.name +
-                    "» распределено больше порций, чем есть в исходном заказе."
+                    i18n.error_split_over_allocated.replace("{name}", sourceItem.name)
                 );
             }
 
@@ -2328,13 +2360,13 @@
 
                 if (!Number.isInteger(dishId) || dishId <= 0) {
                     throw new Error(
-                        "Некорректный ID блюда «" + sourceItem.name + "»."
+                        i18n.error_split_dish_id_invalid.replace("{name}", sourceItem.name)
                     );
                 }
 
                 if (!Number.isFinite(price) || price < 1 || price > 20000) {
                     throw new Error(
-                        "Некорректная цена блюда «" + sourceItem.name + "»."
+                        i18n.error_split_price_invalid.replace("{name}", sourceItem.name)
                     );
                 }
 
@@ -2352,9 +2384,10 @@
 
             if (assigned !== item.quantity) {
                 throw new Error(
-                    "Блюдо «" + item.name + "»: в исходном заказе " +
-                    item.quantity + " шт., распределено " + assigned +
-                    " шт. Распределите всё количество без остатка."
+                    i18n.error_split_not_fully_allocated
+                        .replace("{name}", item.name)
+                        .replace("{source}", item.quantity)
+                        .replace("{assigned}", assigned)
                 );
             }
         }
@@ -2362,8 +2395,7 @@
         payload.list_order_guest_dto.forEach((order, index) => {
             if (order.order_items.length === 0) {
                 throw new Error(
-                    "Новый заказ №" + (index + 1) +
-                    " пуст. Добавьте в него хотя бы одно блюдо."
+                    i18n.error_split_order_empty.replace("{index}", index + 1)
                 );
             }
         });
@@ -2372,14 +2404,14 @@
             !Number.isInteger(payload.table_number) ||
             payload.table_number < 1
         ) {
-            throw new Error("Некорректный номер столика.");
+            throw new Error(i18n.error_split_table_invalid);
         }
 
         if (
             !Number.isInteger(payload.old_order_id) ||
             payload.old_order_id <= 0
         ) {
-            throw new Error("Некорректный ID исходного заказа.");
+            throw new Error(i18n.error_split_old_order_invalid);
         }
 
         return payload;
@@ -2389,7 +2421,7 @@
         hideSplitValidation();
 
         if (!currentSplitOrder) {
-            showSplitValidation("Исходный заказ не выбран.");
+            showSplitValidation(i18n.error_split_source_not_selected);
             return;
         }
 
@@ -2399,22 +2431,21 @@
             payload = collectSplitPayload();
         } catch (error) {
             showSplitValidation(
-                error.message || "Проверьте данные новых заказов."
+                error.message || i18n.error_validation
             );
             return;
         }
 
         const confirmed = window.confirm(
-            "Разделить заказ №" + currentSplitOrder.orderNumber +
-            " на " + payload.list_order_guest_dto.length + " новых заказа?\n\n" +
-            "Все порции должны быть распределены без остатка. " +
-            "Исходный заказ будет удалён после успешного разделения."
+            i18n.split_confirm_dialog_template
+                .replace("{number}", currentSplitOrder.orderNumber)
+                .replace("{count}", payload.list_order_guest_dto.length)
         );
 
         if (!confirmed) return;
 
         confirmSplitButton.disabled = true;
-        confirmSplitButton.textContent = "Обработка...";
+        confirmSplitButton.textContent = i18n.processing;
 
         try {
             const response = await apiFetch(SPLIT_ENDPOINT, {
@@ -2436,7 +2467,7 @@
             }
 
             if (!response.ok) {
-                console.error("Ошибка разделения заказа:", {
+                console.error("Split order error:", {
                     status: response.status,
                     response: result
                 });
@@ -2452,7 +2483,7 @@
                             : "";
 
                         const errorMessage =
-                            error.msg || error.message || "Ошибка валидации.";
+                            error.msg || error.message || i18n.error_validation;
 
                         return location
                             ? location + ": " + errorMessage
@@ -2461,7 +2492,7 @@
                 } else if (typeof detail === "string") {
                     message = detail;
                 } else {
-                    message = "Сервер вернул ошибку HTTP " + response.status + ".";
+                    message = i18n.error_server_status.replace("{status}", response.status);
                 }
 
                 throw new Error(message);
@@ -2472,7 +2503,7 @@
                     result.detail ||
                     result.error ||
                     result.message ||
-                    "Сервер не смог разделить заказ."
+                    i18n.error_split_generic
                 );
             }
 
@@ -2480,16 +2511,16 @@
             window.location.reload();
 
         } catch (error) {
-            console.error("Ошибка разделения заказа:", error);
+            console.error("Split order error:", error);
 
             showSplitValidation(
                 error.message ||
-                "Не удалось разделить заказ. Попробуйте ещё раз."
+                i18n.error_split_generic
             );
 
         } finally {
             confirmSplitButton.disabled = false;
-            confirmSplitButton.textContent = "Подтвердить разделение";
+            confirmSplitButton.textContent = i18n.split_confirm_button;
         }
     }
 

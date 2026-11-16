@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Изменение блюда</title>
+    <title>{{ trans('edit_dish_title') }}</title>
     <style>
         * {
             margin: 0;
@@ -254,12 +254,12 @@
 <div class="page">
     <a href="/menu_page" class="back">
         <span class="back-arrow">←</span>
-        <span>Вернуться в меню</span>
+        <span>{{ trans('back_to_menu') }}</span>
     </a>
 
     <header class="header">
-        <h1 class="title">Изменение блюда</h1>
-        <div class="subtitle">Изменение информации о блюде</div>
+        <h1 class="title">{{ trans('edit_dish_title') }}</h1>
+        <div class="subtitle">{{ trans('edit_dish_subtitle') }}</div>
     </header>
 
     <form
@@ -271,26 +271,26 @@
         <div id="formError" class="form-error"></div>
 
         <div class="field">
-            <label for="dish_name">Название</label>
+            <label for="dish_name">{{ trans('dish_name_field_label') }}</label>
             <input
                 type="text"
                 id="dish_name"
                 name="dish_name"
                 value="{{ dish.dish_name }}"
-                placeholder="Введите название блюда"
+                placeholder="{{ trans('edit_dish_name_placeholder') }}"
                 required>
         </div>
 
         <div class="field">
-            <label for="description">Описание</label>
+            <label for="description">{{ trans('description_label') }}</label>
             <textarea
                 id="description"
                 name="description"
-                placeholder="Введите описание блюда">{{ dish.description or "" }}</textarea>
+                placeholder="{{ trans('edit_description_placeholder') }}">{{ dish.description or "" }}</textarea>
         </div>
 
         <div class="field">
-            <label for="price">Цена</label>
+            <label for="price">{{ trans('price_label') }}</label>
             <input
                 type="number"
                 id="price"
@@ -303,26 +303,26 @@
         </div>
 
         <div class="photo-section">
-            <div class="photo-title">Фотография</div>
+            <div class="photo-title">{{ trans('photo_label') }}</div>
 
             {% if dish.image_url %}
             <div class="current-photo">
                 <img src="{{ dish.image_url }}" alt="{{ dish.dish_name }}">
                 <div class="photo-info">
-                    Текущая фотография блюда.<br>
-                    Чтобы заменить её, выберите новый файл ниже.
+                    {{ trans('current_photo_info_line1') }}<br>
+                    {{ trans('current_photo_info_line2') }}
                 </div>
             </div>
             {% else %}
             <div class="current-photo">
                 <div class="no-current-photo">
-                    У блюда пока нет фотографии.
+                    {{ trans('no_current_photo') }}
                 </div>
             </div>
             {% endif %}
 
             <div class="field">
-                <label for="image">Новая фотография</label>
+                <label for="image">{{ trans('new_photo_label') }}</label>
                 <input
                     type="file"
                     id="image"
@@ -332,14 +332,20 @@
         </div>
 
         <div class="form-actions">
-            <a href="/menu_page" class="btn cancel">Отмена</a>
-            <button type="submit" class="btn save">Сохранить изменения</button>
+            <a href="/menu_page" class="btn cancel">{{ trans('cancel') }}</a>
+            <button type="submit" class="btn save">{{ trans('save_changes') }}</button>
         </div>
     </form>
 </div>
 
 <script src="/static/api.js"></script>
 <script>
+const i18n = {
+    error_save_changes: "{{ trans('error_save_changes') | escape }}",
+    error_check_form: "{{ trans('error_check_form') | escape }}",
+    error_connection: "{{ trans('error_connection') | escape }}"
+};
+
 const form = document.getElementById("dishForm");
 const formError = document.getElementById("formError");
 
@@ -375,7 +381,7 @@ form.addEventListener("submit", async function(event) {
         try {
             data = JSON.parse(text);
         } catch {
-            showFormError(text || "Не удалось сохранить изменения.");
+            showFormError(text || i18n.error_save_changes);
             return;
         }
 
@@ -394,14 +400,14 @@ form.addEventListener("submit", async function(event) {
                 }
             });
 
-            showFormError("Проверьте правильность заполнения формы.");
+            showFormError(i18n.error_check_form);
             return;
         }
 
-        showFormError("Не удалось сохранить изменения.");
+        showFormError(i18n.error_save_changes);
     } catch (error) {
         console.error(error);
-        showFormError("Не удалось подключиться к серверу.");
+        showFormError(i18n.error_connection);
     }
 });
 

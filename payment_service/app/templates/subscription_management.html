@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#101012">
     <meta name="stripe-publishable-key" content="{{ stripe_publishable_key }}">
-    <title>Управление подпиской — FDCPlatform</title>
+    <title>{{ trans('subscription_management_page_title') }} — FDCPlatform</title>
     <script src="https://js.stripe.com/v3/"></script>
     <style>
         :root {
@@ -241,7 +241,7 @@
             box-shadow: 0 0 0 1px var(--gold) inset, 0 8px 24px rgba(213, 166, 91, 0.12);
         }
         .plan-card.current::after {
-            content: "Текущий"; position: absolute; top: 8px; right: 8px;
+            content: "{{ trans('plan_badge_current') }}"; position: absolute; top: 8px; right: 8px;
             padding: 3px 7px; border-radius: 6px;
             background: rgba(213, 166, 91, 0.15); color: var(--gold-light);
             font-size: 8px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
@@ -430,90 +430,90 @@
     </style>
 </head>
 <body>
-    <a href="/admin_panel" class="back-link">Назад</a>
+    <a href="/admin_panel" class="back-link">{{ trans('back_button') }}</a>
 
     <div class="container">
         <header class="page-header reveal">
             <div class="brand-pill">FDCPlatform</div>
-            <h1>Управление подпиской</h1>
+            <h1>{{ trans('subscription_management_title') }}</h1>
         </header>
 
         <main class="panel reveal" style="animation-delay: .1s;">
             <div class="grid">
                 <section class="block" id="planBlock">
-                    <div class="block-title">Текущий план</div>
+                    <div class="block-title">{{ trans('block_current_plan') }}</div>
                     <div class="plan-current" id="currentPlanName">—</div>
-                    <div class="plan-hint" id="currentPlanHint">Загрузка...</div>
+                    <div class="plan-hint" id="currentPlanHint">{{ trans('loading') }}</div>
                     <div class="divider"></div>
                     <div class="field">
-                        <label>Сменить план</label>
+                        <label>{{ trans('change_plan_label') }}</label>
                         <div class="plans-grid" id="plansGrid"></div>
                     </div>
-                    <button type="button" class="btn btn-violet btn-block" id="changePlanBtn" disabled>Сменить план</button>
+                    <button type="button" class="btn btn-violet btn-block" id="changePlanBtn" disabled>{{ trans('change_plan_button') }}</button>
                     <div class="alert alert-error" id="changePlanError"></div>
                     <div class="alert alert-success" id="changePlanSuccess"></div>
                 </section>
 
                 <section class="block" id="paymentBlock">
-                    <div class="block-title">Способ оплаты</div>
+                    <div class="block-title">{{ trans('block_payment_method') }}</div>
                     <div id="paymentElement" class="payment-element-wrap"></div>
                     <div class="payment-element-error" id="paymentElementError">
-                        Не удалось загрузить виджет оплаты. Проверьте подключение к Stripe.
+                        {{ trans('payment_widget_load_error') }}
                     </div>
                     <p class="payment-methods-note">
-                        Поддерживаются <strong>банковские карты</strong> и <strong>SEPA Direct Debit (IBAN)</strong>.
+                        {{ trans('payment_methods_supported_prefix') }} <strong>{{ trans('payment_method_card') }}</strong> {{ trans('and') }} <strong>{{ trans('payment_method_sepa') }}</strong>.
                     </p>
-                    <button type="button" class="btn btn-gold btn-block" id="savePaymentBtn">Сохранить способ оплаты</button>
+                    <button type="button" class="btn btn-gold btn-block" id="savePaymentBtn">{{ trans('save_payment_method_button') }}</button>
                     <div class="alert alert-error" id="paymentError"></div>
                     <div class="alert alert-success" id="paymentSuccess"></div>
                 </section>
 
                 <section class="block" id="vatBlock">
-                    <div class="block-title">Налоговый номер (VAT ID)</div>
+                    <div class="block-title">{{ trans('block_vat') }}</div>
                     <div class="field">
-                        <label>Статус</label>
-                        <div id="vatStatusBadge" class="status-badge status-none">Не привязан</div>
+                        <label>{{ trans('vat_status_label') }}</label>
+                        <div id="vatStatusBadge" class="status-badge status-none">{{ trans('vat_status_not_linked') }}</div>
                         <div class="vat-current" id="vatCurrentValue"></div>
                     </div>
                     <div class="field">
-                        <label for="vatInput">VAT ID</label>
+                        <label for="vatInput">{{ trans('vat_id_label') }}</label>
                         <input type="text" id="vatInput" placeholder="DE123456789" maxlength="20" autocomplete="off">
                     </div>
-                    <button type="button" class="btn btn-gold btn-block" id="saveVatBtn">Проверить и сохранить</button>
+                    <button type="button" class="btn btn-gold btn-block" id="saveVatBtn">{{ trans('save_vat_button') }}</button>
                     <div class="alert alert-error" id="vatError"></div>
                     <div class="alert alert-success" id="vatSuccess"></div>
                 </section>
 
                 <section class="block" id="addressBlock">
-                    <div class="block-title">Адрес регистрации</div>
-                    <div class="field"><label for="addressLine1">Улица и номер</label><input type="text" id="addressLine1" placeholder="Улица и номер"></div>
-                    <div class="field"><label for="addressCity">Город</label><input type="text" id="addressCity" placeholder="Город"></div>
-                    <div class="field"><label for="addressPostal">Индекс</label><input type="text" id="addressPostal" placeholder="Индекс"></div>
+                    <div class="block-title">{{ trans('block_address') }}</div>
+                    <div class="field"><label for="addressLine1">{{ trans('address_line1_label') }}</label><input type="text" id="addressLine1" placeholder="{{ trans('address_line1_placeholder') }}"></div>
+                    <div class="field"><label for="addressCity">{{ trans('address_city_label') }}</label><input type="text" id="addressCity" placeholder="{{ trans('address_city_placeholder') }}"></div>
+                    <div class="field"><label for="addressPostal">{{ trans('address_postal_label') }}</label><input type="text" id="addressPostal" placeholder="{{ trans('address_postal_placeholder') }}"></div>
                     <div class="field">
-                        <label>Страна</label>
+                        <label>{{ trans('address_country_label') }}</label>
                         <div class="custom-select" id="countrySelect" tabindex="0">
-                            <div class="custom-select-trigger placeholder" id="countryTrigger">Выберите страну</div>
+                            <div class="custom-select-trigger placeholder" id="countryTrigger">{{ trans('choose_country') }}</div>
                             <div class="custom-select-menu" id="countryMenu"></div>
                         </div>
                     </div>
-                    <button type="button" class="btn btn-gold btn-block" id="saveAddressBtn">Сохранить адрес</button>
+                    <button type="button" class="btn btn-gold btn-block" id="saveAddressBtn">{{ trans('save_address_button') }}</button>
                     <div class="alert alert-error" id="addressError"></div>
                     <div class="alert alert-success" id="addressSuccess"></div>
                 </section>
 
                 <section class="block full">
-                    <div class="block-title">История платежей</div>
+                    <div class="block-title">{{ trans('block_payment_history') }}</div>
                     <div class="invoice-list" id="invoiceList">
-                        <div style="color: var(--muted); font-size: 11px;">Загрузка...</div>
+                        <div style="color: var(--muted); font-size: 11px;">{{ trans('loading') }}</div>
                     </div>
                 </section>
 
                 <section class="block full">
-                    <div class="block-title">Отмена подписки</div>
+                    <div class="block-title">{{ trans('block_cancel_subscription') }}</div>
                     <p style="color: var(--muted); font-size: 11px; margin-bottom: 12px;">
-                        Подписка останется активной до конца оплаченного периода.
+                        {{ trans('cancel_subscription_hint') }}
                     </p>
-                    <button type="button" class="btn btn-cancel" id="cancelSubscriptionBtn">Отменить подписку</button>
+                    <button type="button" class="btn btn-cancel" id="cancelSubscriptionBtn">{{ trans('cancel_subscription_button') }}</button>
                     <div class="alert alert-error" id="cancelError"></div>
                     <div class="alert alert-success" id="cancelSuccess"></div>
                 </section>
@@ -524,6 +524,49 @@
 <script>
 (function () {
     "use strict";
+
+    const i18n = {
+        toast_close_aria: "{{ trans('toast_close_aria') | escape }}",
+        error_network: "{{ trans('error_network') | escape }}",
+        error_status_prefix: "{{ trans('error_status_prefix') | escape }}",
+        payment_widget_no_key: "{{ trans('payment_widget_no_key') | escape }}",
+        payment_widget_init_error: "{{ trans('payment_widget_init_error') | escape }}",
+        toast_plan_changed: "{{ trans('toast_plan_changed') | escape }}",
+        toast_payment_not_loaded: "{{ trans('toast_payment_not_loaded') | escape }}",
+        toast_payment_saved: "{{ trans('toast_payment_saved') | escape }}",
+        toast_vat_enter: "{{ trans('toast_vat_enter') | escape }}",
+        toast_vat_valid: "{{ trans('toast_vat_valid') | escape }}",
+        toast_vat_invalid: "{{ trans('toast_vat_invalid') | escape }}",
+        toast_vat_unavailable: "{{ trans('toast_vat_unavailable') | escape }}",
+        toast_address_updated: "{{ trans('toast_address_updated') | escape }}",
+        toast_no_payments: "{{ trans('toast_no_payments') | escape }}",
+        toast_subscription_resumed: "{{ trans('toast_subscription_resumed') | escape }}",
+        toast_subscription_cancelled: "{{ trans('toast_subscription_cancelled') | escape }}",
+        confirm_resume: "{{ trans('confirm_resume_subscription') | escape }}",
+        confirm_cancel: "{{ trans('confirm_cancel_subscription') | escape }}",
+        btn_saving: "{{ trans('btn_saving') | escape }}",
+        btn_save_payment_method: "{{ trans('save_payment_method_button') | escape }}",
+        btn_checking: "{{ trans('btn_checking') | escape }}",
+        btn_save_vat: "{{ trans('save_vat_button') | escape }}",
+        plan_hint_cancelled_until: "{{ trans('plan_hint_cancelled_until') | escape }}",
+        plan_hint_cancelled_end: "{{ trans('plan_hint_cancelled_end') | escape }}",
+        plan_hint_active_next: "{{ trans('plan_hint_active_next') | escape }}",
+        plan_hint_active: "{{ trans('plan_hint_active') | escape }}",
+        plan_hint_trial_until: "{{ trans('plan_hint_trial_until') | escape }}",
+        plan_hint_trial: "{{ trans('plan_hint_trial') | escape }}",
+        plan_hint_past_due: "{{ trans('plan_hint_past_due') | escape }}",
+        vat_status_valid: "{{ trans('vat_status_valid') | escape }}",
+        vat_status_invalid: "{{ trans('vat_status_invalid') | escape }}",
+        vat_status_not_linked: "{{ trans('vat_status_not_linked') | escape }}",
+        vat_status_unverified: "{{ trans('vat_status_unverified') | escape }}",
+        vat_current_prefix: "{{ trans('vat_current_prefix') | escape }}",
+        error_load_subscription: "{{ trans('error_load_subscription') | escape }}",
+        toast_resume_subscription_btn: "{{ trans('resume_subscription_button') | escape }}",
+        toast_cancel_subscription_btn: "{{ trans('cancel_subscription_button') | escape }}",
+        back_button: "{{ trans('back_button') | escape }}",
+        loading: "{{ trans('loading') | escape }}",
+        toast_generic_error: "{{ trans('toast_generic_error') | escape }}"
+    };
 
     const STRIPE_PUBLISHABLE_KEY =
         document.querySelector('meta[name="stripe-publishable-key"]')?.content || "";
@@ -586,19 +629,19 @@
     };
 
     const PLANS = [
-        { id: "basic", name: "Basic", price: "€39.99", period: "/ мес", desc: "Сайт, меню, заказы и администрация для небольших заведений." },
-        { id: "online", name: "Online", price: "€59.99", period: "/ мес", desc: "Всё из Basic плюс доставка, клиенты и история онлайн-оплат." },
-        { id: "advanced", name: "Advanced", price: "€119.99", period: "/ мес", desc: "Всё из Online плюс управление столиками и бронями." },
-        { id: "professional", name: "Professional", price: "€199.99", period: "/ мес", desc: "Всё из Advanced плюс онлайн-бронирование, финансы и аналитика." },
+        { id: "basic", name: "Basic", price: "€39.99", period: "{{ trans('period_per_month') | escape }}", desc: "{{ trans('plan_basic_desc_short') | escape }}" },
+        { id: "online", name: "Online", price: "€59.99", period: "{{ trans('period_per_month') | escape }}", desc: "{{ trans('plan_online_desc_short') | escape }}" },
+        { id: "advanced", name: "Advanced", price: "€119.99", period: "{{ trans('period_per_month') | escape }}", desc: "{{ trans('plan_advanced_desc_short') | escape }}" },
+        { id: "professional", name: "Professional", price: "€199.99", period: "{{ trans('period_per_month') | escape }}", desc: "{{ trans('plan_professional_desc_short') | escape }}" },
     ];
 
     const COUNTRIES = [
-        { code: "DE", label: "Германия" }, { code: "FR", label: "Франция" },
-        { code: "ES", label: "Испания" }, { code: "PL", label: "Польша" },
-        { code: "AT", label: "Австрия" }, { code: "IT", label: "Италия" },
-        { code: "NL", label: "Нидерланды" }, { code: "UA", label: "Украина" },
-        { code: "KZ", label: "Казахстан" }, { code: "GE", label: "Грузия" },
-        { code: "AM", label: "Армения" }, { code: "US", label: "США" },
+        { code: "DE", label: "{{ trans('country_de') | escape }}" }, { code: "FR", label: "{{ trans('country_fr') | escape }}" },
+        { code: "ES", label: "{{ trans('country_es') | escape }}" }, { code: "PL", label: "{{ trans('country_pl') | escape }}" },
+        { code: "AT", label: "{{ trans('country_at') | escape }}" }, { code: "IT", label: "{{ trans('country_it') | escape }}" },
+        { code: "NL", label: "{{ trans('country_nl') | escape }}" }, { code: "UA", label: "{{ trans('country_ua') | escape }}" },
+        { code: "KZ", label: "{{ trans('country_kz') | escape }}" }, { code: "GE", label: "{{ trans('country_ge') | escape }}" },
+        { code: "AM", label: "{{ trans('country_am') | escape }}" }, { code: "US", label: "{{ trans('country_us') | escape }}" },
     ];
 
     const $ = (id) => document.getElementById(id);
@@ -659,7 +702,7 @@
         const close = document.createElement("button");
         close.type = "button";
         close.className = "toast-close";
-        close.setAttribute("aria-label", "Закрыть");
+        close.setAttribute("aria-label", i18n.toast_close_aria);
         close.textContent = "×";
         close.addEventListener("click", () => removeToast(toast));
 
@@ -764,14 +807,14 @@
         });
         if (!resp.ok) {
             const data = await resp.json().catch(() => ({}));
-            throw new Error(data.detail || data.message || ("Ошибка " + resp.status));
+            throw new Error(data.detail || data.message || (i18n.error_status_prefix + " " + resp.status));
         }
         return resp.json();
     }
 
     async function initPaymentElement() {
         if (!STRIPE_PUBLISHABLE_KEY || STRIPE_PUBLISHABLE_KEY.length < 10) {
-            paymentElementError.textContent = "Платёжный виджет недоступен: не настроен ключ Stripe.";
+            paymentElementError.textContent = i18n.payment_widget_no_key;
             paymentElementError.classList.add("show");
             paymentElementMount.style.display = "none";
             return;
@@ -795,7 +838,7 @@
             });
         } catch (e) {
             console.error("Stripe Elements init error:", e);
-            paymentElementError.textContent = "Не удалось инициализировать платёжный виджет: " + e.message;
+            paymentElementError.textContent = i18n.payment_widget_init_error + " " + e.message;
             paymentElementError.classList.add("show");
             paymentElementMount.style.display = "none";
         }
@@ -803,12 +846,12 @@
 
     function updateCancelButton() {
         if (cancelAtPeriodEnd) {
-            cancelSubscriptionBtn.textContent = "Возобновить подписку";
+            cancelSubscriptionBtn.textContent = i18n.toast_resume_subscription_btn;
             cancelSubscriptionBtn.classList.remove("btn-cancel");
             cancelSubscriptionBtn.classList.add("btn-resume");
             cancelSubscriptionBtn.dataset.action = "resume";
         } else {
-            cancelSubscriptionBtn.textContent = "Отменить подписку";
+            cancelSubscriptionBtn.textContent = i18n.toast_cancel_subscription_btn;
             cancelSubscriptionBtn.classList.add("btn-cancel");
             cancelSubscriptionBtn.classList.remove("btn-resume");
             cancelSubscriptionBtn.dataset.action = "cancel";
@@ -829,21 +872,21 @@
 
             if (cancelAtPeriodEnd) {
                 currentPlanHint.textContent = endDate
-                    ? "Отменена. Доступ сохранится до " + endDate
-                    : "Отменена. Доступ сохранится до конца оплаченного периода";
+                    ? i18n.plan_hint_cancelled_until.replace("{date}", endDate)
+                    : i18n.plan_hint_cancelled_end;
                 currentPlanHint.style.color = "#e8c58e";
             } else if (data.status === "active") {
                 currentPlanHint.textContent = endDate
-                    ? "Активна. Следующее списание " + endDate
-                    : "Активна";
+                    ? i18n.plan_hint_active_next.replace("{date}", endDate)
+                    : i18n.plan_hint_active;
                 currentPlanHint.style.color = "";
             } else if (data.status === "trialing") {
                 currentPlanHint.textContent = endDate
-                    ? "Пробный период до " + endDate
-                    : "Пробный период";
+                    ? i18n.plan_hint_trial_until.replace("{date}", endDate)
+                    : i18n.plan_hint_trial;
                 currentPlanHint.style.color = "";
             } else if (data.status === "past_due") {
-                currentPlanHint.textContent = "Платёж не прошёл. Проверьте способ оплаты.";
+                currentPlanHint.textContent = i18n.plan_hint_past_due;
                 currentPlanHint.style.color = "#e58c8c";
             } else {
                 currentPlanHint.textContent = data.status || "—";
@@ -856,17 +899,17 @@
             vatStatusBadge.className = "status-badge";
             if (data.vat_status === "valid") {
                 vatStatusBadge.classList.add("status-valid");
-                vatStatusBadge.textContent = "Подтверждён";
+                vatStatusBadge.textContent = i18n.vat_status_valid;
             } else if (data.vat_status === "invalid") {
                 vatStatusBadge.classList.add("status-invalid");
-                vatStatusBadge.textContent = "Недействителен";
+                vatStatusBadge.textContent = i18n.vat_status_invalid;
             } else {
                 vatStatusBadge.classList.add("status-none");
-                vatStatusBadge.textContent = "Не привязан";
+                vatStatusBadge.textContent = i18n.vat_status_not_linked;
             }
             if (data.vat_id) {
                 vatInput.value = data.vat_id;
-                vatCurrentValue.textContent = "Текущий: " + data.vat_id;
+                vatCurrentValue.textContent = i18n.vat_current_prefix + " " + data.vat_id;
             } else {
                 vatCurrentValue.textContent = "";
             }
@@ -884,7 +927,7 @@
             }
             renderCountryMenu();
         } catch (e) {
-            currentPlanName.textContent = "Ошибка";
+            currentPlanName.textContent = i18n.toast_generic_error;
             currentPlanHint.textContent = e.message;
         }
     }
@@ -905,7 +948,7 @@
                 return;
             }
 
-            showToast("План изменён.", "success");
+            showToast(i18n.toast_plan_changed, "success");
             await loadSubscriptionState();
         } catch (e) {
             showToast(e.message, "error");
@@ -916,11 +959,11 @@
 
     savePaymentBtn.addEventListener("click", async () => {
         if (!paymentElement || !paymentClientSecret) {
-            showToast("Платёжный виджет не загружен.", "error");
+            showToast(i18n.toast_payment_not_loaded, "error");
             return;
         }
         savePaymentBtn.disabled = true;
-        savePaymentBtn.textContent = "Сохранение...";
+        savePaymentBtn.textContent = i18n.btn_saving;
 
         try {
             const { error: submitError } = await elements.submit();
@@ -945,22 +988,22 @@
                     method: "POST",
                     body: JSON.stringify({ payment_method_id: result.setupIntent.payment_method }),
                 });
-                showToast("Способ оплаты сохранён.", "success");
+                showToast(i18n.toast_payment_saved, "success");
                 paymentElement.clear();
             }
         } catch (e) {
             showToast(e.message, "error");
         } finally {
             savePaymentBtn.disabled = false;
-            savePaymentBtn.textContent = "Сохранить способ оплаты";
+            savePaymentBtn.textContent = i18n.btn_save_payment_method;
         }
     });
 
     saveVatBtn.addEventListener("click", async () => {
         const vatId = vatInput.value.trim().toUpperCase();
-        if (!vatId) { showToast("Введите VAT ID.", "error"); return; }
+        if (!vatId) { showToast(i18n.toast_vat_enter, "error"); return; }
         saveVatBtn.disabled = true;
-        saveVatBtn.textContent = "Проверка...";
+        saveVatBtn.textContent = i18n.btn_checking;
         try {
             const result = await apiFetch("/subscription/update-vat", {
                 method: "POST",
@@ -968,23 +1011,23 @@
             });
             if (result.status === "valid") {
                 vatStatusBadge.className = "status-badge status-valid";
-                vatStatusBadge.textContent = "Подтверждён";
-                vatCurrentValue.textContent = "Текущий: " + vatId;
-                showToast("VAT ID подтверждён. Применён reverse charge (если применимо).", "success");
+                vatStatusBadge.textContent = i18n.vat_status_valid;
+                vatCurrentValue.textContent = i18n.vat_current_prefix + " " + vatId;
+                showToast(i18n.toast_vat_valid, "success");
             } else if (result.status === "invalid") {
                 vatStatusBadge.className = "status-badge status-invalid";
-                vatStatusBadge.textContent = "Недействителен";
-                showToast("VAT ID недействителен. НДС будет начисляться по стандартной ставке.", "error");
+                vatStatusBadge.textContent = i18n.vat_status_invalid;
+                showToast(i18n.toast_vat_invalid, "error");
             } else {
                 vatStatusBadge.className = "status-badge status-none";
-                vatStatusBadge.textContent = "Не проверен";
-                showToast("VIES временно недоступен. Попробуйте позже.", "error");
+                vatStatusBadge.textContent = i18n.vat_status_unverified;
+                showToast(i18n.toast_vat_unavailable, "error");
             }
         } catch (e) {
             showToast(e.message, "error");
         } finally {
             saveVatBtn.disabled = false;
-            saveVatBtn.textContent = "Проверить и сохранить";
+            saveVatBtn.textContent = i18n.btn_save_vat;
         }
     });
 
@@ -1000,7 +1043,7 @@
                     country: selectedCountry,
                 }),
             });
-            showToast("Адрес обновлён.", "success");
+            showToast(i18n.toast_address_updated, "success");
         } catch (e) {
             showToast(e.message, "error");
         } finally {
@@ -1013,7 +1056,7 @@
             const invoices = await apiFetch("/subscription/invoices");
             invoiceList.innerHTML = "";
             if (!invoices.length) {
-                invoiceList.innerHTML = '<div style="color: var(--muted); font-size: 11px;">Платежей пока нет.</div>';
+                invoiceList.innerHTML = '<div style="color: var(--muted); font-size: 11px;">' + i18n.toast_no_payments + '</div>';
                 return;
             }
             invoices.forEach((inv) => {
@@ -1032,8 +1075,8 @@
     cancelSubscriptionBtn.addEventListener("click", async () => {
         const isResume = cancelSubscriptionBtn.dataset.action === "resume";
         const confirmMsg = isResume
-            ? "Возобновить подписку? Она продолжит продлеваться автоматически."
-            : "Отменить подписку? Она останется активной до конца оплаченного периода.";
+            ? i18n.confirm_resume
+            : i18n.confirm_cancel;
 
         if (!confirm(confirmMsg)) return;
 
@@ -1042,10 +1085,10 @@
         try {
             if (isResume) {
                 await apiFetch("/subscription/resume", { method: "POST" });
-                showToast("Подписка возобновлена.", "success");
+                showToast(i18n.toast_subscription_resumed, "success");
             } else {
                 await apiFetch("/subscription/cancel", { method: "POST" });
-                showToast("Подписка будет отменена в конце оплаченного периода.", "info");
+                showToast(i18n.toast_subscription_cancelled, "info");
             }
             await loadSubscriptionState();
         } catch (e) {

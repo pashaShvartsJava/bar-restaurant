@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Заказы</title>
+    <title>{{ trans('orders_history_page_title') }}</title>
     <style>
         * {
             margin: 0;
@@ -355,26 +355,26 @@
 <body>
 <div class="container">
     <div class="top">
-        <a href="/orders/get_orders" class="back">← НАЗАД</a>
+        <a href="/orders/get_orders" class="back">← {{ trans('nav_back_upper') }}</a>
         <div class="brand">RESTAURANT ADMIN</div>
     </div>
 
     <div class="header">
         <div class="header-label">ORDER MANAGEMENT</div>
-        <h1>Заказы</h1>
-        <p class="description">Все зарегистрированные заказы ресторана</p>
+        <h1>{{ trans('orders_page_title') }}</h1>
+        <p class="description">{{ trans('orders_page_description') }}</p>
     </div>
 
     {% if orders %}
     <div class="orders">
         <div class="table-header">
-            <div>Номер заказа</div>
-            <div>Клиент</div>
-            <div>Статус</div>
-            <div>Создан</div>
-            <div>Статус изменён</div>
-            <div>Сумма</div>
-            <div>Действия</div>
+            <div>{{ trans('th_order_number') }}</div>
+            <div>{{ trans('th_client') }}</div>
+            <div>{{ trans('th_status') }}</div>
+            <div>{{ trans('th_created') }}</div>
+            <div>{{ trans('th_status_changed') }}</div>
+            <div>{{ trans('th_sum') }}</div>
+            <div>{{ trans('th_actions') }}</div>
         </div>
 
         <div id="ordersList">
@@ -392,23 +392,23 @@
                 <div>
                     <span class="status {{ current_status }}">
                         {% if current_status == "pending" %}
-                            Ожидает
+                            {{ trans('status_pending') }}
                         {% elif current_status == "confirmed_address" %}
-                            Адрес подтверждён
+                            {{ trans('status_confirmed_address') }}
                         {% elif current_status == "paid" %}
-                            Оплачен
+                            {{ trans('status_paid') }}
                         {% elif current_status == "prepared" %}
-                            Готовится
+                            {{ trans('status_prepared') }}
                         {% elif current_status == "delivering" %}
-                            Доставляется
+                            {{ trans('status_delivering') }}
                         {% elif current_status == "completed" %}
-                            Завершён
+                            {{ trans('status_completed') }}
                         {% elif current_status == "cancelled_before" %}
-                            Отменён до оплаты
+                            {{ trans('status_cancelled_before') }}
                         {% elif current_status == "cancelled_after" %}
-                            Отменён после оплаты
+                            {{ trans('status_cancelled_after') }}
                         {% elif current_status == "expired" %}
-                            Истёк
+                            {{ trans('status_expired') }}
                         {% else %}
                             {{ current_status }}
                         {% endif %}
@@ -428,23 +428,23 @@
                 </div>
 
                 <div class="status-action">
-                    <a class="action" href="/orders/{{ order.id }}">Информация</a>
+                    <a class="action" href="/orders/{{ order.id }}">{{ trans('action_info') }}</a>
 
                     {% if current_status not in ["pending", "confirmed_address", "expired", "cancelled_before", "cancelled_after", "completed"] %}
-                    <button class="change-status-button" type="button" onclick="toggleStatusMenu('{{ order.order_number }}')">Статус</button>
+                    <button class="change-status-button" type="button" onclick="toggleStatusMenu('{{ order.order_number }}')">{{ trans('action_status') }}</button>
 
                     <div class="status-menu" id="status-menu-{{ order.order_number }}">
                         {% if current_status == "paid" %}
-                        <button class="status-option" type="button" onclick="changeOrderStatus('{{ order.order_number }}', 'prepared')">Готовится</button>
+                        <button class="status-option" type="button" onclick="changeOrderStatus('{{ order.order_number }}', 'prepared')">{{ trans('status_prepared') }}</button>
                         {% endif %}
 
                         {% if current_status == "paid" or current_status == "prepared" %}
-                        <button class="status-option" type="button" onclick="changeOrderStatus('{{ order.order_number }}', 'delivering')">Доставляется</button>
+                        <button class="status-option" type="button" onclick="changeOrderStatus('{{ order.order_number }}', 'delivering')">{{ trans('status_delivering') }}</button>
                         {% endif %}
 
                         {% if current_status == "paid" or current_status == "prepared" or current_status == "delivering" %}
-                        <button class="status-option" type="button" onclick="changeOrderStatus('{{ order.order_number }}', 'completed')">Завершён</button>
-                        <button class="status-option" type="button" onclick="changeOrderStatus('{{ order.order_number }}', 'cancelled_after')">Отменён после оплаты</button>
+                        <button class="status-option" type="button" onclick="changeOrderStatus('{{ order.order_number }}', 'completed')">{{ trans('status_completed') }}</button>
+                        <button class="status-option" type="button" onclick="changeOrderStatus('{{ order.order_number }}', 'cancelled_after')">{{ trans('status_cancelled_after') }}</button>
                         {% endif %}
                     </div>
                     {% endif %}
@@ -457,9 +457,9 @@
     </div>
     {% else %}
     <div class="empty">
-        <div class="empty-title">Заказы не найдены</div>
+        <div class="empty-title">{{ trans('orders_empty_title') }}</div>
         <div class="empty-description">
-            В системе пока нет зарегистрированных заказов.
+            {{ trans('orders_history_empty_description') }}
         </div>
     </div>
     {% endif %}
@@ -469,6 +469,11 @@
 
 <script src="/static/api.js"></script>
 <script>
+    const i18n = {
+        error_status_change: "{{ trans('error_status_change') | escape }}",
+        error_connection_status: "{{ trans('error_connection_status') | escape }}"
+    };
+
     const statusError = document.getElementById("statusError");
 
     function toggleStatusMenu(orderNumber) {
@@ -501,7 +506,7 @@
             });
 
             if (!response.ok) {
-                let message = "Не удалось изменить статус заказа.";
+                let message = i18n.error_status_change;
                 try {
                     const data = await response.json();
                     message = data.detail || data.message || message;
@@ -513,7 +518,7 @@
 
             location.reload();
         } catch {
-            statusError.textContent = "Не удалось изменить статус заказа. Проверьте соединение и попробуйте ещё раз.";
+            statusError.textContent = i18n.error_connection_status;
             statusError.classList.add("active");
         }
     }

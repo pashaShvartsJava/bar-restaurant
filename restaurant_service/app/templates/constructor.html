@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Конструктор сайта — {{ restaurant.restaurant_name }}</title>
+    <title>{{ trans('constructor_page_title') }} — {{ restaurant.restaurant_name }}</title>
 
 <style>
     * {
@@ -484,15 +484,15 @@
 <div class="container">
 
     <div class="top">
-        <a href="/admin_panel" class="back">← Назад в панель</a>
+        <a href="/admin_panel" class="back">← {{ trans('back_to_panel') }}</a>
         <div class="brand">FDCPlatform</div>
     </div>
 
     <div class="header">
         <div class="header-label">CONSTRUCTOR</div>
-        <h1>Конструктор сайта</h1>
+        <h1>{{ trans('constructor_page_title') }}</h1>
         <p class="description">
-            Настройте, как ваш ресторан выглядит для посетителей
+            {{ trans('constructor_page_description') }}
         </p>
     </div>
 
@@ -502,110 +502,110 @@
     <form class="form" id="constructorForm" enctype="multipart/form-data" novalidate>
 
         <div class="form-section">
-            <h2 class="form-section-title">Основная информация</h2>
+            <h2 class="form-section-title">{{ trans('section_main_info') }}</h2>
 
             <div class="form-grid">
                 <div class="field">
-                    <label for="restaurant_name">Название ресторана</label>
+                    <label for="restaurant_name">{{ trans('restaurant_name_label') }}</label>
                     <input type="text" id="restaurant_name" name="restaurant_name"
                            value="{{ restaurant.restaurant_name or '' }}" required>
                 </div>
 
                 <div class="field">
-                    <label for="slug">Slug (URL-адрес)</label>
+                    <label for="slug">{{ trans('slug_label') }}</label>
                     <input type="text" id="slug" name="slug"
                            value="{{ restaurant.slug or '' }}" required>
-                    <span class="field-hint">Используется в адресе страницы ресторана</span>
+                    <span class="field-hint">{{ trans('slug_hint') }}</span>
                 </div>
 
                 <div class="field">
-                    <label for="slogan">Слоган</label>
+                    <label for="slogan">{{ trans('slogan_label') }}</label>
                     <input type="text" id="slogan" name="slogan" maxlength="120"
-                           value="{{ restaurant.slogan or '' }}" placeholder="Короткий слоган">
+                           value="{{ restaurant.slogan or '' }}" placeholder="{{ trans('slogan_placeholder') }}">
                 </div>
 
                 <div class="field">
-                    <label for="tagline">Тэглайн</label>
+                    <label for="tagline">{{ trans('tagline_label') }}</label>
                     <input type="text" id="tagline" name="tagline" maxlength="160"
-                           value="{{ restaurant.tagline or '' }}" placeholder="Подзаголовок">
+                           value="{{ restaurant.tagline or '' }}" placeholder="{{ trans('tagline_placeholder') }}">
                 </div>
 
                 <div class="field" style="grid-column: 1 / -1;">
-                    <label for="short_description">Краткое описание</label>
+                    <label for="short_description">{{ trans('short_description_label') }}</label>
                     <textarea id="short_description" name="short_description" maxlength="300"
-                              placeholder="Короткое описание ресторана для карточки на платформе">{{ restaurant.short_description or '' }}</textarea>
+                              placeholder="{{ trans('short_description_placeholder') }}">{{ restaurant.short_description or '' }}</textarea>
                 </div>
 
                 <div class="field" style="grid-column: 1 / -1;">
-                    <label for="about_title">Заголовок блока «О нас»</label>
+                    <label for="about_title">{{ trans('about_title_label') }}</label>
                     <input type="text" id="about_title" name="about_title" maxlength="120"
-                           value="{{ restaurant.about_title or '' }}" placeholder="Например: Наша история">
+                           value="{{ restaurant.about_title or '' }}" placeholder="{{ trans('about_title_placeholder') }}">
                 </div>
 
                 <div class="field" style="grid-column: 1 / -1;">
-                    <label for="description">Полное описание</label>
+                    <label for="description">{{ trans('full_description_label') }}</label>
                     <textarea id="description" name="description"
-                              placeholder="Подробное описание ресторана, кухни, атмосферы">{{ restaurant.description or '' }}</textarea>
+                              placeholder="{{ trans('full_description_placeholder') }}">{{ restaurant.description or '' }}</textarea>
                 </div>
             </div>
         </div>
 
         <div class="form-section">
-            <h2 class="form-section-title">Главное фото</h2>
+            <h2 class="form-section-title">{{ trans('section_main_photo') }}</h2>
 
             <div class="photo-block">
                 <div class="photo-preview" id="photoPreview">
                     {% if restaurant.photo_url %}
-                        <img src="{{ restaurant.photo_url }}" alt="Фото ресторана">
+                        <img src="{{ restaurant.photo_url }}" alt="{{ trans('photo_alt') }}">
                     {% else %}
-                        Нет фото
+                        {{ trans('no_photo') }}
                     {% endif %}
                 </div>
 
                 <div class="photo-actions">
                     <input type="file" id="photoInput" name="photo" accept="image/*" class="photo-input">
                     <button type="button" class="photo-button" id="photoButton">
-                        📷 Выбрать фото
+                        📷 {{ trans('choose_photo_button') }}
                     </button>
                     <button type="button" class="photo-remove{% if restaurant.photo_url %} show{% endif %}" id="photoRemove">
-                        Удалить фото
+                        {{ trans('remove_photo_button') }}
                     </button>
                     <div class="photo-filename" id="photoFilename"></div>
-                    <span class="field-hint">Рекомендуемый размер: 800×800 px, JPG или PNG</span>
+                    <span class="field-hint">{{ trans('photo_size_hint') }}</span>
                 </div>
             </div>
         </div>
 
         <div class="form-section">
-            <h2 class="form-section-title">Местоположение</h2>
+            <h2 class="form-section-title">{{ trans('section_location') }}</h2>
 
             <div class="form-grid triple">
                 <div class="field">
-                    <label for="country">Страна</label>
+                    <label for="country">{{ trans('country') }}</label>
                     <input type="text" id="country" name="country"
                            value="{{ restaurant.country or '' }}" required>
                 </div>
 
                 <div class="field">
-                    <label for="city">Город</label>
+                    <label for="city">{{ trans('city') }}</label>
                     <input type="text" id="city" name="city"
                            value="{{ restaurant.city or '' }}" required>
                 </div>
 
                 <div class="field">
-                    <label for="timezone">Часовой пояс</label>
+                    <label for="timezone">{{ trans('timezone') }}</label>
                     <input type="text" id="timezone" name="timezone"
                            value="{{ restaurant.timezone or '' }}" placeholder="Europe/Moscow" required>
                 </div>
 
                 <div class="field" style="grid-column: 1 / -1;">
-                    <label for="address">Адрес</label>
+                    <label for="address">{{ trans('address') }}</label>
                     <input type="text" id="address" name="address"
                            value="{{ restaurant.address or '' }}" required>
                 </div>
 
                 <div class="field">
-                    <label for="currency">Валюта</label>
+                    <label for="currency">{{ trans('currency') }}</label>
                     <select id="currency" name="currency">
                         {% set currencies = [("EUR", "€"), ("USD", "$"), ("RUB", "₽"), ("KZT", "₸"), ("GEL", "₾"), ("UAH", "₴"), ("TRY", "₺"), ("GBP", "£")] %}
                         {% for code, symbol in currencies %}
@@ -617,17 +617,17 @@
         </div>
 
         <div class="form-section">
-            <h2 class="form-section-title">Контакты</h2>
+            <h2 class="form-section-title">{{ trans('section_contacts') }}</h2>
 
             <div class="form-grid">
                 <div class="field">
-                    <label for="phone">Телефон</label>
+                    <label for="phone">{{ trans('phone') }}</label>
                     <input type="tel" id="phone" name="phone"
                            value="{{ restaurant.phone or '' }}" placeholder="+7 (999) 000-00-00">
                 </div>
 
                 <div class="field">
-                    <label for="email">Email</label>
+                    <label for="email">{{ trans('email') }}</label>
                     <input type="email" id="email" name="email"
                            value="{{ restaurant.email or '' }}" placeholder="info@restaurant.com">
                 </div>
@@ -641,27 +641,27 @@
         </div>
 
         <div class="form-section">
-            <h2 class="form-section-title">Режим работы</h2>
+            <h2 class="form-section-title">{{ trans('section_working_hours') }}</h2>
 
             <div class="working-hours" id="workingHours">
                 {% set days = [
-                    ("monday", "Понедельник"),
-                    ("tuesday", "Вторник"),
-                    ("wednesday", "Среда"),
-                    ("thursday", "Четверг"),
-                    ("friday", "Пятница"),
-                    ("saturday", "Суббота"),
-                    ("sunday", "Воскресенье")
+                    ("monday", trans('day_monday')),
+                    ("tuesday", trans('day_tuesday')),
+                    ("wednesday", trans('day_wednesday')),
+                    ("thursday", trans('day_thursday')),
+                    ("friday", trans('day_friday')),
+                    ("saturday", trans('day_saturday')),
+                    ("sunday", trans('day_sunday'))
                 ] %}
                 {% for day_key, day_label in days %}
                     {% set hours = (restaurant.working_hours or {}).get(day_key, {}) %}
                     <div class="working-row" data-day="{{ day_key }}">
                         <span class="working-day">{{ day_label }}</span>
                         <input type="text" name="working_hours[{{ day_key }}][from]"
-                               placeholder="Открыто с (10:00)"
+                               placeholder="{{ trans('opening_time_placeholder') }}"
                                value="{{ hours.get('from', '') if hours else '' }}">
                         <input type="text" name="working_hours[{{ day_key }}][to]"
-                               placeholder="Закрыто в (22:00)"
+                               placeholder="{{ trans('closing_time_placeholder') }}"
                                value="{{ hours.get('to', '') if hours else '' }}">
                     </div>
                 {% endfor %}
@@ -669,39 +669,50 @@
         </div>
 
         <div class="form-section">
-            <h2 class="form-section-title">Возможности заведения</h2>
+            <h2 class="form-section-title">{{ trans('section_venue_features') }}</h2>
 
             <div class="checkbox-row">
                 <label class="checkbox">
                     <input type="checkbox" id="accepts_reservations" name="accepts_reservations"
                            {% if restaurant.accepts_reservations %}checked{% endif %}>
-                    Принимает бронирования
+                    {{ trans('accepts_reservations_label') }}
                 </label>
                 <label class="checkbox">
                     <input type="checkbox" id="accepts_delivery" name="accepts_delivery"
                            {% if restaurant.accepts_delivery %}checked{% endif %}>
-                    Принимает доставку
+                    {{ trans('accepts_delivery_label') }}
                 </label>
                 <label class="checkbox">
                     <input type="checkbox" id="accepts_orders_on_site" name="accepts_orders_on_site"
                            {% if restaurant.accepts_orders_on_site %}checked{% endif %}>
-                    Принимает заказы в заведении
+                    {{ trans('accepts_orders_on_site_label') }}
                 </label>
             </div>
         </div>
 
         <div class="form-actions">
-            <a href="/admin_panel" class="btn btn-cancel">Отмена</a>
-            <button type="submit" class="btn btn-save" id="saveButton">Сохранить изменения</button>
+            <a href="/admin_panel" class="btn btn-cancel">{{ trans('cancel') }}</a>
+            <button type="submit" class="btn btn-save" id="saveButton">{{ trans('save_changes') }}</button>
         </div>
     </form>
 
-    <div class="footer">FDCPlatform · Конструктор сайта</div>
+    <div class="footer">FDCPlatform · {{ trans('constructor_page_title') }}</div>
 </div>
 
 <script src="/static/api.js"></script>
 
 <script>
+    const i18n = {
+        error_required_fields: "{{ trans('error_required_fields_constructor') | escape }}",
+        error_save_changes: "{{ trans('error_save_changes') | escape }}",
+        error_connection_constructor: "{{ trans('error_connection_constructor') | escape }}",
+        success_changes_saved: "{{ trans('success_changes_saved') | escape }}",
+        saving: "{{ trans('saving') | escape }}",
+        save_changes: "{{ trans('save_changes') | escape }}",
+        no_photo: "{{ trans('no_photo') | escape }}",
+        photo_alt: "{{ trans('photo_alt') | escape }}"
+    };
+
     const RESTAURANT_ID = "{{ restaurant.id }}";
     const form = document.getElementById("constructorForm");
     const formError = document.getElementById("formError");
@@ -740,11 +751,11 @@
 
     function renderPhoto(url) {
         if (url) {
-            photoPreview.innerHTML = `<img src="${url}" alt="Фото ресторана">`;
+            photoPreview.innerHTML = `<img src="${url}" alt="${i18n.photo_alt}">`;
             photoRemove.classList.add("show");
             currentPhotoUrl = url;
         } else {
-            photoPreview.innerHTML = "Нет фото";
+            photoPreview.innerHTML = i18n.no_photo;
             photoRemove.classList.remove("show");
             currentPhotoUrl = null;
         }
@@ -810,12 +821,12 @@
         const timezoneValue = document.getElementById("timezone").value.trim();
 
         if (!nameValue || !slugValue || !countryValue || !cityValue || !addressValue || !timezoneValue) {
-            showError("Заполните обязательные поля: название, slug, страна, город, адрес, часовой пояс.");
+            showError(i18n.error_required_fields);
             return;
         }
 
         saveButton.disabled = true;
-        saveButton.textContent = "Сохранение...";
+        saveButton.textContent = i18n.saving;
 
         try {
             const formData = new FormData();
@@ -860,7 +871,7 @@
                 showError(
                     data?.detail ||
                     data?.message ||
-                    "Не удалось сохранить изменения."
+                    i18n.error_save_changes
                 );
                 return;
             }
@@ -874,13 +885,13 @@
                 photoFilename.textContent = "";
             }
 
-            showSuccess("Изменения сохранены.");
+            showSuccess(i18n.success_changes_saved);
         } catch (error) {
             console.error("SAVE RESTAURANT ERROR:", error);
-            showError("Не удалось подключиться к серверу.");
+            showError(i18n.error_connection_constructor);
         } finally {
             saveButton.disabled = false;
-            saveButton.textContent = "Сохранить изменения";
+            saveButton.textContent = i18n.save_changes;
         }
     });
 </script>

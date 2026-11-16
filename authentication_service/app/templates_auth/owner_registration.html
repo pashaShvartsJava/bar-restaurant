@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#151114">
-    <title>Регистрация владельца — FDCPlatform</title>
-    <style>
+    <title>{{ trans('owner_registration_title') }} — FDCPlatform</title>
+     <style>
         :root{--gold:#d5a65b;--gold-light:#e6c58f;--bg:#0c0b0e;--panel:#171316;--text:#eee5df;--muted:#91898a;--border:rgba(255,255,255,.09);--green:#9bc8a5;--red:#e58c8c}
         *{margin:0;padding:0;box-sizing:border-box}
         html{scroll-behavior:smooth}
@@ -124,7 +124,6 @@
         .confirm-actions .button{min-height:42px;font-size:11px}
         .confirm-actions .button-secondary{margin-top:0}
 
-        /* ===== VAT предупреждение ===== */
         .vat-warning{display:none;margin-top:12px;padding:12px 14px;border:1px solid rgba(229,140,140,.35);border-radius:9px;background:rgba(229,140,140,.06);color:#f0b8b8;font-size:10px;line-height:1.65}
         .vat-warning.show{display:block}
         .vat-warning strong{color:#f5caca}
@@ -142,37 +141,37 @@
 </head>
 <body>
 <main class="page">
-    <aside class="sidebar" aria-label="Преимущества платформы">
+    <aside class="sidebar" aria-label="{{ trans('sidebar_aria_benefits') }}">
         <section class="side-box">
             <span class="side-label">FDCPlatform</span>
-            <h2>Ваше заведение.<br>Ваши правила.</h2>
-            <p>Создайте аккаунт владельца, чтобы управлять рестораном в одном удобном пространстве.</p>
+            <h2>{{ trans('side_heading_line1') }}<br>{{ trans('side_heading_line2') }}</h2>
+            <p>{{ trans('side_intro') }}</p>
             <div class="benefit-list">
                 <div class="benefit">
                     <div class="benefit-icon">⌘</div>
-                    <div><strong>Всё под контролем</strong><p>Меню, заказы и бронирования в одной панели.</p></div>
+                    <div><strong>{{ trans('benefit_control_title') }}</strong><p>{{ trans('benefit_control_desc') }}</p></div>
                 </div>
                 <div class="benefit">
                     <div class="benefit-icon">↗</div>
-                    <div><strong>Меньше рутины</strong><p>Управляйте заведением из единого интерфейса.</p></div>
+                    <div><strong>{{ trans('benefit_less_routine_title') }}</strong><p>{{ trans('benefit_less_routine_desc') }}</p></div>
                 </div>
                 <div class="benefit">
                     <div class="benefit-icon">◇</div>
-                    <div><strong>Отдельное пространство</strong><p>Настройки и данные вашего заведения.</p></div>
+                    <div><strong>{{ trans('benefit_own_space_title') }}</strong><p>{{ trans('benefit_own_space_desc') }}</p></div>
                 </div>
             </div>
         </section>
-        <div class="side-note">«Хороший сервис начинается с порядка за кулисами».</div>
+        <div class="side-note">{{ trans('side_quote') }}</div>
     </aside>
     <section class="card">
         <header>
             <div class="logo">FDCPlatform</div>
-            <h1 id="pageTitle">Регистрация владельца</h1>
-            <p class="subtitle" id="pageSubtitle">Несколько простых шагов — и вы сможете настроить пространство своего заведения.</p>
+            <h1 id="pageTitle">{{ trans('owner_registration_title') }}</h1>
+            <p class="subtitle" id="pageSubtitle">{{ trans('owner_registration_subtitle') }}</p>
         </header>
         <div class="progress-wrap" id="progressWrap">
-            <div class="progress-meta"><span id="progressLabel">Шаг 1 из 3</span><strong id="progressPercent">33%</strong></div>
-            <div class="progress-track" role="progressbar" aria-label="Прогресс регистрации" aria-valuemin="0" aria-valuemax="100" aria-valuenow="33" id="progressTrack">
+            <div class="progress-meta"><span id="progressLabel">{{ trans('progress_label') }}</span><strong id="progressPercent">33%</strong></div>
+            <div class="progress-track" role="progressbar" aria-label="{{ trans('progress_aria') }}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="33" id="progressTrack">
                 <div class="progress-bar" id="progressBar"></div>
             </div>
         </div>
@@ -189,81 +188,97 @@
                 <section class="step active" data-step="0">
                     <button class="step-header" type="button" aria-expanded="true" aria-controls="stepBody0">
                         <span class="step-number">1</span>
-                        <span class="step-heading"><span class="step-title">Данные владельца</span><span class="step-hint">Контактные данные и подтверждение возраста</span><span class="step-summary"></span></span>
+                        <span class="step-heading"><span class="step-title">{{ trans('step1_title') }}</span><span class="step-hint">{{ trans('step1_hint') }}</span><span class="step-summary"></span></span>
                         <span class="step-chevron" aria-hidden="true">⌄</span>
                     </button>
                     <div class="step-body" id="stepBody0">
                         <div class="step-content">
                             <div class="step-divider"></div>
-                            <p class="step-description">Укажите контактные данные человека, который будет управлять заведением. Для регистрации необходимо быть совершеннолетним.</p>
+                            <p class="step-description">{{ trans('step1_description') }}</p>
                             <div class="row">
-                                <div class="field"><label for="name">Имя <span class="required">*</span></label><input id="name" name="name" type="text" placeholder="Ваше имя" autocomplete="given-name" minlength="2" maxlength="50" required><div class="field-error">Введите имя (от 2 до 50 символов).</div></div>
-                                <div class="field"><label for="surname">Фамилия <span class="required">*</span></label><input id="surname" name="surname" type="text" placeholder="Ваша фамилия" autocomplete="family-name" minlength="2" maxlength="50" required><div class="field-error">Введите фамилию (от 2 до 50 символов).</div></div>
+                                <div class="field"><label for="name">{{ trans('name') }} <span class="required">*</span></label><input id="name" name="name" type="text" placeholder="{{ trans('name') }}" autocomplete="given-name" minlength="2" maxlength="50" required><div class="field-error">{{ trans('error_name') }}</div></div>
+                                <div class="field"><label for="surname">{{ trans('surname') }} <span class="required">*</span></label><input id="surname" name="surname" type="text" placeholder="{{ trans('surname') }}" autocomplete="family-name" minlength="2" maxlength="50" required><div class="field-error">{{ trans('error_surname') }}</div></div>
                             </div>
-                            <div class="field"><label for="email">Электронная почта <span class="required">*</span></label><input id="email" name="email" type="email" placeholder="name@example.com" autocomplete="email" maxlength="254" required><div class="field-error">Введите корректный адрес электронной почты.</div></div>
-                            <div class="field"><label for="phone">Телефон <span class="required">*</span></label><input id="phone" name="phone" type="tel" placeholder="+995555123456" autocomplete="tel" maxlength="25" required><div class="field-help">Укажите код страны, например +995 для Грузии или +49 для Германии.</div><div class="field-error">Укажите телефон в международном формате, например +995555123456.</div></div>
-                            <div class="field"><label for="birthday">Дата рождения <span class="required">*</span></label><input id="birthday" name="birthday" type="date" autocomplete="bday" required aria-describedby="birthdayHelp"><div class="field-help" id="birthdayHelp">Регистрация доступна только пользователям от 18 лет.</div><div class="field-error">Регистрация доступна только пользователям от 18 лет.</div></div>
-                            <button class="button next-button" type="button">Продолжить <span class="button-arrow" aria-hidden="true">→</span></button>
+                            <div class="field"><label for="email">{{ trans('email') }} <span class="required">*</span></label><input id="email" name="email" type="email" placeholder="name@example.com" autocomplete="email" maxlength="254" required><div class="field-error">{{ trans('error_email') }}</div></div>
+                            <div class="field"><label for="phone">{{ trans('phone') }} <span class="required">*</span></label><input id="phone" name="phone" type="tel" placeholder="+995555123456" autocomplete="tel" maxlength="25" required><div class="field-help">{{ trans('phone_help') }}</div><div class="field-error">{{ trans('error_phone') }}</div></div>
+                            <div class="field"><label for="birthday">{{ trans('birthday') }} <span class="required">*</span></label><input id="birthday" name="birthday" type="date" autocomplete="bday" required aria-describedby="birthdayHelp"><div class="field-help" id="birthdayHelp">{{ trans('birthday_help') }}</div><div class="field-error">{{ trans('error_birthday_age') }}</div></div>
+                            <button class="button next-button" type="button">{{ trans('continue') }} <span class="button-arrow" aria-hidden="true">→</span></button>
                         </div>
                     </div>
                 </section>
                 <section class="step" data-step="1">
                     <button class="step-header" type="button" aria-expanded="false" aria-controls="stepBody1">
                         <span class="step-number">2</span>
-                        <span class="step-heading"><span class="step-title">Ваше заведение</span><span class="step-hint">Название, адрес регистрации и региональные настройки</span><span class="step-summary"></span></span>
+                        <span class="step-heading"><span class="step-title">{{ trans('step2_title') }}</span><span class="step-hint">{{ trans('step2_hint') }}</span><span class="step-summary"></span></span>
                         <span class="step-chevron" aria-hidden="true">⌄</span>
                     </button>
                     <div class="step-body" id="stepBody1">
                         <div class="step-content">
                             <div class="step-divider"></div>
-                            <p class="step-description">Укажите сведения о заведении. Они будут использоваться для настройки рабочего пространства ресторана.</p>
-                            <div class="field"><label for="restaurantName">Название заведения <span class="required">*</span></label><input id="restaurantName" name="restaurant_name" type="text" placeholder="Например, Atelier Bistro" autocomplete="organization" minlength="2" maxlength="100" required><div class="field-error">Укажите название от 2 до 100 символов.</div></div>
+                            <p class="step-description">{{ trans('step2_description') }}</p>
+                            <div class="field"><label for="restaurantName">{{ trans('restaurant_name') }} <span class="required">*</span></label><input id="restaurantName" name="restaurant_name" type="text" placeholder="{{ trans('restaurant_name_placeholder') }}" autocomplete="organization" minlength="2" maxlength="100" required><div class="field-error">{{ trans('error_restaurant_name') }}</div></div>
                             <div class="row">
-                                <div class="field"><label for="country">Страна регистрации <span class="required">*</span></label><div class="select-wrap"><select id="country" name="country" autocomplete="country" required><option value="">Загрузка списка стран…</option></select></div><div class="field-help">Выберите страну регистрации заведения.</div><div class="field-error">Выберите страну из списка.</div></div>
-                                <div class="field"><label for="city">Город регистрации <span class="required">*</span></label><input id="city" name="city" type="text" placeholder="Например, Тбилиси" autocomplete="address-level2" minlength="2" maxlength="100" required><div class="field-error">Укажите город (от 2 до 100 символов).</div></div>
+                                <div class="field"><label for="country">{{ trans('country') }} <span class="required">*</span></label><div class="select-wrap"><select id="country" name="country" autocomplete="country" required><option value="">{{ trans('countries_loading') }}</option></select></div><div class="field-help">{{ trans('country_help') }}</div><div class="field-error">{{ trans('error_country') }}</div></div>
+                                <div class="field"><label for="city">{{ trans('city') }} <span class="required">*</span></label><input id="city" name="city" type="text" placeholder="{{ trans('city_placeholder') }}" autocomplete="address-level2" minlength="2" maxlength="100" required><div class="field-error">{{ trans('error_city') }}</div></div>
                             </div>
-                            <div class="field"><label for="address">Адрес регистрации ресторана <span class="required">*</span></label><input id="address" name="address" type="text" placeholder="Юридический адрес: улица и номер" autocomplete="street-address" minlength="3" maxlength="200" required><div class="field-help">Юридический адрес заведения, указываемый при регистрации.</div><div class="field-error">Укажите адрес регистрации (от 3 до 200 символов).</div></div>
-                            <div class="field"><label for="slug">Адрес страницы заведения (slug) <span class="required">*</span></label><input id="slug" name="slug" type="text" placeholder="atelier-bistro" minlength="2" maxlength="100" pattern="[a-z0-9]+(-[a-z0-9]+)*" autocomplete="off" required><div class="field-help">Генерируется из названия. Можно изменить вручную. Только строчные латинские буквы, цифры и дефисы.</div><div class="field-error">Используйте латинские буквы, цифры и одиночные дефисы.</div></div>
+                            <div class="field"><label for="address">{{ trans('address') }} <span class="required">*</span></label><input id="address" name="address" type="text" placeholder="{{ trans('address_placeholder') }}" autocomplete="street-address" minlength="3" maxlength="200" required><div class="field-help">{{ trans('address_help') }}</div><div class="field-error">{{ trans('error_address') }}</div></div>
+                            <div class="field"><label for="slug">{{ trans('slug') }} <span class="required">*</span></label><input id="slug" name="slug" type="text" placeholder="atelier-bistro" minlength="2" maxlength="100" pattern="[a-z0-9]+(-[a-z0-9]+)*" autocomplete="off" required><div class="field-help">{{ trans('slug_help') }}</div><div class="field-error">{{ trans('error_slug') }}</div></div>
                             <div class="row">
-                                <div class="field"><label for="currency">Валюта заведения <span class="required">*</span></label><div class="select-wrap"><select id="currency" name="restaurant_currency" required><option value="">Выберите валюту</option><option value="EUR">EUR — Евро</option><option value="GBP">GBP — Фунт стерлингов</option><option value="PLN">PLN — Польский злотый</option><option value="CHF">CHF — Швейцарский франк</option><option value="CZK">CZK — Чешская крона</option><option value="SEK">SEK — Шведская крона</option><option value="DKK">DKK — Датская крона</option><option value="RON">RON — Румынский лей</option><option value="BGN">BGN — Болгарский лев</option><option value="HUF">HUF — Венгерский форинт</option><option value="GEL">GEL — Грузинский лари</option><option value="UAH">UAH — Украинская гривна</option><option value="KZT">KZT — Казахстанский тенге</option><option value="AMD">AMD — Армянский драм</option><option value="USD">USD — Доллар США</option></select></div><div class="field-error">Выберите валюту.</div></div>
-                                <div class="field"><label for="timezone">Часовой пояс <span class="required">*</span></label><div class="select-wrap"><select id="timezone" name="timezone" required><option value="">Загрузка часовых поясов…</option></select></div><div class="field-help">Список часовых поясов IANA с городами и UTC-смещением.</div><div class="field-error">Выберите часовой пояс из списка.</div></div>
+                                <div class="field"><label for="currency">{{ trans('currency') }} <span class="required">*</span></label><div class="select-wrap"><select id="currency" name="restaurant_currency" required>
+                                    <option value="">{{ trans('choose_currency') }}</option>
+                                    <option value="EUR">{{ trans('currency_eur') }}</option>
+                                    <option value="GBP">{{ trans('currency_gbp') }}</option>
+                                    <option value="PLN">{{ trans('currency_pln') }}</option>
+                                    <option value="CHF">{{ trans('currency_chf') }}</option>
+                                    <option value="CZK">{{ trans('currency_czk') }}</option>
+                                    <option value="SEK">{{ trans('currency_sek') }}</option>
+                                    <option value="DKK">{{ trans('currency_dkk') }}</option>
+                                    <option value="RON">{{ trans('currency_ron') }}</option>
+                                    <option value="BGN">{{ trans('currency_bgn') }}</option>
+                                    <option value="HUF">{{ trans('currency_huf') }}</option>
+                                    <option value="GEL">{{ trans('currency_gel') }}</option>
+                                    <option value="UAH">{{ trans('currency_uah') }}</option>
+                                    <option value="KZT">{{ trans('currency_kzt') }}</option>
+                                    <option value="AMD">{{ trans('currency_amd') }}</option>
+                                    <option value="USD">{{ trans('currency_usd') }}</option>
+                                </select></div><div class="field-error">{{ trans('error_currency') }}</div></div>
+                                <div class="field"><label for="timezone">{{ trans('timezone') }} <span class="required">*</span></label><div class="select-wrap"><select id="timezone" name="timezone" required><option value="">{{ trans('timezones_loading') }}</option></select></div><div class="field-help">{{ trans('timezone_help') }}</div><div class="field-error">{{ trans('error_timezone') }}</div></div>
                             </div>
 
                             <!-- VAT ID -->
                             <div class="field">
-                                <label>Налоговый номер (VAT ID)</label>
+                                <label>{{ trans('vat_id_label') }}</label>
                                 <div class="field-help" style="margin-bottom:10px;">
-                                    Если у вашего заведения есть VAT ID (для компаний в ЕС), укажите его — это позволит применять обратное начисление НДС (reverse charge).
-                                    <strong>Поле необязательное</strong>: вы можете зарегистрироваться как физическое лицо или индивидуальный предприниматель без VAT ID.
+                                    {{ trans('vat_id_help') }}
                                 </div>
 
                                 <div style="display:flex; gap:10px; margin-bottom:12px;">
                                     <button type="button" id="vatYesBtn" class="button button-secondary" style="flex:1; min-height:38px; font-size:10px;">
-                                        Да, есть VAT ID
+                                        {{ trans('vat_yes') }}
                                     </button>
                                     <button type="button" id="vatNoBtn" class="button button-secondary" style="flex:1; min-height:38px; font-size:10px;">
-                                        Нет / регистрируюсь как физлицо
+                                        {{ trans('vat_no') }}
                                     </button>
                                 </div>
 
                                 <div id="vatInputWrap" style="display:none;">
-                                    <input id="vatId" name="vat_id" type="text" placeholder="Например: DE123456789" maxlength="20" autocomplete="off">
-                                    <div class="field-help">Формат: код страны (2 буквы) + номер. Проверка через официальную систему ЕС (VIES).</div>
+                                    <input id="vatId" name="vat_id" type="text" placeholder="{{ trans('vat_id_placeholder') }}" maxlength="20" autocomplete="off">
+                                    <div class="field-help">{{ trans('vat_id_format_help') }}</div>
                                     <div class="field-error" id="vatError"></div>
                                     <div id="vatStatus" style="margin-top:8px; font-size:10px; line-height:1.5;"></div>
 
                                     <div class="vat-warning" id="vatWarning">
-                                        <strong>⚠ Внимание: VAT ID недействителен</strong>
-                                        <div>VIES не подтвердил этот номер. Если вы продолжите с ним:</div>
+                                        <strong>{{ trans('vat_warning_title') }}</strong>
+                                        <div>{{ trans('vat_warning_intro') }}</div>
                                         <ul>
-                                            <li>НДС будет начислен по стандартной ставке страны вашего заведения, как для физического лица.</li>
-                                            <li>Вы не сможете применить обратное начисление НДС (reverse charge).</li>
-                                            <li><strong>Ответственность за корректность налогового номера и налоговые последствия лежит на вас.</strong> Если номер окажется чужим/поддельным, налоговая может предъявить претензии вам как владельцу заведения.</li>
-                                            <li>Вы сможете исправить VAT ID позже в панели управления — после успешной проверки VIES налоговый режим изменится со следующего периода.</li>
+                                            <li>{{ trans('vat_warning_item1') }}</li>
+                                            <li>{{ trans('vat_warning_item2') }}</li>
+                                            <li>{{ trans('vat_warning_item3') }}</li>
+                                            <li>{{ trans('vat_warning_item4') }}</li>
                                         </ul>
                                         <div class="vat-ack">
                                             <input id="vatAck" type="checkbox">
-                                            <label for="vatAck">Я понимаю риски и подтверждаю, что продолжу с указанным VAT ID, принимая налоговую ответственность на себя.</label>
+                                            <label for="vatAck">{{ trans('vat_warning_ack') }}</label>
                                         </div>
                                     </div>
                                 </div>
@@ -271,28 +286,28 @@
                                 <input type="hidden" name="vat_verified" id="vatVerified" value="false">
                             </div>
 
-                            <button class="button next-button" type="button" id="vatNextBtn">Продолжить <span class="button-arrow" aria-hidden="true">→</span></button>
-                            <button class="button button-secondary back-button" type="button" data-back="0">← Вернуться к данным владельца</button>
+                            <button class="button next-button" type="button" id="vatNextBtn">{{ trans('continue') }} <span class="button-arrow" aria-hidden="true">→</span></button>
+                            <button class="button button-secondary back-button" type="button" data-back="0">← {{ trans('back_to_owner_data') }}</button>
                         </div>
                     </div>
                 </section>
                 <section class="step" data-step="2">
                     <button class="step-header" type="button" aria-expanded="false" aria-controls="stepBody2">
                         <span class="step-number">3</span>
-                        <span class="step-heading"><span class="step-title">Учётная запись</span><span class="step-hint">Пароль и согласия</span><span class="step-summary"></span></span>
+                        <span class="step-heading"><span class="step-title">{{ trans('step3_title') }}</span><span class="step-hint">{{ trans('step3_hint') }}</span><span class="step-summary"></span></span>
                         <span class="step-chevron" aria-hidden="true">⌄</span>
                     </button>
                     <div class="step-body" id="stepBody2">
                         <div class="step-content">
                             <div class="step-divider"></div>
-                            <p class="step-description">Создайте пароль для входа в панель управления.</p>
-                            <div class="field"><label for="password">Пароль <span class="required">*</span></label><div class="input-wrap"><input class="has-toggle" id="password" name="password" type="password" placeholder="Не менее 8 символов" autocomplete="new-password" minlength="8" maxlength="64" required><button class="password-toggle" type="button" data-toggle-password="password" aria-label="Показать пароль">Показать</button></div><div class="field-error">Пароль должен содержать от 8 до 64 символов, букву и цифру.</div><div class="password-rules" aria-live="polite"><span class="password-rule" id="ruleLength">8–64 символа</span><span class="password-rule" id="ruleLetter">Хотя бы одна буква</span><span class="password-rule" id="ruleNumber">Хотя бы одна цифра</span></div></div>
-                            <div class="field"><label for="password_confirm">Повторите пароль <span class="required">*</span></label><div class="input-wrap"><input class="has-toggle" id="password_confirm" name="password_confirm" type="password" placeholder="Введите пароль ещё раз" autocomplete="new-password" required><button class="password-toggle" type="button" data-toggle-password="password_confirm" aria-label="Показать повторный пароль">Показать</button></div><div class="field-error">Пароли не совпадают.</div></div>
-                            <div class="check-row"><input id="terms" name="terms" type="checkbox" value="true" required><label for="terms">Я принимаю <a href="/terms" target="_blank" rel="noopener">условия использования</a> и <a href="/privacy" target="_blank" rel="noopener">политику конфиденциальности</a>. <span class="required">*</span></label></div>
-                            <div class="checkbox-error" id="termsError">Для продолжения необходимо принять условия.</div>
-                            <div class="check-row"><input id="newsletter" name="newsletter" type="checkbox" value="true"><label for="newsletter">Хочу получать полезные новости и обновления платформы по электронной почте. (Необязательно)</label></div>
-                            <button class="button" type="submit" id="submitButton">Создать аккаунт и перейти к оплате <span class="button-arrow" aria-hidden="true">→</span></button>
-                            <button class="button button-secondary back-button" type="button" data-back="1">← Вернуться к данным заведения</button>
+                            <p class="step-description">{{ trans('step3_description') }}</p>
+                            <div class="field"><label for="password">{{ trans('password') }} <span class="required">*</span></label><div class="input-wrap"><input class="has-toggle" id="password" name="password" type="password" placeholder="{{ trans('password_placeholder') }}" autocomplete="new-password" minlength="8" maxlength="64" required><button class="password-toggle" type="button" data-toggle-password="password" aria-label="{{ trans('show_password_aria') }}">{{ trans('show') }}</button></div><div class="field-error">{{ trans('error_password') }}</div><div class="password-rules" aria-live="polite"><span class="password-rule" id="ruleLength">{{ trans('rule_length') }}</span><span class="password-rule" id="ruleLetter">{{ trans('rule_letter') }}</span><span class="password-rule" id="ruleNumber">{{ trans('rule_number') }}</span></div></div>
+                            <div class="field"><label for="password_confirm">{{ trans('password_confirm') }} <span class="required">*</span></label><div class="input-wrap"><input class="has-toggle" id="password_confirm" name="password_confirm" type="password" placeholder="{{ trans('password_confirm_placeholder') }}" autocomplete="new-password" required><button class="password-toggle" type="button" data-toggle-password="password_confirm" aria-label="{{ trans('show_password_confirm_aria') }}">{{ trans('show') }}</button></div><div class="field-error">{{ trans('error_password_mismatch') }}</div></div>
+                            <div class="check-row"><input id="terms" name="terms" type="checkbox" value="true" required><label for="terms">{{ trans('terms_prefix') }} <a href="/terms" target="_blank" rel="noopener">{{ trans('terms_link') }}</a> {{ trans('terms_and') }} <a href="/privacy" target="_blank" rel="noopener">{{ trans('privacy_link') }}</a>. <span class="required">*</span></label></div>
+                            <div class="checkbox-error" id="termsError">{{ trans('error_terms') }}</div>
+                            <div class="check-row"><input id="newsletter" name="newsletter" type="checkbox" value="true"><label for="newsletter">{{ trans('newsletter_label') }}</label></div>
+                            <button class="button" type="submit" id="submitButton">{{ trans('submit_button') }} <span class="button-arrow" aria-hidden="true">→</span></button>
+                            <button class="button button-secondary back-button" type="button" data-back="1">← {{ trans('back_to_venue_data') }}</button>
                         </div>
                     </div>
                 </section>
@@ -300,11 +315,11 @@
         </form>
         <section class="success-panel" id="successPanel" aria-live="polite">
             <div class="success-icon">✓</div>
-            <h2>Регистрация завершена</h2>
-            <p>Аккаунт создан. Теперь вы можете войти в систему.</p>
-            <a class="button" href="/admin/login">Перейти ко входу</a>
+            <h2>{{ trans('registration_completed_title') }}</h2>
+            <p>{{ trans('registration_completed_desc') }}</p>
+            <a class="button" href="/admin/login">{{ trans('go_to_login') }}</a>
         </section>
-        <div class="footer" id="footer">Уже есть аккаунт? <a href="/admin/login">Войти в систему</a><div><a href="/restaurant-platform">На главную</a></div></div>
+        <div class="footer" id="footer">{{ trans('already_have_account') }} <a href="/admin/login">{{ trans('login') }}</a><div><a href="/restaurant-platform">{{ trans('back_to_main') }}</a></div></div>
     </section>
 </main>
 
@@ -312,27 +327,27 @@
     <div class="confirm-dialog">
         <div class="confirm-icon">✉</div>
 
-        <h3 id="emailConfirmTitle">Подтвердите почту перед оплатой</h3>
+        <h3 id="emailConfirmTitle">{{ trans('email_confirm_title') }}</h3>
 
         <p>
-            Пожалуйста, убедитесь, что адрес электронной почты указан верно.
-            <strong>После оплаты вы не сможете войти в аккаунт, пока не подтвердите почту</strong>
-            по ссылке из письма.
+            {{ trans('email_confirm_desc_1') }}
+            <strong>{{ trans('email_confirm_desc_strong') }}</strong>
+            {{ trans('email_confirm_desc_2') }}
         </p>
 
         <div class="confirm-email" id="confirmEmailValue">name@example.com</div>
 
         <p>
-            Если адрес указан с ошибкой, вернитесь на шаг «Данные владельца» и исправьте его.
+            {{ trans('email_confirm_hint') }}
         </p>
 
         <div class="confirm-actions">
             <button class="button" type="button" id="confirmEmailProceed">
-                Всё верно, перейти к оплате
+                {{ trans('email_confirm_proceed') }}
                 <span class="button-arrow" aria-hidden="true">→</span>
             </button>
             <button class="button button-secondary" type="button" id="confirmEmailRecheck">
-                Перепроверить почту
+                {{ trans('email_confirm_recheck') }}
             </button>
         </div>
     </div>
@@ -341,6 +356,78 @@
 <script>
 (() => {
     "use strict";
+
+    const i18n = {
+        error_server: "{{ trans('error_server') | escape }}",
+        error_check_fields: "{{ trans('error_check_fields') | escape }}",
+        error_vat_invalid_ack: "{{ trans('error_vat_invalid_ack') | escape }}",
+        error_vat_unavailable: "{{ trans('error_vat_unavailable') | escape }}",
+        error_vat_pending: "{{ trans('error_vat_pending') | escape }}",
+        error_finish_previous_step: "{{ trans('error_finish_previous_step') | escape }}",
+        error_check_required: "{{ trans('error_check_required') | escape }}",
+        error_400: "{{ trans('error_400') | escape }}",
+        error_401: "{{ trans('error_401') | escape }}",
+        error_403: "{{ trans('error_403') | escape }}",
+        error_404_reg: "{{ trans('error_404_reg') | escape }}",
+        error_409: "{{ trans('error_409') | escape }}",
+        error_422: "{{ trans('error_422') | escape }}",
+        error_429: "{{ trans('error_429') | escape }}",
+        error_500: "{{ trans('error_500') | escape }}",
+        error_502: "{{ trans('error_502') | escape }}",
+        error_503: "{{ trans('error_503') | escape }}",
+        error_504: "{{ trans('error_504') | escape }}",
+        error_server_generic: "{{ trans('error_server_generic') | escape }}",
+        error_connection: "{{ trans('error_connection') | escape }}",
+        sending: "{{ trans('sending') | escape }}",
+        submit_button: "{{ trans('submit_button') | escape }}",
+        submit_button_arrow: " <span class=\"button-arrow\" aria-hidden=\"true\">→</span>",
+        progress_step_of: "{{ trans('progress_step_of') | escape }}",
+        registration_completed_page_title: "{{ trans('registration_completed_title') | escape }}",
+        registration_completed_page_subtitle: "{{ trans('registration_completed_subtitle') | escape }}",
+        show_password: "{{ trans('show') | escape }}",
+        hide_password: "{{ trans('hide') | escape }}",
+        show_password_aria: "{{ trans('show_password_aria') | escape }}",
+        hide_password_aria: "{{ trans('hide_password_aria') | escape }}",
+        summary_age_prefix: "{{ trans('summary_age_prefix') | escape }}",
+        summary_account_filled: "{{ trans('step3_summary_filled') | escape }}",
+        vat_checking: "{{ trans('vat_checking') | escape }}",
+        vat_valid_prefix: "{{ trans('vat_valid_prefix') | escape }}",
+        vat_invalid: "{{ trans('vat_invalid') | escape }}",
+        vat_format_error: "{{ trans('vat_format_error') | escape }}",
+        vat_unavailable_error: "{{ trans('vat_unavailable_error') | escape }}",
+        vat_check_failed_error: "{{ trans('vat_check_failed_error') | escape }}",
+        choose_country: "{{ trans('choose_country') | escape }}",
+        choose_timezone: "{{ trans('choose_timezone') | escape }}",
+        field_required: "{{ trans('field_required') | escape }}",
+        field_length_2_50: "{{ trans('field_length_2_50') | escape }}",
+        field_email_invalid: "{{ trans('field_email_invalid') | escape }}",
+        field_phone_invalid: "{{ trans('field_phone_invalid') | escape }}",
+        field_birthday_required: "{{ trans('field_birthday_required') | escape }}",
+        field_birthday_invalid: "{{ trans('field_birthday_invalid') | escape }}",
+        field_birthday_age: "{{ trans('field_birthday_age') | escape }}",
+        field_length_2_100: "{{ trans('field_length_2_100') | escape }}",
+        field_length_3_200: "{{ trans('field_length_3_200') | escape }}",
+        field_slug_invalid: "{{ trans('field_slug_invalid') | escape }}",
+        field_password_length: "{{ trans('field_password_length') | escape }}",
+        field_password_letter: "{{ trans('field_password_letter') | escape }}",
+        field_password_number: "{{ trans('field_password_number') | escape }}",
+        field_passwords_mismatch: "{{ trans('field_passwords_mismatch') | escape }}",
+        field_vat_format: "{{ trans('field_vat_format') | escape }}",
+        field_country_invalid: "{{ trans('field_country_invalid') | escape }}",
+        field_currency_invalid: "{{ trans('field_currency_invalid') | escape }}",
+        field_timezone_invalid: "{{ trans('field_timezone_invalid') | escape }}",
+        error_message_400: "{{ trans('error_message_400') | escape }}",
+        error_message_401: "{{ trans('error_message_401') | escape }}",
+        error_message_403: "{{ trans('error_message_403') | escape }}",
+        error_message_404: "{{ trans('error_message_404') | escape }}",
+        error_message_409: "{{ trans('error_message_409') | escape }}",
+        error_message_422: "{{ trans('error_message_422') | escape }}",
+        error_message_429: "{{ trans('error_message_429') | escape }}",
+        error_message_500: "{{ trans('error_message_500') | escape }}",
+        error_message_502: "{{ trans('error_message_502') | escape }}",
+        error_message_503: "{{ trans('error_message_503') | escape }}",
+        error_message_504: "{{ trans('error_message_504') | escape }}"
+    };
 
     const form = document.getElementById("registrationForm");
     const steps = Array.from(document.querySelectorAll(".step"));
@@ -378,7 +465,7 @@
     let isSubmitting = false;
     let emailConfirmedForSubmit = false;
     let vatCheckAbort = null;
-    let vatCurrentState = "none"; // none | valid | invalid | unknown
+    let vatCurrentState = "none";
 
     const completedSteps = new Set();
     const getField = id => document.getElementById(id);
@@ -423,18 +510,18 @@
     applySubscriptionToForm(subscription);
 
     const countryData = [
-        ["US","США","United States"],
-        ["DE","Германия","Germany"],
-        ["FR","Франция","France"],
-        ["ES","Испания","Spain"],
-        ["PL","Польша","Poland"],
-        ["AT","Австрия","Austria"],
-        ["IT","Италия","Italy"],
-        ["NL","Нидерланды","Netherlands"],
-        ["UA","Украина","Ukraine"],
-        ["KZ","Казахстан","Kazakhstan"],
-        ["GE","Грузия","Georgia"],
-        ["AM","Армения","Armenia"]
+        ["US","{{ trans('country_us') | escape }}","United States"],
+        ["DE","{{ trans('country_de') | escape }}","Germany"],
+        ["FR","{{ trans('country_fr') | escape }}","France"],
+        ["ES","{{ trans('country_es') | escape }}","Spain"],
+        ["PL","{{ trans('country_pl') | escape }}","Poland"],
+        ["AT","{{ trans('country_at') | escape }}","Austria"],
+        ["IT","{{ trans('country_it') | escape }}","Italy"],
+        ["NL","{{ trans('country_nl') | escape }}","Netherlands"],
+        ["UA","{{ trans('country_ua') | escape }}","Ukraine"],
+        ["KZ","{{ trans('country_kz') | escape }}","Kazakhstan"],
+        ["GE","{{ trans('country_ge') | escape }}","Georgia"],
+        ["AM","{{ trans('country_am') | escape }}","Armenia"]
     ];
 
     const currencyByCountry = {
@@ -446,14 +533,14 @@
     const countryFragment = document.createDocumentFragment();
     countryData.sort((a, b) => a[1].localeCompare(b[1], "ru"));
 
-    countryData.forEach(([code, ru, en]) => {
+    countryData.forEach(([code, local, en]) => {
         const option = document.createElement("option");
         option.value = code;
-        option.textContent = `${ru} — ${en} (${code})`;
+        option.textContent = `${local} — ${en} (${code})`;
         countryFragment.appendChild(option);
     });
 
-    countrySelect.replaceChildren(new Option("Выберите страну", ""), countryFragment);
+    countrySelect.replaceChildren(new Option(i18n.choose_country, ""), countryFragment);
 
     function getOffset(timeZone, date = new Date()) {
         try {
@@ -472,24 +559,24 @@
         const parts = zone.split("/");
         const city = (parts[parts.length - 1] || zone).replace(/_/g, " ");
         const names = {
-             Tbilisi:"Тбилиси",
-    Yerevan:"Ереван",
-    Berlin:"Берлин",
-    Paris:"Париж",
-    Madrid:"Мадрид",
-    Warsaw:"Варшава",
-    Rome:"Рим",
-    Amsterdam:"Амстердам",
-    Kyiv:"Киев",
-    Almaty:"Алматы",
-    "New York":"Нью-Йорк",
-    "Los Angeles":"Лос-Анджелес",
-    Chicago:"Чикаго",
-    Denver:"Денвер",
-    Phoenix:"Финикс",
-    Anchorage:"Анкоридж",
-    Honolulu:"Гонолулу",
-    UTC:"UTC"
+            Tbilisi: "{{ trans('tz_tbilisi') | escape }}",
+            Yerevan: "{{ trans('tz_yerevan') | escape }}",
+            Berlin: "{{ trans('tz_berlin') | escape }}",
+            Paris: "{{ trans('tz_paris') | escape }}",
+            Madrid: "{{ trans('tz_madrid') | escape }}",
+            Warsaw: "{{ trans('tz_warsaw') | escape }}",
+            Rome: "{{ trans('tz_rome') | escape }}",
+            Amsterdam: "{{ trans('tz_amsterdam') | escape }}",
+            Kyiv: "{{ trans('tz_kyiv') | escape }}",
+            Almaty: "{{ trans('tz_almaty') | escape }}",
+            "New York": "{{ trans('tz_new_york') | escape }}",
+            "Los Angeles": "{{ trans('tz_los_angeles') | escape }}",
+            Chicago: "{{ trans('tz_chicago') | escape }}",
+            Denver: "{{ trans('tz_denver') | escape }}",
+            Phoenix: "{{ trans('tz_phoenix') | escape }}",
+            Anchorage: "{{ trans('tz_anchorage') | escape }}",
+            Honolulu: "{{ trans('tz_honolulu') | escape }}",
+            UTC: "UTC"
         };
         return names[city] || city;
     }
@@ -504,7 +591,7 @@
             option.textContent = `${timezoneCityName(zone)} — ${zone} (${getOffset(zone)})`;
             tzFragment.appendChild(option);
         });
-        timezoneSelect.replaceChildren(new Option("Выберите часовой пояс", ""), tzFragment);
+        timezoneSelect.replaceChildren(new Option(i18n.choose_timezone, ""), tzFragment);
     } catch {
         const fallback = [
             "Asia/Tbilisi","Europe/Berlin","Europe/Paris","Europe/London",
@@ -514,7 +601,7 @@
             "Australia/Sydney","Pacific/Auckland","UTC"
         ];
         timezoneSelect.replaceChildren(
-            new Option("Выберите часовой пояс", ""),
+            new Option(i18n.choose_timezone, ""),
             ...fallback.map(zone => new Option(
                 `${timezoneCityName(zone)} — ${zone} (${getOffset(zone)})`, zone
             ))
@@ -555,13 +642,13 @@
         formError.scrollIntoView({ behavior: "smooth", block: "center" });
     }
 
-    function showServerError() { showFormError("Ошибка сервера. Попробуйте позже."); }
+    function showServerError() { showFormError(i18n.error_server); }
     function clearFormError() { formError.textContent = ""; formError.classList.remove("show"); }
 
     function updateProgress() {
         const percent = Math.round((currentStep + 1) / steps.length * 100);
         progressBar.style.width = `${percent}%`;
-        progressLabel.textContent = `Шаг ${currentStep + 1} из ${steps.length}`;
+        progressLabel.textContent = i18n.progress_step_of.replace("{current}", currentStep + 1).replace("{total}", steps.length);
         progressPercent.textContent = `${percent}%`;
         progressTrack.setAttribute("aria-valuenow", percent);
     }
@@ -575,7 +662,7 @@
             const email = getField("email").value.trim();
             const age = calculateAge(birthday.value);
             if (email) text += (text ? " · " : "") + email;
-            if (age !== null) text += (text ? " · " : "") + `${age} лет`;
+            if (age !== null) text += (text ? " · " : "") + i18n.summary_age_prefix.replace("{age}", age);
         }
         if (index === 1) {
             text = [
@@ -584,7 +671,7 @@
                 countrySelect.selectedOptions[0]?.textContent.split(" (")[0]
             ].filter(Boolean).join(" · ");
         }
-        if (index === 2) text = "Данные учётной записи заполнены";
+        if (index === 2) text = i18n.summary_account_filled;
         summary.textContent = text;
     }
 
@@ -624,41 +711,41 @@
         let message = "";
 
         if (field.required && field.type !== "checkbox" && !value) {
-            message = "Это поле обязательно для заполнения.";
+            message = i18n.field_required;
         } else if (["name", "surname"].includes(field.id) && (value.length < 2 || value.length > 50)) {
-            message = "Введите от 2 до 50 символов.";
+            message = i18n.field_length_2_50;
         } else if (field.id === "email" && value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
-            message = "Введите корректный адрес электронной почты.";
+            message = i18n.field_email_invalid;
         } else if (field.id === "phone" && value && !/^\+?[0-9]{10,15}$/.test(value)) {
-            message = "Введите телефон с кодом страны и 10–15 цифрами, например +995555123456.";
+            message = i18n.field_phone_invalid;
         } else if (field.id === "birthday") {
             const age = calculateAge(value);
-            if (!value) message = "Укажите дату рождения.";
-            else if (age === null) message = "Укажите корректную дату рождения не позднее сегодняшнего дня.";
-            else if (age < 18) message = "Регистрация доступна только пользователям от 18 лет.";
+            if (!value) message = i18n.field_birthday_required;
+            else if (age === null) message = i18n.field_birthday_invalid;
+            else if (age < 18) message = i18n.field_birthday_age;
         } else if (field.id === "restaurantName" && (value.length < 2 || value.length > 100)) {
-            message = "Название должно содержать от 2 до 100 символов.";
+            message = i18n.field_length_2_100;
         } else if (field.id === "city" && (value.length < 2 || value.length > 100)) {
-            message = "Город должен содержать от 2 до 100 символов.";
+            message = i18n.field_length_2_100;
         } else if (field.id === "address" && (value.length < 3 || value.length > 200)) {
-            message = "Адрес регистрации должен содержать от 3 до 200 символов.";
+            message = i18n.field_length_3_200;
         } else if (field.id === "country" && !countryData.some(country => country[0] === value)) {
-            message = "Выберите страну из списка.";
+            message = i18n.field_country_invalid;
         } else if (field.id === "slug" && value && !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(value)) {
-            message = "Slug должен содержать строчные латинские буквы, цифры и одиночные дефисы.";
+            message = i18n.field_slug_invalid;
         } else if (field.id === "currency" && value && !Array.from(field.options).some(o => o.value === value)) {
-            message = "Выберите валюту из списка.";
+            message = i18n.field_currency_invalid;
         } else if (field.id === "timezone" && value && !Array.from(field.options).some(o => o.value === value)) {
-            message = "Выберите часовой пояс из списка.";
+            message = i18n.field_timezone_invalid;
         } else if (field.id === "password") {
-            if (value.length < 8 || value.length > 64) message = "Пароль должен содержать от 8 до 64 символов.";
-            else if (!/[A-Za-zА-Яа-яЁё]/.test(value)) message = "Добавьте в пароль хотя бы одну букву.";
-            else if (!/[0-9]/.test(value)) message = "Добавьте в пароль хотя бы одну цифру.";
+            if (value.length < 8 || value.length > 64) message = i18n.field_password_length;
+            else if (!/[A-Za-zА-Яа-яЁё]/.test(value)) message = i18n.field_password_letter;
+            else if (!/[0-9]/.test(value)) message = i18n.field_password_number;
         } else if (field.id === "password_confirm" && value !== password.value) {
-            message = "Пароли не совпадают.";
+            message = i18n.field_passwords_mismatch;
         } else if (field.id === "vatId") {
             if (value && !/^[A-Z]{2}[0-9A-Z]{2,12}$/.test(value)) {
-                message = "Формат: 2 буквы кода страны + номер (например, DE123456789).";
+                message = i18n.field_vat_format;
             }
         }
 
@@ -703,9 +790,9 @@
     }
 
     function validateVatBeforeNext() {
-        if (vatInputWrap.style.display === "none") return true; // пользователь выбрал "нет"
+        if (vatInputWrap.style.display === "none") return true;
         const value = vatIdInput.value.trim();
-        if (!value) return true; // пустое поле — ок, это опционально
+        if (!value) return true;
 
         if (vatCurrentState === "valid") return true;
 
@@ -713,7 +800,7 @@
             if (!vatAck.checked) {
                 vatWarning.classList.add("show");
                 vatWarning.scrollIntoView({ behavior: "smooth", block: "center" });
-                showFormError("VAT ID недействителен. Ознакомьтесь с предупреждением и подтвердите ответственность, либо измените номер.");
+                showFormError(i18n.error_vat_invalid_ack);
                 return false;
             }
             vatAcknowledged.value = "true";
@@ -721,10 +808,10 @@
         }
 
         if (vatCurrentState === "unknown") {
-            showFormError("Не удалось проверить VAT ID (VIES недоступен). Попробуйте позже или нажмите «Нет» и зарегистрируйтесь как физлицо.");
+            showFormError(i18n.error_vat_unavailable);
             return false;
         }
-        showFormError("Дождитесь окончания проверки VAT ID или измените номер.");
+        showFormError(i18n.error_vat_pending);
         return false;
     }
 
@@ -734,7 +821,7 @@
             nextButton.addEventListener("click", () => {
                 clearFormError();
                 if (!validateStep(index)) {
-                    showFormError("Проверьте отмеченные поля и заполните их корректно.");
+                    showFormError(i18n.error_check_fields);
                     return;
                 }
                 if (index === 1 && !validateVatBeforeNext()) {
@@ -752,7 +839,7 @@
                 if (index === currentStep) return;
                 for (let i = 0; i < index; i++) {
                     if (!completedSteps.has(i)) {
-                        showFormError("Сначала завершите предыдущий этап регистрации.");
+                        showFormError(i18n.error_finish_previous_step);
                         openStep(i);
                         return;
                     }
@@ -841,8 +928,8 @@
             const input = getField(button.dataset.togglePassword);
             const show = input.type === "password";
             input.type = show ? "text" : "password";
-            button.textContent = show ? "Скрыть" : "Показать";
-            button.setAttribute("aria-label", show ? "Скрыть пароль" : "Показать пароль");
+            button.textContent = show ? i18n.hide_password : i18n.show_password;
+            button.setAttribute("aria-label", show ? i18n.hide_password_aria : i18n.show_password_aria);
         });
     });
 
@@ -887,7 +974,7 @@
         const countryCode = vatNumber.slice(0, 2);
         const vatNumberOnly = vatNumber.slice(2);
 
-        setVatStatus("Проверяем через VIES…", "#91898a");
+        setVatStatus(i18n.vat_checking, "#91898a");
         setVatError("");
         vatCurrentState = "pending";
         vatWarning.classList.remove("show");
@@ -903,7 +990,7 @@
             if (!resp.ok) {
                 vatCurrentState = "unknown";
                 setVatStatus("");
-                setVatError("VIES временно недоступен. Попробуйте позже или нажмите «Нет / регистрируюсь как физлицо».");
+                setVatError(i18n.vat_unavailable_error);
                 return;
             }
 
@@ -911,20 +998,20 @@
             if (data.valid === true) {
                 vatCurrentState = "valid";
                 vatVerified.value = "true";
-                setVatStatus(`✓ VAT ID действителен: ${data.name || "—"}`, "#9bc8a5");
+                setVatStatus(i18n.vat_valid_prefix.replace("{name}", data.name || "—"), "#9bc8a5");
                 vatWarning.classList.remove("show");
             } else {
                 vatCurrentState = "invalid";
                 vatVerified.value = "false";
                 setVatStatus("");
-                setVatError("VAT ID недействителен по данным VIES.");
+                setVatError(i18n.vat_invalid);
                 vatWarning.classList.add("show");
             }
         } catch (err) {
             if (err.name === "AbortError") return;
             vatCurrentState = "unknown";
             setVatStatus("");
-            setVatError("Не удалось проверить VAT ID. Проверьте соединение или нажмите «Нет / регистрируюсь как физлицо».");
+            setVatError(i18n.vat_check_failed_error);
         }
     }
 
@@ -945,7 +1032,7 @@
         }
         if (!/^[A-Z]{2}[0-9A-Z]{2,12}$/.test(value)) {
             setVatStatus("");
-            setVatError("Формат: 2 буквы кода страны + номер (например, DE123456789).");
+            setVatError(i18n.vat_format_error);
             return;
         }
 
@@ -1005,7 +1092,7 @@
             if (!validateStep(i)) {
                 completedSteps.delete(i);
                 openStep(i);
-                showFormError("Проверьте обязательные поля, пароль и согласие с условиями.");
+                showFormError(i18n.error_check_required);
                 return;
             }
         }
@@ -1023,7 +1110,7 @@
         emailConfirmedForSubmit = false;
         isSubmitting = true;
         submitButton.disabled = true;
-        submitButton.textContent = "Отправка…";
+        submitButton.textContent = i18n.sending;
 
         try {
             const response = await fetch(form.action, {
@@ -1046,15 +1133,15 @@
 
             if (!response.ok) {
                 const messages = {
-                    400: "Некорректные данные. Проверьте заполненные поля.",
-                    401: "Не удалось выполнить авторизацию.",
-                    403: "Недостаточно прав для выполнения действия.",
-                    404: "Страница регистрации не найдена.",
-                    409: "Аккаунт с такими данными уже существует.",
-                    422: "Сервер не смог проверить введённые данные.",
-                    429: "Слишком много попыток. Попробуйте позже."
+                    400: i18n.error_message_400,
+                    401: i18n.error_message_401,
+                    403: i18n.error_message_403,
+                    404: i18n.error_message_404,
+                    409: i18n.error_message_409,
+                    422: i18n.error_message_422,
+                    429: i18n.error_message_429
                 };
-                showFormError(messages[response.status] || `Ошибка сервера (${response.status}). Попробуйте позже.`);
+                showFormError(messages[response.status] || i18n.error_message_500);
                 return;
             }
 
@@ -1070,35 +1157,35 @@
 
             window.location.href = "/restaurant/register?registered=1";
         } catch (error) {
-            console.error("Ошибка регистрации:", error);
-            showFormError("Не удалось связаться с сервером. Проверьте подключение и попробуйте ещё раз.");
+            console.error("Registration error:", error);
+            showFormError(i18n.error_connection);
         } finally {
             isSubmitting = false;
             submitButton.disabled = false;
-            submitButton.innerHTML = 'Создать аккаунт и перейти к оплате <span class="button-arrow" aria-hidden="true">→</span>';
+            submitButton.innerHTML = i18n.submit_button + i18n.submit_button_arrow;
         }
     });
 
     const params = new URLSearchParams(window.location.search);
     const errorCode = params.get("error");
     const serverErrors = {
-        "400":"Некорректные данные. Проверьте заполненные поля.",
-        "401":"Не удалось выполнить авторизацию. Попробуйте снова.",
-        "403":"У вас нет разрешения на выполнение этого действия.",
-        "404":"Запрашиваемый ресурс не найден.",
-        "409":"Аккаунт с такими данными уже существует.",
-        "422":"Сервер не смог проверить введённые данные. Проверьте форму.",
-        "429":"Слишком много попыток. Подождите немного и повторите.",
-        "500":"Ошибка сервера. Попробуйте позже.",
-        "502":"Ошибка сервера. Попробуйте позже.",
-        "503":"Ошибка сервера. Попробуйте позже.",
-        "504":"Ошибка сервера. Попробуйте позже."
+        "400": i18n.error_message_400,
+        "401": i18n.error_message_401,
+        "403": i18n.error_message_403,
+        "404": i18n.error_message_404,
+        "409": i18n.error_message_409,
+        "422": i18n.error_message_422,
+        "429": i18n.error_message_429,
+        "500": i18n.error_message_500,
+        "502": i18n.error_message_502,
+        "503": i18n.error_message_503,
+        "504": i18n.error_message_504
     };
 
     if (errorCode && serverErrors[errorCode]) {
         isSubmitting = false;
         submitButton.disabled = false;
-        submitButton.innerHTML = 'Создать аккаунт и перейти к оплате <span class="button-arrow" aria-hidden="true">→</span>';
+        submitButton.innerHTML = i18n.submit_button + i18n.submit_button_arrow;
         if (["500","502","503","504"].includes(errorCode)) showServerError();
         else showFormError(serverErrors[errorCode]);
         const cleanUrl = new URL(window.location.href);
@@ -1109,7 +1196,7 @@
     window.addEventListener("pageshow", () => {
         isSubmitting = false;
         submitButton.disabled = false;
-        submitButton.innerHTML = 'Создать аккаунт и перейти к оплате <span class="button-arrow" aria-hidden="true">→</span>';
+        submitButton.innerHTML = i18n.submit_button + i18n.submit_button_arrow;
     });
 
     if (params.get("registered") === "1") {
@@ -1117,8 +1204,8 @@
         document.getElementById("progressWrap").style.display = "none";
         document.getElementById("successPanel").classList.add("show");
         document.getElementById("footer").style.display = "none";
-        document.getElementById("pageTitle").textContent = "Регистрация завершена";
-        document.getElementById("pageSubtitle").textContent = "Ваш запрос на регистрацию обработан.";
+        document.getElementById("pageTitle").textContent = i18n.registration_completed_page_title;
+        document.getElementById("pageSubtitle").textContent = i18n.registration_completed_page_subtitle;
     }
 
     updatePasswordRules();

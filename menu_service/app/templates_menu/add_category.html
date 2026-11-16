@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Добавить категорию</title>
+    <title>{{ trans('add_category_title') }}</title>
     <style>
         * {
             margin: 0;
@@ -271,42 +271,42 @@
     <div class="top">
         <a href="/menu_page" class="back">
             <span class="back-arrow">←</span>
-            <span>Вернуться к меню</span>
+            <span>{{ trans('back_to_menu') }}</span>
         </a>
         <div class="brand">BAR</div>
     </div>
 
     <header class="header">
         <div class="header-label">MENU MANAGEMENT</div>
-        <h1>Добавить категорию</h1>
-        <p class="description">Создайте новую категорию для блюд меню</p>
+        <h1>{{ trans('add_category_title') }}</h1>
+        <p class="description">{{ trans('add_category_description') }}</p>
     </header>
 
     <div id="form-error" class="error"></div>
 
     <form id="categoryForm" class="form-card">
-        <h2 class="form-title">Новая категория</h2>
+        <h2 class="form-title">{{ trans('new_category') }}</h2>
 
         <div class="field">
-            <label for="category_name">Название категории</label>
+            <label for="category_name">{{ trans('category_name_label') }}</label>
             <input
                 type="text"
                 id="category_name"
                 name="category_name"
-                placeholder="Например: Закуски"
+                placeholder="{{ trans('category_name_placeholder') }}"
                 minlength="2"
                 maxlength="100"
                 required>
         </div>
 
         <button type="submit" class="submit">
-            Добавить категорию
+            {{ trans('add_category_button') }}
         </button>
     </form>
 
     <section class="categories-card">
         <div class="categories-header">
-            <h2 class="categories-title">Существующие категории</h2>
+            <h2 class="categories-title">{{ trans('existing_categories') }}</h2>
             <span class="categories-count">{{ categories|length }}</span>
         </div>
 
@@ -321,7 +321,7 @@
         </div>
         {% else %}
         <div class="empty-categories">
-            Категории пока не добавлены
+            {{ trans('no_categories_yet') }}
         </div>
         {% endif %}
     </section>
@@ -333,6 +333,11 @@
 
 <script src="/static/api.js"></script>
 <script>
+const i18n = {
+    error_add_category: "{{ trans('error_add_category') | escape }}",
+    error_connection: "{{ trans('error_connection') | escape }}"
+};
+
 const form = document.getElementById("categoryForm");
 const formError = document.getElementById("form-error");
 const input = document.getElementById("category_name");
@@ -370,7 +375,7 @@ form.addEventListener("submit", async function(event) {
         try {
             data = JSON.parse(text);
         } catch {
-            showError("Не удалось добавить категорию.");
+            showError(i18n.error_add_category);
             return;
         }
 
@@ -384,10 +389,10 @@ form.addEventListener("submit", async function(event) {
             return;
         }
 
-        showError("Не удалось добавить категорию.");
+        showError(i18n.error_add_category);
     } catch (error) {
         console.error(error);
-        showError("Не удалось подключиться к серверу.");
+        showError(i18n.error_connection);
     }
 });
 </script>

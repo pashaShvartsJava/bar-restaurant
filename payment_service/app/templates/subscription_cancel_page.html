@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#0c0a10">
-    <title>Оплата отменена — Restaurant Platform</title>
+    <title>{{ trans('subscription_cancelled_page_title') }} — Restaurant Platform</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -185,33 +185,30 @@
     <main class="card">
         <div class="icon">!</div>
 
-        <h1>Оплата отменена</h1>
+        <h1>{{ trans('subscription_cancelled_title') }}</h1>
 
         <p class="subtitle">
-            Вы прервали оформление подписки. Деньги не были списаны,
-            и ресторан пока не активирован.
+            {{ trans('subscription_cancelled_subtitle') }}
         </p>
 
         <div class="note">
             <span class="note-icon">ⓘ</span>
             <span>
-                Вы можете вернуться к выбору тарифа в любой момент.
-                Если у вас возникли сложности с оплатой или вопросы
-                по тарифам — напишите в поддержку, мы поможем.
+                {{ trans('subscription_cancelled_note') }}
             </span>
         </div>
 
         <div class="actions">
             <a class="btn btn-primary" href="/choose_subscription">
-                Вернуться к выбору тарифа →
+                {{ trans('back_to_plan_selection') }} →
             </a>
             <a class="btn btn-secondary" href="/restaurant-platform">
-                На главную
+                {{ trans('back_to_main') }}
             </a>
         </div>
 
         <p class="footer-note">
-            Нужна помощь? <a href="/contact">Связаться с поддержкой</a>
+            {{ trans('need_help_q') }} <a href="/contact">{{ trans('contact_support') }}</a>
         </p>
     </main>
 </body>

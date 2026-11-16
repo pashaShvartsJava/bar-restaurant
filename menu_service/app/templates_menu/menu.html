@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Меню</title>
+    <title>{{ trans('menu_page_title') }}</title>
     <style>
         * {
             margin: 0;
@@ -412,20 +412,20 @@
 <div class="page">
     <header class="header">
         <div>
-            <h1 class="title">Меню</h1>
-            <div class="subtitle">Управление блюдами и категориями</div>
+            <h1 class="title">{{ trans('menu_page_title') }}</h1>
+            <div class="subtitle">{{ trans('menu_page_subtitle') }}</div>
         </div>
 
         <div class="top">
             <a href="/admin_panel" class="back">
                 <span class="back-arrow">←</span>
-                Вернуться в панель управления
+                {{ trans('back_to_admin_panel') }}
             </a>
         </div>
 
         <div class="header-actions">
-            <a href="/menu_page/add_category" class="btn add">+ Добавить категорию</a>
-            <a href="/menu_page/add_dish" class="btn add">+ Добавить блюдо</a>
+            <a href="/menu_page/add_category" class="btn add">+ {{ trans('add_category_title') }}</a>
+            <a href="/menu_page/add_dish" class="btn add">+ {{ trans('add_dish_button') }}</a>
         </div>
     </header>
 
@@ -445,11 +445,11 @@
                         <span class="dish-count">
                             {{ category.dishes|length }}
                             {% if category.dishes|length == 1 %}
-                                блюдо
+                                {{ trans('dish_count_one') }}
                             {% elif category.dishes|length < 5 %}
-                                блюда
+                                {{ trans('dish_count_few') }}
                             {% else %}
-                                блюд
+                                {{ trans('dish_count_many') }}
                             {% endif %}
                         </span>
                     </div>
@@ -462,7 +462,7 @@
                                         {% if dish.image_url %}
                                             <img src="{{ dish.image_url }}" alt="{{ dish.dish_name }}" class="dish-image">
                                         {% else %}
-                                            <div class="no-image">Нет<br>фото</div>
+                                            <div class="no-image">{{ trans('no_photo_short') }}</div>
                                         {% endif %}
                                     </div>
 
@@ -471,7 +471,7 @@
                                         {% if dish.description %}
                                             <div class="dish-description">{{ dish.description }}</div>
                                         {% else %}
-                                            <div class="dish-description no-description">Описание отсутствует</div>
+                                            <div class="dish-description no-description">{{ trans('no_description') }}</div>
                                         {% endif %}
                                     </div>
 
@@ -481,31 +481,31 @@
                                     </div>
 
                                     <div class="dish-actions">
-                                        <button type="button" class="action edit" data-dish-id="{{ dish.id }}">Изменить</button>
+                                        <button type="button" class="action edit" data-dish-id="{{ dish.id }}">{{ trans('edit') }}</button>
                                         <button
                                             type="button"
                                             class="action delete {% if dish.dish_status.value == 'unavailable' %}restore{% endif %}"
                                             data-dish-id="{{ dish.id }}"
                                             data-status="{{ dish.dish_status.value }}">
                                             {% if dish.dish_status.value == "available" %}
-                                                Убрать из меню
+                                                {{ trans('remove_from_menu') }}
                                             {% else %}
-                                                Вернуть в меню
+                                                {{ trans('restore_to_menu') }}
                                             {% endif %}
                                         </button>
                                     </div>
                                 </article>
                             {% endfor %}
                         {% else %}
-                            <div class="empty-category">В этой категории пока нет блюд</div>
+                            <div class="empty-category">{{ trans('empty_category') }}</div>
                         {% endif %}
                     </div>
                 </section>
             {% endfor %}
         {% else %}
             <div class="empty-menu">
-                <div class="empty-title">Меню пока пустое</div>
-                <div class="empty-text">Не добавлено пока ни одного блюда</div>
+                <div class="empty-title">{{ trans('empty_menu_title') }}</div>
+                <div class="empty-text">{{ trans('empty_menu_text') }}</div>
             </div>
         {% endif %}
     </main>
@@ -517,6 +517,15 @@
 
 <script src="/static/api.js"></script>
 <script>
+const i18n = {
+    confirm_remove: "{{ trans('confirm_remove_dish') | escape }}",
+    confirm_restore: "{{ trans('confirm_restore_dish') | escape }}",
+    error_status_change: "{{ trans('error_status_change') | escape }}",
+    error_connection: "{{ trans('error_connection') | escape }}",
+    btn_remove: "{{ trans('remove_from_menu') | escape }}",
+    btn_restore: "{{ trans('restore_to_menu') | escape }}"
+};
+
 const formError = document.getElementById("formError");
 
 function showFormError(message) {
@@ -541,8 +550,8 @@ document.querySelectorAll(".action.delete").forEach(button => {
         const dishId = this.dataset.dishId;
         const isAvailable = this.dataset.status === "available";
         const message = isAvailable
-            ? "Вы действительно хотите убрать это блюдо из меню?"
-            : "Вы действительно хотите вернуть это блюдо в меню?";
+            ? i18n.confirm_remove
+            : i18n.confirm_restore;
 
         if (!confirm(message)) {
             return;
@@ -565,7 +574,7 @@ document.querySelectorAll(".action.delete").forEach(button => {
                 try {
                     data = JSON.parse(text);
                 } catch {
-                    showFormError(text || "Не удалось изменить статус блюда.");
+                    showFormError(text || i18n.error_status_change);
                     return;
                 }
 
@@ -579,22 +588,22 @@ document.querySelectorAll(".action.delete").forEach(button => {
                     return;
                 }
 
-                showFormError("Не удалось изменить статус блюда.");
+                showFormError(i18n.error_status_change);
                 return;
             }
 
             if (isAvailable) {
-                this.textContent = "Вернуть в меню";
+                this.textContent = i18n.btn_restore;
                 this.dataset.status = "unavailable";
                 this.classList.add("restore");
             } else {
-                this.textContent = "Убрать из меню";
+                this.textContent = i18n.btn_remove;
                 this.dataset.status = "available";
                 this.classList.remove("restore");
             }
         } catch (error) {
             console.error("CHANGE DISH STATUS ERROR:", error);
-            showFormError("Не удалось подключиться к серверу.");
+            showFormError(i18n.error_connection);
         }
     });
 });

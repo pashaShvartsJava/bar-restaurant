@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Добавить блюдо</title>
+    <title>{{ trans('add_dish_title') }}</title>
     <style>
         * {
             box-sizing: border-box;
@@ -308,12 +308,12 @@
 <div class="page">
     <a href="/menu_page" class="back">
         <span class="back-arrow">←</span>
-        <span>Вернуться к меню</span>
+        <span>{{ trans('back_to_menu') }}</span>
     </a>
 
     <div class="header">
-        <h1 class="title">Добавить блюдо</h1>
-        <p class="subtitle">Заполните информацию о блюде и назначьте ему категорию.</p>
+        <h1 class="title">{{ trans('add_dish_title') }}</h1>
+        <p class="subtitle">{{ trans('add_dish_subtitle') }}</p>
     </div>
 
     <div class="card">
@@ -326,19 +326,19 @@
             enctype="multipart/form-data"
         >
             <div class="field">
-                <label for="dish_name">Имя блюда</label>
+                <label for="dish_name">{{ trans('dish_name_label') }}</label>
                 <input
                     type="text"
                     id="dish_name"
                     name="dish_name"
-                    placeholder="Например: Стейк из говядины"
+                    placeholder="{{ trans('dish_name_placeholder') }}"
                     required
                     minlength="2"
                     maxlength="100">
             </div>
 
             <div class="field">
-                <label for="price">Цена</label>
+                <label for="price">{{ trans('price_label') }}</label>
                 <input
                     type="number"
                     id="price"
@@ -350,18 +350,18 @@
             </div>
 
             <div class="field">
-                <label for="description">Описание</label>
+                <label for="description">{{ trans('description_label') }}</label>
                 <textarea
                     id="description"
                     name="description"
-                    placeholder="Краткое описание блюда..."
+                    placeholder="{{ trans('description_placeholder') }}"
                     maxlength="1000"></textarea>
             </div>
 
             <div class="field">
-                <label for="category_id">Категория</label>
+                <label for="category_id">{{ trans('category_label') }}</label>
                 <select id="category_id" name="category_id" required>
-                    <option value="" selected disabled>Выберите категорию</option>
+                    <option value="" selected disabled>{{ trans('choose_category') }}</option>
                     {% for category in categories %}
                         <option value="{{ category.id }}">{{ category.category_name }}</option>
                     {% endfor %}
@@ -369,7 +369,7 @@
             </div>
 
             <div class="field">
-                <label>Тип позиции</label>
+                <label>{{ trans('item_type_label') }}</label>
                 <label class="checkbox-field" for="is_drink">
                     <input
                         type="checkbox"
@@ -377,23 +377,22 @@
                         name="is_drink"
                         value="true">
                     <span class="checkbox-text">
-                        <span class="checkbox-label">Это напиток</span>
+                        <span class="checkbox-label">{{ trans('is_drink_label') }}</span>
                         <span class="checkbox-hint">
-                            Отметьте, если позиция — напиток. В Германии к напиткам применяется
-                            НДС 19%, к еде — 7%.
+                            {{ trans('is_drink_hint') }}
                         </span>
                     </span>
                 </label>
             </div>
 
             <div class="field">
-                <label>Фотография</label>
+                <label>{{ trans('photo_label') }}</label>
                 <div class="photo-box">
-                    <div class="photo-preview" id="photoPreview">Фото не выбрано</div>
+                    <div class="photo-preview" id="photoPreview">{{ trans('photo_not_selected') }}</div>
 
                     <div class="photo-actions">
-                        <label for="image" class="photo-button" id="attachButton">Прикрепить фото</label>
-                        <label for="image" class="photo-button change" id="changeButton">Изменить фото</label>
+                        <label for="image" class="photo-button" id="attachButton">{{ trans('attach_photo') }}</label>
+                        <label for="image" class="photo-button change" id="changeButton">{{ trans('change_photo') }}</label>
                         <input
                             type="file"
                             id="image"
@@ -405,8 +404,8 @@
             </div>
 
             <div class="form-actions">
-                <a href="/menu_page" class="button cancel">Отмена</a>
-                <button type="submit" class="button save">Добавить блюдо</button>
+                <a href="/menu_page" class="button cancel">{{ trans('cancel') }}</a>
+                <button type="submit" class="button save">{{ trans('add_dish_button') }}</button>
             </div>
         </form>
     </div>
@@ -414,6 +413,13 @@
 
 <script src="/static/api.js"></script>
 <script>
+const i18n = {
+    error_image_only: "{{ trans('error_image_only') | escape }}",
+    error_check_form: "{{ trans('error_check_form') | escape }}",
+    error_add_dish: "{{ trans('error_add_dish') | escape }}",
+    error_connection: "{{ trans('error_connection') | escape }}"
+};
+
 const form = document.getElementById("dishForm");
 const formError = document.getElementById("formError");
 const imageInput = document.getElementById("image");
@@ -429,7 +435,7 @@ imageInput.addEventListener("change", function() {
     }
 
     if (!file.type.startsWith("image/")) {
-        showFormError("Можно загрузить только изображение.");
+        showFormError(i18n.error_image_only);
         this.value = "";
         return;
     }
@@ -481,7 +487,7 @@ form.addEventListener("submit", async function(event) {
         try {
             data = JSON.parse(text);
         } catch {
-            showFormError(text || "Не удалось добавить блюдо.");
+            showFormError(text || i18n.error_add_dish);
             return;
         }
 
@@ -500,14 +506,14 @@ form.addEventListener("submit", async function(event) {
                 }
             });
 
-            showFormError("Проверьте правильность заполнения формы.");
+            showFormError(i18n.error_check_form);
             return;
         }
 
-        showFormError("Не удалось добавить блюдо.");
+        showFormError(i18n.error_add_dish);
     } catch (error) {
         console.error(error);
-        showFormError("Не удалось подключиться к серверу.");
+        showFormError(i18n.error_connection);
     }
 });
 

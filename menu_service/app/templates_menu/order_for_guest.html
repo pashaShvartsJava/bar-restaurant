@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ restaurant.restaurant_name if restaurant else 'Restaurant' }} — Заказ</title>
+    <title>{{ restaurant.restaurant_name if restaurant else 'Restaurant' }} — {{ trans('order_page_title') }}</title>
 
     <style>
     * {
@@ -879,8 +879,8 @@
             </a>
 
             <div class="nav-actions">
-                <a href="/r/{{ slug }}" class="nav-link">Главная</a>
-                <a href="/login" class="nav-link">Войти в аккаунт</a>
+                <a href="/r/{{ slug }}" class="nav-link">{{ trans('home') }}</a>
+                <a href="/login" class="nav-link">{{ trans('login_to_account') }}</a>
             </div>
         </div>
     </nav>
@@ -906,11 +906,10 @@
                     {% endif %}
                 </div>
 
-                <h1>Выберите блюда и напитки</h1>
+                <h1>{{ trans('order_hero_title') }}</h1>
 
                 <p>
-                    Соберите свой заказ из меню заведения.
-                    Выбранные позиции появятся справа в вашей корзине.
+                    {{ trans('order_hero_desc') }}
                 </p>
             </div>
         </section>
@@ -918,8 +917,8 @@
         <main class="order-layout">
             <section class="menu-panel">
                 <header class="menu-header">
-                    <h2>Меню {{ restaurant.restaurant_name if restaurant else '' }}</h2>
-                    <p>Доступные блюда и напитки</p>
+                    <h2>{{ trans('menu_of_restaurant') }} {{ restaurant.restaurant_name if restaurant else '' }}</h2>
+                    <p>{{ trans('available_dishes_drinks') }}</p>
                 </header>
 
                 {% if categories %}
@@ -949,7 +948,7 @@
                                                     >
                                                 {% else %}
                                                     <div class="dish-no-image">
-                                                        Нет<br>фото
+                                                        {{ trans('no_photo_short') }}
                                                     </div>
                                                 {% endif %}
                                             </div>
@@ -960,7 +959,7 @@
                                                 {% if dish.description %}
                                                     <p class="dish-description">{{ dish.description }}</p>
                                                 {% else %}
-                                                    <p class="dish-description">Авторское блюдо</p>
+                                                    <p class="dish-description">{{ trans('signature_dish') }}</p>
                                                 {% endif %}
                                             </div>
 
@@ -995,11 +994,11 @@
                                                         class="add-button"
                                                         data-dish-id="{{ dish.id }}"
                                                     >
-                                                        Добавить
+                                                        {{ trans('add_to_cart') }}
                                                     </button>
                                                 {% else %}
                                                     <span class="unavailable-label">
-                                                        Сейчас недоступно
+                                                        {{ trans('currently_unavailable') }}
                                                     </span>
                                                 {% endif %}
                                             </div>
@@ -1012,9 +1011,9 @@
                 {% else %}
                     <div class="empty-cart">
                         <div class="empty-cart-icon">🍽</div>
-                        <div class="empty-cart-title">Меню пока пусто</div>
+                        <div class="empty-cart-title">{{ trans('menu_empty_yet') }}</div>
                         <div class="empty-cart-text">
-                            В данный момент нет доступных блюд.
+                            {{ trans('no_dishes_available_now') }}
                         </div>
                     </div>
                 {% endif %}
@@ -1022,10 +1021,10 @@
 
             <aside class="cart-panel">
                 <header class="cart-header">
-                    <h2 class="cart-title">Ваш заказ</h2>
+                    <h2 class="cart-title">{{ trans('your_order') }}</h2>
 
                     <span class="cart-count" id="cartCount">
-                        0 предметов
+                        {{ trans('cart_items_zero') }}
                     </span>
                 </header>
 
@@ -1033,7 +1032,7 @@
 
                 <footer class="cart-footer">
                     <div class="total-row">
-                        <span class="total-label">Итого</span>
+                        <span class="total-label">{{ trans('total') }}</span>
 
                         <span class="total-price" id="cartTotal">
                             0.00 {{ currency_symbol }}
@@ -1048,7 +1047,7 @@
                         id="checkoutButton"
                         disabled
                     >
-                        Оформить заказ
+                        {{ trans('checkout') }}
                     </button>
 
                     <button
@@ -1056,12 +1055,11 @@
                         class="clear-button"
                         id="clearButton"
                     >
-                        Очистить корзину
+                        {{ trans('clear_cart') }}
                     </button>
 
                     <p class="cart-note">
-                        После оформления вы сможете указать
-                        адрес доставки и подтвердить заказ.
+                        {{ trans('cart_note_after_checkout') }}
                     </p>
                 </footer>
             </aside>
@@ -1069,13 +1067,29 @@
 
         <footer class="footer">
             <span>© 2026 {{ restaurant.restaurant_name if restaurant else 'Restaurant' }}</span>
-            <a href="/r/{{ slug }}">← Вернуться на страницу заведения</a>
+            <a href="/r/{{ slug }}">← {{ trans('back_to_restaurant_page') }}</a>
         </footer>
     </div>
 
     <script src="/static/api.js"></script>
 
     <script>
+        const i18n = {
+            cart_items_one: "{{ trans('cart_items_one') | escape }}",
+            cart_items_few: "{{ trans('cart_items_few') | escape }}",
+            cart_items_many: "{{ trans('cart_items_many') | escape }}",
+            no_photo_short: "{{ trans('no_photo_short') | escape }}",
+            remove: "{{ trans('remove') | escape }}",
+            total_word: "{{ trans('total_word') | escape }}",
+            cart_empty: "{{ trans('cart_empty') | escape }}",
+            cart_empty_desc: "{{ trans('cart_empty_desc') | escape }}",
+            error_cart_empty: "{{ trans('error_cart_empty') | escape }}",
+            error_checkout: "{{ trans('error_checkout') | escape }}",
+            creating_order: "{{ trans('creating_order') | escape }}",
+            confirm_clear_cart: "{{ trans('confirm_clear_cart') | escape }}",
+            checkout_button: "{{ trans('checkout') | escape }}"
+        };
+
         const SLUG = "{{ slug }}";
         const RESTAURANT_ID = "{{ restaurant.id if restaurant else '' }}";
         const CURRENCY_SYMBOL = "{{ currency_symbol }}";
@@ -1127,26 +1141,25 @@
             );
         }
 
-        function getRussianItemText(number) {
+        function getItemsText(number) {
             const value =
                 Math.abs(number) % 100;
 
             const lastDigit =
                 value % 10;
 
+            let template;
             if (value >= 11 && value <= 19) {
-                return `${number} предметов`;
+                template = i18n.cart_items_many;
+            } else if (lastDigit === 1) {
+                template = i18n.cart_items_one;
+            } else if (lastDigit >= 2 && lastDigit <= 4) {
+                template = i18n.cart_items_few;
+            } else {
+                template = i18n.cart_items_many;
             }
 
-            if (lastDigit === 1) {
-                return `${number} предмет`;
-            }
-
-            if (lastDigit >= 2 && lastDigit <= 4) {
-                return `${number} предмета`;
-            }
-
-            return `${number} предметов`;
+            return template.replace("{n}", number);
         }
 
         function escapeHTML(value) {
@@ -1297,7 +1310,7 @@
                 getTotalPrice(cart);
 
             cartCount.textContent =
-                getRussianItemText(quantity);
+                getItemsText(quantity);
 
             cartTotal.textContent =
                 `${total.toFixed(2)} ${CURRENCY_SYMBOL}`;
@@ -1306,10 +1319,9 @@
                 cartContent.innerHTML = `
                     <div class="empty-cart">
                         <div class="empty-cart-icon">🍽</div>
-                        <div class="empty-cart-title">Корзина пуста</div>
+                        <div class="empty-cart-title">${i18n.cart_empty}</div>
                         <div class="empty-cart-text">
-                            Выберите блюда из меню,
-                            чтобы начать заказ.
+                            ${i18n.cart_empty_desc}
                         </div>
                     </div>
                 `;
@@ -1348,7 +1360,7 @@
                         `
                         : `
                             <div class="cart-item-no-image">
-                                Нет<br>фото
+                                ${i18n.no_photo_short}
                             </div>
                         `;
 
@@ -1369,7 +1381,7 @@
 
                             <br>
 
-                            Всего:
+                            ${i18n.total_word}:
                             <strong>
                                 ${itemTotal.toFixed(2)} ${CURRENCY_SYMBOL}
                             </strong>
@@ -1396,7 +1408,7 @@
                             class="remove-button"
                             data-remove="${item.dish_id}"
                         >
-                            Убрать
+                            ${i18n.remove}
                         </button>
                     </div>
                 `;
@@ -1509,7 +1521,7 @@
                     return;
                 }
 
-                if (confirm("Очистить всю корзину?")) {
+                if (confirm(i18n.confirm_clear_cart)) {
                     localStorage.removeItem(
                         CART_STORAGE_KEY
                     );
@@ -1535,7 +1547,7 @@
 
                 if (cart.length === 0) {
                     checkoutError.textContent =
-                        "Корзина пуста.";
+                        i18n.error_cart_empty;
 
                     checkoutError.style.display =
                         "block";
@@ -1584,7 +1596,7 @@
                     true;
 
                 checkoutButton.textContent =
-                    "Создание заказа...";
+                    i18n.creating_order;
 
                 try {
                     const response =
@@ -1607,7 +1619,7 @@
 
                     if (!response.ok) {
                         let message =
-                            "Не удалось оформить заказ. Попробуйте ещё раз.";
+                            i18n.error_checkout;
 
                         try {
                             const errorData =
@@ -1661,7 +1673,7 @@
 
                     checkoutError.textContent =
                         error.message ||
-                        "Не удалось оформить заказ. Попробуйте ещё раз.";
+                        i18n.error_checkout;
 
                     checkoutError.style.display =
                         "block";
@@ -1672,7 +1684,7 @@
                         false;
 
                     checkoutButton.textContent =
-                        "Оформить заказ";
+                        i18n.checkout_button;
                 }
             }
         );

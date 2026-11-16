@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>История оплат</title>
+    <title>{{ trans('payment_history_page_title') }}</title>
 
     <style>
     * {
@@ -375,14 +375,14 @@
 <body>
 <div class="container">
     <div class="top">
-        <a href="/admin_panel" class="back">← НАЗАД</a>
+        <a href="/admin_panel" class="back">← {{ trans('nav_back_upper') }}</a>
         <div class="brand">RESTAURANT ADMIN</div>
     </div>
 
     <div class="header">
         <div class="header-label">PAYMENT HISTORY</div>
-        <h1>История оплат</h1>
-        <p class="description">Все зарегистрированные платежи ресторана</p>
+        <h1>{{ trans('payment_history_page_title') }}</h1>
+        <p class="description">{{ trans('payment_history_page_description') }}</p>
     </div>
 
     {% set total_paid = namespace(value=0) %}
@@ -406,19 +406,19 @@
 
     <div class="summary">
         <div class="summary-card">
-            <div class="summary-label">Всего оплачено</div>
+            <div class="summary-label">{{ trans('summary_total_paid') }}</div>
             <div class="summary-value">{{ "%.2f"|format(total_paid.value) }} {{ currency_symbol }}</div>
         </div>
         <div class="summary-card">
-            <div class="summary-label">Успешных оплат</div>
+            <div class="summary-label">{{ trans('summary_successful_payments') }}</div>
             <div class="summary-value neutral">{{ count_paid.value }}</div>
         </div>
         <div class="summary-card">
-            <div class="summary-label">Возвраты</div>
+            <div class="summary-label">{{ trans('summary_refunds') }}</div>
             <div class="summary-value">{{ "%.2f"|format(total_refunded.value) }} {{ currency_symbol }}</div>
         </div>
         <div class="summary-card">
-            <div class="summary-label">Неудачные платежи</div>
+            <div class="summary-label">{{ trans('summary_failed_payments') }}</div>
             <div class="summary-value neutral">{{ "%.2f"|format(total_failed.value) }} {{ currency_symbol }}</div>
         </div>
     </div>
@@ -426,13 +426,13 @@
     {% if payments %}
     <div class="payments">
         <div class="table-header">
-            <div>Платёж</div>
-            <div>Заказ</div>
-            <div>Клиент</div>
-            <div>Сумма</div>
-            <div>Способ</div>
-            <div>Дата</div>
-            <div>Статус</div>
+            <div>{{ trans('th_payment') }}</div>
+            <div>{{ trans('th_order') }}</div>
+            <div>{{ trans('th_client') }}</div>
+            <div>{{ trans('th_sum') }}</div>
+            <div>{{ trans('th_method') }}</div>
+            <div>{{ trans('th_date') }}</div>
+            <div>{{ trans('th_status') }}</div>
         </div>
 
         {% for payment in payments %}
@@ -441,7 +441,7 @@
             <div class="payment-number">{{ payment.payment_number or ("#" ~ payment.id) }}</div>
             <div class="payment-order">
                 {% if payment.order_number %}
-                    Заказ № {{ payment.order_number }}
+                    {{ trans('order_number_prefix') }} {{ payment.order_number }}
                 {% else %}
                     —
                 {% endif %}
@@ -461,19 +461,19 @@
             <div>
                 <span class="status {{ st }}">
                     {% if st == "pending" %}
-                        Ожидает
+                        {{ trans('payment_status_pending') }}
                     {% elif st == "processing" %}
-                        Обрабатывается
+                        {{ trans('payment_status_processing') }}
                     {% elif st == "authorized" %}
-                        Авторизован
+                        {{ trans('payment_status_authorized') }}
                     {% elif st == "paid" %}
-                        Оплачен
+                        {{ trans('payment_status_paid') }}
                     {% elif st == "refunded" %}
-                        Возвращён
+                        {{ trans('payment_status_refunded') }}
                     {% elif st == "failed" %}
-                        Ошибка
+                        {{ trans('payment_status_failed') }}
                     {% elif st == "cancelled" %}
-                        Отменён
+                        {{ trans('payment_status_cancelled') }}
                     {% else %}
                         {{ st }}
                     {% endif %}
@@ -485,8 +485,8 @@
 
     {% else %}
     <div class="empty">
-        <div class="empty-title">Платежи не найдены</div>
-        <div class="empty-description">За данный период оплаты отсутствуют.</div>
+        <div class="empty-title">{{ trans('payments_empty_title') }}</div>
+        <div class="empty-description">{{ trans('payments_empty_description') }}</div>
     </div>
     {% endif %}
 

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Профиль — BAR</title>
+  <title>{{ trans('profile_page_title') }} — BAR</title>
   <style>
     * {
         margin: 0;
@@ -78,7 +78,7 @@
         padding: 30px 45px;
     }
 
-    /* ===== ВЕРХНЯЯ ПАНЕЛЬ ===== */
+    /* ===== ВЕРХНЯЯ ПАНЕЛЬ (только логотип) ===== */
 
     .top {
         display: flex;
@@ -93,53 +93,6 @@
         font-family: Georgia, serif;
         font-size: 20px;
         letter-spacing: 4px;
-    }
-
-    .top-menu {
-        display: flex;
-        gap: 10px;
-    }
-
-    .top-button,
-    .cart-button {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        padding: 11px 18px;
-        border-radius: 7px;
-        border: 1px solid var(--border);
-        background: rgba(255, 255, 255, 0.025);
-        color: #b9b0b2;
-        text-decoration: none;
-        font-size: 11px;
-        cursor: pointer;
-        transition: 0.25s;
-    }
-
-    .top-button:hover,
-    .cart-button:hover {
-        color: var(--cream, var(--text));
-        border-color: var(--gold-border);
-        background: rgba(213, 166, 91, 0.07);
-        transform: translateY(-2px);
-    }
-
-    .cart-icon {
-        font-size: 14px;
-    }
-
-    .cart-badge {
-        min-width: 18px;
-        height: 18px;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        padding: 0 5px;
-        border-radius: 20px;
-        background: var(--gold);
-        color: #1a1410;
-        font-size: 9px;
-        font-weight: 700;
     }
 
     /* ===== КОНТЕНТ ===== */
@@ -195,137 +148,290 @@
         display: grid;
         grid-template-columns: 330px 1fr;
         gap: 25px;
+        align-items: start;
     }
 
-    /* ===== КАРТОЧКА ПРОФИЛЯ ===== */
+    /* ===== БОКОВОЕ МЕНЮ ПРОФИЛЯ (внутри layout) ===== */
 
-    .profile-card {
-        padding: 27px;
+    .profile-menu {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        width: 330px;
+        padding: 14px;
         background:
-            linear-gradient(
-                145deg,
-                rgba(40, 31, 34, 0.96),
-                rgba(17, 16, 18, 0.98)
-            );
-        border: 1px solid rgba(213, 166, 91, 0.16);
-        border-radius: 14px;
-        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+            radial-gradient(ellipse at 50% 0%, rgba(220, 120, 100, 0.12) 0%, rgba(150, 65, 80, 0.14) 40%, rgba(25, 20, 22, 0.92) 80%),
+            linear-gradient(180deg, rgba(40, 25, 28, 0.96) 0%, rgba(24, 18, 20, 0.96) 50%, rgba(16, 14, 16, 0.96) 100%);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        border-radius: 18px;
+        box-shadow: 0 25px 70px rgba(0, 0, 0, 0.5), inset 0 1px rgba(255, 255, 255, 0.03);
+        backdrop-filter: blur(14px);
+        transition: width 0.28s ease, padding 0.28s ease;
+        position: sticky;
+        top: 25px;
     }
 
-    .profile-header {
+    .profile-menu.collapsed { width: 64px; padding: 14px 8px; }
+
+    /* Шапка меню */
+    .profile-menu-header {
         display: flex;
         align-items: center;
-        gap: 15px;
-        padding-bottom: 22px;
+        justify-content: space-between;
+        gap: 10px;
+        padding: 6px 8px 14px;
+        margin-bottom: 6px;
         border-bottom: 1px solid rgba(255, 255, 255, 0.06);
     }
 
-    .avatar {
-        width: 55px;
-        height: 55px;
+    .profile-menu-brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        min-width: 0;
+        overflow: hidden;
+        transition: opacity 0.2s ease;
+    }
+
+    .profile-menu-avatar {
+        flex-shrink: 0;
+        width: 36px;
+        height: 36px;
         display: flex;
         align-items: center;
         justify-content: center;
-        flex-shrink: 0;
         border-radius: 50%;
-        background: #252427;
-        border: 1px solid rgba(255, 255, 255, 0.08);
+        background: rgba(213, 166, 91, 0.12);
+        border: 1px solid rgba(213, 166, 91, 0.3);
         color: var(--gold);
         font-family: Georgia, serif;
-        font-size: 21px;
+        font-size: 15px;
     }
 
-    .user-name {
-        font-family: Georgia, serif;
-        font-size: 21px;
-        line-height: 1.2;
-        color: #f0e5de;
+    .profile-menu-user {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        min-width: 0;
+        overflow: hidden;
+        white-space: nowrap;
     }
 
-    .user-status {
-        margin-top: 5px;
-        color: var(--muted);
-        font-size: 10px;
-    }
-
-    .data {
-        margin-top: 22px;
-    }
-
-    .data-item {
-        padding: 13px 0;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-    }
-
-    .data-item:last-child {
-        border-bottom: none;
-    }
-
-    .data-label {
-        margin-bottom: 5px;
-        color: var(--muted);
-        font-size: 9px;
-        letter-spacing: 1px;
-        text-transform: uppercase;
-    }
-
-    .data-value {
-        color: #ddd5d0;
+    .profile-menu-user strong {
+        color: #eee5df;
         font-family: Georgia, serif;
         font-size: 13px;
+        font-weight: normal;
+        letter-spacing: 0.3px;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 
-    .address {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 10px 15px;
-        margin-top: 8px;
-    }
-
-    .address-item {
-        padding: 8px 10px;
-        border-radius: 6px;
-        background: rgba(255, 255, 255, 0.025);
-        border: 1px solid rgba(255, 255, 255, 0.05);
-    }
-
-    .address-label {
-        margin-bottom: 4px;
+    .profile-menu-user span {
         color: var(--muted);
-        font-size: 8px;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
+        font-size: 9px;
     }
 
-    .address-value {
-        color: #ddd5d0;
-        font-family: Georgia, serif;
-        font-size: 11px;
+    .profile-menu.collapsed .profile-menu-brand { opacity: 0; width: 0; pointer-events: none; }
+    .profile-menu.collapsed .profile-menu-avatar { display: none; }
+
+    .profile-menu-toggle {
+        flex-shrink: 0;
+        width: 34px;
+        height: 34px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 8px;
+        color: #b8a8a6;
+        font-size: 17px;
+        line-height: 1;
+        cursor: pointer;
+        transition: background 0.2s, border-color 0.2s, color 0.2s;
     }
 
-    .address-street {
-        grid-column: span 2;
+    .profile-menu-toggle:hover {
+        background: rgba(255, 255, 255, 0.08);
+        border-color: rgba(255, 255, 255, 0.2);
+        color: #f2c1a8;
     }
 
-    .edit-profile {
-        display: block;
-        margin-top: 18px;
-        padding: 12px;
-        border: 1px solid rgba(213, 166, 91, 0.3);
-        border-radius: 7px;
-        background: rgba(213, 166, 91, 0.06);
+    /* Список пунктов */
+    .profile-menu-list { display: flex; flex-direction: column; gap: 4px; }
+
+    .profile-menu-item {
+        display: flex;
+        align-items: center;
+        gap: 13px;
+        min-height: 48px;
+        padding: 11px 12px;
+        border: 1px solid transparent;
+        border-radius: 10px;
+        background: transparent;
+        color: #d4cac6;
+        font-family: Arial, sans-serif;
+        font-size: 12px;
+        font-weight: 500;
+        text-decoration: none;
+        text-align: left;
+        cursor: pointer;
+        white-space: nowrap;
+        overflow: hidden;
+        transition: background 0.2s, border-color 0.2s, color 0.2s;
+    }
+
+    .profile-menu-item:hover {
+        background: rgba(255, 255, 255, 0.05);
+        border-color: rgba(255, 255, 255, 0.08);
+        color: #f2e8e2;
+    }
+
+    .profile-menu-item .menu-icon {
+        flex-shrink: 0;
+        width: 28px;
+        height: 28px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        font-size: 15px;
+        line-height: 1;
+    }
+
+    .profile-menu-item.support-item .menu-icon {
+        background: rgba(139, 92, 246, 0.1);
+        border-color: rgba(167, 139, 250, 0.3);
+        color: var(--violet-light);
+    }
+
+    .profile-menu-item.cart-item .menu-icon {
+        background: rgba(213, 166, 91, 0.1);
+        border-color: rgba(213, 166, 91, 0.3);
         color: var(--gold);
+    }
+
+    .profile-menu-item .menu-label {
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        transition: opacity 0.2s ease;
+    }
+
+    .profile-menu.collapsed .profile-menu-item { justify-content: center; padding: 11px 6px; }
+    .profile-menu.collapsed .profile-menu-item .menu-label { opacity: 0; width: 0; pointer-events: none; }
+
+    /* Бейдж корзины: справа от иконки, между label и краем */
+    .profile-menu-cart-badge {
+        flex-shrink: 0;
+        min-width: 20px;
+        height: 20px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0 6px;
+        margin-left: auto;
+        border-radius: 20px;
+        background: var(--gold);
+        color: #1a1410;
+        font-size: 9px;
+        font-weight: 700;
+        transition: opacity 0.2s ease;
+    }
+
+    .profile-menu-item.cart-item { position: relative; }
+
+    /* В свёрнутом меню бейдж всё равно справа от иконки — уменьшенный */
+    .profile-menu.collapsed .profile-menu-cart-badge {
+        min-width: 14px;
+        height: 14px;
+        padding: 0 3px;
+        margin-left: 0;
+        font-size: 8px;
+    }
+
+    .profile-menu-divider { height: 1px; margin: 6px 8px; background: rgba(255, 255, 255, 0.06); }
+
+    /* Кнопка выхода */
+    .profile-menu-item.logout-item { color: #b8a8a6; }
+    .profile-menu-item.logout-item:hover {
+        background: rgba(120, 60, 60, 0.18);
+        border-color: rgba(180, 90, 90, 0.28);
+        color: #e0b0a8;
+    }
+    .profile-menu-item.logout-item .menu-icon {
+        background: rgba(210, 85, 90, 0.1);
+        border-color: rgba(217, 130, 130, 0.3);
+        color: #d98282;
+    }
+
+    /* Выбор языка в меню */
+    .profile-menu-lang {
+        margin: 8px 6px 0;
+        padding: 10px 12px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 10px;
+        background: rgba(255, 255, 255, 0.03);
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .profile-menu.collapsed .profile-menu-lang { display: none; }
+
+    .profile-menu-lang-title {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        color: #8a8082;
+        font-size: 9px;
+        font-weight: 600;
+        letter-spacing: 1.2px;
+        text-transform: uppercase;
+    }
+
+    .lang-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+
+    .lang-link {
+        flex: 1 1 calc(33% - 6px);
+        padding: 6px;
+        border: 1px solid rgba(213, 166, 91, 0.2);
+        border-radius: 6px;
+        background: rgba(213, 166, 91, 0.05);
+        color: #d5a65b;
+        font-size: 9px;
+        font-weight: 600;
         text-align: center;
         text-decoration: none;
-        font-size: 10px;
-        transition: 0.25s;
+        transition: background 0.2s, border-color 0.2s;
     }
 
-    .edit-profile:hover {
-        border-color: var(--gold);
-        background: rgba(213, 166, 91, 0.12);
-        transform: translateY(-2px);
+    .lang-link:hover {
+        background: rgba(213, 166, 91, 0.15);
+        border-color: rgba(213, 166, 91, 0.5);
+        color: #e8c58e;
     }
+
+    .profile-menu-error {
+        display: none;
+        margin: 4px 6px 0;
+        padding: 8px 10px;
+        border: 1px solid rgba(217, 130, 130, 0.3);
+        border-radius: 7px;
+        background: rgba(217, 130, 130, 0.06);
+        color: #d98282;
+        font-size: 10px;
+        line-height: 1.5;
+    }
+
+    .profile-menu-error.show { display: block; }
 
     /* ===== ПРАВАЯ КАРТОЧКА ===== */
 
@@ -833,92 +939,41 @@
         font-size: 18px;
     }
 
-    /* ===== НИЖНЯЯ ПАНЕЛЬ ===== */
+    /* ===== КОРЗИНА (компактная, сбоку справа) ===== */
 
-    .bottom {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-top: 30px;
-        gap: 12px;
-        flex-wrap: wrap;
+    .cart-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 999;
+        background: rgba(0, 0, 0, 0.55);
+        opacity: 0;
+        visibility: hidden;
+        transition: 0.3s;
     }
 
-    .support {
-        display: flex;
-        align-items: center;
-        gap: 9px;
-        padding: 11px 16px;
-        border-radius: 7px;
-        border: 1px solid var(--violet-border);
-        background: transparent;
-        color: var(--violet-light);
-        text-decoration: none;
-        font-size: 10px;
-        transition: 0.25s;
+    .cart-overlay.visible {
+        opacity: 1;
+        visibility: visible;
     }
-
-    .support::before {
-        content: "";
-        width: 7px;
-        height: 7px;
-        border-radius: 50%;
-        background: var(--violet);
-        box-shadow: 0 0 8px rgba(167, 139, 250, 0.6);
-    }
-
-    .support:hover {
-        color: #e0d4ff;
-        border-color: var(--violet);
-        box-shadow: 0 0 16px rgba(139, 92, 246, 0.25);
-    }
-
-    .logout {
-        padding: 11px 16px;
-        border-radius: 7px;
-        border: 1px solid rgba(210, 85, 90, 0.4);
-        background: transparent;
-        color: #d98282;
-        text-decoration: none;
-        font-size: 10px;
-        cursor: pointer;
-        transition: 0.25s;
-        font-family: inherit;
-    }
-
-    .logout:hover {
-        color: #e39a9a;
-        border-color: rgba(217, 130, 130, 0.7);
-        box-shadow: 0 0 14px rgba(210, 70, 70, 0.2);
-    }
-
-    .logout:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-    }
-
-    /* ===== КОРЗИНА ===== */
 
     .cart-sidebar {
         position: fixed;
-        top: 0;
-        right: 0;
+        top: 20px;
+        right: 20px;
+        bottom: 20px;
         z-index: 1000;
-        width: 390px;
-        max-width: 100%;
-        height: 100vh;
+        width: 360px;
+        max-width: calc(100vw - 40px);
         display: flex;
         flex-direction: column;
         background:
-            linear-gradient(
-                180deg,
-                rgba(38, 32, 33, 0.99) 0%,
-                rgba(22, 21, 23, 0.99) 45%,
-                rgba(14, 14, 16, 0.99) 100%
-            );
-        border-left: 1px solid rgba(213, 166, 91, 0.2);
-        box-shadow: -15px 0 40px rgba(0, 0, 0, 0.35);
-        transform: translateX(100%);
+            radial-gradient(ellipse at 50% 0%, rgba(220, 120, 100, 0.10) 0%, rgba(150, 65, 80, 0.12) 40%, rgba(20, 16, 18, 0.97) 80%),
+            linear-gradient(180deg, rgba(38, 32, 33, 0.99) 0%, rgba(22, 21, 23, 0.99) 45%, rgba(14, 14, 16, 0.99) 100%);
+        border: 1px solid rgba(213, 166, 91, 0.2);
+        border-radius: 18px;
+        box-shadow: 0 25px 70px rgba(0, 0, 0, 0.55);
+        backdrop-filter: blur(14px);
+        transform: translateX(calc(100% + 40px));
         transition: transform 0.3s ease;
     }
 
@@ -930,32 +985,32 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 25px;
+        padding: 20px;
         border-bottom: 1px solid rgba(255, 255, 255, 0.07);
     }
 
     .cart-title {
         display: block;
         font-family: Georgia, serif;
-        font-size: 22px;
+        font-size: 19px;
         color: #f0e5de;
     }
 
     .cart-header-count {
         display: block;
-        margin-top: 5px;
+        margin-top: 4px;
         color: var(--muted);
-        font-size: 10px;
+        font-size: 9px;
     }
 
     .cart-close {
-        width: 34px;
-        height: 34px;
+        width: 32px;
+        height: 32px;
         border: 1px solid rgba(255, 255, 255, 0.08);
         border-radius: 7px;
         background: rgba(42, 40, 42, 0.95);
         color: #aaa9ae;
-        font-size: 20px;
+        font-size: 18px;
         line-height: 1;
         cursor: pointer;
         transition: 0.25s;
@@ -969,7 +1024,7 @@
     .cart-content {
         flex: 1;
         overflow-y: auto;
-        padding: 20px;
+        padding: 16px;
     }
 
     .cart-empty {
@@ -985,33 +1040,33 @@
 
     .cart-empty-icon {
         color: #55555b;
-        font-size: 32px;
+        font-size: 28px;
     }
 
     .cart-empty-text {
         font-family: Georgia, serif;
-        font-size: 16px;
+        font-size: 15px;
         color: #a29a9c;
     }
 
     .cart-empty-description {
-        max-width: 230px;
+        max-width: 210px;
         color: var(--muted);
-        font-size: 10px;
+        font-size: 9px;
         line-height: 1.5;
     }
 
     .cart-item {
         display: grid;
-        grid-template-columns: 58px 1fr;
-        gap: 12px;
-        padding: 13px 0;
+        grid-template-columns: 52px 1fr;
+        gap: 10px;
+        padding: 11px 0;
         border-bottom: 1px solid rgba(255, 255, 255, 0.06);
     }
 
     .cart-item-image {
-        width: 58px;
-        height: 58px;
+        width: 52px;
+        height: 52px;
         overflow: hidden;
         border-radius: 7px;
         background: #252427;
@@ -1031,7 +1086,7 @@
         align-items: center;
         justify-content: center;
         color: var(--muted);
-        font-size: 20px;
+        font-size: 18px;
     }
 
     .cart-item-info {
@@ -1042,13 +1097,13 @@
         display: flex;
         align-items: flex-start;
         justify-content: space-between;
-        gap: 10px;
+        gap: 8px;
     }
 
     .cart-item-name {
         color: #f0e5de;
         font-family: Georgia, serif;
-        font-size: 13px;
+        font-size: 12px;
         line-height: 1.3;
     }
 
@@ -1057,7 +1112,7 @@
         border: none;
         background: transparent;
         color: var(--muted);
-        font-size: 14px;
+        font-size: 13px;
         cursor: pointer;
         transition: 0.2s;
     }
@@ -1067,17 +1122,17 @@
     }
 
     .cart-item-price {
-        margin-top: 4px;
+        margin-top: 3px;
         color: var(--gold);
-        font-size: 11px;
+        font-size: 10px;
     }
 
     .cart-item-bottom {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        gap: 10px;
-        margin-top: 9px;
+        gap: 8px;
+        margin-top: 7px;
     }
 
     .cart-quantity {
@@ -1090,8 +1145,8 @@
     }
 
     .cart-quantity button {
-        width: 28px;
-        height: 27px;
+        width: 26px;
+        height: 25px;
         border: none;
         background: transparent;
         color: #aaa9ae;
@@ -1105,7 +1160,7 @@
     }
 
     .cart-quantity-value {
-        min-width: 27px;
+        min-width: 25px;
         color: #eee;
         text-align: center;
         font-size: 10px;
@@ -1113,32 +1168,33 @@
 
     .cart-item-total {
         color: #eee;
-        font-size: 11px;
+        font-size: 10px;
         font-weight: 600;
     }
 
     .cart-footer {
-        padding: 20px;
+        padding: 16px;
         border-top: 1px solid rgba(255, 255, 255, 0.07);
         background: rgba(10, 10, 12, 0.28);
+        border-radius: 0 0 18px 18px;
     }
 
     .cart-total {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        margin-bottom: 15px;
+        margin-bottom: 12px;
     }
 
     .cart-total-label {
         color: var(--muted);
-        font-size: 11px;
+        font-size: 10px;
     }
 
     .cart-total-price {
         color: var(--gold);
         font-family: Georgia, serif;
-        font-size: 20px;
+        font-size: 18px;
     }
 
     .checkout-button,
@@ -1151,11 +1207,11 @@
     }
 
     .checkout-button {
-        padding: 13px;
+        padding: 11px;
         border: 1px solid rgba(213, 166, 91, 0.45);
         background: rgba(213, 166, 91, 0.12);
         color: var(--gold);
-        font-size: 11px;
+        font-size: 10px;
         font-weight: 600;
     }
 
@@ -1166,32 +1222,17 @@
     }
 
     .clear-cart-button {
-        margin-top: 8px;
-        padding: 10px;
+        margin-top: 7px;
+        padding: 9px;
         border: 1px solid rgba(255, 255, 255, 0.08);
         background: rgba(255, 255, 255, 0.025);
         color: var(--muted);
-        font-size: 10px;
+        font-size: 9px;
     }
 
     .clear-cart-button:hover {
         border-color: rgba(190, 70, 75, 0.4);
         color: #d98282;
-    }
-
-    .cart-overlay {
-        position: fixed;
-        inset: 0;
-        z-index: 999;
-        background: rgba(0, 0, 0, 0.55);
-        opacity: 0;
-        visibility: hidden;
-        transition: 0.3s;
-    }
-
-    .cart-overlay.visible {
-        opacity: 1;
-        visibility: visible;
     }
 
     body.cart-open {
@@ -1223,6 +1264,14 @@
         .layout {
             grid-template-columns: 1fr;
         }
+
+        .profile-menu {
+            position: static;
+            width: 100%;
+            max-width: 420px;
+        }
+
+        .profile-menu.collapsed { width: 64px; }
 
         .actions {
             grid-template-columns: 1fr;
@@ -1265,50 +1314,22 @@
             padding: 20px 15px;
         }
 
-        .top-menu {
-            display: flex;
-        }
-
-        .top-button {
-            display: none;
-        }
-
-        .cart-button {
-            padding: 10px 13px;
-        }
-
         .heading h1 {
             font-size: 28px;
         }
 
-        .profile-card,
+        .profile-menu,
         .actions-card {
             padding: 20px;
         }
 
-        .address {
-            grid-template-columns: 1fr;
-        }
-
-        .address-street {
-            grid-column: span 1;
-        }
-
-        .bottom {
-            align-items: stretch;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .support,
-        .logout {
-            text-align: center;
-            justify-content: center;
-            width: 100%;
-        }
-
         .cart-sidebar {
-            width: 100%;
+            top: 10px;
+            right: 10px;
+            bottom: 10px;
+            width: calc(100vw - 20px);
+            max-width: none;
+            border-radius: 14px;
         }
 
         .restaurant-actions {
@@ -1326,90 +1347,85 @@
             animation-duration: 0.01ms !important;
         }
     }
-</style>
+  </style>
 </head>
 <body>
 <div class="page">
   <header class="top">
     <div class="logo"></div>
-    <nav class="top-menu">
-      <button type="button" class="cart-button" id="cartButton">
-        <span class="cart-icon">🛒</span>
-        <span>Корзина</span>
-        <span class="cart-badge" id="cartBadge">0</span>
-      </button>
-    </nav>
   </header>
 
   <main class="content">
     <div class="heading">
       <div class="heading-label">PERSONAL AREA</div>
-      <h1>Личный кабинет</h1>
-      <p>Управляйте заказами и своим профилем</p>
+      <h1>{{ trans('personal_area_title') }}</h1>
+      <p>{{ trans('personal_area_subtitle') }}</p>
     </div>
 
     <div id="pageError" class="page-error"></div>
 
     <div class="layout">
-      <section class="profile-card">
-        <div class="profile-header">
-          <div class="avatar">{{ user.name[0] }}</div>
-          <div>
-            <div class="user-name">{{ user.name }} {{ user.surname }}</div>
-            <div class="user-status">Зарегистрированный клиент</div>
-          </div>
-        </div>
 
-        <div class="data">
-          <div class="data-item">
-            <div class="data-label">Email</div>
-            <div class="data-value">{{ user.email }}</div>
-          </div>
-
-          <div class="data-item">
-            <div class="data-label">Телефон</div>
-            <div class="data-value">{{ user.phone }}</div>
-          </div>
-
-          <div class="data-item">
-            <div class="data-label">Дата рождения</div>
-            <div class="data-value">{{ user.birthday }}</div>
-          </div>
-
-          <div class="data-item">
-            <div class="data-label">Адрес</div>
-            <div class="address">
-              <div class="address-item">
-                <div class="address-label">Город</div>
-                <div class="address-value">{{ address.city }}</div>
-              </div>
-
-              <div class="address-item">
-                <div class="address-label">Индекс</div>
-                <div class="address-value">{{ address.postal_code }}</div>
-              </div>
-
-              <div class="address-item address-street">
-                <div class="address-label">Улица</div>
-                <div class="address-value">{{ address.street }}</div>
-              </div>
-
-              <div class="address-item">
-                <div class="address-label">Дом</div>
-                <div class="address-value">{{ address.house }}</div>
-              </div>
-
-              <div class="address-item">
-                <div class="address-label">Квартира</div>
-                <div class="address-value">{{ address.apartment }}</div>
-              </div>
+      <aside class="profile-menu" id="profileMenu">
+        <div class="profile-menu-header">
+          <div class="profile-menu-brand">
+            <div class="profile-menu-avatar">{{ user.name[0] }}</div>
+            <div class="profile-menu-user">
+              <strong>{{ user.name }} {{ user.surname }}</strong>
+              <span>{{ trans('registered_client_status') }}</span>
             </div>
           </div>
+
+          <button type="button" class="profile-menu-toggle" id="profileMenuToggle" aria-label="{{ trans('collapse_menu') }}" aria-expanded="true">
+            ‹
+          </button>
         </div>
 
-        <a href="/user/edit" class="edit-profile">Изменить личные данные</a>
-      </section>
+        <nav class="profile-menu-list">
+          <a href="/user/edit" class="profile-menu-item">
+            <span class="menu-icon">⚙️</span>
+            <span class="menu-label">{{ trans('edit_profile') }}</span>
+          </a>
 
+          <a href="/main/support/user" class="profile-menu-item support-item">
+            <span class="menu-icon">💬</span>
+            <span class="menu-label">{{ trans('fdc_support') }}</span>
+          </a>
+
+          <button type="button" class="profile-menu-item cart-item" id="cartButton">
+            <span class="menu-icon">🛒</span>
+            <span class="menu-label">{{ trans('cart') }}</span>
+            <span class="profile-menu-cart-badge" id="cartBadge">0</span>
+          </button>
+
+          <div class="profile-menu-divider"></div>
+
+          <button type="button" class="profile-menu-item logout-item" id="logoutButton">
+            <span class="menu-icon">⏻</span>
+            <span class="menu-label">{{ trans('logout') }}</span>
+          </button>
+
+          <div id="logoutError" class="profile-menu-error"></div>
+
+          <form id="logoutForm" method="post" action="/logout" style="display:none;"></form>
+
+          <div class="profile-menu-lang">
+            <div class="profile-menu-lang-title">
+              <span>🌐</span> {{ trans('language') }}
+            </div>
+            <div class="lang-grid">
+              <a href="/set-language/en" class="lang-link">EN</a>
+              <a href="/set-language/de" class="lang-link">DE</a>
+              <a href="/set-language/ru" class="lang-link">RU</a>
+              <a href="/set-language/uk" class="lang-link">UK</a>
+              <a href="/set-language/fr" class="lang-link">FR</a>
+              <a href="/set-language/ka" class="lang-link">KA</a>
+            </div>
+          </div>
+        </nav>
+      </aside>
+
+      <!-- ===== ПРАВАЯ КАРТОЧКА ===== -->
       <section class="actions-card">
         <div class="search-section">
           <div class="search-row">
@@ -1418,12 +1434,12 @@
               <input
                 type="text"
                 id="restaurantSearch"
-                placeholder="Поиск по названию заведения..."
+                placeholder="{{ trans('search_restaurant_placeholder') }}"
                 autocomplete="off"
               >
             </div>
             <select id="cityFilter">
-              <option value="">Все города</option>
+              <option value="">{{ trans('all_cities') }}</option>
               {% for r in restaurants %}
                 {% set rcity = r.city if r.city is defined else r.get('city') %}
                 {% if rcity %}
@@ -1435,8 +1451,8 @@
         </div>
 
         <div class="restaurants-section">
-          <h3>Заведения</h3>
-          <p>Выберите заведение, чтобы перейти в его меню</p>
+          <h3>{{ trans('venues_title') }}</h3>
+          <p>{{ trans('venues_subtitle') }}</p>
 
           {% if restaurants %}
             <div class="restaurants-list" id="restaurantsList">
@@ -1468,41 +1484,41 @@
 
                   <div class="restaurant-actions">
                     <a href="/r/{{ slug }}/menu_page/orders/users" class="restaurant-btn menu-gold">
-                      Перейти в меню →
+                      {{ trans('go_to_menu') }}
                     </a>
                     <a href="/r/{{ slug }}/support/user" class="restaurant-btn support-purple">
-                      Техподдержка
+                      {{ trans('support_button') }}
                     </a>
                   </div>
                 </div>
               {% endfor %}
             </div>
             <div class="search-no-results" id="searchNoResults">
-              Ничего не найдено. Попробуйте изменить запрос или выбрать другой город.
+              {{ trans('search_no_results') }}
             </div>
           {% else %}
             <div class="restaurants-empty">
               <span class="order-icon">🍽</span>
-              <span>Пока нет доступных заведений</span>
+              <span>{{ trans('no_venues_available') }}</span>
             </div>
           {% endif %}
         </div>
 
         <div class="actions-title">
-          <h2>Что хотите сделать?</h2>
-          <p>Выберите необходимый раздел</p>
+          <h2>{{ trans('what_to_do_title') }}</h2>
+          <p>{{ trans('what_to_do_subtitle') }}</p>
         </div>
 
         <div class="actions">
           <button type="button" class="action" id="repeatLastOrder">
             <div class="action-icon">☰</div>
             <div>
-              <div class="action-name">Повторить последний заказ</div>
+              <div class="action-name">{{ trans('repeat_last_order') }}</div>
               <div class="action-description">
                 {% if last_order %}
-                  Оформление доставки по последнему заказу
+                  {{ trans('repeat_last_order_available') }}
                 {% else %}
-                  У вас пока нет завершённых заказов
+                  {{ trans('repeat_last_order_empty') }}
                 {% endif %}
               </div>
             </div>
@@ -1511,8 +1527,8 @@
           <a href="/orders/my_history_orders" class="action">
             <div class="action-icon">◷</div>
             <div>
-              <div class="action-name">История заказов</div>
-              <div class="action-description">Ваши предыдущие заказы</div>
+              <div class="action-name">{{ trans('order_history_title') }}</div>
+              <div class="action-description">{{ trans('order_history_desc') }}</div>
             </div>
           </a>
         </div>
@@ -1520,8 +1536,8 @@
         <div class="active-orders">
           <div class="active-orders-header">
             <div>
-              <h3>Активные заказы</h3>
-              <p>Ваши текущие заказы</p>
+              <h3>{{ trans('active_orders_title') }}</h3>
+              <p>{{ trans('active_orders_subtitle') }}</p>
             </div>
             <span class="active-dot {% if active_orders %}active-dot--on{% else %}active-dot--off{% endif %}"></span>
           </div>
@@ -1532,7 +1548,7 @@
                 {% set status = order.status.value if order.status.value is defined else order.status %}
                 <div class="active-order">
                   <div class="active-order-info">
-                    <div class="active-order-number">Заказ #{{ order.order_number }}</div>
+                    <div class="active-order-number">{{ trans('order_number_prefix') }}{{ order.order_number }}</div>
                     <div class="active-order-items">
                       {% for item in order.order_items %}
                         <div class="active-order-item">
@@ -1556,11 +1572,11 @@
                   <div class="active-order-right">
                     <span class="active-order-status status-{{ status }}">
                       {% if status == "paid" %}
-                        Оплачен
+                        {{ trans('status_paid') }}
                       {% elif status == "preparing" %}
-                        Готовится
+                        {{ trans('status_preparing') }}
                       {% elif status == "delivering" %}
-                        Ваш заказ уже в пути
+                        {{ trans('status_delivering_short') }}
                       {% else %}
                         {{ status }}
                       {% endif %}
@@ -1572,19 +1588,11 @@
           {% else %}
             <div class="order-empty">
               <div class="order-icon">◷</div>
-              <span>Сейчас нет активных заказов</span>
+              <span>{{ trans('no_active_orders') }}</span>
             </div>
           {% endif %}
         </div>
       </section>
-    </div>
-
-    <div class="bottom">
-      <form method="post" action="/logout" id="logoutForm">
-        <button type="submit" class="logout">Выйти из аккаунта</button>
-      </form>
-
-      <a href="/main/support/user" class="support">Связаться с техподдержкой платформы</a>
     </div>
   </main>
 </div>
@@ -1595,28 +1603,45 @@
 <aside class="cart-sidebar" id="cartSidebar">
   <header class="cart-header">
     <div>
-      <span class="cart-title">Корзина</span>
-      <span class="cart-header-count" id="cartHeaderCount">0 предметов</span>
+      <span class="cart-title">{{ trans('cart') }}</span>
+      <span class="cart-header-count" id="cartHeaderCount">{{ trans('cart_items_zero') }}</span>
     </div>
-    <button type="button" class="cart-close" id="cartClose" title="Свернуть корзину">×</button>
+    <button type="button" class="cart-close" id="cartClose" title="{{ trans('collapse_cart') }}">×</button>
   </header>
 
   <div class="cart-content" id="cartContent"></div>
 
   <footer class="cart-footer">
     <div class="cart-total">
-      <span class="cart-total-label">Итого</span>
+      <span class="cart-total-label">{{ trans('total') }}</span>
       <span class="cart-total-price" id="cartTotalPrice">0.00 €</span>
     </div>
 
-    <button type="button" class="checkout-button" id="checkoutButton">Оформить заказ</button>
-    <button type="button" class="clear-cart-button" id="clearCartButton">Очистить корзину</button>
+    <button type="button" class="checkout-button" id="checkoutButton">{{ trans('checkout') }}</button>
+    <button type="button" class="clear-cart-button" id="clearCartButton">{{ trans('clear_cart') }}</button>
   </footer>
 </aside>
 
 <script src="/static/api.js"></script>
 
 <script>
+  const i18n = {
+    error_cart_empty: "{{ trans('error_cart_empty') | escape }}",
+    error_create_order: "{{ trans('error_create_order') | escape }}",
+    error_connection_cart: "{{ trans('error_connection_cart') | escape }}",
+    error_no_last_order: "{{ trans('error_no_last_order') | escape }}",
+    error_logout: "{{ trans('error_logout') | escape }}",
+    error_connection_logout: "{{ trans('error_connection_logout') | escape }}",
+    cart_empty_title: "{{ trans('cart_empty') | escape }}",
+    cart_empty_desc: "{{ trans('cart_empty_desc') | escape }}",
+    cart_items_one: "{{ trans('cart_items_one') | escape }}",
+    cart_items_few: "{{ trans('cart_items_few') | escape }}",
+    cart_items_many: "{{ trans('cart_items_many') | escape }}",
+    dish_default_name_prefix: "{{ trans('dish_default_name_prefix') | escape }}",
+    collapse_menu_label: "{{ trans('collapse_menu') | escape }}",
+    expand_menu_label: "{{ trans('expand_menu') | escape }}"
+  };
+
   const CART_STORAGE_KEY = "restaurant_cart";
   const lastOrder = {{ last_order | tojson }};
   const cartButton = document.getElementById("cartButton");
@@ -1632,6 +1657,24 @@
   const repeatLastOrderButton = document.getElementById("repeatLastOrder");
   const pageError = document.getElementById("pageError");
   const logoutForm = document.getElementById("logoutForm");
+  const logoutButton = document.getElementById("logoutButton");
+  const logoutError = document.getElementById("logoutError");
+
+  const profileMenu = document.getElementById("profileMenu");
+  const profileMenuToggle = document.getElementById("profileMenuToggle");
+
+  // ===== СВОРАЧИВАНИЕ МЕНЮ ПРОФИЛЯ =====
+  if (profileMenuToggle) {
+    profileMenuToggle.addEventListener("click", () => {
+      const isCollapsed = profileMenu.classList.toggle("collapsed");
+      profileMenuToggle.setAttribute("aria-expanded", String(!isCollapsed));
+      profileMenuToggle.setAttribute(
+        "aria-label",
+        isCollapsed ? i18n.expand_menu_label : i18n.collapse_menu_label
+      );
+      profileMenuToggle.textContent = isCollapsed ? "›" : "‹";
+    });
+  }
 
   // ===== ПОИСК И ФИЛЬТР =====
   const searchInput = document.getElementById("restaurantSearch");
@@ -1740,7 +1783,7 @@
   }
 
   function getItemName(item) {
-    return item.dish_name || item.name || `Блюдо #${item.dish_id}`;
+    return item.dish_name || item.name || `${i18n.dish_default_name_prefix} #${item.dish_id}`;
   }
 
   function getItemPrice(item) {
@@ -1752,15 +1795,9 @@
   }
 
   function getItemsText(count) {
-    if (count === 1) {
-      return "1 предмет";
-    }
-
-    if (count >= 2 && count <= 4) {
-      return `${count} предмета`;
-    }
-
-    return `${count} предметов`;
+    if (count === 1) return i18n.cart_items_one.replace("{n}", count);
+    if (count >= 2 && count <= 4) return i18n.cart_items_few.replace("{n}", count);
+    return i18n.cart_items_many.replace("{n}", count);
   }
 
   function renderCart() {
@@ -1774,8 +1811,8 @@
       cartContent.innerHTML = `
         <div class="cart-empty">
           <div class="cart-empty-icon">🛒</div>
-          <div class="cart-empty-text">Корзина пуста</div>
-          <div class="cart-empty-description">Добавьте блюда из меню, и они появятся здесь.</div>
+          <div class="cart-empty-text">${i18n.cart_empty_title}</div>
+          <div class="cart-empty-description">${i18n.cart_empty_desc}</div>
         </div>
       `;
 
@@ -1807,7 +1844,7 @@
           <div class="cart-item-info">
             <div class="cart-item-top">
               <div class="cart-item-name">${name}</div>
-              <button type="button" class="cart-item-remove" data-index="${index}" title="Удалить">×</button>
+              <button type="button" class="cart-item-remove" data-index="${index}" title="${i18n.cart_empty_title}">×</button>
             </div>
             <div class="cart-item-price">${formatPrice(price)}</div>
             <div class="cart-item-bottom">
@@ -1907,7 +1944,7 @@
     const cart = getCart();
 
     if (cart.length === 0) {
-      showError("Корзина пуста.");
+      showError(i18n.error_cart_empty);
       return;
     }
 
@@ -1932,14 +1969,14 @@
       });
 
       if (!response.ok) {
-        showError(await getErrorMessage(response, "Не удалось оформить заказ."));
+        showError(await getErrorMessage(response, i18n.error_create_order));
         checkoutButton.disabled = false;
         return;
       }
 
       window.location.href = "/users/confirm_address";
     } catch {
-      showError("Не удалось связаться с сервером. Попробуйте ещё раз.");
+      showError(i18n.error_connection_cart);
       checkoutButton.disabled = false;
     }
   });
@@ -1949,7 +1986,7 @@
       clearError();
 
       if (!lastOrder || !lastOrder.order_items || lastOrder.order_items.length === 0) {
-        showError("У вас пока нет завершённых заказов.");
+        showError(i18n.error_no_last_order);
         return;
       }
 
@@ -1966,12 +2003,12 @@
     });
   }
 
-  logoutForm.addEventListener("submit", async event => {
-    event.preventDefault();
-    clearError();
+  logoutButton.addEventListener("click", async () => {
+    logoutError.textContent = "";
+    logoutError.classList.remove("show");
 
-    const button = logoutForm.querySelector(".logout");
-    button.disabled = true;
+    const originalHTML = logoutButton.innerHTML;
+    logoutButton.disabled = true;
 
     try {
       const response = await apiFetch("/logout", {
@@ -1979,16 +2016,19 @@
         body: new FormData(logoutForm)
       });
 
-      if (!response.ok) {
-        showError(await getErrorMessage(response, "Не удалось выйти из аккаунта."));
-        button.disabled = false;
+      if (response.ok) {
+        window.location.href = "/login";
         return;
       }
 
-      window.location.href = "/login";
+      logoutError.textContent = await getErrorMessage(response, i18n.error_logout);
+      logoutError.classList.add("show");
     } catch {
-      showError("Не удалось связаться с сервером. Попробуйте ещё раз.");
-      button.disabled = false;
+      logoutError.textContent = i18n.error_connection_logout;
+      logoutError.classList.add("show");
+    } finally {
+      logoutButton.disabled = false;
+      logoutButton.innerHTML = originalHTML;
     }
   });
 

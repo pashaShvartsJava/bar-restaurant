@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Настройки профиля | Bar & Lounge</title>
+    <title>{{ trans('profile_settings_page_title') }} | Bar & Lounge</title>
     <style>
     :root {
         --bg: #100e11;
@@ -510,27 +510,27 @@
 <body>
 <div class="page">
     <div class="top">
-        <a href="/user/my_profile" class="back">← Вернуться в профиль</a>
+        <a href="/user/my_profile" class="back">← {{ trans('back_to_profile') }}</a>
         <div class="brand">BAR & LOUNGE</div>
     </div>
     <div class="card">
         <div class="header">
             <div class="header-label">PROFILE SETTINGS</div>
-            <h1>Настройки профиля</h1>
-            <div class="description">Изменение личных данных и настроек аккаунта</div>
+            <h1>{{ trans('profile_settings_page_title') }}</h1>
+            <div class="description">{{ trans('profile_settings_description') }}</div>
         </div>
         <form id="profileForm">
             <div id="formError" class="form-error"></div>
             <div class="content">
                 <div class="section">
-                    <div class="section-title">ЛИЧНЫЕ ДАННЫЕ</div>
+                    <div class="section-title">{{ trans('personal_data_section_title') }}</div>
                     <div class="row">
                         <div class="field">
-                            <label>Имя</label>
+                            <label>{{ trans('name') }}</label>
                             <input type="text" name="name" value="{{ user.name }}">
                         </div>
                         <div class="field">
-                            <label>Фамилия</label>
+                            <label>{{ trans('surname') }}</label>
                             <input type="text" name="surname" value="{{ user.surname }}">
                         </div>
                     </div>
@@ -539,35 +539,35 @@
                         <input type="email" name="email" value="{{ user.email }}">
                     </div>
                     <div class="field">
-                        <label>Номер телефона</label>
+                        <label>{{ trans('phone_number') }}</label>
                         <input type="tel" name="phone" value="{{ user.phone }}">
                     </div>
                     <div class="field">
-                        <label>Дата рождения</label>
+                        <label>{{ trans('birthday') }}</label>
                         <input type="date" name="birthday" value="{{ user.birthday }}">
                     </div>
                 </div>
                 <div class="section">
-                    <div class="section-title">АДРЕС</div>
+                    <div class="section-title">{{ trans('address_section_title') }}</div>
                     <div class="field">
-                        <label>Город</label>
+                        <label>{{ trans('city') }}</label>
                         <input type="text" name="city" value="{{ address.city }}">
                     </div>
                     <div class="field">
-                        <label>Почтовый индекс</label>
+                        <label>{{ trans('postal_code') }}</label>
                         <input type="text" name="postal_code" value="{{ address.postal_code }}">
                     </div>
                     <div class="field">
-                        <label>Улица</label>
+                        <label>{{ trans('street') }}</label>
                         <input type="text" name="street" value="{{ address.street }}">
                     </div>
                     <div class="row">
                         <div class="field">
-                            <label>Дом</label>
+                            <label>{{ trans('house_number') }}</label>
                             <input type="text" name="house" value="{{ address.house }}">
                         </div>
                         <div class="field">
-                            <label>Квартира</label>
+                            <label>{{ trans('apartment_number') }}</label>
                             <input type="text" name="apartment" value="{{ address.apartment }}">
                         </div>
                     </div>
@@ -575,25 +575,25 @@
                 <div class="account-actions">
                     <a href="/user/password" class="action-card">
                         <div class="action-info">
-                            <strong>Изменить пароль</strong>
-                            <span>Обновить пароль аккаунта</span>
+                            <strong>{{ trans('change_password_link_title') }}</strong>
+                            <span>{{ trans('change_password_link_desc') }}</span>
                         </div>
                         <div class="arrow">→</div>
                     </a>
                     <a href="/profile/account" class="action-card">
                         <div class="action-info">
-                            <strong>Банковские данные</strong>
-                            <span>Добавить или изменить данные счета</span>
+                            <strong>{{ trans('bank_details_link_title') }}</strong>
+                            <span>{{ trans('bank_details_link_desc') }}</span>
                         </div>
                         <div class="arrow">→</div>
                     </a>
                 </div>
             </div>
             <div class="bottom">
-                <a href="/user/my_profile" class="cancel">Отмена</a>
+                <a href="/user/my_profile" class="cancel">{{ trans('cancel') }}</a>
                 <div class="bottom-right">
-                    <button type="button" class="delete" onclick="deleteAccount()">Удалить аккаунт</button>
-                    <button type="submit" class="save">Сохранить изменения</button>
+                    <button type="button" class="delete" onclick="deleteAccount()">{{ trans('delete_account_button') }}</button>
+                    <button type="submit" class="save">{{ trans('save_changes') }}</button>
                 </div>
             </div>
         </form>
@@ -601,6 +601,16 @@
 </div>
 <script src="/static/api.js"></script>
 <script>
+    const i18n = {
+        error_invalid_value: "{{ trans('invalid_value') | escape }}",
+        error_generic: "{{ trans('error_generic') | escape }}",
+        error_no_access: "{{ trans('error_no_access') | escape }}",
+        error_data_not_found: "{{ trans('error_data_not_found') | escape }}",
+        error_server: "{{ trans('error_server') | escape }}",
+        error_connection_profile: "{{ trans('error_connection_profile') | escape }}",
+        confirm_delete_account: "{{ trans('confirm_delete_account') | escape }}"
+    };
+
     const form = document.getElementById("profileForm");
     const formError = document.getElementById("formError");
 
@@ -650,7 +660,7 @@ async function handleFieldErrors(response) {
                 const input = field ? form.querySelector(`[name="${field}"]`) : null;
 
                 if (input) {
-                    showError(input, error.msg || "Некорректное значение.");
+                    showError(input, error.msg || i18n.error_invalid_value);
                 } else if (error.msg) {
                     generalErrors.push(error.msg);
                 }
@@ -662,9 +672,9 @@ async function handleFieldErrors(response) {
             return;
         }
 
-        showFormError(data.detail || data.message || "Произошла ошибка.");
+        showFormError(data.detail || data.message || i18n.error_generic);
     } catch {
-        showFormError("Произошла ошибка.");
+        showFormError(i18n.error_generic);
     }
 }
 
@@ -682,25 +692,25 @@ async function handleResponse(response) {
     }
 
     if (response.status === 403) {
-        showFormError("У вас нет доступа к этому действию.");
+        showFormError(i18n.error_no_access);
         return false;
     }
 
     if (response.status === 404) {
-        showFormError("Данные не найдены.");
+        showFormError(i18n.error_data_not_found);
         return false;
     }
 
     if (response.status >= 500) {
-        showFormError("Ошибка сервера. Попробуйте позже.");
+        showFormError(i18n.error_server);
         return false;
     }
 
     try {
         const data = await response.json();
-        showFormError(data.detail || data.message || "Произошла ошибка.");
+        showFormError(data.detail || data.message || i18n.error_generic);
     } catch {
-        showFormError("Произошла ошибка.");
+        showFormError(i18n.error_generic);
     }
 
     return false;
@@ -720,14 +730,14 @@ form.addEventListener("submit", async function(event) {
 
         window.location.href = "/user/my_profile";
     } catch {
-        showFormError("Не удалось подключиться к серверу. Проверьте соединение.");
+        showFormError(i18n.error_connection_profile);
     }
 });
 
 async function deleteAccount() {
     clearFormError();
 
-    if (!confirm("Вы действительно хотите удалить аккаунт?")) return;
+    if (!confirm(i18n.confirm_delete_account)) return;
 
     try {
         const response = await apiFetch("/user/delete", {
@@ -738,7 +748,7 @@ async function deleteAccount() {
 
         window.location.href = "/bar_name";
     } catch {
-        showFormError("Не удалось подключиться к серверу. Проверьте соединение.");
+        showFormError(i18n.error_connection_profile);
     }
 }
 

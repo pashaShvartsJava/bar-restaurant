@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Создание заказа вручную</title>
+    <title>{{ trans('manual_order_page_title') }}</title>
 
     <style>
         * {
@@ -521,15 +521,15 @@
 <body>
 <div class="container">
     <div class="top">
-        <a href="/orders/get_orders" class="back">← К СПИСКУ ЗАКАЗОВ</a>
+        <a href="/orders/get_orders" class="back">← {{ trans('back_to_orders_list_upper') }}</a>
         <div class="brand">RESTAURANT ADMIN</div>
     </div>
 
     <header class="header">
         <div class="header-label">ORDER MANAGEMENT</div>
-        <h1>Создание заказа</h1>
+        <h1>{{ trans('manual_order_page_title') }}</h1>
         <p class="description">
-            Создайте заказ для столика и добавьте блюда из меню.
+            {{ trans('manual_order_description') }}
         </p>
     </header>
 
@@ -537,14 +537,14 @@
 
     <form id="createOrderForm">
         <section class="panel">
-            <h2 class="panel-title">Столик</h2>
+            <h2 class="panel-title">{{ trans('manual_order_table_title') }}</h2>
             <p class="panel-description">
-                Выберите столик из списка, полученного из сервиса управления столиками.
+                {{ trans('manual_order_table_description') }}
             </p>
 
             <div class="selection-row">
                 <div class="selected-value" id="selectedTableDisplay">
-                    Столик не выбран
+                    {{ trans('table_not_selected') }}
                 </div>
 
                 <button
@@ -552,17 +552,17 @@
                     type="button"
                     onclick="openTableSelection()"
                 >
-                    Назначить столик
+                    {{ trans('assign_table_button') }}
                 </button>
             </div>
 
             <div class="selection-form" id="tableSelectionForm">
-                <h3 class="selection-form-title">Выбор столика</h3>
+                <h3 class="selection-form-title">{{ trans('table_selection_title') }}</h3>
 
                 <div class="field">
-                    <label for="tableSelect">Доступные столики</label>
+                    <label for="tableSelect">{{ trans('available_tables_label') }}</label>
                     <select id="tableSelect">
-                        <option value="">Список столиков пока не загружен</option>
+                        <option value="">{{ trans('tables_not_loaded') }}</option>
                     </select>
                 </div>
 
@@ -572,7 +572,7 @@
                         type="button"
                         onclick="confirmTableSelection()"
                     >
-                        Подтвердить выбор
+                        {{ trans('confirm_selection_button') }}
                     </button>
 
                     <button
@@ -580,21 +580,21 @@
                         type="button"
                         onclick="closeTableSelection()"
                     >
-                        Отмена
+                        {{ trans('cancel') }}
                     </button>
                 </div>
             </div>
         </section>
 
         <section class="panel">
-            <h2 class="panel-title">Блюда</h2>
+            <h2 class="panel-title">{{ trans('manual_order_dishes_title') }}</h2>
             <p class="panel-description">
-                Выберите блюда из меню и укажите количество каждого блюда.
+                {{ trans('manual_order_dishes_description') }}
             </p>
 
             <div class="selection-row">
                 <div class="selected-value" id="selectedDishesDisplay">
-                    Блюда не добавлены
+                    {{ trans('dishes_not_added') }}
                 </div>
 
                 <button
@@ -602,27 +602,26 @@
                     type="button"
                     onclick="openMenuSelection()"
                 >
-                    Добавить блюда
+                    {{ trans('add_dishes_button') }}
                 </button>
             </div>
 
             <div class="selection-form" id="menuSelectionForm">
-                <h3 class="selection-form-title">Выбор блюд из меню</h3>
+                <h3 class="selection-form-title">{{ trans('menu_selection_title') }}</h3>
 
                 <div class="field">
-                    <label for="menuSearch">Поиск по меню</label>
+                    <label for="menuSearch">{{ trans('menu_search_label') }}</label>
                     <input
                         id="menuSearch"
                         type="search"
-                        placeholder="Название блюда"
+                        placeholder="{{ trans('menu_search_placeholder') }}"
                         autocomplete="off"
                     >
                 </div>
 
                 <div class="menu-list" id="menuList">
                     <div class="empty-state">
-                        Меню пока не загружено. Здесь будут отображаться блюда,
-                        полученные из сервиса меню.
+                        {{ trans('menu_not_loaded_empty') }}
                     </div>
                 </div>
 
@@ -632,7 +631,7 @@
                         type="button"
                         onclick="confirmMenuSelection()"
                     >
-                        Добавить выбранные блюда
+                        {{ trans('add_selected_dishes_button') }}
                     </button>
 
                     <button
@@ -640,45 +639,45 @@
                         type="button"
                         onclick="closeMenuSelection()"
                     >
-                        Отмена
+                        {{ trans('cancel') }}
                     </button>
                 </div>
             </div>
         </section>
 
         <section class="panel">
-            <h2 class="panel-title">Состав заказа</h2>
+            <h2 class="panel-title">{{ trans('order_composition_title') }}</h2>
             <p class="panel-description">
-                Проверьте выбранные блюда и их количество перед созданием заказа.
+                {{ trans('order_composition_description') }}
             </p>
 
             <div class="order-items" id="orderItems">
                 <div class="empty-state">
-                    В заказе пока нет блюд.
+                    {{ trans('order_no_items_yet') }}
                 </div>
             </div>
 
             <div class="summary">
-                <div class="summary-label">Общая сумма</div>
+                <div class="summary-label">{{ trans('total_sum_label') }}</div>
                 <div class="summary-total" id="orderTotal">0.00 €</div>
             </div>
         </section>
 
         <section class="panel">
-            <h2 class="panel-title">Дополнительная информация</h2>
+            <h2 class="panel-title">{{ trans('extra_info_title') }}</h2>
 
             <div class="field">
-                <label for="orderComment">Комментарий к заказу</label>
+                <label for="orderComment">{{ trans('order_comment_label') }}</label>
                 <textarea
                     id="orderComment"
-                    placeholder="Дополнительные пожелания (необязательно)"
+                    placeholder="{{ trans('order_comment_placeholder') }}"
                 ></textarea>
             </div>
         </section>
 
         <div class="form-footer">
             <a href="/orders/get_orders" class="secondary-button">
-                Отмена
+                {{ trans('cancel') }}
             </a>
 
             <button
@@ -687,7 +686,7 @@
                 class="primary-button"
                 onclick="assignOrder()"
             >
-                Назначить заказ
+                {{ trans('assign_order_button') }}
             </button>
         </div>
     </form>
@@ -698,6 +697,32 @@
 <script src="/static/api.js"></script>
 
 <script>
+    const i18n = {
+        error_select_table: "{{ trans('error_select_table') | escape }}",
+        error_table_not_in_list: "{{ trans('error_table_not_in_list') | escape }}",
+        error_table_unavailable: "{{ trans('error_table_unavailable') | escape }}",
+        error_dishes_not_found: "{{ trans('error_dishes_not_found') | escape }}",
+        error_menu_not_loaded: "{{ trans('error_menu_not_loaded') | escape }}",
+        error_assign_table_first: "{{ trans('error_assign_table_first') | escape }}",
+        error_add_dish_first: "{{ trans('error_add_dish_first') | escape }}",
+        error_table_number_unknown: "{{ trans('error_table_number_unknown') | escape }}",
+        error_create_order_status: "{{ trans('error_create_order_status') | escape }}",
+        error_create_order_failed: "{{ trans('error_create_order_failed') | escape }}",
+        success_order_created: "{{ trans('success_order_created') | escape }}",
+        create_order_processing: "{{ trans('create_order_processing') | escape }}",
+        assign_order_button: "{{ trans('assign_order_button') | escape }}",
+        table_not_selected: "{{ trans('table_not_selected') | escape }}",
+        table_number_prefix: "{{ trans('table_number_prefix') | escape }}",
+        choose_table: "{{ trans('choose_table') | escape }}",
+        available_tables_not_loaded: "{{ trans('available_tables_not_loaded') | escape }}",
+        dishes_not_added: "{{ trans('dishes_not_added') | escape }}",
+        selected_dishes_template: "{{ trans('selected_dishes_template') | escape }}",
+        order_no_items_yet: "{{ trans('order_no_items_yet') | escape }}",
+        remove_item: "{{ trans('remove_item') | escape }}",
+        decrease_quantity_aria: "{{ trans('decrease_quantity_aria') | escape }}",
+        increase_quantity_aria: "{{ trans('increase_quantity_aria') | escape }}"
+    };
+
     let availableTables = {{ availableTables | tojson }};
     let availableDishes = {{ availableDishes | tojson }};
 
@@ -745,8 +770,8 @@
         const placeholder = document.createElement("option");
         placeholder.value = "";
         placeholder.textContent = availableTables.length
-            ? "Выберите столик"
-            : "Доступные столики не загружены";
+            ? i18n.choose_table
+            : i18n.available_tables_not_loaded;
 
         tableSelect.appendChild(placeholder);
 
@@ -755,7 +780,7 @@
             .forEach(table => {
                 const option = document.createElement("option");
                 option.value = String(table.id);
-                option.textContent = `Столик № ${table.table_number}`;
+                option.textContent = `${i18n.table_number_prefix} ${table.table_number}`;
                 tableSelect.appendChild(option);
             });
 
@@ -768,7 +793,7 @@
         const tableId = tableSelect.value;
 
         if (!tableId) {
-            showMessage("Сначала выберите столик из списка.", "error");
+            showMessage(i18n.error_select_table, "error");
             return;
         }
 
@@ -777,19 +802,19 @@
         );
 
         if (!table) {
-            showMessage("Выбранный столик отсутствует в списке.", "error");
+            showMessage(i18n.error_table_not_in_list, "error");
             return;
         }
 
         if (table.available === false) {
-            showMessage("Этот столик недоступен для выбора.", "error");
+            showMessage(i18n.error_table_unavailable, "error");
             return;
         }
 
         selectedTable = table;
 
         const display = document.getElementById("selectedTableDisplay");
-        display.textContent = `Столик № ${table.table_number}`;
+        display.textContent = `${i18n.table_number_prefix} ${table.table_number}`;
         display.classList.add("active");
 
         closeTableSelection();
@@ -828,8 +853,8 @@
             const empty = document.createElement("div");
             empty.className = "empty-state";
             empty.textContent = availableDishes.length
-                ? "Блюда по заданному запросу не найдены."
-                : "Меню пока не загружено. Подключите получение блюд из сервиса меню.";
+                ? i18n.error_dishes_not_found
+                : i18n.error_menu_not_loaded;
 
             menuList.appendChild(empty);
             return;
@@ -876,7 +901,7 @@
             const minus = document.createElement("button");
             minus.type = "button";
             minus.textContent = "−";
-            minus.setAttribute("aria-label", "Уменьшить количество");
+            minus.setAttribute("aria-label", i18n.decrease_quantity_aria);
             minus.disabled = quantity === 0;
 
             const quantityValue = document.createElement("span");
@@ -886,7 +911,7 @@
             const plus = document.createElement("button");
             plus.type = "button";
             plus.textContent = "+";
-            plus.setAttribute("aria-label", "Увеличить количество");
+            plus.setAttribute("aria-label", i18n.increase_quantity_aria);
 
             minus.addEventListener("click", () => {
                 setTemporaryDishQuantity(dish, quantity - 1);
@@ -941,7 +966,7 @@
         if (selectedDishes.size === 0) {
             const empty = document.createElement("div");
             empty.className = "empty-state";
-            empty.textContent = "В заказе пока нет блюд.";
+            empty.textContent = i18n.order_no_items_yet;
             orderItems.appendChild(empty);
 
             orderTotal.textContent = "0.00 €";
@@ -978,7 +1003,7 @@
             const remove = document.createElement("button");
             remove.type = "button";
             remove.className = "remove-item";
-            remove.textContent = "Удалить";
+            remove.textContent = i18n.remove_item;
 
             remove.addEventListener("click", () => {
                 selectedDishes.delete(id);
@@ -997,7 +1022,7 @@
         const display = document.getElementById("selectedDishesDisplay");
 
         if (!selectedDishes.size) {
-            display.textContent = "Блюда не добавлены";
+            display.textContent = i18n.dishes_not_added;
             display.classList.remove("active");
             return;
         }
@@ -1008,8 +1033,9 @@
             totalQuantity += item.quantity;
         });
 
-        display.textContent =
-            `Выбрано блюд: ${selectedDishes.size}; порций: ${totalQuantity}`;
+        display.textContent = i18n.selected_dishes_template
+            .replace("{dishes}", selectedDishes.size)
+            .replace("{portions}", totalQuantity);
 
         display.classList.add("active");
     }
@@ -1018,19 +1044,19 @@
         hideMessage();
 
         if (!selectedTable) {
-            showMessage("Назначьте столик перед созданием заказа.", "error");
+            showMessage(i18n.error_assign_table_first, "error");
             return;
         }
 
         if (!selectedDishes.size) {
-            showMessage("Добавьте хотя бы одно блюдо в заказ.", "error");
+            showMessage(i18n.error_add_dish_first, "error");
             return;
         }
 
         const tableNumber = Number(selectedTable.table_number);
 
         if (!Number.isInteger(tableNumber)) {
-            showMessage("Не удалось определить номер столика.", "error");
+            showMessage(i18n.error_table_number_unknown, "error");
             return;
         }
 
@@ -1046,7 +1072,7 @@
         };
 
         createOrderButton.disabled = true;
-        createOrderButton.textContent = "Создание заказа…";
+        createOrderButton.textContent = i18n.create_order_processing;
 
         try {
             const url =
@@ -1067,19 +1093,19 @@
                 const detail = result.detail;
                 const errorText = typeof detail === "string"
                     ? detail
-                    : `Ошибка создания заказа (${response.status})`;
+                    : i18n.error_create_order_status.replace("{status}", response.status);
 
                 throw new Error(errorText);
             }
 
-            showMessage("Заказ успешно создан.", "info");
+            showMessage(i18n.success_order_created, "info");
 
             selectedDishes.clear();
             temporarySelectedDishes.clear();
             selectedTable = null;
 
             document.getElementById("selectedTableDisplay").textContent =
-                "Столик не выбран";
+                i18n.table_not_selected;
             document.getElementById("selectedTableDisplay")
                 .classList.remove("active");
 
@@ -1088,14 +1114,14 @@
             renderTables();
             renderOrderItems();
         } catch (error) {
-            console.error("Ошибка создания заказа:", error);
+            console.error("Create order error:", error);
             showMessage(
-                error.message || "Не удалось создать заказ.",
+                error.message || i18n.error_create_order_failed,
                 "error"
             );
         } finally {
             createOrderButton.disabled = false;
-            createOrderButton.textContent = "Назначить заказ";
+            createOrderButton.textContent = i18n.assign_order_button;
         }
     }
 

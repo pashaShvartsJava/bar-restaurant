@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#1b1518">
-    <title>Вход администратора | FDCPlatform</title>
+    <title>{{ trans('admin_login_title') }} | FDCPlatform</title>
 
-    <style>
+     <style>
     :root {
         --bg: #100e11;
         --bg-soft: #191418;
@@ -487,176 +487,84 @@
 
         <div class="side-card">
             <span class="side-label">FDCPlatform</span>
-
-            <h3>
-                Панель администратора
-            </h3>
-
-            <p>
-                Авторизуйтесь для доступа к административным функциям
-                FDCPlatform.
-            </p>
+            <h3>{{ trans('admin_panel_label') }}</h3>
+            <p>{{ trans('admin_panel_desc') }}</p>
         </div>
 
         <div class="side-card">
-            <span class="side-label">ДОСТУП</span>
-
-            <p class="quote">
-                «Особый доступ требует особого ключа»
-            </p>
+            <span class="side-label">{{ trans('access_label') }}</span>
+            <p class="quote">{{ trans('access_quote') }}</p>
         </div>
 
     </aside>
 
     <main class="auth-card">
 
-        <div class="logo">
-            FDCPlatform
-        </div>
+        <div class="logo">FDCPlatform</div>
 
-        <h1>
-            Вход администратора
-        </h1>
+        <h1>{{ trans('admin_login_title') }}</h1>
 
-        <div class="subtitle">
-            Введите данные для доступа к панели администратора
-        </div>
+        <div class="subtitle">{{ trans('admin_login_subtitle') }}</div>
 
         <form id="adminLoginForm">
 
             <div class="field">
-                <label>
-                    Email <span class="required">*</span>
-                </label>
-
-                <input
-                    type="email"
-                    name="email"
-                    placeholder="admin@example.com"
-                    required
-                >
+                <label>Email <span class="required">*</span></label>
+                <input type="email" name="email" placeholder="admin@example.com" required>
             </div>
 
             <div class="field">
-                <label>
-                    Пароль <span class="required">*</span>
-                </label>
-
-                <input
-                    type="password"
-                    name="password"
-                    placeholder="Введите пароль"
-                    required
-                >
+                <label>{{ trans('password') }} <span class="required">*</span></label>
+                <input type="password" name="password" placeholder="{{ trans('enter_password') }}" required>
             </div>
 
-            <a
-                href="/bar_name/forgot_password"
-                class="forgot-password"
-            >
-                Забыли пароль?
-            </a>
+            <a href="/bar_name/forgot_password" class="forgot-password">{{ trans('forgot_password') }}</a>
 
             <div class="field">
-                <label>
-                    Специальный ключ <span class="required">*</span>
-                </label>
-
-                <input
-                    type="password"
-                    name="authentication_key"
-                    placeholder="Введите специальный ключ"
-                    required
-                >
+                <label>{{ trans('special_key') }} <span class="required">*</span></label>
+                <input type="password" name="authentication_key" placeholder="{{ trans('enter_special_key') }}" required>
             </div>
 
             <div id="form-error" class="field-error"></div>
 
-            <button
-                type="submit"
-                class="btn"
-            >
-                Войти
-            </button>
+            <button type="submit" class="btn">{{ trans('login') }}</button>
 
         </form>
 
         <div class="divider"></div>
 
         <div class="register-link">
-            Обычный пользователь?
-            <a href="/login">
-                Войти как пользователь
-            </a>
+            {{ trans('regular_user_q') }}
+            <a href="/login">{{ trans('login_as_user') }}</a>
         </div>
 
-        <a
-            href="/restaurants"
-            class="back-link"
-        >
-            ← Вернуться на главную
-        </a>
+        <a href="/restaurants" class="back-link">{{ trans('back_to_main') }}</a>
 
     </main>
 
     <aside class="side">
 
         <div class="side-card">
-
-            <span class="side-label">
-                ADMIN ACCESS
-            </span>
-
+            <span class="side-label">{{ trans('admin_access_label') }}</span>
             <div class="admin-info">
-
-                <div class="admin-icon">
-                    ◇
-                </div>
-
+                <div class="admin-icon">◇</div>
                 <div>
-                    <div class="admin-name">
-                        Административный доступ
-                    </div>
-
-                    <div class="admin-description">
-                        Управление системой
-                    </div>
+                    <div class="admin-name">{{ trans('admin_access_name') }}</div>
+                    <div class="admin-description">{{ trans('admin_access_desc') }}</div>
                 </div>
-
             </div>
-
         </div>
 
         <div class="side-card">
-
-            <span class="side-label">
-                ВОЗМОЖНОСТИ
-            </span>
-
-            <h3>
-                Управление
-            </h3>
-
-            <p>
-                Управление пользователями, заказами, меню и другими
-                функциями системы.
-            </p>
-
+            <span class="side-label">{{ trans('features_label') }}</span>
+            <h3>{{ trans('management') }}</h3>
+            <p>{{ trans('management_desc') }}</p>
         </div>
 
         <div class="side-card">
-
-            <span class="side-label">
-                SECURITY
-            </span>
-
-            <p class="quote">
-                Защищённая зона
-            </p>
-
+            <span class="side-label">SECURITY</span>
+            <p class="quote">{{ trans('secure_zone') }}</p>
         </div>
-
-        <div class="footer">
 
     </aside>
 
@@ -665,41 +573,34 @@
 <script src="/static/api.js"></script>
 
 <script>
+    const i18n = {
+        error_generic: "{{ trans('error_generic') | escape }}",
+        error_server: "{{ trans('error_server') | escape }}",
+        error_connection: "{{ trans('error_connection') | escape }}",
+        invalid_value: "{{ trans('invalid_value') | escape }}"
+    };
+
     const form = document.getElementById("adminLoginForm");
     const formError = document.getElementById("form-error");
 
     function clearError(input) {
         input.style.borderColor = "";
-
-        const error = input.parentElement.querySelector(
-            ".field-error:not(#form-error)"
-        );
-
-        if (error) {
-            error.remove();
-        }
+        const error = input.parentElement.querySelector(".field-error:not(#form-error)");
+        if (error) error.remove();
     }
 
     function showError(input, message) {
         clearError(input);
         input.style.borderColor = "#d98282";
-
         const error = document.createElement("div");
         error.className = "field-error";
         error.textContent = message;
-
         input.parentElement.appendChild(error);
     }
 
     function clearAllErrors() {
-        form.querySelectorAll(".field-error:not(#form-error)").forEach(error => {
-            error.remove();
-        });
-
-        form.querySelectorAll("input").forEach(input => {
-            input.style.borderColor = "";
-        });
-
+        form.querySelectorAll(".field-error:not(#form-error)").forEach(error => error.remove());
+        form.querySelectorAll("input").forEach(input => input.style.borderColor = "");
         formError.textContent = "";
         formError.style.display = "none";
     }
@@ -711,11 +612,10 @@
 
     async function handleFieldErrors(response) {
         let data;
-
         try {
             data = await response.json();
         } catch {
-            showFormError("Произошла ошибка.");
+            showFormError(i18n.error_generic);
             return;
         }
 
@@ -723,15 +623,8 @@
             data.detail.forEach(error => {
                 const field = error.loc?.at(-1);
                 const input = form.querySelector(`[name="${field}"]`);
-
-                if (input) {
-                    showError(
-                        input,
-                        error.msg || "Некорректное значение."
-                    );
-                }
+                if (input) showError(input, error.msg || i18n.invalid_value);
             });
-
             return;
         }
 
@@ -745,29 +638,23 @@
             return;
         }
 
-        showFormError("Произошла ошибка.");
+        showFormError(i18n.error_generic);
     }
 
     async function handleResponse(response) {
-        if (response.ok) {
-            return true;
-        }
+        if (response.ok) return true;
 
-        if (
-            response.status === 422 ||
-            response.status === 401 ||
-            response.status === 403
-        ) {
+        if ([422, 401, 403].includes(response.status)) {
             await handleFieldErrors(response);
             return false;
         }
 
         if (response.status >= 500) {
-            showFormError("Ошибка сервера. Попробуйте позже.");
+            showFormError(i18n.error_server);
             return false;
         }
 
-        showFormError("Произошла ошибка.");
+        showFormError(i18n.error_generic);
         return false;
     }
 
@@ -781,17 +668,11 @@
                 body: new FormData(form)
             });
 
-            if (!await handleResponse(response)) {
-                return;
-            }
-
+            if (!await handleResponse(response)) return;
             window.location.href = "/admin_panel";
         } catch (error) {
             console.error(error);
-
-            showFormError(
-                "Не удалось подключиться к серверу. Проверьте соединение."
-            );
+            showFormError(i18n.error_connection);
         }
     });
 </script>

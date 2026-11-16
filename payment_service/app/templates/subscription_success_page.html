@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#0c0a10">
-    <title>Подписка оформлена — Restaurant Platform</title>
+    <title>{{ trans('subscription_success_page_title') }} — Restaurant Platform</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -295,11 +295,10 @@
     <main class="card">
         <div class="icon">✓</div>
 
-        <h1>Подписка оформлена</h1>
+        <h1>{{ trans('subscription_success_title') }}</h1>
 
         <p class="subtitle">
-            Оплата прошла успешно, и подписка активируется в течение нескольких секунд.
-            Мы отправили данные на вашу электронную почту.
+            {{ trans('subscription_success_subtitle') }}
         </p>
 
         {% if subscription_number %}
@@ -310,20 +309,18 @@
 
         {% if key %}
         <div class="access-key-block">
-            <div class="access-key-label">Ключ доступа к аккаунту</div>
+            <div class="access-key-label">{{ trans('access_key_label') }}</div>
 
             <div class="access-key-value">
                 <code class="access-key-code" id="accessKey">{{ key }}</code>
                 <button type="button" class="copy-key-btn" id="copyKeyButton">
-                    Скопировать
+                    {{ trans('copy_button') }}
                 </button>
             </div>
 
             <p class="access-key-warning">
-                <strong>Обязательно сохраните этот ключ.</strong>
-                Он понадобится для входа в аккаунт. Без него войти невозможно.
-                При желании(настоятельно рекомендуется) вы сможете сгенерировать новый ключ уже в личном кабинете разделе управление администраторами.
-                Ни с кем не делитесь этим ключом, сохраняйте данные в полной конфиденциальности.
+                <strong>{{ trans('access_key_warning_strong') }}</strong>
+                {{ trans('access_key_warning_body') }}
             </p>
         </div>
         {% endif %}
@@ -332,50 +329,54 @@
             <div class="step warning">
                 <span class="step-num">!</span>
                 <span>
-                    <strong>Подтвердите электронную почту.</strong>
-                    Перед входом в аккаунт обязательно перейдите по ссылке
-                    из письма, которое мы отправили на ваш email. Без подтверждения
-                    почты вход будет недоступен.
+                    <strong>{{ trans('step_confirm_email_strong') }}</strong>
+                    {{ trans('step_confirm_email_body') }}
                 </span>
             </div>
 
             <div class="step">
                 <span class="step-num">1</span>
                 <span>
-                    Скопируйте и сохраните ключ доступа — он понадобится при входе.
+                    {{ trans('step_copy_key') }}
                 </span>
             </div>
 
             <div class="step">
                 <span class="step-num">2</span>
                 <span>
-                    Проверьте почту (включая папку «Спам») и подтвердите email.
+                    {{ trans('step_check_email') }}
                 </span>
             </div>
 
             <div class="step">
                 <span class="step-num">3</span>
                 <span>
-                    Войдите в панель управления заведением через страницу входа.
+                    {{ trans('step_login_to_panel') }}
                 </span>
             </div>
 
             <div class="step">
                 <span class="step-num">4</span>
                 <span>
-                    Настройте меню, столики и принимайте первые заказы.
+                    {{ trans('step_setup_menu') }}
                 </span>
             </div>
         </div>
 
         <a class="btn btn-primary" href="/admin/login">
-            Перейти ко входу →
+            {{ trans('go_to_login_button') }} →
         </a>
     </main>
 
     {% if key %}
     <script>
         (function () {
+            const i18n = {
+                copy_button: "{{ trans('copy_button') | escape }}",
+                copied: "{{ trans('copied') | escape }}",
+                selected: "{{ trans('selected') | escape }}"
+            };
+
             const button = document.getElementById("copyKeyButton");
             const code = document.getElementById("accessKey");
 
@@ -398,7 +399,7 @@
                     }
 
                     const original = button.textContent;
-                    button.textContent = "Скопировано";
+                    button.textContent = i18n.copied;
                     button.classList.add("copied");
 
                     setTimeout(() => {
@@ -407,9 +408,9 @@
                     }, 2000);
                 } catch (error) {
                     console.error("COPY KEY ERROR:", error);
-                    button.textContent = "Выделено";
+                    button.textContent = i18n.selected;
                     setTimeout(() => {
-                        button.textContent = "Скопировать";
+                        button.textContent = i18n.copy_button;
                     }, 1500);
                 }
             });

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QR-коды столиков — {{ restaurant.restaurant_name }}</title>
+    <title>{{ trans('qr_codes_page_title') }} — {{ restaurant.restaurant_name }}</title>
 
 <style>
     :root {
@@ -438,22 +438,21 @@
 <body>
     <main class="page">
         <div class="top">
-            <a href="/admin_panel" class="back">← Назад в панель</a>
+            <a href="/admin_panel" class="back">← {{ trans('back_to_panel') }}</a>
             <span class="brand">FDCPLATFORM</span>
         </div>
 
         <section class="card">
             <header class="header">
-                <div class="header-label">QR-код столика</div>
+                <div class="header-label">{{ trans('qr_page_label') }}</div>
                 <h1>{{ restaurant.restaurant_name }}</h1>
                 <p class="description">
-                    Введите номер столика и сгенерируйте QR-код. Гость сканирует код
-                    и попадает в меню с привязкой к этому столику.
+                    {{ trans('qr_page_description') }}
                 </p>
             </header>
 
             <div class="qr-form">
-                <label for="tableNumberInput">Номер столика</label>
+                <label for="tableNumberInput">{{ trans('table_number_label') }}</label>
                 <div class="qr-form-row">
                     <input
                         id="tableNumberInput"
@@ -461,11 +460,11 @@
                         inputmode="numeric"
                         min="1"
                         step="1"
-                        placeholder="Например, 5"
+                        placeholder="{{ trans('table_number_placeholder') }}"
                         autocomplete="off"
                     >
                     <button type="button" class="btn btn-primary" id="generateButton">
-                        Сгенерировать
+                        {{ trans('generate_button') }}
                     </button>
                 </div>
                 <div class="field-error" id="qrError"></div>
@@ -475,16 +474,16 @@
                 <div class="qr-image-wrap">
                     <img
                         src=""
-                        alt="QR-код столика"
+                        alt="{{ trans('qr_image_alt') }}"
                         class="qr-image"
                         id="qrImage"
                     >
                 </div>
 
                 <div class="qr-info">
-                    <div class="qr-title" id="qrTitle">Столик №—</div>
+                    <div class="qr-title" id="qrTitle">{{ trans('table_number_prefix') }}—</div>
                     <div class="qr-subtitle">
-                        Отсканируйте код, чтобы открыть меню и оформить заказ.
+                        {{ trans('qr_scan_hint') }}
                     </div>
 
                     <div class="qr-actions">
@@ -494,29 +493,41 @@
                             id="downloadLink"
                             download
                         >
-                            Скачать PNG
+                            {{ trans('download_png_button') }}
                         </a>
                         <button
                             type="button"
                             class="btn btn-secondary"
                             id="printButton"
                         >
-                            Распечатать
+                            {{ trans('print_button') }}
                         </button>
                     </div>
                 </div>
             </div>
 
             <div class="hint">
-                <strong>Совет:</strong> распечатайте QR-код на плотной бумаге
-                и разместите на столе. Код должен быть хорошо освещён и не иметь
-                бликов — так гости смогут отсканировать его с первого раза.
+                <strong>{{ trans('tip_label') }}</strong> {{ trans('qr_tip_body') }}
             </div>
         </section>
     </main>
 
     <script>
         (function () {
+            const i18n = {
+                error_enter_table_number: "{{ trans('error_enter_table_number') | escape }}",
+                error_table_number_positive: "{{ trans('error_table_number_positive') | escape }}",
+                error_table_number_not_found: "{{ trans('error_table_number_not_found') | escape }}",
+                error_no_access_qr: "{{ trans('error_no_access_qr') | escape }}",
+                error_invalid_table_number: "{{ trans('error_invalid_table_number') | escape }}",
+                error_generate_qr: "{{ trans('error_generate_qr') | escape }}",
+                error_connection_qr: "{{ trans('error_connection_qr') | escape }}",
+                generating: "{{ trans('generating') | escape }}",
+                generate_button: "{{ trans('generate_button') | escape }}",
+                table_number_prefix: "{{ trans('table_number_prefix') | escape }}",
+                qr_image_alt_prefix: "{{ trans('qr_image_alt_prefix') | escape }}"
+            };
+
             const input = document.getElementById("tableNumberInput");
             const generateButton = document.getElementById("generateButton");
             const errorEl = document.getElementById("qrError");
@@ -549,14 +560,14 @@
                 const raw = input.value.trim();
 
                 if (!raw) {
-                    showError("Введите номер столика.");
+                    showError(i18n.error_enter_table_number);
                     input.focus();
                     return;
                 }
 
                 const tableNumber = Number(raw);
                 if (!Number.isInteger(tableNumber) || tableNumber <= 0) {
-                    showError("Номер столика должен быть положительным целым числом.");
+                    showError(i18n.error_table_number_positive);
                     input.focus();
                     return;
                 }
@@ -565,22 +576,22 @@
 
                 generateButton.disabled = true;
                 const originalText = generateButton.textContent;
-                generateButton.textContent = "Генерация…";
+                generateButton.textContent = i18n.generating;
 
                 try {
                     const resp = await fetch(url, { method: "GET" });
 
                     if (!resp.ok) {
                         if (resp.status === 404) {
-                            showError("Столик с таким номером не найден.");
+                            showError(i18n.error_table_number_not_found);
                         } else if (resp.status === 401) {
                             window.location.href = "/login";
                         } else if (resp.status === 403) {
-                            showError("У вас нет доступа к этому действию.");
+                            showError(i18n.error_no_access_qr);
                         } else if (resp.status === 422) {
-                            showError("Некорректный номер столика.");
+                            showError(i18n.error_invalid_table_number);
                         } else {
-                            showError("Не удалось сгенерировать QR-код. Попробуйте позже.");
+                            showError(i18n.error_generate_qr);
                         }
                         result.hidden = true;
                         return;
@@ -591,15 +602,15 @@
                     currentObjectUrl = URL.createObjectURL(blob);
 
                     image.src = currentObjectUrl;
-                    image.alt = `QR-код столика ${tableNumber}`;
-                    title.textContent = `Столик №${tableNumber}`;
+                    image.alt = i18n.qr_image_alt_prefix + " " + tableNumber;
+                    title.textContent = i18n.table_number_prefix + tableNumber;
                     downloadLink.href = `${url}?download=1`;
                     downloadLink.setAttribute("download", `qr_table_${tableNumber}.png`);
 
                     result.hidden = false;
                 } catch (e) {
                     console.error("QR generation error:", e);
-                    showError("Не удалось подключиться к серверу. Проверьте соединение.");
+                    showError(i18n.error_connection_qr);
                     result.hidden = true;
                 } finally {
                     generateButton.disabled = false;
@@ -630,7 +641,7 @@
                     <html lang="ru">
                     <head>
                         <meta charset="UTF-8">
-                        <title>Печать QR — ${titleText}</title>
+                        <title>${titleText}</title>
                         <style>
                             * { margin: 0; padding: 0; box-sizing: border-box; }
                             body {
@@ -674,8 +685,8 @@
                         <div class="wrap">
                             <h1>${restaurantName}</h1>
                             <h2>${titleText}</h2>
-                            <img src="${image.src}" alt="QR-код">
-                            <p>Отсканируйте код, чтобы открыть меню</p>
+                            <img src="${image.src}" alt="">
+                            <p>${i18n.qr_scan_hint}</p>
                         </div>
                     </body>
                     </html>

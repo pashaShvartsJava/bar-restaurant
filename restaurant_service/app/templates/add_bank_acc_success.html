@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#1b1518">
-    <title>Счёт привязан — FDCPlatform</title>
+    <title>{{ trans('account_linked_page_title') }} — FDCPlatform</title>
 
     <style>
         * {
@@ -227,31 +227,26 @@
     <main class="card">
         <div class="icon">✓</div>
 
-        <h1>Счёт привязан</h1>
+        <h1>{{ trans('account_linked_title') }}</h1>
 
         <p class="subtitle">
-            Данные для получения выплат успешно сохранены.
-            Теперь вы можете принимать онлайн-заказы, а деньги
-            будут поступать на указанный банковский счёт.
+            {{ trans('account_linked_subtitle') }}
         </p>
 
         <div class="info-box">
             <p>
-                <strong>Что дальше?</strong>
-                Перейдите в панель управления, заново пройдя аутентификацию, чтобы начать
-                принимать заказы. Если вы ещё не завершили настройку,
-                Stripe может запросить дополнительные документы —
-                об этом придёт уведомление на указанную почту.
+                <strong>{{ trans('whats_next_title') }}</strong>
+                {{ trans('whats_next_body') }}
             </p>
         </div>
 
         <a href="/admin/login" class="btn">
-            Перейти в панель управления
+            {{ trans('go_to_admin_panel_button') }}
             <span class="btn-arrow">→</span>
         </a>
 
         <p class="footer-note">
-            Если панель управления не открывается — войдите в аккаунт заново.
+            {{ trans('account_linked_footer_note') }}
         </p>
     </main>
 </body>

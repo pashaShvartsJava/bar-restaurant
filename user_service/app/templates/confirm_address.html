@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Подтверждение адреса — {{ restaurant.restaurant_name if restaurant else 'Restaurant' }}</title>
+    <title>{{ trans('confirm_address_page_title') }} — {{ restaurant.restaurant_name if restaurant else 'Restaurant' }}</title>
 
     <style>
         * {
@@ -409,18 +409,18 @@
         <div class="nav-container">
             <a href="/user/my_profile" class="brand">
                 {{ restaurant.restaurant_name if restaurant else 'RESTAURANT' }}
-                <span>Подтверждение адреса</span>
+                <span>{{ trans('confirm_address_brand_subtitle') }}</span>
             </a>
 
-            <a href="/user/my_profile" class="nav-link">← Вернуться в профиль</a>
+            <a href="/user/my_profile" class="nav-link">← {{ trans('back_to_profile') }}</a>
         </div>
     </nav>
 
     <div class="page">
         <header class="header">
-            <div class="header-label">Доставка</div>
-            <h1>Подтвердите адрес</h1>
-            <p>Проверьте адрес доставки и подтвердите его перед переходом к оплате заказа.</p>
+            <div class="header-label">{{ trans('delivery_label') }}</div>
+            <h1>{{ trans('confirm_address_title') }}</h1>
+            <p>{{ trans('confirm_address_subtitle') }}</p>
         </header>
 
         <div class="card">
@@ -428,10 +428,10 @@
                 <div id="formError" class="form-error"></div>
 
                 <div class="section">
-                    <div class="section-title">Адрес доставки</div>
+                    <div class="section-title">{{ trans('delivery_address_section') }}</div>
 
                     <div class="field">
-                        <label for="city">Город</label>
+                        <label for="city">{{ trans('city') }}</label>
                         <input
                             id="city"
                             type="text"
@@ -441,7 +441,7 @@
                     </div>
 
                     <div class="field">
-                        <label for="postal_code">Почтовый индекс</label>
+                        <label for="postal_code">{{ trans('postal_code') }}</label>
                         <input
                             id="postal_code"
                             type="text"
@@ -451,7 +451,7 @@
                     </div>
 
                     <div class="field">
-                        <label for="street">Улица</label>
+                        <label for="street">{{ trans('street') }}</label>
                         <input
                             id="street"
                             type="text"
@@ -462,7 +462,7 @@
 
                     <div class="row">
                         <div class="field">
-                            <label for="house">Дом</label>
+                            <label for="house">{{ trans('house_number') }}</label>
                             <input
                                 id="house"
                                 type="text"
@@ -472,7 +472,7 @@
                         </div>
 
                         <div class="field">
-                            <label for="apartment">Квартира</label>
+                            <label for="apartment">{{ trans('apartment_number') }}</label>
                             <input
                                 id="apartment"
                                 type="text"
@@ -483,21 +483,32 @@
                 </div>
 
                 <div class="bottom">
-                    <a href="/user/my_profile" class="cancel">Отмена</a>
+                    <a href="/user/my_profile" class="cancel">{{ trans('cancel') }}</a>
                     <button type="submit" class="continue" id="continueButton">
-                        Перейти к оплате
+                        {{ trans('proceed_to_payment') }}
                     </button>
                 </div>
             </form>
         </div>
 
         <div class="footer">
-            {{ restaurant.restaurant_name if restaurant else 'Restaurant' }} · Доставка
+            {{ restaurant.restaurant_name if restaurant else 'Restaurant' }} · {{ trans('delivery_label') }}
         </div>
     </div>
 
     <script src="/static/api.js"></script>
     <script>
+        const i18n = {
+            error_no_access: "{{ trans('error_no_access') | escape }}",
+            error_data_not_found: "{{ trans('error_data_not_found') | escape }}",
+            error_server: "{{ trans('error_server') | escape }}",
+            error_generic: "{{ trans('error_generic') | escape }}",
+            error_checkout_url: "{{ trans('error_checkout_url') | escape }}",
+            error_connection_address: "{{ trans('error_connection_address') | escape }}",
+            checking: "{{ trans('checking') | escape }}",
+            proceed_to_payment: "{{ trans('proceed_to_payment') | escape }}"
+        };
+
         const addressForm = document.getElementById("addressForm");
         const formError = document.getElementById("formError");
         const continueButton = document.getElementById("continueButton");
@@ -521,17 +532,17 @@
             }
 
             if (response.status === 403) {
-                showError("У вас нет доступа к этому действию.");
+                showError(i18n.error_no_access);
                 return false;
             }
 
             if (response.status === 404) {
-                showError("Данные не найдены.");
+                showError(i18n.error_data_not_found);
                 return false;
             }
 
             if (response.status >= 500) {
-                showError("Ошибка сервера. Попробуйте позже.");
+                showError(i18n.error_server);
                 return false;
             }
 
@@ -540,12 +551,12 @@
 
                 if (Array.isArray(data.detail)) {
                     const messages = data.detail.map(error => error.msg).filter(Boolean);
-                    showError(messages.length ? messages.join(", ") : "Произошла ошибка.");
+                    showError(messages.length ? messages.join(", ") : i18n.error_generic);
                 } else {
-                    showError(data.detail || data.message || "Произошла ошибка.");
+                    showError(data.detail || data.message || i18n.error_generic);
                 }
             } catch {
-                showError("Произошла ошибка.");
+                showError(i18n.error_generic);
             }
 
             return false;
@@ -555,7 +566,7 @@
             event.preventDefault();
             clearError();
             continueButton.disabled = true;
-            continueButton.textContent = "Проверка...";
+            continueButton.textContent = i18n.checking;
 
             try {
                 const response = await apiFetch(addressForm.action, {
@@ -568,16 +579,16 @@
                 const data = await response.json();
 
                 if (!data.checkout_url) {
-                    showError("Не удалось получить ссылку на оплату.");
+                    showError(i18n.error_checkout_url);
                     return;
                 }
 
                 window.location.href = data.checkout_url;
             } catch {
-                showError("Не удалось подключиться к серверу. Проверьте соединение.");
+                showError(i18n.error_connection_address);
             } finally {
                 continueButton.disabled = false;
-                continueButton.textContent = "Перейти к оплате";
+                continueButton.textContent = i18n.proceed_to_payment;
             }
         });
     </script>
