@@ -567,5 +567,7 @@
 "error_enter_new_password": "შეიყვანეთ ახალი პაროლი.",
 "error_confirm_new_password": "დაადასტურეთ ახალი პაროლი.",
 "error_link_expired": "ბმულის ვადა ამოიწურა. მოითხოვეთ პაროლის აღდგენა ხელახლა.",
-"btn_saving": "შენახვა..."
+"btn_saving": "შენახვა...",
+  "select_language": "ენის არჩევა",
+  "close": "დახურვა"
 }

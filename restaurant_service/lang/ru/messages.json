@@ -110,5 +110,6 @@
 "until_time_prefix": "до",
 "contact_phone_label": "Телефон",
 "contact_email_label": "Почта",
-"contact_address_label": "Адрес"
+"contact_address_label": "Адрес",
+  "select_language": "Выбрать язык"
 }

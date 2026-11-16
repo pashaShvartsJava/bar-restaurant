@@ -110,5 +110,6 @@
 "until_time_prefix": "jusqu'à",
 "contact_phone_label": "Téléphone",
 "contact_email_label": "Email",
-"contact_address_label": "Adresse"
+"contact_address_label": "Adresse",
+  "select_language": "Choisir la langue"
 }

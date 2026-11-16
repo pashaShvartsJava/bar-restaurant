@@ -71,6 +71,9 @@
             color: var(--gold); font-family: Georgia, serif;
             font-size: 11px; letter-spacing: 3px; text-transform: uppercase;
         }
+        .top-right {
+            display: flex; align-items: center; gap: 10px;
+        }
         .owner-link {
             display: inline-flex; align-items: center; gap: 7px;
             padding: 9px 14px; border: 1px solid rgba(213,166,91,.28);
@@ -82,6 +85,21 @@
             background: rgba(213,166,91,.13);
             border-color: var(--gold); color: #fff0d1;
         }
+        .lang-trigger {
+            display: inline-flex; align-items: center; justify-content: center;
+            gap: 7px; height: 38px; padding: 0 12px;
+            border: 1px solid rgba(255,255,255,.1);
+            border-radius: 8px; background: rgba(255,255,255,.035);
+            color: #c9bfc0; font-size: 12px; font-weight: 600;
+            cursor: pointer; transition: background .2s, border-color .2s, color .2s;
+        }
+        .lang-trigger:hover {
+            background: rgba(213,166,91,.08);
+            border-color: rgba(213,166,91,.45);
+            color: var(--gold-light);
+        }
+        .lang-trigger-icon { font-size: 14px; }
+        .lang-trigger-arrow { font-size: 9px; color: var(--muted); }
 
         /* ===== Заголовок ===== */
         .header {
@@ -341,6 +359,97 @@
         .footer a { color: #77747b; text-decoration: none; transition: color .2s ease; }
         .footer a:hover { color: var(--gold); }
 
+        /* ===== ВЫДВИЖНОЕ МЕНЮ ЯЗЫКОВ (справа) ===== */
+
+        .lang-overlay {
+            position: fixed; inset: 0; z-index: 1100;
+            background: rgba(0, 0, 0, 0.55);
+            opacity: 0; visibility: hidden; transition: .25s;
+        }
+        .lang-overlay.visible { opacity: 1; visibility: visible; }
+
+        .lang-drawer {
+            position: fixed; top: 20px; right: 20px; bottom: 20px; z-index: 1200;
+            width: 320px; max-width: calc(100vw - 40px);
+            display: flex; flex-direction: column;
+            background:
+                radial-gradient(ellipse at 50% 0%, rgba(220, 120, 100, 0.10) 0%, rgba(150, 65, 80, 0.12) 40%, rgba(20, 16, 18, 0.97) 80%),
+                linear-gradient(180deg, rgba(38, 32, 33, 0.99) 0%, rgba(22, 21, 23, 0.99) 45%, rgba(14, 14, 16, 0.99) 100%);
+            border: 1px solid rgba(213, 166, 91, 0.2);
+            border-radius: 18px;
+            box-shadow: 0 25px 70px rgba(0, 0, 0, 0.55);
+            backdrop-filter: blur(14px);
+            transform: translateX(calc(100% + 40px));
+            transition: transform 0.3s ease;
+        }
+        .lang-drawer.open { transform: translateX(0); }
+
+        .lang-drawer-header {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 20px; border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+        }
+        .lang-drawer-title {
+            display: flex; align-items: center; gap: 9px;
+            font-family: Georgia, serif; font-size: 19px; color: #f0e5de;
+        }
+        .lang-drawer-title-icon { font-size: 16px; }
+        .lang-drawer-close {
+            width: 32px; height: 32px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 7px; background: rgba(42, 40, 42, 0.95);
+            color: #aaa9ae; font-size: 18px; line-height: 1;
+            cursor: pointer; transition: 0.25s;
+        }
+        .lang-drawer-close:hover { color: #fff; border-color: #d5a65b; }
+
+        .lang-list {
+            flex: 1; overflow-y: auto; padding: 14px;
+            display: flex; flex-direction: column; gap: 6px;
+        }
+
+        .lang-option {
+            display: flex; align-items: center; gap: 13px;
+            padding: 13px 14px;
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.025);
+            color: #d4cac6; text-decoration: none;
+            font-family: Arial, sans-serif; font-size: 13px;
+            cursor: pointer; transition: 0.2s; text-align: left;
+        }
+        .lang-option:hover {
+            background: rgba(213, 166, 91, 0.07);
+            border-color: rgba(213, 166, 91, 0.35);
+            color: #f2e8e2;
+        }
+        .lang-option.active {
+            background: rgba(213, 166, 91, 0.12);
+            border-color: rgba(213, 166, 91, 0.55);
+            color: #e8c58e;
+        }
+        .lang-option-flag {
+            flex-shrink: 0; width: 32px; height: 32px;
+            display: flex; align-items: center; justify-content: center;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            font-size: 17px;
+        }
+        .lang-option.active .lang-option-flag {
+            background: rgba(213, 166, 91, 0.14);
+            border-color: rgba(213, 166, 91, 0.4);
+        }
+        .lang-option-text {
+            display: flex; flex-direction: column; gap: 2px; min-width: 0;
+        }
+        .lang-option-name { font-weight: 600; font-size: 13px; color: inherit; }
+        .lang-option-native { font-size: 10px; color: #8a8384; }
+        .lang-option.active .lang-option-native { color: #b09a76; }
+        .lang-option-check {
+            margin-left: auto; color: #d5a65b; font-size: 14px; display: none;
+        }
+        .lang-option.active .lang-option-check { display: block; }
+
         @keyframes fadeUp {
             from { opacity: 0; transform: translateY(18px); }
             to { opacity: 1; transform: translateY(0); }
@@ -387,9 +496,16 @@
                 grid-area: brand; text-align: center;
                 font-size: 10px; letter-spacing: 2.5px;
             }
+            .top-right {
+                grid-area: owner;
+                justify-self: start;
+                gap: 6px;
+            }
             .owner-link {
-                grid-area: owner; justify-self: start;
                 padding: 8px 11px; font-size: 10px;
+            }
+            .lang-trigger {
+                height: 34px; padding: 0 9px; font-size: 11px;
             }
             .back {
                 grid-area: back; justify-self: end; font-size: 10px;
@@ -451,6 +567,12 @@
                 font-size: 9px; text-align: center;
             }
             .footer-links { justify-content: center; width: 100%; gap: 14px; }
+
+            .lang-drawer {
+                top: 10px; right: 10px; bottom: 10px;
+                width: calc(100vw - 20px); max-width: none;
+                border-radius: 14px;
+            }
         }
 
         @media (max-width: 380px) {
@@ -479,10 +601,17 @@
         <nav class="top" aria-label="{{ trans('nav_aria_label') }}">
             <div class="brand">FDCPlatform</div>
 
-            <a class="owner-link" href="/restaurant-platform">
-                {{ trans('info_for_owners') }}
-                <span aria-hidden="true">→</span>
-            </a>
+            <div class="top-right">
+                <a class="owner-link" href="/restaurant-platform">
+                    {{ trans('info_for_owners') }}
+                    <span aria-hidden="true">→</span>
+                </a>
+
+                <button type="button" class="lang-trigger" id="langButton" aria-label="{{ trans('select_language') }}" title="{{ trans('select_language') }}">
+                    <span class="lang-trigger-icon">🌐</span>
+                    <span class="lang-trigger-arrow">▾</span>
+                </button>
+            </div>
         </nav>
 
         <header class="header">
@@ -498,7 +627,7 @@
             </p>
         </header>
 
-        {# Собираем города из списка ресторанов — не зависим от отдельной переменной #}
+        {# Собираем города из списка ресторанов #}
         {% set cities = [] %}
         {% for r in restaurants %}
             {% set c = r.city if r.city is defined else r.get('city') %}
@@ -671,6 +800,75 @@
         </footer>
     </main>
 
+    <!-- ===== ВЫДВИЖНОЕ МЕНЮ ЯЗЫКОВ ===== -->
+    <div class="lang-overlay" id="langOverlay"></div>
+
+    <aside class="lang-drawer" id="langDrawer" aria-hidden="true">
+        <header class="lang-drawer-header">
+            <span class="lang-drawer-title">
+                <span class="lang-drawer-title-icon">🌐</span>
+                {{ trans('select_language') }}
+            </span>
+            <button type="button" class="lang-drawer-close" id="langClose" aria-label="{{ trans('close') }}">×</button>
+        </header>
+
+        <nav class="lang-list">
+            <a href="/set-language/ru" class="lang-option {% if current_lang == 'ru' %}active{% endif %}" data-lang="ru">
+                <span class="lang-option-flag">🇷🇺</span>
+                <span class="lang-option-text">
+                    <span class="lang-option-name">Русский</span>
+                    <span class="lang-option-native">Russian</span>
+                </span>
+                <span class="lang-option-check">✓</span>
+            </a>
+
+            <a href="/set-language/en" class="lang-option {% if current_lang == 'en' %}active{% endif %}" data-lang="en">
+                <span class="lang-option-flag">🇬🇧</span>
+                <span class="lang-option-text">
+                    <span class="lang-option-name">English</span>
+                    <span class="lang-option-native">Английский</span>
+                </span>
+                <span class="lang-option-check">✓</span>
+            </a>
+
+            <a href="/set-language/de" class="lang-option {% if current_lang == 'de' %}active{% endif %}" data-lang="de">
+                <span class="lang-option-flag">🇩🇪</span>
+                <span class="lang-option-text">
+                    <span class="lang-option-name">Deutsch</span>
+                    <span class="lang-option-native">Немецкий</span>
+                </span>
+                <span class="lang-option-check">✓</span>
+            </a>
+
+            <a href="/set-language/uk" class="lang-option {% if current_lang == 'uk' %}active{% endif %}" data-lang="uk">
+                <span class="lang-option-flag">🇺🇦</span>
+                <span class="lang-option-text">
+                    <span class="lang-option-name">Українська</span>
+                    <span class="lang-option-native">Украинский</span>
+                </span>
+                <span class="lang-option-check">✓</span>
+            </a>
+
+            <a href="/set-language/fr" class="lang-option {% if current_lang == 'fr' %}active{% endif %}" data-lang="fr">
+                <span class="lang-option-flag">🇫🇷</span>
+                <span class="lang-option-text">
+                    <span class="lang-option-name">Français</span>
+                    <span class="lang-option-native">Французский</span>
+                </span>
+                <span class="lang-option-check">✓</span>
+            </a>
+
+            <a href="/set-language/ka" class="lang-option {% if current_lang == 'ka' %}active{% endif %}" data-lang="ka">
+                <span class="lang-option-flag">🇬🇪</span>
+                <span class="lang-option-text">
+                    <span class="lang-option-name">ქართული</span>
+                    <span class="lang-option-native">Грузинский</span>
+                </span>
+                <span class="lang-option-check">✓</span>
+            </a>
+        </nav>
+    </aside>
+
     <script>
     (() => {
         "use strict";
@@ -682,8 +880,6 @@
         const noResults = document.getElementById("noResults");
         const restaurantsList = document.getElementById("restaurantsList");
 
-        // Если карточек нет вообще (пустая база) — фильтр не нужен,
-        // чтобы не перетирать Jinja-empty-state
         if (!searchInput || !cityFilter || !restaurantsList) {
             return;
         }
@@ -717,8 +913,6 @@
                 if (show) visible++;
             });
 
-            // «Ничего не найдено» показываем только если реально есть карточки,
-            // но ни одна не прошла фильтр
             if (noResults) {
                 noResults.style.display =
                     visible === 0 && cards.length > 0 ? "block" : "none";
@@ -744,6 +938,39 @@
         });
 
         applyFilters();
+    })();
+    </script>
+
+    <script>
+    (() => {
+        "use strict";
+
+        const langButton = document.getElementById("langButton");
+        const langDrawer = document.getElementById("langDrawer");
+        const langOverlay = document.getElementById("langOverlay");
+        const langClose = document.getElementById("langClose");
+
+        function openLang() {
+            langDrawer.classList.add("open");
+            langOverlay.classList.add("visible");
+            langDrawer.setAttribute("aria-hidden", "false");
+            document.body.style.overflow = "hidden";
+        }
+
+        function closeLang() {
+            langDrawer.classList.remove("open");
+            langOverlay.classList.remove("visible");
+            langDrawer.setAttribute("aria-hidden", "true");
+            document.body.style.overflow = "";
+        }
+
+        langButton.addEventListener("click", openLang);
+        langClose.addEventListener("click", closeLang);
+        langOverlay.addEventListener("click", closeLang);
+
+        document.addEventListener("keydown", (e) => {
+            if (e.key === "Escape") closeLang();
+        });
     })();
     </script>
 </body>

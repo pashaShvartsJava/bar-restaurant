@@ -567,5 +567,7 @@
 "error_enter_new_password": "Saisissez un nouveau mot de passe.",
 "error_confirm_new_password": "Confirmez le nouveau mot de passe.",
 "error_link_expired": "Le lien a expiré. Demandez à nouveau la récupération du mot de passe.",
-"btn_saving": "Enregistrement..."
+"btn_saving": "Enregistrement...",
+  "select_language": "Choisir la langue",
+  "close": "Fermer"
 }

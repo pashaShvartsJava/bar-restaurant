@@ -566,5 +566,7 @@
 "error_enter_new_password": "Введите новый пароль.",
 "error_confirm_new_password": "Подтвердите новый пароль.",
 "error_link_expired": "Срок действия ссылки истёк. Запросите восстановление пароля ещё раз.",
-"btn_saving": "Сохранение..."
+"btn_saving": "Сохранение...",
+  "select_language": "Выбрать язык",
+  "close": "Закрыть"
 }

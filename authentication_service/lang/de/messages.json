@@ -567,5 +567,7 @@
 "error_enter_new_password": "Geben Sie ein neues Passwort ein.",
 "error_confirm_new_password": "Bestätigen Sie das neue Passwort.",
 "error_link_expired": "Der Link ist abgelaufen. Fordern Sie die Passwort-Wiederherstellung erneut an.",
-"btn_saving": "Wird gespeichert..."
+"btn_saving": "Wird gespeichert...",
+  "select_language": "Sprache wählen",
+  "close": "Schließen"
 }

@@ -567,5 +567,7 @@
 "error_enter_new_password": "Enter a new password.",
 "error_confirm_new_password": "Confirm the new password.",
 "error_link_expired": "The link has expired. Request password recovery again.",
-"btn_saving": "Saving..."
+"btn_saving": "Saving...",
+  "select_language": "Select language",
+  "close": "Close"
 }

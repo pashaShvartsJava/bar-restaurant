@@ -566,5 +566,7 @@
 "error_enter_new_password": "Введіть новий пароль.",
 "error_confirm_new_password": "Підтвердьте новий пароль.",
 "error_link_expired": "Термін дії посилання минув. Запросіть відновлення пароля ще раз.",
-"btn_saving": "Збереження..."
+"btn_saving": "Збереження...",
+  "select_language": "Вибрати мову",
+  "close": "Закрити"
 }

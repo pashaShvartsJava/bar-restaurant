@@ -189,6 +189,8 @@
             border-color 0.2s,
             color 0.2s,
             transform 0.2s;
+        cursor: pointer;
+        font-family: inherit;
     }
 
     .quick-button:hover {
@@ -224,6 +226,26 @@
     .quick-button.about:hover {
         border-color: rgba(255, 255, 255, 0.25);
         color: #e2d8d3;
+    }
+
+    .quick-button.lang {
+        min-width: 0;
+        width: 38px;
+        padding: 0;
+        font-size: 15px;
+        gap: 0;
+    }
+
+    .quick-button.lang.has-arrow {
+        width: auto;
+        padding: 0 10px;
+        gap: 6px;
+        font-size: 11px;
+    }
+
+    .quick-button.lang .lang-arrow {
+        font-size: 9px;
+        color: var(--muted, #93898d);
     }
 
     .back-to-list {
@@ -270,6 +292,176 @@
 
     .back-to-list:hover .arrow {
         transform: translateX(-3px);
+    }
+
+    /* ===== ВЫДВИЖНОЕ МЕНЮ ЯЗЫКОВ (справа) ===== */
+
+    .lang-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 1100;
+        background: rgba(0, 0, 0, 0.55);
+        opacity: 0;
+        visibility: hidden;
+        transition: 0.25s;
+    }
+
+    .lang-overlay.visible {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    .lang-drawer {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        bottom: 20px;
+        z-index: 1200;
+        width: 300px;
+        max-width: calc(100vw - 40px);
+        display: flex;
+        flex-direction: column;
+        background:
+            radial-gradient(ellipse at 50% 0%, rgba(220, 120, 100, 0.10) 0%, rgba(150, 65, 80, 0.12) 40%, rgba(20, 16, 18, 0.97) 80%),
+            linear-gradient(180deg, rgba(38, 32, 33, 0.99) 0%, rgba(22, 21, 23, 0.99) 45%, rgba(14, 14, 16, 0.99) 100%);
+        border: 1px solid rgba(213, 166, 91, 0.2);
+        border-radius: 18px;
+        box-shadow: 0 25px 70px rgba(0, 0, 0, 0.55);
+        backdrop-filter: blur(14px);
+        transform: translateX(calc(100% + 40px));
+        transition: transform 0.3s ease;
+    }
+
+    .lang-drawer.open {
+        transform: translateX(0);
+    }
+
+    .lang-drawer-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 20px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+    }
+
+    .lang-drawer-title {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        font-family: Georgia, serif;
+        font-size: 19px;
+        color: #f0e5de;
+    }
+
+    .lang-drawer-title-icon {
+        font-size: 16px;
+    }
+
+    .lang-drawer-close {
+        width: 32px;
+        height: 32px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 7px;
+        background: rgba(42, 40, 42, 0.95);
+        color: #aaa9ae;
+        font-size: 18px;
+        line-height: 1;
+        cursor: pointer;
+        transition: 0.25s;
+    }
+
+    .lang-drawer-close:hover {
+        color: #fff;
+        border-color: #d5a65b;
+    }
+
+    .lang-list {
+        flex: 1;
+        overflow-y: auto;
+        padding: 14px;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .lang-option {
+        display: flex;
+        align-items: center;
+        gap: 13px;
+        padding: 13px 14px;
+        border: 1px solid rgba(255, 255, 255, 0.07);
+        border-radius: 10px;
+        background: rgba(255, 255, 255, 0.025);
+        color: #d4cac6;
+        text-decoration: none;
+        font-family: Arial, sans-serif;
+        font-size: 13px;
+        cursor: pointer;
+        transition: 0.2s;
+        text-align: left;
+    }
+
+    .lang-option:hover {
+        background: rgba(213, 166, 91, 0.07);
+        border-color: rgba(213, 166, 91, 0.35);
+        color: #f2e8e2;
+    }
+
+    .lang-option.active {
+        background: rgba(213, 166, 91, 0.12);
+        border-color: rgba(213, 166, 91, 0.55);
+        color: #e8c58e;
+    }
+
+    .lang-option-flag {
+        flex-shrink: 0;
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        font-size: 17px;
+    }
+
+    .lang-option.active .lang-option-flag {
+        background: rgba(213, 166, 91, 0.14);
+        border-color: rgba(213, 166, 91, 0.4);
+    }
+
+    .lang-option-text {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        min-width: 0;
+    }
+
+    .lang-option-name {
+        font-weight: 600;
+        font-size: 13px;
+        color: inherit;
+    }
+
+    .lang-option-native {
+        font-size: 10px;
+        color: #8a8384;
+    }
+
+    .lang-option.active .lang-option-native {
+        color: #b09a76;
+    }
+
+    .lang-option-check {
+        margin-left: auto;
+        color: #d5a65b;
+        font-size: 14px;
+        display: none;
+    }
+
+    .lang-option.active .lang-option-check {
+        display: block;
     }
 
     .hero {
@@ -613,6 +805,17 @@
             font-size: 10px;
         }
 
+        .quick-button.lang {
+            flex: 0 0 auto;
+            width: 38px;
+            padding: 0;
+        }
+
+        .quick-button.lang.has-arrow {
+            width: auto;
+            padding: 0 10px;
+        }
+
         .back-to-list {
             top: 62px;
             left: 12px;
@@ -654,6 +857,14 @@
             font-size: 9px;
         }
 
+        .quick-button.lang {
+            width: 35px;
+        }
+
+        .quick-button.lang.has-arrow {
+            padding: 0 8px;
+        }
+
         .back-to-list {
             top: 60px;
             height: 34px;
@@ -679,6 +890,15 @@
 
         .about-box {
             padding: 25px 20px;
+        }
+
+        .lang-drawer {
+            top: 10px;
+            right: 10px;
+            bottom: 10px;
+            width: calc(100vw - 20px);
+            max-width: none;
+            border-radius: 14px;
         }
     }
 
@@ -710,7 +930,81 @@
         <a href="#about" class="quick-button about">
             {{ trans('about_venue_link') }}
         </a>
+
+        <button type="button" class="quick-button lang has-arrow" id="langButton" aria-label="{{ trans('select_language') }}" title="{{ trans('select_language') }}">
+            <span>🌐</span>
+            <span class="lang-arrow">▾</span>
+        </button>
     </div>
+
+    <!-- ===== ВЫДВИЖНОЕ МЕНЮ ЯЗЫКОВ ===== -->
+    <div class="lang-overlay" id="langOverlay"></div>
+
+    <aside class="lang-drawer" id="langDrawer" aria-hidden="true">
+        <header class="lang-drawer-header">
+            <span class="lang-drawer-title">
+                <span class="lang-drawer-title-icon">🌐</span>
+                {{ trans('select_language') }}
+            </span>
+            <button type="button" class="lang-drawer-close" id="langClose" aria-label="{{ trans('close') }}">×</button>
+        </header>
+
+        <nav class="lang-list">
+            <a href="/set-language/ru" class="lang-option {% if current_lang == 'ru' %}active{% endif %}" data-lang="ru">
+                <span class="lang-option-flag">🇷🇺</span>
+                <span class="lang-option-text">
+                    <span class="lang-option-name">Русский</span>
+                    <span class="lang-option-native">Russian</span>
+                </span>
+                <span class="lang-option-check">✓</span>
+            </a>
+
+            <a href="/set-language/en" class="lang-option {% if current_lang == 'en' %}active{% endif %}" data-lang="en">
+                <span class="lang-option-flag">🇬🇧</span>
+                <span class="lang-option-text">
+                    <span class="lang-option-name">English</span>
+                    <span class="lang-option-native">Английский</span>
+                </span>
+                <span class="lang-option-check">✓</span>
+            </a>
+
+            <a href="/set-language/de" class="lang-option {% if current_lang == 'de' %}active{% endif %}" data-lang="de">
+                <span class="lang-option-flag">🇩🇪</span>
+                <span class="lang-option-text">
+                    <span class="lang-option-name">Deutsch</span>
+                    <span class="lang-option-native">Немецкий</span>
+                </span>
+                <span class="lang-option-check">✓</span>
+            </a>
+
+            <a href="/set-language/uk" class="lang-option {% if current_lang == 'uk' %}active{% endif %}" data-lang="uk">
+                <span class="lang-option-flag">🇺🇦</span>
+                <span class="lang-option-text">
+                    <span class="lang-option-name">Українська</span>
+                    <span class="lang-option-native">Украинский</span>
+                </span>
+                <span class="lang-option-check">✓</span>
+            </a>
+
+            <a href="/set-language/fr" class="lang-option {% if current_lang == 'fr' %}active{% endif %}" data-lang="fr">
+                <span class="lang-option-flag">🇫🇷</span>
+                <span class="lang-option-text">
+                    <span class="lang-option-name">Français</span>
+                    <span class="lang-option-native">Французский</span>
+                </span>
+                <span class="lang-option-check">✓</span>
+            </a>
+
+            <a href="/set-language/ka" class="lang-option {% if current_lang == 'ka' %}active{% endif %}" data-lang="ka">
+                <span class="lang-option-flag">🇬🇪</span>
+                <span class="lang-option-text">
+                    <span class="lang-option-name">ქართული</span>
+                    <span class="lang-option-native">Грузинский</span>
+                </span>
+                <span class="lang-option-check">✓</span>
+            </a>
+        </nav>
+    </aside>
 
     <div class="container">
 
@@ -927,8 +1221,6 @@
                                     {{ trans('from_time_prefix') }} {{ hours.get('from') }}
                                 {% elif hours.get('to') %}
                                     {{ trans('until_time_prefix') }} {{ hours.get('to') }}
-                                {% else %}
-                                    —
                                 {% endif %}
                             </span>
                         </div>
@@ -1002,6 +1294,37 @@
         </footer>
 
     </div>
+
+    <script>
+      (function () {
+        const langButton = document.getElementById("langButton");
+        const langDrawer = document.getElementById("langDrawer");
+        const langOverlay = document.getElementById("langOverlay");
+        const langClose = document.getElementById("langClose");
+
+        function openLang() {
+          langDrawer.classList.add("open");
+          langOverlay.classList.add("visible");
+          langDrawer.setAttribute("aria-hidden", "false");
+          document.body.style.overflow = "hidden";
+        }
+
+        function closeLang() {
+          langDrawer.classList.remove("open");
+          langOverlay.classList.remove("visible");
+          langDrawer.setAttribute("aria-hidden", "true");
+          document.body.style.overflow = "";
+        }
+
+        langButton.addEventListener("click", openLang);
+        langClose.addEventListener("click", closeLang);
+        langOverlay.addEventListener("click", closeLang);
+
+        document.addEventListener("keydown", (e) => {
+          if (e.key === "Escape") closeLang();
+        });
+      })();
+    </script>
 
 </body>
 </html>
