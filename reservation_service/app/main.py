@@ -11,7 +11,7 @@ from .routes.routes import templates, router as admin_router
 from .async_processes.async_processes import outbox_publisher
 
 
-LANG_DIR = "/admin_service/lang"
+LANG_DIR = "/reservation_service/lang"
 _current_lang = ContextVar("current_lang", default="en")
 _translations = {}
 

@@ -672,7 +672,7 @@
 
                         <a
                             class="restaurant-card {% if not photo %}no-photo{% endif %}"
-                            href="/r/{{ slug }}/delivery"
+                            href="/r/{{ slug }}"
                             data-name="{{ (name or '')|lower }}"
                             data-description="{{ (description or '')|lower }}"
                             data-city="{{ (city or '')|lower }}"
@@ -800,7 +800,6 @@
         </footer>
     </main>
 
-    <!-- ===== ВЫДВИЖНОЕ МЕНЮ ЯЗЫКОВ ===== -->
     <div class="lang-overlay" id="langOverlay"></div>
 
     <aside class="lang-drawer" id="langDrawer" aria-hidden="true">
