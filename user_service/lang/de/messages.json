@@ -81,5 +81,7 @@
 "total": "Gesamt",
 "checkout": "Bestellung aufgeben",
 "clear_cart": "Warenkorb leeren",
-"error_cart_empty": "Der Warenkorb ist leer."
+"error_cart_empty": "Der Warenkorb ist leer.",
+  "venue_suspended_note": "Dieses Lokal bietet derzeit keine Online-Dienste an.",
+"venue_closed_note": "Dieses Lokal ist nicht mehr in Betrieb."
 }

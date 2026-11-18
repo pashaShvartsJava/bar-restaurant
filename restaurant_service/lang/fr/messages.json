@@ -111,5 +111,7 @@
 "contact_phone_label": "Téléphone",
 "contact_email_label": "Email",
 "contact_address_label": "Adresse",
-  "select_language": "Choisir la langue"
+  "select_language": "Choisir la langue",
+  "venue_suspended_note": "Cet établissement ne fournit temporairement pas de services en ligne.",
+"venue_closed_note": "Cet établissement n'est plus en activité."
 }

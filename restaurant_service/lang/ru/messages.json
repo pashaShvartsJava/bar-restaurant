@@ -111,5 +111,7 @@
 "contact_phone_label": "Телефон",
 "contact_email_label": "Почта",
 "contact_address_label": "Адрес",
-  "select_language": "Выбрать язык"
+  "select_language": "Выбрать язык",
+  "venue_suspended_note": "Сейчас заведение временно не предоставляет онлайн-услуги.",
+"venue_closed_note": "Данное заведение больше не работает."
 }

@@ -15,7 +15,8 @@ from typing import Annotated
 
 from ..dependencies.dependencies import get_service_dependency, get_httpx_async_connection, get_restaurant_dependency, \
     get_restaurant_dependency_by_id, get_authentication_key, get_new_key, get_vat_status_dependency, get_plan_in_cache, \
-    required_plans
+    required_plans, verify_restaurant_status
+from ..schema.restaurant_schema import RestaurantStatus
 from ..schema.subscription_schema import PlanId
 from ..security.internal_security import verify_internal_token
 from ..security.role.role import IdentityRole
@@ -84,6 +85,7 @@ async def show_admin_panel(request: Request):
     required_roles(IdentityRole.OWNER,IdentityRole.ADMIN, IdentityRole.MODERATOR, payload=payload)
     restaurant_id = payload.get("restaurant_id")
     restaurant = await get_restaurant_dependency_by_id(restaurant_id)
+    await verify_restaurant_status(restaurant.status)
     plan = await get_plan_in_cache(restaurant_id)
     unread_support_count = 0
     if plan != PlanId.BASIC.value:
@@ -106,6 +108,8 @@ async def show_all_admins(request: Request, admin_service : AdminService = Depen
     payload = get_payload(request)
     required_roles(IdentityRole.OWNER,IdentityRole.MODERATOR, payload=payload)
     restaurant_id = payload.get("restaurant_id")
+    restaurant = await get_restaurant_dependency(restaurant_id)
+    await verify_restaurant_status(restaurant.status)
     admins = await admin_service.find_all_admins(restaurant_id)
     token = request.cookies.get("access_token")
     if payload.get("role") == IdentityRole.OWNER.value:
@@ -122,6 +126,9 @@ async def show_all_admins(request: Request, admin_service : AdminService = Depen
 async def generate_auth_key(request: Request):
     payload = get_payload(request)
     required_roles(IdentityRole.OWNER, payload=payload)
+    restaurant_id = payload.get("restaurant_id")
+    restaurant = await get_restaurant_dependency(restaurant_id)
+    await verify_restaurant_status(restaurant.status)
     try:
         new_key = await get_new_key(payload.get("restaurant_id"), request.cookies.get("access_token"))
     except httpx.HTTPStatusError as e:
@@ -133,9 +140,12 @@ async def generate_auth_key(request: Request):
 
 
 @router.get("/admin_panel/all_admins/add_admin")
-def show_page_add_admin(request : Request):
+async def show_page_add_admin(request : Request):
     payload = get_payload(request)
     required_roles(IdentityRole.OWNER, IdentityRole.MODERATOR, payload=payload)
+    restaurant_id = payload.get("restaurant_id")
+    restaurant = await get_restaurant_dependency(restaurant_id)
+    await verify_restaurant_status(restaurant.status)
     return templates.TemplateResponse("add_admins.html", {"request" : request})
 
 @router.post("/admin_panel/all_admins/add_admin")
@@ -146,6 +156,9 @@ async def add_admin(request : Request,
     payload = get_payload(request)
     required_roles(IdentityRole.OWNER, IdentityRole.MODERATOR, payload=payload)
     await verify_csrf(request)
+    restaurant_id = payload.get("restaurant_id")
+    restaurant = await get_restaurant_dependency(restaurant_id)
+    await verify_restaurant_status(restaurant.status)
     admin_created = False
     identity_created = False
     membership_created = False
@@ -185,6 +198,8 @@ async def delete_admin(request : Request, admin_id : int, admin_service : AdminS
     required_roles(IdentityRole.OWNER, payload=payload)
     await verify_csrf(request)
     restaurant_id = payload.get("restaurant_id")
+    restaurant = await get_restaurant_dependency(restaurant_id)
+    await verify_restaurant_status(restaurant.status)
     admin = await admin_service.find_by_id(admin_id, restaurant_id)
     async with httpx.AsyncClient() as client:
         response = await client.delete(url="http://authentication-service:8000/delete_identity",
@@ -205,6 +220,8 @@ async def show_edit_page(request : Request, admin_id : int, service : AdminServi
     payload = get_payload(request)
     required_roles(IdentityRole.OWNER, IdentityRole.ADMIN, IdentityRole.MODERATOR, payload=payload)
     restaurant_id = payload.get("restaurant_id")
+    restaurant = await get_restaurant_dependency(restaurant_id)
+    await verify_restaurant_status(restaurant.status)
     admin = await service.find_by_id(admin_id, restaurant_id)
     return templates.TemplateResponse("edit_admin.html", {"request" : request, "admin" : admin})
 
@@ -221,6 +238,8 @@ async def edit_admin(request : Request, admin_id : int, service : AdminService =
     required_roles(IdentityRole.OWNER, IdentityRole.ADMIN, IdentityRole.MODERATOR, payload=payload)
     await verify_csrf(request)
     restaurant_id = payload.get("restaurant_id")
+    restaurant = await get_restaurant_dependency(restaurant_id)
+    await verify_restaurant_status(restaurant.status)
     updated_admin = AdminUpdateDTO(name = name,
                                    surname = surname,
                                    phone=phone,
@@ -266,6 +285,8 @@ async def edit_password_page(request : Request, id : int, service : AdminService
     payload = get_payload(request)
     required_roles(IdentityRole.OWNER, IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
     restaurant_id = payload.get("restaurant_id")
+    restaurant = await get_restaurant_dependency(restaurant_id)
+    await verify_restaurant_status(restaurant.status)
     admin = await service.find_by_identity(payload["sub"], restaurant_id)
     if admin.id != id:
         raise HTTPException(status_code=403, detail="Доступ запрещен")
@@ -280,6 +301,8 @@ async def edit_password(request: Request, service: AdminService = Depends(get_se
     required_roles(IdentityRole.OWNER, IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
     await verify_csrf(request)
     restaurant_id = payload.get("restaurant_id")
+    restaurant = await get_restaurant_dependency(restaurant_id)
+    await verify_restaurant_status(restaurant.status)
     admin = await service.find_by_identity(payload["sub"], restaurant_id)
 
     if new_password != confirmed_password:
@@ -305,6 +328,8 @@ async def show_all_customers(request : Request):
     payload = get_payload(request)
     required_roles(IdentityRole.OWNER, IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
     restaurant_id = payload.get("restaurant_id")
+    restaurant = await get_restaurant_dependency(restaurant_id)
+    await verify_restaurant_status(restaurant.status)
     current_plan_id = await get_plan_in_cache(restaurant_id)
     await required_plans(current_plan_id, PlanId.ONLINE, PlanId.ADVANCED, PlanId.PROFESSIONAL)
     async with httpx.AsyncClient() as client:
@@ -330,6 +355,8 @@ async def search_customer(request : Request, client_id : UUID):
     payload = get_payload(request)
     required_roles(IdentityRole.OWNER, IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
     restaurant_id = payload.get("restaurant_id")
+    restaurant = await get_restaurant_dependency(restaurant_id)
+    await verify_restaurant_status(restaurant.status)
     current_plan_id = await get_plan_in_cache(restaurant_id)
     await required_plans(current_plan_id, PlanId.ONLINE, PlanId.ADVANCED, PlanId.PROFESSIONAL)
     async with httpx.AsyncClient() as client:
@@ -359,6 +386,8 @@ async def customer_info(request : Request, identity_id : UUID):
     payload = get_payload(request)
     required_roles(IdentityRole.OWNER, IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
     restaurant_id = payload.get("restaurant_id")
+    restaurant = await get_restaurant_dependency(restaurant_id)
+    await verify_restaurant_status(restaurant.status)
     current_plan_id = await get_plan_in_cache(restaurant_id)
     await required_plans(current_plan_id, PlanId.ONLINE, PlanId.ADVANCED, PlanId.PROFESSIONAL)
     async with httpx.AsyncClient() as client:
@@ -383,6 +412,8 @@ async def customer_info(request : Request, identity_id : UUID):
     payload = get_payload(request)
     required_roles(IdentityRole.OWNER, IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
     restaurant_id = payload.get("restaurant_id")
+    restaurant = await get_restaurant_dependency(restaurant_id)
+    await verify_restaurant_status(restaurant.status)
     current_plan_id = await get_plan_in_cache(restaurant_id)
     await required_plans(current_plan_id, PlanId.ONLINE, PlanId.ADVANCED, PlanId.PROFESSIONAL)
     async with httpx.AsyncClient() as client:

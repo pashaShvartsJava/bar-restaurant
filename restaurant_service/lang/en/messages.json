@@ -111,5 +111,7 @@
 "contact_phone_label": "Phone",
 "contact_email_label": "Email",
 "contact_address_label": "Address",
-  "select_language": "Select language"
+  "select_language": "Select language",
+  "venue_suspended_note": "This venue is temporarily not providing online services.",
+"venue_closed_note": "This venue is no longer operating."
 }

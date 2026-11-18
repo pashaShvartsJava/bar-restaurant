@@ -192,7 +192,7 @@
             border: 1px solid rgba(255,255,255,.07); border-radius: 14px;
             background: linear-gradient(155deg, rgba(40,37,39,.94), rgba(23,22,24,.98) 62%);
             box-shadow: 0 15px 50px rgba(0,0,0,.12);
-            transition: transform .3s ease, border-color .3s ease, box-shadow .3s ease, background .3s ease;
+            transition: transform .3s ease, border-color .3s ease, box-shadow .3s ease, background .3s ease, opacity .3s ease;
             opacity: 0; animation: cardReveal .6s ease forwards;
         }
         .restaurant-card:hover {
@@ -248,6 +248,83 @@
         }
         .restaurant-footer .arrow { transition: transform .25s ease; }
         .restaurant-card:hover .restaurant-footer .arrow { transform: translateX(4px); }
+
+        /* ===== Недоступные заведения (suspended / closed) ===== */
+
+        .restaurant-card.restaurant-inactive {
+            cursor: default;
+            pointer-events: none;
+            opacity: .55;
+            filter: grayscale(.6);
+            border-color: rgba(255,255,255,.06);
+            background: linear-gradient(155deg, rgba(28,26,27,.94), rgba(18,17,19,.98) 62%);
+            box-shadow: 0 10px 30px rgba(0,0,0,.08);
+            animation: none;
+            opacity: .55 !important;
+        }
+        .restaurant-card.restaurant-inactive:hover {
+            transform: none;
+            border-color: rgba(255,255,255,.06);
+            box-shadow: 0 10px 30px rgba(0,0,0,.08);
+            background: linear-gradient(155deg, rgba(28,26,27,.94), rgba(18,17,19,.98) 62%);
+        }
+        .restaurant-card.restaurant-inactive:hover .restaurant-photo img {
+            transform: none;
+            filter: brightness(.7);
+        }
+        .restaurant-card.restaurant-inactive .restaurant-photo img {
+            filter: brightness(.7);
+        }
+        .restaurant-card.restaurant-inactive .restaurant-name {
+            color: #b8b2b4;
+        }
+        .restaurant-card.restaurant-inactive .restaurant-description {
+            color: #777174;
+        }
+        .restaurant-card.restaurant-inactive .restaurant-city {
+            color: #a29a9c;
+            border-color: rgba(255,255,255,.1);
+            background: rgba(255,255,255,.03);
+        }
+        .restaurant-card.restaurant-inactive .restaurant-footer {
+            color: #7a7476;
+        }
+        .restaurant-card.restaurant-inactive .restaurant-footer .arrow {
+            display: none;
+        }
+        .restaurant-card.restaurant-inactive .restaurant-status-note {
+            display: inline-flex;
+        }
+
+        .restaurant-status-note {
+            display: none;
+            align-items: center;
+            gap: 8px;
+            margin-top: 14px;
+            padding: 8px 12px;
+            border-radius: 7px;
+            font-size: 11px;
+            line-height: 1.5;
+            font-weight: 500;
+        }
+
+        .restaurant-status-note.status-closed {
+            border: 1px solid rgba(217, 130, 130, 0.3);
+            background: rgba(217, 130, 130, 0.07);
+            color: #e0a0a0;
+        }
+
+        .restaurant-status-note.status-suspended {
+            border: 1px solid rgba(213, 166, 91, 0.3);
+            background: rgba(213, 166, 91, 0.07);
+            color: #e0c88a;
+        }
+
+        .restaurant-status-note::before {
+            content: "ⓘ";
+            font-size: 13px;
+            line-height: 1;
+        }
 
         /* ===== Пустые состояния ===== */
         .empty-state {
@@ -359,7 +436,7 @@
         .footer a { color: #77747b; text-decoration: none; transition: color .2s ease; }
         .footer a:hover { color: var(--gold); }
 
-        /* ===== ВЫДВИЖНОЕ МЕНЮ ЯЗЫКОВ (справа) ===== */
+        /* ===== ВЫДВИЖНОЕ МЕНЮ ЯЗЫКОВ ===== */
 
         .lang-overlay {
             position: fixed; inset: 0; z-index: 1100;
@@ -548,6 +625,8 @@
             .restaurant-description { font-size: 12px; line-height: 1.6; -webkit-line-clamp: 2; }
             .restaurant-footer { margin-top: 12px; font-size: 9.5px; letter-spacing: .4px; }
 
+            .restaurant-status-note { font-size: 10px; padding: 7px 10px; }
+
             .side-col { gap: 12px; margin-top: 16px; }
             .side-box { padding: 16px; border-radius: 12px; }
             .side-box h2 { font-size: 17px; }
@@ -669,42 +748,105 @@
                         {% set city = restaurant.city if restaurant.city is defined else restaurant.get('city') %}
                         {% set description = restaurant.short_description if restaurant.short_description is defined else (restaurant.description if restaurant.description is defined else restaurant.get('description')) %}
                         {% set photo = restaurant.photo_url if restaurant.photo_url is defined else restaurant.get('photo_url') %}
+                        {% set status = restaurant.status.value if restaurant.status is defined and restaurant.status.value is defined else (restaurant.status if restaurant.status is defined else restaurant.get('status')) %}
 
-                        <a
-                            class="restaurant-card {% if not photo %}no-photo{% endif %}"
-                            href="/r/{{ slug }}"
-                            data-name="{{ (name or '')|lower }}"
-                            data-description="{{ (description or '')|lower }}"
-                            data-city="{{ (city or '')|lower }}"
-                        >
-                            {% if photo %}
-                                <div class="restaurant-photo">
-                                    <img
-                                        src="{{ photo }}"
-                                        alt="{{ name }}"
-                                        loading="lazy"
-                                    >
-                                </div>
-                            {% endif %}
-
-                            <div class="restaurant-body">
-                                <div class="restaurant-top">
-                                    <span class="restaurant-name">{{ name }}</span>
-                                    {% if city %}
-                                        <span class="restaurant-city">{{ city }}</span>
-                                    {% endif %}
-                                </div>
-
-                                {% if description %}
-                                    <p class="restaurant-description">{{ description }}</p>
+                        {% if status == 'suspended' %}
+                            <div
+                                class="restaurant-card restaurant-inactive {% if not photo %}no-photo{% endif %}"
+                                data-name="{{ (name or '')|lower }}"
+                                data-description="{{ (description or '')|lower }}"
+                                data-city="{{ (city or '')|lower }}"
+                            >
+                                {% if photo %}
+                                    <div class="restaurant-photo">
+                                        <img src="{{ photo }}" alt="{{ name }}" loading="lazy">
+                                    </div>
                                 {% endif %}
 
-                                <span class="restaurant-footer">
-                                    {{ trans('go_to_venue') }}
-                                    <span class="arrow" aria-hidden="true">→</span>
-                                </span>
+                                <div class="restaurant-body">
+                                    <div class="restaurant-top">
+                                        <span class="restaurant-name">{{ name }}</span>
+                                        {% if city %}
+                                            <span class="restaurant-city">{{ city }}</span>
+                                        {% endif %}
+                                    </div>
+
+                                    {% if description %}
+                                        <p class="restaurant-description">{{ description }}</p>
+                                    {% endif %}
+
+                                    <div class="restaurant-status-note status-suspended">
+                                        {{ trans('venue_suspended_note') }}
+                                    </div>
+                                </div>
                             </div>
-                        </a>
+                        {% elif status == 'closed' %}
+                            <div
+                                class="restaurant-card restaurant-inactive {% if not photo %}no-photo{% endif %}"
+                                data-name="{{ (name or '')|lower }}"
+                                data-description="{{ (description or '')|lower }}"
+                                data-city="{{ (city or '')|lower }}"
+                            >
+                                {% if photo %}
+                                    <div class="restaurant-photo">
+                                        <img src="{{ photo }}" alt="{{ name }}" loading="lazy">
+                                    </div>
+                                {% endif %}
+
+                                <div class="restaurant-body">
+                                    <div class="restaurant-top">
+                                        <span class="restaurant-name">{{ name }}</span>
+                                        {% if city %}
+                                            <span class="restaurant-city">{{ city }}</span>
+                                        {% endif %}
+                                    </div>
+
+                                    {% if description %}
+                                        <p class="restaurant-description">{{ description }}</p>
+                                    {% endif %}
+
+                                    <div class="restaurant-status-note status-closed">
+                                        {{ trans('venue_closed_note') }}
+                                    </div>
+                                </div>
+                            </div>
+                        {% else %}
+                            <a
+                                class="restaurant-card {% if not photo %}no-photo{% endif %}"
+                                href="/r/{{ slug }}"
+                                data-name="{{ (name or '')|lower }}"
+                                data-description="{{ (description or '')|lower }}"
+                                data-city="{{ (city or '')|lower }}"
+                            >
+                                {% if photo %}
+                                    <div class="restaurant-photo">
+                                        <img
+                                            src="{{ photo }}"
+                                            alt="{{ name }}"
+                                            loading="lazy"
+                                        >
+                                    </div>
+                                {% endif %}
+
+                                <div class="restaurant-body">
+                                    <div class="restaurant-top">
+                                        <span class="restaurant-name">{{ name }}</span>
+                                        {% if city %}
+                                            <span class="restaurant-city">{{ city }}</span>
+                                        {% endif %}
+                                    </div>
+
+                                    {% if description %}
+                                        <p class="restaurant-description">{{ description }}</p>
+                                    {% endif %}
+
+                                    <span class="restaurant-footer">
+                                        {{ trans('go_to_venue') }}
+                                        <span class="arrow" aria-hidden="true">→</span>
+                                    </span>
+                                </div>
+                            </a>
+                        {% endif %}
                     {% endfor %}
 
                     {% if not restaurants %}

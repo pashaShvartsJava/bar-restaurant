@@ -56,7 +56,8 @@ async def all_restaurants(request : Request,
             restaurant_name=r.restaurant_name,
             city=r.city,
             short_description=r.short_description,
-            photo_url=r.photo_url) for r in restaurants]
+            photo_url=r.photo_url,
+            status=r.status) for r in restaurants]
 
 @router.post("/restaurants/add_restaurant")
 async def create_restaurant(data : RestaurantCreationDTO,

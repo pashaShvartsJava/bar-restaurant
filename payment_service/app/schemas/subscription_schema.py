@@ -8,6 +8,8 @@ from uuid import UUID
 
 from enum import Enum
 
+from ..models.subscriptions import AccessStatus
+
 STRIPE_PRICE_IDS = {
     "basic": "price_1Ub39rEBszTkRGCJJDTd6TE2",
     "online": "price_1Ub3AdEBszTkRGCJmN37jyvq",
@@ -133,5 +135,6 @@ class SubscriptionDataDTO(BaseModel):
     vat_status: VatStatus
     vat_checked_at: Optional[datetime] = None
     country: str
+    access_status : AccessStatus
 
     model_config = ConfigDict(from_attributes=True)

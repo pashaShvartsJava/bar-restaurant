@@ -6,6 +6,8 @@ from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 from pydantic import BaseModel, Field, field_validator
 import pycountry
 
+from ..models.restaurant_model import RestaurantStatus
+
 
 class RestaurantCreationDTO(BaseModel):
     restaurant_name: str = Field(..., min_length=2, max_length=100)
@@ -92,3 +94,4 @@ class RestaurantForUserProfileDTO(BaseModel):
     city: Optional[str] = None
     short_description: Optional[str] = None
     photo_url: Optional[str] = None
+    status: RestaurantStatus

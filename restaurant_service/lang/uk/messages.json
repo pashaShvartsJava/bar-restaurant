@@ -111,5 +111,7 @@
 "contact_phone_label": "Телефон",
 "contact_email_label": "Пошта",
 "contact_address_label": "Адреса",
-  "select_language": "Вибрати мову"
+  "select_language": "Вибрати мову",
+  "venue_suspended_note": "Наразі заклад тимчасово не надає онлайн-послуги.",
+"venue_closed_note": "Цей заклад більше не працює."
 }

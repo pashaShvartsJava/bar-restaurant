@@ -40,6 +40,10 @@ class VatStatus(str, Enum):
     INVALID = "invalid"
     UNKNOWN = "unknown"
 
+class AccessStatus(str, Enum):
+    ENABLED = "enabled"
+    SUSPENDED = "suspended"
+
 class SubscriptionDataDTO(BaseModel):
     subscription_number: str
     restaurant_id: UUID
@@ -70,5 +74,7 @@ class SubscriptionDataDTO(BaseModel):
     vat_status: VatStatus
     vat_checked_at: Optional[datetime] = None
     country: str
+    access_status: AccessStatus
 
     model_config = ConfigDict(from_attributes=True)
+
