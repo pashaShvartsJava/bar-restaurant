@@ -14,6 +14,7 @@ from .broker.instance import rabbitmq
 from .routes.routes import templates as auth_templates, router as auth_router
 from .routes.admin_routes import templates as router_templates, router as router
 from .routes.owner_routes import templates as owner_templates, router as owner_router
+from .routes.super_admin_routes import router as super_admin_router
 import logging
 
 
@@ -81,6 +82,7 @@ config.JWT_SECRET_KEY = "SECRET_KEY"
 app.include_router(auth_router)
 app.include_router(router)
 app.include_router(owner_router)
+app.include_router(super_admin_router)
 
 @app.middleware("http")
 async def language_middleware(request: Request, call_next):

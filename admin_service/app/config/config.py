@@ -7,6 +7,8 @@ class Settings(BaseSettings):
     jwt_algorithm: str
     internal_token: str
 
+    PLATFORM_ADMIN_JWT_SECRET: str
+
     model_config = SettingsConfigDict(
         env_file=".env",
         extra="ignore",

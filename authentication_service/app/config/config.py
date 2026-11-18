@@ -17,6 +17,12 @@ class Settings(BaseSettings):
     RABBITMQ_USER: str
     RABBITMQ_PASSWORD: str
 
+    PLATFORM_ADMIN_LOGIN: str
+    PLATFORM_ADMIN_PASSWORD_HASH: str
+    PLATFORM_ADMIN_KEY_HASH: str
+    PLATFORM_ADMIN_JWT_SECRET: str
+
+
     model_config = SettingsConfigDict(
         env_file=".env",
         extra="ignore",

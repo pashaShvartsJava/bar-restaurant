@@ -7,6 +7,7 @@ import httpx
 from fastapi import FastAPI, Request
 
 from .routes.routes import templates, router as admin_router
+from .routes.app_management_routes import router as super_admin_router
 
 LANG_DIR = "/admin_service/lang"
 _current_lang = ContextVar("current_lang", default="en")
@@ -53,6 +54,7 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 app.include_router(admin_router)
+app.include_router(super_admin_router)
 
 @app.middleware("http")
 async def language_middleware(request: Request, call_next):

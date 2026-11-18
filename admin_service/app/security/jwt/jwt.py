@@ -7,6 +7,7 @@ from starlette.requests import Request
 from ...config.config import settings
 
 PUBLIC_SECRET_KEY = Path(settings.jwt_public_key_path).read_text()
+PLATFORM_ADMIN_JWT_SECRET = settings.PLATFORM_ADMIN_JWT_SECRET
 ALGORITHM = settings.jwt_algorithm
 
 def decode_access_token(token : str) -> dict:
@@ -21,3 +22,16 @@ def get_payload(request : Request):
     if token is None:
         raise HTTPException(status_code=403, detail="Authorization required")
     return decode_access_token(token)
+
+def decode_secret_access_token(token : str) -> dict:
+    try:
+        payload = jwt.decode(token, PLATFORM_ADMIN_JWT_SECRET,  algorithms="HS256")
+        return payload
+    except InvalidTokenError:
+        raise HTTPException(status_code=401,detail="Authentication required")
+
+def get_secret_payload(request : Request):
+    token = request.cookies.get("access_token")
+    if token is None:
+        raise HTTPException(status_code=403, detail="Authorization required")
+    return decode_secret_access_token(token)

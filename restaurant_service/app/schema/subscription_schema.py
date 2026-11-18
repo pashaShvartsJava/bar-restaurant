@@ -30,7 +30,7 @@ PLANS = {
         "yearly": Decimal("419.99"),
         "trial_days": 3,
         "currency": Currency.EUR,
-        "order_commission_percent": 11,
+        "order_commission_percent": 0,
     },
     PlanId.ONLINE: {
         "name": "Online",
