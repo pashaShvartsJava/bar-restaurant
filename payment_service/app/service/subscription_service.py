@@ -9,7 +9,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.concurrency import run_in_threadpool
 
 from .stripe_service import StripeService
-from ..broker.producers import publish_subscription_vat_status_changed_event
 from ..broker.rabbitmq import RabbitMQ
 from ..models.subscriptions import Subscription, SubscriptionStatus, VatStatus, PlanId
 from ..repository.outbox_repository import OutboxPaymentEventsRepository
@@ -313,3 +312,21 @@ class SubscriptionService:
                                                                         subscription.email,
                                                                         event_id)
 
+    async def get_subscriptions(self):
+        return await self.subscription_repository.get_subscriptions()
+
+    async def get_subscription_by_id(self, id : int):
+        return await self.subscription_repository.get_subscription_by_id(id)
+
+    async def update_subscription(self, subscription : Subscription) -> Subscription:
+        event_id = str(uuid.uuid4())
+        await self.outbox_repository.create_outbox_sub_access_status_event(
+                subscription.id,
+                subscription.restaurant_id,
+                subscription.owner_id,
+                subscription.access_status,
+                event_id,
+                subscription.suspended_reason,
+                subscription.email)
+        await self.subscription_repository.update(subscription)
+        return subscription

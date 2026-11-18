@@ -40,6 +40,10 @@ class VatStatus(str, Enum):
     INVALID = "invalid"
     UNKNOWN = "unknown"
 
+class AccessStatus(str, Enum):
+    ENABLED = "enabled"
+    SUSPENDED = "suspended"
+
 class Subscription(Base):
 
     __tablename__ = "subscriptions"
@@ -76,3 +80,8 @@ class Subscription(Base):
     vat_status = Column(SQLEnum(VatStatus), nullable=False, default=VatStatus.NONE)
     vat_checked_at = Column(DateTime(timezone=True), nullable=True)
     country = Column(String(2), nullable=False, index=True, server_default="DE")
+
+    access_status = Column(SQLEnum(AccessStatus), nullable=False, default=AccessStatus.ENABLED)
+    suspended_reason = Column(Text, nullable=True)
+    suspended_at = Column(DateTime(timezone=True), nullable=True)
+    suspended_by = Column(String, nullable=True)

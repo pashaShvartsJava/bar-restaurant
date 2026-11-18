@@ -16,6 +16,7 @@ async def lifespan(app: FastAPI):
     consumer_reset_password_task = asyncio.create_task(rabbitmq.consume_reset_password_queue.consume())
     consumer_create_reservation_task = asyncio.create_task(rabbitmq.consume_create_reservation.consume())
     consumer_vat_status_changed_task = asyncio.create_task(rabbitmq.consume_vat_status_changed.consume())
+    consumer_access_status_changed_task = asyncio.create_task(rabbitmq.consume_access_status_changed.consume())
     try:
         yield
     finally:
@@ -25,6 +26,7 @@ async def lifespan(app: FastAPI):
         consumer_reset_password_task.cancel()
         consumer_create_reservation_task.cancel()
         consumer_vat_status_changed_task.cancel()
+        consumer_access_status_changed_task.cancel()
         try:
             await consumer_email_task
             await consumer_password_task
@@ -32,6 +34,7 @@ async def lifespan(app: FastAPI):
             await consumer_reset_password_task
             await consumer_create_reservation_task
             await consumer_vat_status_changed_task
+            await consumer_access_status_changed_task
         except asyncio.CancelledError:
             pass
         await rabbitmq.close()

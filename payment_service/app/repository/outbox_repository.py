@@ -7,7 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from ..models.outbox_payment_events import OutboxPaymentEvents
 from uuid import UUID
 
-from ..models.subscriptions import SubscriptionStatus, VatStatus
+from ..models.subscriptions import SubscriptionStatus, VatStatus, AccessStatus
 
 
 class OutboxPaymentEventsRepository:
@@ -91,6 +91,33 @@ class OutboxPaymentEventsRepository:
                 "client_id": str(owner_id),
                 "status": vat_status.value,
                 "email": email
+            },
+            event_id=event_id
+        )
+        self.db.add(outbox_event)
+        await self.db.flush()
+        return outbox_event
+
+    async def create_outbox_sub_access_status_event(self,
+                                                    subscription_id : UUID,
+                                                    restaurant_id : UUID,
+                                                    owner_id : UUID,
+                                                    status : AccessStatus,
+                                                    event_id : str,
+                                                    reason : str,
+                                                    email : str):
+        found_event = await self.get_event_by_event_id(event_id)
+        if found_event is not None:
+            return found_event
+        outbox_event = OutboxPaymentEvents(
+            event_type="SubscriptionAccessStatusChanged",
+            payload={
+                "subscription_id": str(subscription_id),
+                "restaurant_id": str(restaurant_id),
+                "client_id": str(owner_id),
+                "status": status.value,
+                "reason" : reason,
+                 "email" : email
             },
             event_id=event_id
         )

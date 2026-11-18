@@ -31,6 +31,37 @@ async def publish_subscription_event(subscription_id : str,
         content_type="application/json")
     await rabbitmq.subscription_exchange.publish(message, routing_key="subscriptions_routing_key")
 
+async def publish_subscription_access_status_event(subscription_id : str,
+                                     restaurant_id : str,
+                                     client_id : str,
+                                     status : str,
+                                     event_id : str,
+                                                   reason : str,
+                                                   email : str):
+    message = aio_pika.Message(
+        body=json.dumps({
+            "event": "subscription_access_status_changed",
+            "subscription_id": subscription_id,
+            "client_id": client_id,
+            "restaurant_id": restaurant_id,
+            "status": status})
+        .encode(), message_id=event_id, delivery_mode=aio_pika.DeliveryMode.PERSISTENT,
+        content_type="application/json")
+    await rabbitmq.subscription_exchange.publish(message, routing_key="subscriptions_routing_key")
+    message = aio_pika.Message(
+        body=json.dumps({
+            "event": "subscription_access_status_changed",
+            "subscription_id": subscription_id,
+            "client_id": client_id,
+            "restaurant_id": restaurant_id,
+            "status": status,
+            "reason" : reason,
+            "email" : email})
+        .encode(), message_id=event_id, delivery_mode=aio_pika.DeliveryMode.PERSISTENT,
+        content_type="application/json")
+    await rabbitmq.subscription_exchange.publish(message, routing_key="subscriptions_email_routing_key")
+
+
 async def publish_subscription_vat_status_changed_event(subscription_id : str,
                                                         restaurant_id : str,
                                                         client_id : str,

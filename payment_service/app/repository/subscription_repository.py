@@ -48,6 +48,14 @@ class SubscriptionRepository:
                                                                 Subscription.status == SubscriptionStatus.TRIALING)))
         return result.scalars().all()
 
+    async def get_subscriptions(self):
+        result = await self.db.execute(select(Subscription))
+        return result.scalars().all()
+
+    async def get_subscription_by_id(self, id: int):
+        result = await self.db.execute(select(Subscription).where(Subscription.id == id))
+        return result.scalar_one_or_none()
+
     async def create_subscription(self, data : SubscriptionCheckoutDTO) -> Subscription:
         subscription_number = generate_subscription_number()
         plan_name = PLANS.get(PlanId(data.plan_id))

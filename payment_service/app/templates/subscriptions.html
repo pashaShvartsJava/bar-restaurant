@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0c0a10">
+    <title>Subscriptions | FDCPlatform</title>
+    <style>
+        *{box-sizing:border-box;margin:0;padding:0}
+        :root{
+            --bg:#0c0a10;
+            --surface:#15121b;
+            --surface-light:#1e1a26;
+            --border:rgba(255,255,255,.08);
+            --accent:#d8c8a0;
+            --accent-light:#e0c88a;
+            --accent-soft:rgba(199,165,106,.06);
+            --accent-border:rgba(199,165,106,.3);
+            --text:#f4f0e9;
+            --muted:#a9a3b3;
+            --green:#9bc8a5;
+            --red:#e08b8b;
+            --orange:#e5ad76;
+            --blue:#8db8df;
+            --purple:#c4a5ed;
+            --gray:#aaa4b2;
+        }
+        body{
+            min-height:100vh;
+            padding:35px 24px;
+            background:radial-gradient(circle at 50% 0%,rgba(139,92,246,.18),transparent 42%),var(--bg);
+            color:var(--text);
+            font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+        }
+        button,input,select,textarea{font:inherit}
+        button{cursor:pointer}
+        .container{width:min(100%,1500px);margin:0 auto}
+        .header{display:flex;align-items:center;justify-content:space-between;gap:20px;margin-bottom:45px}
+        .logo{display:flex;align-items:center;gap:12px}
+        .logo-icon{width:44px;height:44px;display:grid;place-items:center;border-radius:13px;background:linear-gradient(145deg,#7c3aed,#a78bfa);color:white;font-size:22px}
+        .logo-text{font-size:17px;font-weight:700;letter-spacing:.3px}
+        .back-button{display:inline-flex;align-items:center;justify-content:center;gap:9px;padding:11px 17px;border:1px solid var(--accent-border);border-radius:10px;background:var(--accent-soft);color:var(--accent);font-size:12px;font-weight:600;text-decoration:none;transition:.2s}
+        .back-button:hover{background:rgba(199,165,106,.14);border-color:var(--accent);transform:translateY(-2px)}
+        .page-heading{margin-bottom:30px}
+        .page-title{margin-bottom:12px;font-family:Georgia,serif;font-size:36px;font-weight:normal}
+        .page-title span{color:var(--accent)}
+        .subtitle{color:var(--muted);font-size:13px;line-height:1.7}
+        .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:28px}
+        .stat-card{padding:20px 22px;border:1px solid var(--border);border-radius:14px;background:linear-gradient(145deg,var(--surface-light),var(--surface))}
+        .stat-label{margin-bottom:12px;color:var(--muted);font-size:11px;letter-spacing:.5px;text-transform:uppercase}
+        .stat-value{font-size:27px;font-weight:600;color:var(--accent)}
+        .toolbar{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:18px}
+        .toolbar-left{display:flex;align-items:center;gap:12px;flex:1;flex-wrap:wrap}
+        .search-box{position:relative;flex:1;min-width:220px;max-width:430px}
+        .search-box input{width:100%;padding:12px 15px 12px 40px;border:1px solid var(--border);border-radius:10px;outline:none;background:var(--surface);color:var(--text);font-size:12px;transition:.2s}
+        .search-box input:focus,.filter-select:focus,.reason-input:focus{border-color:var(--accent-border)}
+        .search-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:15px}
+        .filter-select{min-width:180px;padding:12px 14px;border:1px solid var(--border);border-radius:10px;outline:none;background:var(--surface);color:var(--text);font-size:12px}
+        .filter-select option{background:var(--surface)}
+        .results-count{color:var(--muted);font-size:11px}
+        .table-container{overflow-x:auto;border:1px solid var(--border);border-radius:16px;background:var(--surface);box-shadow:0 20px 60px rgba(0,0,0,.2)}
+        table{width:100%;min-width:1250px;border-collapse:collapse;text-align:left}
+        thead{background:rgba(255,255,255,.025)}
+        th{padding:17px 16px;border-bottom:1px solid var(--border);color:var(--muted);font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;white-space:nowrap}
+        td{padding:17px 16px;border-bottom:1px solid var(--border);color:var(--text);font-size:12px;vertical-align:middle}
+        tbody tr{transition:background .2s}
+        tbody tr:hover{background:rgba(255,255,255,.025)}
+        tbody tr:last-child td{border-bottom:none}
+        .subscription-number{display:block;margin-bottom:5px;color:var(--accent);font-family:"Courier New",monospace;font-size:12px;font-weight:700}
+        .subscription-id{color:var(--muted);font-size:10px}
+        .customer-email{max-width:210px;overflow-wrap:anywhere;color:var(--text)}
+        .plan-name{display:block;margin-bottom:4px;font-weight:600}
+        .secondary-text{color:var(--muted);font-size:10px}
+        .price{color:var(--accent);font-weight:700;white-space:nowrap}
+        .status-badge{display:inline-flex;align-items:center;gap:7px;padding:7px 10px;border:1px solid;border-radius:30px;font-size:10px;font-weight:700;white-space:nowrap}
+        .status-badge::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+        .status-active{color:var(--green);background:rgba(155,200,165,.09);border-color:rgba(155,200,165,.25)}
+        .status-trialing{color:var(--blue);background:rgba(141,184,223,.09);border-color:rgba(141,184,223,.25)}
+        .status-incomplete{color:var(--orange);background:rgba(229,173,118,.09);border-color:rgba(229,173,118,.25)}
+        .status-incomplete_expired{color:var(--gray);background:rgba(170,164,178,.09);border-color:rgba(170,164,178,.25)}
+        .status-past_due{color:#e6a16f;background:rgba(230,161,111,.09);border-color:rgba(230,161,111,.25)}
+        .status-unpaid{color:var(--red);background:rgba(224,139,139,.09);border-color:rgba(224,139,139,.25)}
+        .status-cancelled{color:#d58c9d;background:rgba(213,140,157,.09);border-color:rgba(213,140,157,.25)}
+        .status-paused{color:var(--purple);background:rgba(196,165,237,.09);border-color:rgba(196,165,237,.25)}
+        .access-enabled{color:var(--green);background:rgba(155,200,165,.09);border-color:rgba(155,200,165,.25)}
+        .access-suspended{color:var(--red);background:rgba(224,139,139,.09);border-color:rgba(224,139,139,.25)}
+        .access-cell{display:flex;flex-direction:column;align-items:flex-start;gap:6px}
+        .action-button{padding:9px 12px;border:1px solid var(--accent-border);border-radius:8px;background:var(--accent-soft);color:var(--accent);font-size:10px;font-weight:700;white-space:nowrap;transition:.2s}
+        .action-button:hover{background:rgba(199,165,106,.16);border-color:var(--accent)}
+        .action-button.resume{border-color:rgba(155,200,165,.3);background:rgba(155,200,165,.07);color:var(--green)}
+        .action-button.resume:hover{background:rgba(155,200,165,.15)}
+        .details-cell{padding:0 16px 16px!important;background:rgba(255,255,255,.015)}
+        .details-panel{padding:18px;border:1px solid var(--border);border-radius:12px;background:rgba(0,0,0,.12)}
+        .details-title{margin-bottom:15px;color:var(--accent);font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase}
+        .details-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+        .detail-item{min-width:0}
+        .detail-label{margin-bottom:6px;color:var(--muted);font-size:10px}
+        .detail-value{color:var(--text);font-size:11px;overflow-wrap:anywhere}
+        .error-text{color:var(--red);white-space:pre-wrap}
+        .details-toggle{padding:5px 0;border:none;background:none;color:var(--muted);font-size:10px;cursor:pointer}
+        .details-toggle:hover{color:var(--accent)}
+        .empty-state{padding:65px 20px;text-align:center;color:var(--muted)}
+        .empty-icon{margin-bottom:15px;color:var(--accent);font-size:34px}
+        .empty-state h3{margin-bottom:8px;color:var(--text);font-family:Georgia,serif;font-size:20px;font-weight:normal}
+        .empty-state p{font-size:12px}
+        .modal-overlay{position:fixed;inset:0;z-index:1000;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(0,0,0,.75);backdrop-filter:blur(8px)}
+        .modal-overlay.open{display:flex}
+        .modal{width:min(100%,540px);max-height:90vh;overflow-y:auto;padding:30px;border:1px solid var(--accent-border);border-radius:18px;background:linear-gradient(145deg,var(--surface-light),var(--surface));box-shadow:0 30px 100px rgba(0,0,0,.6);animation:modalAppear .2s ease both}
+        @keyframes modalAppear{from{opacity:0;transform:translateY(12px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
+        .modal-icon{width:48px;height:48px;display:grid;place-items:center;margin-bottom:20px;border:1px solid var(--accent-border);border-radius:13px;background:var(--accent-soft);color:var(--accent);font-size:23px}
+        .modal-title{margin-bottom:10px;font-family:Georgia,serif;font-size:25px;font-weight:normal}
+        .modal-description{margin-bottom:18px;color:var(--muted);font-size:12px;line-height:1.7}
+        .modal-subscription{margin-bottom:20px;padding:13px 15px;border:1px solid var(--border);border-radius:10px;background:rgba(255,255,255,.025)}
+        .modal-subscription span{display:block;margin-bottom:5px;color:var(--muted);font-size:10px}
+        .modal-subscription strong{color:var(--accent);font-family:"Courier New",monospace;font-size:13px}
+        .modal-warning{margin-bottom:20px;padding:13px 15px;border:1px solid var(--accent-border);border-radius:10px;background:var(--accent-soft);color:var(--accent);font-size:11px;line-height:1.6}
+        .modal-section-title{margin-bottom:11px;color:var(--muted);font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase}
+        .access-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px}
+        .access-option{padding:13px 12px;border:1px solid var(--border);border-radius:9px;background:rgba(255,255,255,.02);color:var(--muted);font-size:11px;text-align:center;transition:.2s}
+        .access-option:hover{border-color:var(--accent-border);color:var(--text)}
+        .access-option.selected{border-color:var(--accent);background:var(--accent-soft);color:var(--accent)}
+        .access-option:disabled{opacity:.35;cursor:not-allowed}
+        .reason-label{display:block;margin-bottom:9px;color:var(--muted);font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase}
+        .reason-input{width:100%;min-height:100px;resize:vertical;padding:12px;border:1px solid var(--border);border-radius:9px;outline:none;background:rgba(0,0,0,.15);color:var(--text);font-size:12px;line-height:1.6}
+        .reason-input::placeholder{color:#77717f}
+        .reason-field{margin-bottom:20px}
+        .reason-hint{margin-top:7px;color:var(--muted);font-size:10px}
+        .modal-actions{display:flex;justify-content:flex-end;gap:10px}
+        .modal-button{padding:12px 18px;border:1px solid var(--border);border-radius:9px;background:transparent;color:var(--muted);font-size:11px;font-weight:600;transition:.2s}
+        .modal-button:hover{border-color:var(--muted);color:var(--text)}
+        .modal-button.confirm{border-color:var(--accent-border);background:var(--accent);color:#15121b}
+        .modal-button.confirm:hover{background:var(--accent-light)}
+        .modal-button.confirm:disabled{opacity:.4;cursor:not-allowed}
+        .footer{display:flex;justify-content:space-between;align-items:center;gap:15px;flex-wrap:wrap;margin-top:30px;padding-top:20px;border-top:1px solid var(--border);color:var(--muted);font-size:10px}
+        .system-status{color:var(--green)}
+        @media(max-width:1000px){.stats-grid{grid-template-columns:repeat(2,1fr)}.details-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+        @media(max-width:600px){
+            body{padding:22px 14px}
+            .header{margin-bottom:35px}
+            .page-title{font-size:29px}
+            .stats-grid{gap:10px}
+            .stat-card{padding:15px}
+            .stat-value{font-size:22px}
+            .toolbar-left{width:100%}
+            .search-box{max-width:none;flex-basis:100%}
+            .filter-select{width:100%}
+            .details-grid{grid-template-columns:1fr}
+            .modal{padding:23px 18px}
+            .modal-actions{flex-direction:column-reverse}
+            .modal-button{width:100%}
+            .access-actions{grid-template-columns:1fr}
+        }
+        @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+    </style>
+</head>
+<body>
+<div class="container">
+    <header class="header">
+        <div class="logo">
+            <div class="logo-icon">◆</div>
+            <div class="logo-text">FDCPlatform</div>
+        </div>
+        <a href="/admin_panel/secret_api" class="back-button">
+            <span>←</span>
+            Назад в админ-панель
+        </a>
+    </header>
+    <section class="page-heading">
+        <h1 class="page-title">Управление <span>подписками</span></h1>
+        <p class="subtitle">Просмотр подписок, контроль платежей и управление доступом клиентов.</p>
+    </section>
+    {% set total = subscriptions|length %}
+    {% set active_count = subscriptions|selectattr("status.value","equalto","active")|list|length %}
+    {% set trial_count = subscriptions|selectattr("status.value","equalto","trialing")|list|length %}
+    {% set suspended_count = subscriptions|selectattr("access_status.value","equalto","suspended")|list|length %}
+    <section class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-label">Всего подписок</div>
+            <div class="stat-value">{{ total }}</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">Активные</div>
+            <div class="stat-value">{{ active_count }}</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">Пробный период</div>
+            <div class="stat-value">{{ trial_count }}</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">Доступ приостановлен</div>
+            <div class="stat-value">{{ suspended_count }}</div>
+        </div>
+    </section>
+    <section class="toolbar">
+        <div class="toolbar-left">
+            <div class="search-box">
+                <span class="search-icon">⌕</span>
+                <input type="search" id="searchInput" placeholder="Поиск по номеру, email, ресторану, Stripe ID...">
+            </div>
+            <select class="filter-select" id="statusFilter">
+                <option value="">Все статусы подписки</option>
+                <option value="active">Активна</option>
+                <option value="trialing">Пробный период</option>
+                <option value="incomplete">Не завершена</option>
+                <option value="incomplete_expired">Истекла незавершённая</option>
+                <option value="past_due">Просрочена оплата</option>
+                <option value="unpaid">Не оплачена</option>
+                <option value="cancelled">Отменена</option>
+                <option value="paused">Приостановлена Stripe</option>
+            </select>
+            <select class="filter-select" id="accessFilter">
+                <option value="">Любой доступ</option>
+                <option value="enabled">Доступ разрешён</option>
+                <option value="suspended">Доступ приостановлен</option>
+            </select>
+        </div>
+        <div class="results-count" id="resultsCount">Показано: {{ total }}</div>
+    </section>
+    <section class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Подписка</th>
+                    <th>Клиент</th>
+                    <th>Тариф</th>
+                    <th>Стоимость</th>
+                    <th>Комиссия</th>
+                    <th>Период</th>
+                    <th>Статус подписки</th>
+                    <th>Доступ</th>
+                    <th>Создана</th>
+                    <th>Управление</th>
+                </tr>
+            </thead>
+            <tbody id="subscriptionsTable">
+                {% for subscription in subscriptions %}
+                    {% set status_value = subscription.status.value if subscription.status.value is defined else subscription.status %}
+                    {% set access_value = subscription.access_status.value if subscription.access_status.value is defined else subscription.access_status %}
+                    {% set plan_value = subscription.plan_id.value if subscription.plan_id.value is defined else subscription.plan_id %}
+                    {% set currency_value = subscription.currency.value if subscription.currency.value is defined else subscription.currency %}
+                    {% if status_value == "active" %}
+                        {% set status_label = "Активна" %}
+                    {% elif status_value == "trialing" %}
+                        {% set status_label = "Пробный период" %}
+                    {% elif status_value == "incomplete" %}
+                        {% set status_label = "Не завершена" %}
+                    {% elif status_value == "incomplete_expired" %}
+                        {% set status_label = "Истекла" %}
+                    {% elif status_value == "past_due" %}
+                        {% set status_label = "Просрочена" %}
+                    {% elif status_value == "unpaid" %}
+                        {% set status_label = "Не оплачена" %}
+                    {% elif status_value == "cancelled" %}
+                        {% set status_label = "Отменена" %}
+                    {% elif status_value == "paused" %}
+                        {% set status_label = "Приостановлена Stripe" %}
+                    {% else %}
+                        {% set status_label = status_value %}
+                    {% endif %}
+                    <tr class="subscription-row" data-status="{{ status_value }}" data-access="{{ access_value }}" data-search="{{ subscription.subscription_number }} {{ subscription.email }} {{ subscription.restaurant_id }} {{ subscription.owner_id }} {{ plan_value }} {{ subscription.stripe_customer_id or '' }} {{ subscription.stripe_subscription_id or '' }} {{ subscription.stripe_checkout_session_id or '' }}">
+                        <td>
+                            <span class="subscription-number">{{ subscription.subscription_number }}</span>
+                            <span class="subscription-id">ID: {{ subscription.id }}</span>
+                            <br>
+                            <button type="button" class="details-toggle" onclick="toggleDetails('details-{{ subscription.id }}',this)">+ Подробнее</button>
+                        </td>
+                        <td>
+                            <div class="customer-email">{{ subscription.email }}</div>
+                            <div class="secondary-text">{{ subscription.country }}</div>
+                        </td>
+                        <td>
+                            <span class="plan-name">{{ subscription.plan_name or plan_value }}</span>
+                            <span class="secondary-text">{{ subscription.trial_days }} дней trial</span>
+                        </td>
+                        <td>
+                            <span class="price">{{ "%.2f"|format(subscription.price) }} {{ currency_value }}</span>
+                            <div class="secondary-text">{{ "Годовая" if (subscription.billing_period.value if subscription.billing_period.value is defined else subscription.billing_period) == "yearly" else "Ежемесячная" }}</div>
+                        </td>
+                        <td>{{ subscription.order_commission_percent }}%</td>
+                        <td>
+                            <div>{{ subscription.current_period_start.strftime("%d.%m.%Y") if subscription.current_period_start else "—" }}</div>
+                            <div class="secondary-text">до {{ subscription.current_period_end.strftime("%d.%m.%Y") if subscription.current_period_end else "—" }}</div>
+                        </td>
+                        <td>
+                            <span class="status-badge status-{{ status_value }}">{{ status_label }}</span>
+                            {% if subscription.cancel_at_period_end %}
+                                <div class="secondary-text" style="color:var(--orange);margin-top:6px">Отмена в конце периода</div>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="access-cell">
+                                {% if access_value == "suspended" %}
+                                    <span class="status-badge access-suspended">Приостановлен</span>
+                                {% else %}
+                                    <span class="status-badge access-enabled">Разрешён</span>
+                                {% endif %}
+                                {% if subscription.suspended_at %}
+                                    <span class="secondary-text">{{ subscription.suspended_at.strftime("%d.%m.%Y") }}</span>
+                                {% endif %}
+                            </div>
+                        </td>
+                        <td>
+                            {{ subscription.created_at.strftime("%d.%m.%Y") if subscription.created_at else "—" }}
+                            <div class="secondary-text">{{ subscription.created_at.strftime("%H:%M") if subscription.created_at else "" }}</div>
+                        </td>
+                        <td>
+                            <button type="button" class="action-button {{ 'resume' if access_value == 'suspended' else '' }}" data-id="{{ subscription.id }}" data-number="{{ subscription.subscription_number }}" data-access="{{ access_value }}" data-reason="{{ subscription.suspended_reason or '' }}" onclick="openAccessModal(this)">
+                                {{ "Возобновить доступ" if access_value == "suspended" else "Приостановить доступ" }}
+                            </button>
+                        </td>
+                    </tr>
+                    <tr id="details-{{ subscription.id }}" style="display:none">
+                        <td colspan="10" class="details-cell">
+                            <div class="details-panel">
+                                <div class="details-title">Полная информация о подписке</div>
+                                <div class="details-grid">
+                                    <div class="detail-item"><div class="detail-label">Внутренний ID</div><div class="detail-value">{{ subscription.id }}</div></div>
+                                    <div class="detail-item"><div class="detail-label">Restaurant ID</div><div class="detail-value">{{ subscription.restaurant_id }}</div></div>
+                                    <div class="detail-item"><div class="detail-label">Owner ID</div><div class="detail-value">{{ subscription.owner_id }}</div></div>
+                                    <div class="detail-item"><div class="detail-label">Stripe Customer ID</div><div class="detail-value">{{ subscription.stripe_customer_id or "—" }}</div></div>
+                                    <div class="detail-item"><div class="detail-label">Stripe Subscription ID</div><div class="detail-value">{{ subscription.stripe_subscription_id or "—" }}</div></div>
+                                    <div class="detail-item"><div class="detail-label">Checkout Session ID</div><div class="detail-value">{{ subscription.stripe_checkout_session_id or "—" }}</div></div>
+                                    <div class="detail-item"><div class="detail-label">Начало trial</div><div class="detail-value">{{ subscription.trial_start.strftime("%d.%m.%Y %H:%M") if subscription.trial_start else "—" }}</div></div>
+                                    <div class="detail-item"><div class="detail-label">Окончание trial</div><div class="detail-value">{{ subscription.trial_end.strftime("%d.%m.%Y %H:%M") if subscription.trial_end else "—" }}</div></div>
+                                    <div class="detail-item"><div class="detail-label">Дата отмены</div><div class="detail-value">{{ subscription.canceled_at.strftime("%d.%m.%Y %H:%M") if subscription.canceled_at else "—" }}</div></div>
+                                    <div class="detail-item"><div class="detail-label">VAT ID</div><div class="detail-value">{{ subscription.vat_id or "—" }}</div></div>
+                                    <div class="detail-item"><div class="detail-label">VAT статус</div><div class="detail-value">{{ subscription.vat_status.value if subscription.vat_status.value is defined else subscription.vat_status }}</div></div>
+                                    <div class="detail-item"><div class="detail-label">Дата проверки VAT</div><div class="detail-value">{{ subscription.vat_checked_at.strftime("%d.%m.%Y %H:%M") if subscription.vat_checked_at else "—" }}</div></div>
+                                    <div class="detail-item"><div class="detail-label">Дата обновления</div><div class="detail-value">{{ subscription.updated_at.strftime("%d.%m.%Y %H:%M") if subscription.updated_at else "—" }}</div></div>
+                                    <div class="detail-item"><div class="detail-label">Idempotency Key</div><div class="detail-value">{{ subscription.sub_idempotency_key }}</div></div>
+                                    <div class="detail-item"><div class="detail-label">Отмена в конце периода</div><div class="detail-value">{{ "Да" if subscription.cancel_at_period_end else "Нет" }}</div></div>
+                                    <div class="detail-item"><div class="detail-label">Последняя ошибка оплаты</div><div class="detail-value error-text">{{ subscription.last_payment_error or "Нет ошибок" }}</div></div>
+                                    <div class="detail-item"><div class="detail-label">Статус доступа</div><div class="detail-value">{{ access_value }}</div></div>
+                                    <div class="detail-item"><div class="detail-label">Причина приостановки</div><div class="detail-value">{{ subscription.suspended_reason or "—" }}</div></div>
+                                    <div class="detail-item"><div class="detail-label">Дата приостановки</div><div class="detail-value">{{ subscription.suspended_at.strftime("%d.%m.%Y %H:%M") if subscription.suspended_at else "—" }}</div></div>
+                                    <div class="detail-item"><div class="detail-label">Кем приостановлена</div><div class="detail-value">{{ subscription.suspended_by or "—" }}</div></div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="10">
+                            <div class="empty-state">
+                                <div class="empty-icon">◈</div>
+                                <h3>Подписок пока нет</h3>
+                                <p>Когда появятся подписки, они отобразятся здесь.</p>
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <div class="empty-state" id="noSearchResults" style="display:none">
+            <div class="empty-icon">⌕</div>
+            <h3>Ничего не найдено</h3>
+            <p>Попробуйте изменить поисковый запрос или фильтр.</p>
+        </div>
+    </section>
+    <footer class="footer">
+        <div>FDCPlatform Administration · Subscriptions</div>
+        <div class="system-status">● Система активна</div>
+    </footer>
+</div>
+<div class="modal-overlay" id="accessModal">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+        <div class="modal-icon">⚠</div>
+        <h2 class="modal-title" id="modalTitle">Управление доступом</h2>
+        <p class="modal-description" id="modalDescription">Вы собираетесь изменить доступ клиента к платформе. Статус подписки и состояние Stripe при этом не изменяются.</p>
+        <div class="modal-subscription">
+            <span>Подписка</span>
+            <strong id="modalSubscriptionNumber">—</strong>
+        </div>
+        <div class="modal-warning" id="modalWarning">Это действие влияет только на доступ клиента к платформе. Платёжные операции и жизненный цикл подписки остаются без изменений.</div>
+        <div class="modal-section-title">Выберите действие</div>
+        <div class="access-actions">
+            <button type="button" class="access-option" data-access="suspended">Приостановить доступ</button>
+            <button type="button" class="access-option" data-access="enabled">Возобновить доступ</button>
+        </div>
+        <form id="accessChangeForm" method="POST">
+            <input type="hidden" name="access_status" id="newAccessStatus">
+            <div class="reason-field" id="reasonField">
+                <label class="reason-label" for="suspendedReason">Причина приостановки</label>
+                <textarea class="reason-input" id="suspendedReason" name="suspended_reason" placeholder="Укажите причину, например: нарушение условий договора или задолженность по оплате." maxlength="2000"></textarea>
+                <div class="reason-hint">Причина обязательна для приостановки доступа.</div>
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="modal-button" onclick="closeAccessModal()">Отмена</button>
+                <button type="submit" class="modal-button confirm" id="confirmAccessButton" disabled>Подтвердить</button>
+            </div>
+        </form>
+    </div>
+</div>
+<script>
+    const searchInput=document.getElementById("searchInput");
+    const statusFilter=document.getElementById("statusFilter");
+    const accessFilter=document.getElementById("accessFilter");
+    const resultsCount=document.getElementById("resultsCount");
+    const noSearchResults=document.getElementById("noSearchResults");
+
+    function filterSubscriptions(){
+        const search=searchInput.value.toLowerCase().trim();
+        const selectedStatus=statusFilter.value;
+        const selectedAccess=accessFilter.value;
+        const rows=document.querySelectorAll(".subscription-row");
+        let visibleCount=0;
+
+        rows.forEach(row=>{
+            const matchesSearch=row.dataset.search.toLowerCase().includes(search);
+            const matchesStatus=!selectedStatus||row.dataset.status===selectedStatus;
+            const matchesAccess=!selectedAccess||row.dataset.access===selectedAccess;
+            const visible=matchesSearch&&matchesStatus&&matchesAccess;
+            row.style.display=visible?"":"none";
+            const detailsRow=row.nextElementSibling;
+            if(detailsRow&&detailsRow.id.startsWith("details-")&&!visible){
+                detailsRow.style.display="none";
+            }
+            if(visible)visibleCount++;
+        });
+
+        resultsCount.textContent="Показано: "+visibleCount;
+        noSearchResults.style.display=visibleCount===0&&rows.length>0?"block":"none";
+    }
+
+    searchInput.addEventListener("input",filterSubscriptions);
+    statusFilter.addEventListener("change",filterSubscriptions);
+    accessFilter.addEventListener("change",filterSubscriptions);
+
+    function toggleDetails(id,button){
+        const row=document.getElementById(id);
+        if(!row)return;
+        const isOpen=row.style.display!=="none";
+        row.style.display=isOpen?"none":"table-row";
+        button.textContent=isOpen?"+ Подробнее":"− Скрыть";
+    }
+
+    const modal=document.getElementById("accessModal");
+    const modalNumber=document.getElementById("modalSubscriptionNumber");
+    const modalDescription=document.getElementById("modalDescription");
+    const modalWarning=document.getElementById("modalWarning");
+    const accessForm=document.getElementById("accessChangeForm");
+    const newAccessStatus=document.getElementById("newAccessStatus");
+    const reasonField=document.getElementById("reasonField");
+    const reasonInput=document.getElementById("suspendedReason");
+    const confirmButton=document.getElementById("confirmAccessButton");
+    const accessOptions=document.querySelectorAll(".access-option");
+
+    let currentSubscriptionId=null;
+    let currentAccess=null;
+    let selectedAccess=null;
+
+    function updateAccessForm(){
+        const isSuspending=selectedAccess==="suspended";
+        reasonField.style.display=isSuspending?"block":"none";
+        confirmButton.disabled=!selectedAccess||(isSuspending&&!reasonInput.value.trim());
+        confirmButton.textContent=isSuspending?"Приостановить доступ":"Возобновить доступ";
+        modalDescription.textContent=isSuspending
+            ?"Доступ клиента к платформе будет временно ограничен. Статус подписки Stripe не изменится."
+            :"Доступ клиента к платформе будет восстановлен. Статус подписки Stripe не изменится.";
+        modalWarning.textContent=isSuspending
+            ?"Укажите причину приостановки. Это действие не отменяет подписку и не изменяет её платёжный статус."
+            :"Убедитесь, что основания для ограничения доступа устранены. Подписка продолжит свой естественный цикл.";
+    }
+
+    function openAccessModal(button){
+        currentSubscriptionId=button.dataset.id;
+        currentAccess=button.dataset.access;
+        selectedAccess=null;
+        modalNumber.textContent=button.dataset.number;
+        accessForm.action="/subscriptions/secret_api/"+encodeURIComponent(currentSubscriptionId)+"/access";
+        newAccessStatus.value="";
+        reasonInput.value="";
+        accessOptions.forEach(option=>{
+            option.classList.remove("selected");
+            option.disabled=option.dataset.access===currentAccess;
+        });
+        reasonField.style.display="none";
+        confirmButton.disabled=true;
+        confirmButton.textContent="Подтвердить";
+        modal.classList.add("open");
+        document.body.style.overflow="hidden";
+    }
+
+    function closeAccessModal(){
+        modal.classList.remove("open");
+        document.body.style.overflow="";
+        currentSubscriptionId=null;
+        selectedAccess=null;
+    }
+
+    accessOptions.forEach(option=>{
+        option.addEventListener("click",()=>{
+            selectedAccess=option.dataset.access;
+            newAccessStatus.value=selectedAccess;
+            accessOptions.forEach(item=>item.classList.toggle("selected",item===option));
+            updateAccessForm();
+        });
+    });
+
+    reasonInput.addEventListener("input",updateAccessForm);
+
+    modal.addEventListener("click",event=>{
+        if(event.target===modal)closeAccessModal();
+    });
+
+    document.addEventListener("keydown",event=>{
+        if(event.key==="Escape"&&modal.classList.contains("open"))closeAccessModal();
+    });
+
+    accessForm.addEventListener("submit",event=>{
+        if(!selectedAccess||!currentSubscriptionId){
+            event.preventDefault();
+            return;
+        }
+        if(selectedAccess==="suspended"&&!reasonInput.value.trim()){
+            event.preventDefault();
+            reasonInput.focus();
+            return;
+        }
+        confirmButton.disabled=true;
+        confirmButton.textContent="Отправка...";
+    });
+</script>
+</body>
+</html>

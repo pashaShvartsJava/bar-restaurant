@@ -3,7 +3,7 @@ import aio_pika
 from aio_pika import connect_robust
 
 from .consumer import EmailVerificationConsumer, ChangePasswordVerificationConsumer, ChangeStatusConsumer, \
-    ResetPasswordConsumer, CreateReservationConsumer, ChangeVatStatusConsumer
+    ResetPasswordConsumer, CreateReservationConsumer, ChangeVatStatusConsumer, ChangeRestaurantStatusConsumer
 from ..config.config import settings
 
 
@@ -32,6 +32,9 @@ class RabbitMQ:
         self.subscriptions_exchange = None
         self.create_vat_status_changed_queue = None
         self.consume_vat_status_changed = None
+
+        self.create_access_status_changed_queue = None
+        self.consume_access_status_changed = None
 
     async def connect(self):
         while True:
@@ -81,6 +84,11 @@ class RabbitMQ:
         self.create_vat_status_changed_queue = await self.channel.declare_queue("vat_status_changed_queue", durable=True)
         await self.create_vat_status_changed_queue.bind(self.exchange, routing_key="subscriptions_vat_status_routing_key")
         self.consume_vat_status_changed = ChangeVatStatusConsumer(self.create_vat_status_changed_queue)
+
+        self.create_access_status_changed_queue = await self.channel.declare_queue("restaurant_status_changed_queue", durable=True)
+        await self.create_access_status_changed_queue.bind(self.subscriptions_exchange, routing_key="subscriptions_email_routing_key")
+        self.consume_access_status_changed = ChangeRestaurantStatusConsumer(self.create_access_status_changed_queue)
+
 
     async def close(self):
         if self.connection:

@@ -169,6 +169,10 @@ class RestaurantRepository:
             found_restaurant.status = RestaurantStatus.SUSPENDED
         if new_status == "canceled" or new_status == "incomplete_expired":
             found_restaurant.status = RestaurantStatus.CLOSED
+        if new_status == "suspended":
+            found_restaurant.status = RestaurantStatus.SUSPENDED
+        if new_status == "enabled":
+            found_restaurant.status = RestaurantStatus.ACTIVE
         await self.db.flush()
 
     async def get_status_by_owner_and_id(self, data : KeyDTO) -> RestaurantStatus:

@@ -10,6 +10,7 @@ from .database.database import SessionLocal
 from .dependencies.dependencies import get_subscription_service_dependency
 from .routes.payment_routes import templates as payment_templates,  router as payment_router
 from .routes.subscription_routes import templates as subscription_templates, router as subscription_router
+from .routes.super_admin_routes import router as super_admin_router
 from .broker.instance import rabbitmq
 from .async_processes.async_processes import outbox_publisher, vat_validity_scheduler
 
@@ -73,6 +74,7 @@ app = FastAPI(lifespan=lifespan)
 
 app.include_router(payment_router)
 app.include_router(subscription_router)
+app.include_router(super_admin_router)
 
 @app.middleware("http")
 async def language_middleware(request: Request, call_next):

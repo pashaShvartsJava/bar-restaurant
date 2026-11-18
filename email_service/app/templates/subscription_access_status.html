@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subscription Status Update</title>
+</head>
+<body style="margin:0;padding:0;background-color:#0c0a10;font-family:Arial,Helvetica,sans-serif;color:#f4f0e8;">
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color:#0c0a10;padding:40px 15px;">
+        <tr>
+            <td align="center">
+                <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="max-width:600px;background-color:#15111c;border:1px solid rgba(199,165,106,.3);border-radius:14px;overflow:hidden;">
+                    <tr>
+                        <td style="padding:35px 35px 25px;text-align:center;background-color:#171321;border-bottom:1px solid rgba(199,165,106,.2);">
+                            <div style="font-size:13px;letter-spacing:3px;text-transform:uppercase;color:#d8c8a0;font-weight:bold;">FDC Platform</div>
+                            <h1 style="margin:22px 0 8px;font-size:25px;line-height:1.35;color:#f4f0e8;">
+                                Access Status Update
+                            </h1>
+                            <p style="margin:0;font-size:14px;line-height:1.6;color:#aaa1b5;">
+                                Important information about your subscription
+                            </p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding:32px 35px;">
+                            <p style="margin:0 0 18px;font-size:15px;line-height:1.7;color:#e5dfd4;">
+                                Hello!
+                            </p>
+                            <p style="margin:0 0 25px;font-size:15px;line-height:1.7;color:#c8c0cf;">
+                                We would like to inform you that an administrator has changed the access status of your subscription.
+                            </p>
+                            <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color:#0f0c14;border:1px solid rgba(199,165,106,.2);border-radius:10px;">
+                                <tr>
+                                    <td style="padding:20px 22px;">
+                                        <p style="margin:0 0 8px;font-size:12px;text-transform:uppercase;letter-spacing:1px;color:#aaa1b5;">New Access Status</p>
+                                        {% if access_status == "SUSPENDED" %}
+                                        <p style="margin:0;font-size:21px;font-weight:bold;color:#e5a18f;">Access Suspended</p>
+                                        {% elif access_status == "ENABLED" %}
+                                        <p style="margin:0;font-size:21px;font-weight:bold;color:#d8c8a0;">Access Restored</p>
+                                        {% else %}
+                                        <p style="margin:0;font-size:18px;font-weight:bold;color:#f4f0e8;">{{ access_status }}</p>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            </table>
+                            <h2 style="margin:28px 0 12px;font-size:16px;color:#d8c8a0;">Reason for the Change</h2>
+                            <div style="padding:17px 19px;background-color:#1b1722;border-left:3px solid #d8c8a0;border-radius:4px;">
+                                <p style="margin:0;font-size:14px;line-height:1.7;color:#e5dfd4;white-space:pre-line;">{{ reason }}</p>
+                            </div>
+                            <h2 style="margin:28px 0 15px;font-size:16px;color:#d8c8a0;">Subscription Information</h2>
+                            <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+                                <tr>
+                                    <td style="padding:10px 0;border-bottom:1px solid rgba(255,255,255,.07);font-size:13px;color:#aaa1b5;">Subscription ID</td>
+                                    <td align="right" style="padding:10px 0;border-bottom:1px solid rgba(255,255,255,.07);font-size:13px;color:#f4f0e8;">{{ subscription_id }}</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding:10px 0;border-bottom:1px solid rgba(255,255,255,.07);font-size:13px;color:#aaa1b5;">Client ID</td>
+                                    <td align="right" style="padding:10px 0;border-bottom:1px solid rgba(255,255,255,.07);font-size:13px;color:#f4f0e8;">{{ client_id }}</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding:10px 0;font-size:13px;color:#aaa1b5;">Restaurant ID</td>
+                                    <td align="right" style="padding:10px 0;font-size:13px;color:#f4f0e8;">{{ restaurant_id }}</td>
+                                </tr>
+                            </table>
+                            {% if access_status == "SUSPENDED" %}
+                            <p style="margin:25px 0 0;font-size:14px;line-height:1.7;color:#c8c0cf;">
+                                If you have any questions or would like further clarification regarding the suspension of your access, please contact our support team.
+                            </p>
+                            {% elif access_status == "ENABLED" %}
+                            <p style="margin:25px 0 0;font-size:14px;line-height:1.7;color:#c8c0cf;">
+                                Your access to the platform has been restored. You can now continue using the available features in accordance with your subscription terms.
+                            </p>
+                            {% endif %}
+                            <p style="margin:28px 0 0;font-size:14px;line-height:1.7;color:#c8c0cf;">
+                                Best regards,<br>
+                                <strong style="color:#d8c8a0;">The FDC Platform Team</strong>
+                            </p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding:20px 30px;text-align:center;background-color:#100d15;border-top:1px solid rgba(199,165,106,.15);">
+                            <p style="margin:0;font-size:11px;line-height:1.6;color:#817889;">
+                                This is an automated notification. Please do not reply to this email.
+                            </p>
+                            <p style="margin:8px 0 0;font-size:11px;color:#817889;">
+                                © FDC Platform
+                            </p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

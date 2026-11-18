@@ -212,3 +212,26 @@ class EmailService:
         await smtp.login(settings.EMAIL_USERNAME, settings.EMAIL_PASSWORD)
         await smtp.send_message(message)
         await smtp.quit()
+
+    async def send_restaurant_status_changed_status(self,
+                                                    client_id: str,
+                                                    restaurant_id: str,
+                                                    access_status: str,
+                                                    email: str,
+                                                    subscription_id: str,
+                                                    reason: str):
+        message = EmailMessage()
+        message["From"] = settings.EMAIL_FROM
+        message["To"] = email
+        message["Subject"] = "Статус вашей подписки был изменён"
+        html = templates.get_template("subscription_access_status.html").render(client_id=client_id,
+                                                                             restaurant_id=restaurant_id,
+                                                                             access_status=access_status,
+                                                                             subscription_id=subscription_id,
+                                                                                reason=reason)
+        message.add_alternative(html, subtype="html", )
+        smtp = aiosmtplib.SMTP(hostname=settings.EMAIL_HOST, port=settings.EMAIL_PORT, timeout=20)
+        await smtp.connect()
+        await smtp.login(settings.EMAIL_USERNAME, settings.EMAIL_PASSWORD)
+        await smtp.send_message(message)
+        await smtp.quit()
