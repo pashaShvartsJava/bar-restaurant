@@ -114,6 +114,8 @@ async def get_restaurant_by_restaurant_id(restaurant_id : str,
                          service: RestaurantService = Depends(get_restaurant_dependency)):
     await verify_internal_token(internal_token)
     restaurant = await service.get_restaurant_by_id(uuid.UUID(restaurant_id))
+    if restaurant is None:
+        raise HTTPException(status_code=404, detail="Restaurant not found")
     return RestaurantConstructorDTO.model_validate(restaurant, from_attributes=True)
 
 @router.get("/restaurants/get_restaurant_by_stripe_account_id")
@@ -265,7 +267,6 @@ async def start_connect_onboarding(request: Request, service: RestaurantService 
     required_roles(IdentityRole.OWNER, payload=payload)
     restaurant_id = payload.get("restaurant_id")
     restaurant = await service.get_restaurant_by_id(restaurant_id)
-    await verify_restaurant_status(restaurant.status)
     if not restaurant.stripe_account_id:
         account = stripe.Account.create(
             type="express",

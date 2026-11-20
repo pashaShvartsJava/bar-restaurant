@@ -43,6 +43,12 @@ async def get_restaurant_dependency(slug : str):
         raise
     return RestaurantConstructorDTO(**response.json())
 
+async def get_restaurant_dependency_by_id(restaurant_id : str):
+    client = await get_client()
+    response = await client.get(url="http://restaurant-service:8010/restaurants/get_restaurant_by_id",
+                                params={"restaurant_id" : restaurant_id})
+    return RestaurantConstructorDTO(**response.json())
+
 async def get_restaurant_percentage_commission(restaurant_id : UUID):
     client = await get_client()
     try:

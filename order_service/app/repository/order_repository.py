@@ -183,7 +183,7 @@ class OrderRepository:
                 order.updated_status = now
         await self.db.commit()
 
-    async def search_or_sort_orders(self, search : str,
+    async def search_or_sort_orders(self, search : str | None,
                                     status : OrderStatus,
                                     date_from : date,
                                     date_to : date,
@@ -192,6 +192,9 @@ class OrderRepository:
                                     sort : str,
                                     restaurant_id : UUID):
         query = select(Order).options(selectinload(Order.order_items)).where(Order.restaurant_id==restaurant_id)
+        if search is "":
+            result = await self.db.execute(query)
+            return result.scalars().all()
         if search is not None:
             query = query.where(Order.order_number == search)
         if status is not None:

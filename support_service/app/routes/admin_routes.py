@@ -1,11 +1,11 @@
 import uuid
 
-import httpx
 from fastapi import APIRouter, Request, HTTPException
 from fastapi.params import Depends, Header
 from starlette.responses import RedirectResponse
 from starlette.templating import Jinja2Templates
 
+from ..dependencies.dependencies import get_restaurant_dependency_by_id
 from ..schema.susbcription_schema import PlanId
 from ..security.jwt.jwt import get_payload
 from ..security.authorization.authorization import required_roles
@@ -34,7 +34,7 @@ async def show_admin_chat(request : Request,
     payload  = get_payload(request)
     required_roles(IdentityRole.OWNER, IdentityRole.ADMIN, IdentityRole.MODERATOR, payload=payload)
     restaurant_id = payload.get("restaurant_id")
-    restaurant = await get_restaurant_dependency(restaurant_id)
+    restaurant = await get_restaurant_dependency_by_id(restaurant_id)
     await verify_restaurant_status(restaurant.status)
     current_plan_id = await get_plan_in_cache(restaurant_id)
     await required_plans(current_plan_id, PlanId.ONLINE, PlanId.ADVANCED, PlanId.PROFESSIONAL)
@@ -49,7 +49,7 @@ async def free_conversation(request : Request,
     required_roles(IdentityRole.OWNER, IdentityRole.ADMIN, IdentityRole.MODERATOR, payload=payload)
     await verify_csrf(request)
     restaurant_id = payload.get("restaurant_id")
-    restaurant = await get_restaurant_dependency(restaurant_id)
+    restaurant = await get_restaurant_dependency_by_id(restaurant_id)
     await verify_restaurant_status(restaurant.status)
     current_plan_id = await get_plan_in_cache(restaurant_id)
     await required_plans(current_plan_id, PlanId.ONLINE, PlanId.ADVANCED, PlanId.PROFESSIONAL)
@@ -61,10 +61,12 @@ async def general_support(request : Request, conversation_service : Conversation
     payload = get_payload(request)
     required_roles(IdentityRole.OWNER, IdentityRole.ADMIN, IdentityRole.MODERATOR, payload=payload)
     restaurant_id = payload.get("restaurant_id")
-    restaurant = await get_restaurant_dependency(restaurant_id)
+    restaurant = await get_restaurant_dependency_by_id(restaurant_id)
     await verify_restaurant_status(restaurant.status)
     current_plan_id = await get_plan_in_cache(restaurant_id)
     await required_plans(current_plan_id, PlanId.ONLINE, PlanId.ADVANCED, PlanId.PROFESSIONAL)
+    if restaurant.stripe_account_id is None:
+        raise HTTPException(detail="Connect your bank account to your account in admin panel via 'Manage account' button at first.", status_code=403)
     conversations = await conversation_service.get_unread_conversations(restaurant_id)
     return templates.TemplateResponse("general_support.html", {"request" : request, "conversations" : conversations})
 

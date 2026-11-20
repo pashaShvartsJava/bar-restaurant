@@ -87,7 +87,7 @@ class OrderService:
     async def mark_order_as_expired(self):
         return await self.order_repository.mark_order_as_expired()
 
-    async def search_or_sort_orders(self, search: str,
+    async def search_or_sort_orders(self, search: str | None,
                                     status: OrderStatus,
                                     date_from: date,
                                     date_to: date,

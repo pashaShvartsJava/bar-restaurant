@@ -8,7 +8,7 @@ from starlette.responses import RedirectResponse
 from starlette.templating import Jinja2Templates
 
 from ..dependencies.dependencies import get_order_service_dependency, get_restaurant_dependency, \
-    get_restaurant_percentage_commission, verify_restaurant_status
+    get_restaurant_percentage_commission, verify_restaurant_status, get_restaurant_dependency_by_id
 from ..models.orders import OrderStatus
 from ..schema.delivery_address_schema import DeliveryAddressDTO, GuestDTO, GuestCustomerDTO
 from ..schema.order_item_schema import ListOrderDTO, ListOrderGuestDTO, SplitOrderDTO
@@ -38,7 +38,7 @@ async def orders_history_page(request : Request, service : OrderService = Depend
     payload = get_payload(request)
     required_roles(IdentityRole.OWNER, IdentityRole.ADMIN, IdentityRole.MODERATOR, payload=payload)
     restaurant_id = payload.get("restaurant_id")
-    restaurant = await get_restaurant_dependency(restaurant_id)
+    restaurant = await get_restaurant_dependency_by_id(restaurant_id)
     await verify_restaurant_status(restaurant.status)
     orders = await service.get_all_orders_history(restaurant_id)
     return templates.TemplateResponse("old_orders.html", {"request": request, "orders": orders})
@@ -48,7 +48,7 @@ async def get_all_orders(request : Request, service : OrderService = Depends(get
     payload = get_payload(request)
     required_roles(IdentityRole.OWNER, IdentityRole.ADMIN, IdentityRole.MODERATOR, payload=payload)
     restaurant_id = payload.get("restaurant_id")
-    restaurant = await get_restaurant_dependency(restaurant_id)
+    restaurant = await get_restaurant_dependency_by_id(restaurant_id)
     await verify_restaurant_status(restaurant.status)
     orders = await service.get_all_orders(restaurant_id)
     return templates.TemplateResponse("all_orders.html", {"request" : request, "orders" : orders})
@@ -62,7 +62,7 @@ async def change_order_status(request : Request,
     required_roles(IdentityRole.OWNER, IdentityRole.ADMIN, IdentityRole.MODERATOR, payload=payload)
     await verify_csrf(request)
     restaurant_id = payload.get("restaurant_id")
-    restaurant = await get_restaurant_dependency(restaurant_id)
+    restaurant = await get_restaurant_dependency_by_id(restaurant_id)
     await verify_restaurant_status(restaurant.status)
     order = await service.get_order_by_order_number(UUID(order_number), restaurant_id)
     if order.table_number is None:
@@ -232,7 +232,7 @@ async def search_and_sorting(request : Request,
     payload = get_payload(request)
     required_roles(IdentityRole.OWNER, IdentityRole.ADMIN, IdentityRole.MODERATOR, payload=payload)
     restaurant_id = payload.get("restaurant_id")
-    restaurant = await get_restaurant_dependency(restaurant_id)
+    restaurant = await get_restaurant_dependency_by_id(restaurant_id)
     await verify_restaurant_status(restaurant.status)
     orders = await service.search_or_sort_orders(search, status, date_from, date_to, sum_from, sum_to, sort, restaurant_id)
     return templates.TemplateResponse("all_orders.html", {"request" : request, "orders" : orders})
@@ -246,7 +246,7 @@ async def get_user_orders(request : Request,
     payload = get_payload(request)
     required_roles(IdentityRole.OWNER, IdentityRole.ADMIN, IdentityRole.MODERATOR, payload=payload)
     restaurant_id = payload.get("restaurant_id")
-    restaurant = await get_restaurant_dependency(restaurant_id)
+    restaurant = await get_restaurant_dependency_by_id(restaurant_id)
     await verify_restaurant_status(restaurant.status)
     orders = await service.find_orders_by_client_id(identity_id, restaurant_id)
     return orders
@@ -324,7 +324,7 @@ async def create_order_manually(request : Request):
     payload = get_payload(request)
     required_roles(IdentityRole.OWNER, IdentityRole.ADMIN, IdentityRole.MODERATOR, payload=payload)
     restaurant_id = payload.get("restaurant_id")
-    restaurant = await get_restaurant_dependency(restaurant_id)
+    restaurant = await get_restaurant_dependency_by_id(restaurant_id)
     await verify_restaurant_status(restaurant.status)
     async with httpx.AsyncClient() as client:
         response = await client.get(url="http://reservation-service:8003/tables/available_tables",
@@ -353,7 +353,7 @@ async def create_order_manually(request : Request,
     required_roles(IdentityRole.OWNER, IdentityRole.ADMIN, IdentityRole.MODERATOR, payload=payload)
     await verify_csrf(request)
     restaurant_id = payload.get("restaurant_id")
-    restaurant = await get_restaurant_dependency(restaurant_id)
+    restaurant = await get_restaurant_dependency_by_id(restaurant_id)
     await verify_restaurant_status(restaurant.status)
     total_drink_sum = Decimal("0.00")
     total_food_sum = Decimal("0.00")
@@ -372,7 +372,7 @@ async def merge_orders(request : Request,
     payload = get_payload(request)
     required_roles(IdentityRole.OWNER, IdentityRole.ADMIN, IdentityRole.MODERATOR, payload=payload)
     restaurant_id = payload.get("restaurant_id")
-    restaurant = await get_restaurant_dependency(restaurant_id)
+    restaurant = await get_restaurant_dependency_by_id(restaurant_id)
     await verify_restaurant_status(restaurant.status)
     await service.merge_orders(data, restaurant_id)
 
@@ -384,7 +384,7 @@ async def split_order(request : Request,
     payload = get_payload(request)
     required_roles(IdentityRole.OWNER, IdentityRole.ADMIN, IdentityRole.MODERATOR, payload=payload)
     restaurant_id = payload.get("restaurant_id")
-    restaurant = await get_restaurant_dependency(restaurant_id)
+    restaurant = await get_restaurant_dependency_by_id(restaurant_id)
     await verify_restaurant_status(restaurant.status)
     await service.split_order(data, restaurant_id)
 
@@ -393,7 +393,7 @@ async def get_order_info(request : Request, order_id : int, service : OrderServi
     payload = get_payload(request)
     required_roles(IdentityRole.OWNER, IdentityRole.ADMIN, IdentityRole.MODERATOR, payload=payload)
     restaurant_id = payload.get("restaurant_id")
-    restaurant = await get_restaurant_dependency(restaurant_id)
+    restaurant = await get_restaurant_dependency_by_id(restaurant_id)
     await verify_restaurant_status(restaurant.status)
     order = await service.get_order_by_id(order_id, restaurant_id)
     return templates.TemplateResponse("order_info.html", {"request" : request, "order" : order})
