@@ -83,5 +83,6 @@
 "clear_cart": "Clear cart",
 "error_cart_empty": "Your cart is empty.",
   "venue_suspended_note": "This venue is temporarily not providing online services.",
-"venue_closed_note": "This venue is no longer operating."
+"venue_closed_note": "This venue is no longer operating.",
+   "go_to_restaurant_home": "Venue home page"
 }

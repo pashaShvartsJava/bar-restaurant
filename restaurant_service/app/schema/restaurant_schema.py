@@ -94,4 +94,5 @@ class RestaurantForUserProfileDTO(BaseModel):
     city: Optional[str] = None
     short_description: Optional[str] = None
     photo_url: Optional[str] = None
+    accepts_delivery: bool
     status: RestaurantStatus

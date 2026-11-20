@@ -113,5 +113,6 @@
 "contact_address_label": "Adresse",
   "select_language": "Sprache wählen",
   "venue_suspended_note": "Dieses Lokal bietet derzeit keine Online-Dienste an.",
-"venue_closed_note": "Dieses Lokal ist nicht mehr in Betrieb."
+"venue_closed_note": "Dieses Lokal ist nicht mehr in Betrieb.",
+  "service_unavailable": "Dienst vorübergehend nicht verfügbar"
 }

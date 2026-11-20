@@ -16,7 +16,7 @@ from ..security.jwt.jwt import get_payload
 from ..security.authorization.authorization import required_roles, required_role
 from ..security.role.roles import IdentityRole
 from ..dependencies.dependency import get_service_dependency, get_restaurant_dependency, get_plan_in_cache, \
-    required_plans
+    required_plans, verify_restaurant_status
 from ..services.user_service import UserService
 from ..schema.user_schema import RegisterRequest, EmailRequest, UserDto, UserInfo
 from ..schema.user_schema import UserEditSchema
@@ -152,7 +152,6 @@ async def edit_password(request: Request,service: UserService = Depends(get_serv
     required_roles(IdentityRole.USER, payload=payload)
     await verify_csrf(request)
     user = await service.find_by_identity_id(payload["sub"])
-
     if new_password != confirmed_password:
         raise HTTPException(status_code=400,detail="Пароли не совпадают")
 
@@ -181,6 +180,8 @@ async def get_all_users(request : Request,
     required_roles(IdentityRole.OWNER, IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
     await verify_internal_token(internal_token)
     restaurant_id = payload.get("restaurant_id")
+    restaurant = await get_restaurant_dependency(restaurant_id)
+    await verify_restaurant_status(restaurant.status)
     current_plan_id = await get_plan_in_cache(restaurant_id)
     await required_plans(current_plan_id, PlanId.ONLINE, PlanId.ADVANCED, PlanId.PROFESSIONAL)
     users = await service.find_all_users()
@@ -195,6 +196,8 @@ async def get_user_address(request : Request,
     payload = get_payload(request)
     required_roles(IdentityRole.OWNER, IdentityRole.ADMIN, IdentityRole.MODERATOR, payload=payload)
     restaurant_id = payload.get("restaurant_id")
+    restaurant = await get_restaurant_dependency(restaurant_id)
+    await verify_restaurant_status(restaurant.status)
     current_plan_id = await get_plan_in_cache(restaurant_id)
     await required_plans(current_plan_id, PlanId.ONLINE, PlanId.ADVANCED, PlanId.PROFESSIONAL)
     user = await service.find_by_identity_id(identity_id)
@@ -220,6 +223,9 @@ async def confirm_address(request : Request,
     payload = get_payload(request)
     required_role(IdentityRole.USER, payload)
     restaurant = await get_restaurant_dependency(slug)
+    if not restaurant.accepts_delivery:
+        raise HTTPException(detail="This establishment doesn't have a delivery service", status_code=403)
+    await verify_restaurant_status(restaurant.status)
     identity_id = UUID(payload["sub"])
     user = await service.find_by_identity_id(identity_id)
     return templates.TemplateResponse("confirm_address.html", {"request" : request,
@@ -234,6 +240,11 @@ async def confirm_address(request : Request,
     payload = get_payload(request)
     required_role(IdentityRole.USER, payload)
     await verify_csrf(request)
+    restaurant_id = payload.get("restaurant_id")
+    restaurant = await get_restaurant_dependency(restaurant_id)
+    if not restaurant.accepts_delivery:
+        raise HTTPException(detail="This establishment doesn't have a delivery service", status_code=403)
+    await verify_restaurant_status(restaurant.status)
     async with httpx.AsyncClient() as client:
         response = await client.post(url=f"http://order-service:8007/r/{slug}/orders/confirm_address",
                                      json=data.model_dump(mode="json"),

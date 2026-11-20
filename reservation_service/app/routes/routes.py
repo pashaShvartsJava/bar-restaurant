@@ -19,7 +19,7 @@ from ..security.authorization.authorization import required_roles
 from ..security.role.role import IdentityRole
 from ..dependencies.dependencies import get_table_service_dependency, get_table_session_service_dependency, \
     get_reservation_service_dependency, get_restaurant_dependency, get_restaurant_dependency_by_id, get_plan_in_cache, \
-    required_plans
+    required_plans, verify_restaurant_status
 from ..service.table_service import TableService
 from ..service.table_session_service import TableSessionService
 from ..service.reservation_service import ReservationService
@@ -42,6 +42,8 @@ async def show_tables_page(request : Request, table_service : TableService = Dep
     payload = get_payload(request)
     required_roles(IdentityRole.OWNER, IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
     restaurant_id = payload.get("restaurant_id")
+    restaurant = await get_restaurant_dependency_by_id(restaurant_id)
+    await verify_restaurant_status(restaurant.status)
     current_plan_id = await get_plan_in_cache(restaurant_id)
     await required_plans(current_plan_id, PlanId.ADVANCED, PlanId.PROFESSIONAL)
     tables = await table_service.find_all_tables(restaurant_id)
@@ -52,6 +54,8 @@ async def get_generating_qr_page(request : Request):
     payload = get_payload(request)
     required_roles(IdentityRole.OWNER, IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
     restaurant_id = payload.get("restaurant_id")
+    restaurant = await get_restaurant_dependency_by_id(restaurant_id)
+    await verify_restaurant_status(restaurant.status)
     current_plan_id = await get_plan_in_cache(restaurant_id)
     await required_plans(current_plan_id, PlanId.ADVANCED, PlanId.PROFESSIONAL)
     restaurant_id = payload.get("restaurant_id")
@@ -66,6 +70,8 @@ async def get_qr_code_by_number(request: Request,
     payload = get_payload(request)
     required_roles(IdentityRole.OWNER, IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
     restaurant_id = payload.get("restaurant_id")
+    restaurant = await get_restaurant_dependency_by_id(restaurant_id)
+    await verify_restaurant_status(restaurant.status)
     current_plan_id = await get_plan_in_cache(restaurant_id)
     await required_plans(current_plan_id, PlanId.ADVANCED, PlanId.PROFESSIONAL)
     restaurant = await get_restaurant_dependency_by_id(restaurant_id)
@@ -89,6 +95,8 @@ async def add_table_page(request : Request):
     payload = get_payload(request)
     required_roles(IdentityRole.OWNER, IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
     restaurant_id = payload.get("restaurant_id")
+    restaurant = await get_restaurant_dependency_by_id(restaurant_id)
+    await verify_restaurant_status(restaurant.status)
     current_plan_id = await get_plan_in_cache(restaurant_id)
     await required_plans(current_plan_id, PlanId.ADVANCED, PlanId.PROFESSIONAL)
     return templates.TemplateResponse("add_table.html", {"request" : request})
@@ -102,6 +110,8 @@ async def add_table(request : Request,
     required_roles(IdentityRole.OWNER, IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
     await verify_csrf(request)
     restaurant_id = payload.get("restaurant_id")
+    restaurant = await get_restaurant_dependency_by_id(restaurant_id)
+    await verify_restaurant_status(restaurant.status)
     current_plan_id = await get_plan_in_cache(restaurant_id)
     await required_plans(current_plan_id, PlanId.ADVANCED, PlanId.PROFESSIONAL)
     await table_service.create_table(table_number, capacity, restaurant_id)
@@ -113,6 +123,8 @@ async def take_table(request : Request, table_id : int,  service : TableSessionS
     required_roles(IdentityRole.OWNER, IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
     await verify_csrf(request)
     restaurant_id = payload.get("restaurant_id")
+    restaurant = await get_restaurant_dependency_by_id(restaurant_id)
+    await verify_restaurant_status(restaurant.status)
     current_plan_id = await get_plan_in_cache(restaurant_id)
     await required_plans(current_plan_id, PlanId.ADVANCED, PlanId.PROFESSIONAL)
     await service.start_session(table_id, restaurant_id)
@@ -124,6 +136,8 @@ async def take_table(request : Request, table_id : int,  service : TableSessionS
     required_roles(IdentityRole.OWNER, IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
     await verify_csrf(request)
     restaurant_id = payload.get("restaurant_id")
+    restaurant = await get_restaurant_dependency_by_id(restaurant_id)
+    await verify_restaurant_status(restaurant.status)
     current_plan_id = await get_plan_in_cache(restaurant_id)
     await required_plans(current_plan_id, PlanId.ADVANCED, PlanId.PROFESSIONAL)
     await service.end_session(table_id, restaurant_id)
@@ -134,6 +148,8 @@ async def create_reservation_page(request : Request, table_id : int, table_servi
     payload = get_payload(request)
     required_roles(IdentityRole.OWNER, IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
     restaurant_id = payload.get("restaurant_id")
+    restaurant = await get_restaurant_dependency_by_id(restaurant_id)
+    await verify_restaurant_status(restaurant.status)
     current_plan_id = await get_plan_in_cache(restaurant_id)
     await required_plans(current_plan_id, PlanId.ADVANCED, PlanId.PROFESSIONAL)
     table = await table_service.get_table_by_id(table_id, restaurant_id)
@@ -154,6 +170,8 @@ async def create_reservation(request : Request,
     await verify_csrf(request)
     restaurant_id = payload.get("restaurant_id")
     current_plan_id = await get_plan_in_cache(restaurant_id)
+    restaurant = await get_restaurant_dependency_by_id(restaurant_id)
+    await verify_restaurant_status(restaurant.status)
     await required_plans(current_plan_id, PlanId.ADVANCED, PlanId.PROFESSIONAL)
     reservation_start = reservation_start.replace(tzinfo=timezone.utc)
     reservation_end = reservation_end.replace(tzinfo=timezone.utc)
@@ -174,6 +192,8 @@ async def reservations_page(request : Request, reservation_service : Reservation
     payload = get_payload(request)
     required_roles(IdentityRole.OWNER, IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
     restaurant_id = payload.get("restaurant_id")
+    restaurant = await get_restaurant_dependency_by_id(restaurant_id)
+    await verify_restaurant_status(restaurant.status)
     current_plan_id = await get_plan_in_cache(restaurant_id)
     await required_plans(current_plan_id, PlanId.ADVANCED, PlanId.PROFESSIONAL)
     reservations = await reservation_service.get_all_reservations(restaurant_id)
@@ -187,6 +207,8 @@ async def cancel_reservation(request : Request, reservation_id : int, reservatio
     required_roles(IdentityRole.OWNER, IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
     await verify_csrf(request)
     restaurant_id = payload.get("restaurant_id")
+    restaurant = await get_restaurant_dependency_by_id(restaurant_id)
+    await verify_restaurant_status(restaurant.status)
     current_plan_id = await get_plan_in_cache(restaurant_id)
     await required_plans(current_plan_id, PlanId.ADVANCED, PlanId.PROFESSIONAL)
     await reservation_service.cancel_reservation(reservation_id, restaurant_id)
@@ -201,6 +223,8 @@ async def show_reservation(request : Request,
     payload = get_payload(request)
     required_roles(IdentityRole.OWNER, IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
     restaurant_id = payload.get("restaurant_id")
+    restaurant = await get_restaurant_dependency_by_id(restaurant_id)
+    await verify_restaurant_status(restaurant.status)
     current_plan_id = await get_plan_in_cache(restaurant_id)
     await required_plans(current_plan_id, PlanId.ADVANCED, PlanId.PROFESSIONAL)
     reservation_uuid = None
@@ -219,6 +243,8 @@ async def filter_reservations(request : Request,
     payload = get_payload(request)
     required_roles(IdentityRole.OWNER, IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
     restaurant_id = payload.get("restaurant_id")
+    restaurant = await get_restaurant_dependency_by_id(restaurant_id)
+    await verify_restaurant_status(restaurant.status)
     current_plan_id = await get_plan_in_cache(restaurant_id)
     await required_plans(current_plan_id, PlanId.ADVANCED, PlanId.PROFESSIONAL)
     reservations = await reservation_service.filter_reservations(date, status, table_number, restaurant_id)
@@ -229,6 +255,7 @@ async def filter_reservations(request : Request,
 @router.get("/r/{slug}/tables/get_free_table")
 async def find_free_table(request : Request, slug : str):
     restaurant = await get_restaurant_dependency(slug)
+    await verify_restaurant_status(restaurant.status)
     current_plan_id = await get_plan_in_cache(restaurant.id)
     await required_plans(current_plan_id, PlanId.ADVANCED, PlanId.PROFESSIONAL)
     return templates.TemplateResponse("get_free_table.html", {"request" : request, "slug" : slug, "restaurant" : restaurant})
@@ -240,6 +267,7 @@ async def find_free_table(response : Response,
                           requested_datetime : datetime = Form(),
                           service : TableService = Depends(get_table_service_dependency)):
     restaurant = await get_restaurant_dependency(slug)
+    await verify_restaurant_status(restaurant.status)
     current_plan_id = await get_plan_in_cache(restaurant.id)
     await required_plans(current_plan_id, PlanId.ADVANCED, PlanId.PROFESSIONAL)
     free_table = await service.get_free_table(people_amount, requested_datetime, restaurant.id)
@@ -274,6 +302,7 @@ async def confirm_reservation(request : Request,
                               email : EmailStr = Form(),
                               service : ReservationService = Depends(get_reservation_service_dependency)):
     restaurant = await get_restaurant_dependency(slug)
+    await verify_restaurant_status(restaurant.status)
     current_plan_id = await get_plan_in_cache(restaurant.id)
     await required_plans(current_plan_id, PlanId.ADVANCED, PlanId.PROFESSIONAL)
     token = request.cookies.get("reservation_draft")
@@ -311,6 +340,8 @@ async def get_available_tables(request : Request,
     payload = get_payload(request)
     required_roles(IdentityRole.OWNER, IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
     await verify_internal_token(internal_token)
+    restaurant = await get_restaurant_dependency_by_id(str(restaurant_id))
+    await verify_restaurant_status(restaurant.status)
     current_plan_id = await get_plan_in_cache(str(restaurant_id))
     await required_plans(current_plan_id, PlanId.ADVANCED, PlanId.PROFESSIONAL, PlanId.BASIC, PlanId.ONLINE)
     available_tables = await service.find_all_available_tables(restaurant_id)

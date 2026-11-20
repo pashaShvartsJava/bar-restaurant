@@ -9,7 +9,8 @@ from starlette.templating import Jinja2Templates
 from ..schemas.subscription_schema import SubscriptionCheckoutDTO, PlanId, STRIPE_PRICE_IDS, SubscriptionDataDTO
 from ..security.authorization.authorization import required_roles
 from ..security.internal_security import verify_internal_token
-from ..dependencies.dependencies import get_subscription_service_dependency
+from ..dependencies.dependencies import get_subscription_service_dependency, get_restaurant_dependency_by_id, \
+    verify_restaurant_status
 from ..config.config import settings
 from ..security.jwt.jwt import get_payload
 from ..security.role.role import IdentityRole
@@ -53,6 +54,8 @@ def get_or_create_portal_configuration() -> str:
 async def subscription_payment(data : SubscriptionCheckoutDTO,
                                internal_token : str = Header(..., alias="internal_token"),
                                service : SubscriptionService = Depends(get_subscription_service_dependency)):
+    restaurant = await get_restaurant_dependency_by_id(str(data.restaurant_id))
+    await verify_restaurant_status(restaurant.status)
     await verify_internal_token(internal_token)
     subscription, checkout_url = await service.create_subscription(data)
     return {"subscription_id" : subscription.id, "checkout_url" : checkout_url}
@@ -123,6 +126,8 @@ async def subscription_management_page(request: Request, sub_service: Subscripti
     required_roles(IdentityRole.OWNER, payload=payload)
     customer_id = payload.get("sub")
     restaurant_id = payload.get("restaurant_id")
+    restaurant = await get_restaurant_dependency_by_id(restaurant_id)
+    await verify_restaurant_status(restaurant.status)
     subscription = await sub_service.get_subscription_by_owner_id(customer_id, restaurant_id)
     if not subscription or not subscription.stripe_customer_id:
         raise HTTPException(status_code=404, detail="No active subscription or currently subscription has a trialing period")
@@ -287,6 +292,8 @@ async def get_subscription_dto(restaurant_id : str,
                                internal_token : str = Header(..., alias="internal_token"),
                                service : SubscriptionService = Depends(get_subscription_service_dependency)):
     await verify_internal_token(internal_token)
+    restaurant = await get_restaurant_dependency_by_id(restaurant_id)
+    await verify_restaurant_status(restaurant.status)
     subscription = await service.get_subscription_by_restaurant_id(uuid.UUID(restaurant_id))
     return SubscriptionDataDTO.model_validate(subscription)
 

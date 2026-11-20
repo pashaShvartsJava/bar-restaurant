@@ -113,5 +113,6 @@
 "contact_address_label": "Adresse",
   "select_language": "Choisir la langue",
   "venue_suspended_note": "Cet établissement ne fournit temporairement pas de services en ligne.",
-"venue_closed_note": "Cet établissement n'est plus en activité."
+"venue_closed_note": "Cet établissement n'est plus en activité.",
+  "service_unavailable": "Service temporairement indisponible"
 }

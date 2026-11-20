@@ -11,7 +11,7 @@ from ..security.jwt.jwt import get_payload
 from ..security.authorization.authorization import required_roles
 from ..security.role.role import IdentityRole
 from ..dependencies.dependencies import get_conversation_service_dependency, get_restaurant_dependency, \
-    get_plan_in_cache, required_plans
+    get_plan_in_cache, required_plans, verify_restaurant_status
 from ..service.conversation_service import ConversationService
 from uuid import UUID
 from ..config.config import settings
@@ -34,6 +34,8 @@ async def show_admin_chat(request : Request,
     payload  = get_payload(request)
     required_roles(IdentityRole.OWNER, IdentityRole.ADMIN, IdentityRole.MODERATOR, payload=payload)
     restaurant_id = payload.get("restaurant_id")
+    restaurant = await get_restaurant_dependency(restaurant_id)
+    await verify_restaurant_status(restaurant.status)
     current_plan_id = await get_plan_in_cache(restaurant_id)
     await required_plans(current_plan_id, PlanId.ONLINE, PlanId.ADVANCED, PlanId.PROFESSIONAL)
     conversation = await conversation_service.get_or_create_admin_conversation(identity_id, UUID(payload["sub"]), restaurant_id)
@@ -47,6 +49,8 @@ async def free_conversation(request : Request,
     required_roles(IdentityRole.OWNER, IdentityRole.ADMIN, IdentityRole.MODERATOR, payload=payload)
     await verify_csrf(request)
     restaurant_id = payload.get("restaurant_id")
+    restaurant = await get_restaurant_dependency(restaurant_id)
+    await verify_restaurant_status(restaurant.status)
     current_plan_id = await get_plan_in_cache(restaurant_id)
     await required_plans(current_plan_id, PlanId.ONLINE, PlanId.ADVANCED, PlanId.PROFESSIONAL)
     await conversation_service.free_conversation(conversation_id, restaurant_id)
@@ -57,6 +61,8 @@ async def general_support(request : Request, conversation_service : Conversation
     payload = get_payload(request)
     required_roles(IdentityRole.OWNER, IdentityRole.ADMIN, IdentityRole.MODERATOR, payload=payload)
     restaurant_id = payload.get("restaurant_id")
+    restaurant = await get_restaurant_dependency(restaurant_id)
+    await verify_restaurant_status(restaurant.status)
     current_plan_id = await get_plan_in_cache(restaurant_id)
     await required_plans(current_plan_id, PlanId.ONLINE, PlanId.ADVANCED, PlanId.PROFESSIONAL)
     conversations = await conversation_service.get_unread_conversations(restaurant_id)

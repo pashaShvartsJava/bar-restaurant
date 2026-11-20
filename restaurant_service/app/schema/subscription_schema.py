@@ -1,5 +1,8 @@
+from datetime import datetime
 from decimal import Decimal
-from pydantic import BaseModel, EmailStr
+from typing import Optional
+
+from pydantic import BaseModel, EmailStr, ConfigDict
 from uuid import UUID
 
 
@@ -58,6 +61,16 @@ PLANS = {
     },
 }
 
+class VatStatus(str, Enum):
+    NONE = "none"
+    VALID = "valid"
+    INVALID = "invalid"
+    UNKNOWN = "unknown"
+
+class AccessStatus(str, Enum):
+    ENABLED = "enabled"
+    SUSPENDED = "suspended"
+
 class SubscriptionCheckoutDTO(BaseModel):
     user_id: UUID
     restaurant_id: UUID
@@ -70,3 +83,47 @@ class SubscriptionCheckoutDTO(BaseModel):
     order_commission_percent: Decimal = Decimal("0")
     currency: str = "EUR"
     key: str
+
+class SubscriptionStatus(str, Enum):
+    INCOMPLETE = "incomplete"
+    INCOMPLETE_EXPIRED = "incomplete_expired"
+    TRIALING = "trialing"
+    ACTIVE = "active"
+    PAST_DUE = "past_due"
+    UNPAID = "unpaid"
+    CANCELLED = "cancelled"
+    PAUSED = "paused"
+
+class SubscriptionDataDTO(BaseModel):
+    subscription_number: str
+    restaurant_id: UUID
+    email: str
+    owner_id: UUID
+    status: SubscriptionStatus
+    plan_id: PlanId
+    plan_name: Optional[str] = None
+    billing_period: BillingPeriod
+    trial_days: int
+    price: Decimal
+    order_commission_percent: Decimal
+    currency: Currency
+
+    stripe_customer_id: Optional[str] = None
+    stripe_subscription_id: Optional[str] = None
+    stripe_checkout_session_id: Optional[str] = None
+    current_period_start: Optional[datetime] = None
+    current_period_end: Optional[datetime] = None
+    cancel_at_period_end: bool
+    canceled_at: Optional[datetime] = None
+    trial_start: Optional[datetime] = None
+    trial_end: Optional[datetime] = None
+    last_payment_error: Optional[str] = None
+    sub_idempotency_key: UUID
+
+    vat_id: Optional[str] = None
+    vat_status: VatStatus
+    vat_checked_at: Optional[datetime] = None
+    country: str
+    access_status: AccessStatus
+
+    model_config = ConfigDict(from_attributes=True)

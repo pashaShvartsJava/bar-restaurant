@@ -3,7 +3,8 @@ from datetime import date
 from fastapi import APIRouter, Request, Depends
 from starlette.templating import Jinja2Templates
 
-from ..dependencies.dependencies import get_order_service_dependency
+from ..dependencies.dependencies import get_order_service_dependency, get_restaurant_dependency, \
+    verify_restaurant_status
 from ..security.jwt.jwt import get_payload
 from ..security.authorization.authorization import required_roles
 from ..security.role.role import IdentityRole
@@ -23,5 +24,7 @@ async def show_analytics_page(request : Request,
     payload = get_payload(request)
     required_roles(IdentityRole.OWNER, IdentityRole.MODERATOR, payload=payload)
     restaurant_id = payload.get("restaurant_id")
+    restaurant = await get_restaurant_dependency(restaurant_id)
+    await verify_restaurant_status(restaurant.status)
     analytics = await service.get_analytics(date_from, date_to, uuid.UUID(restaurant_id))
     return templates.TemplateResponse("analytics.html", {"request" : request,"analytics" : analytics, **analytics})

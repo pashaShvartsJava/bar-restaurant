@@ -113,5 +113,7 @@
 "contact_address_label": "Address",
   "select_language": "Select language",
   "venue_suspended_note": "This venue is temporarily not providing online services.",
-"venue_closed_note": "This venue is no longer operating."
+"venue_closed_note": "This venue is no longer operating.",
+  "service_unavailable": "Service temporarily unavailable"
+
 }

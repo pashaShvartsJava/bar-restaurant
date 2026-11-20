@@ -14,7 +14,7 @@ from starlette.templating import Jinja2Templates
 
 from ..models.restaurant_model import RestaurantStatus, Restaurant
 from ..schema.constructor_schema import UpdateRestaurantDTO
-from ..schema.subscription_schema import SubscriptionCheckoutDTO
+from ..schema.subscription_schema import SubscriptionCheckoutDTO, SubscriptionStatus, PlanId
 from ..security.authorization.authorization import required_role, required_roles
 from ..security.jwt.jwt import get_payload
 from ..schema.restaurant_schema import RestaurantCreationDTO, KeyDTO, RestaurantConstructorDTO, \
@@ -22,7 +22,7 @@ from ..schema.restaurant_schema import RestaurantCreationDTO, KeyDTO, Restaurant
 from ..security.internal_security import verify_internal_token, verify_csrf
 from ..security.role.role import IdentityRole
 from ..services.restaurant_service import RestaurantService
-from ..dependencies.dependency import get_restaurant_dependency
+from ..dependencies.dependency import get_restaurant_dependency, verify_restaurant_status, get_plan_in_cache
 
 INTERNAL_TOKEN = settings.internal_token
 router = APIRouter()
@@ -57,6 +57,7 @@ async def all_restaurants(request : Request,
             city=r.city,
             short_description=r.short_description,
             photo_url=r.photo_url,
+            accepts_delivery=r.accepts_delivery,
             status=r.status) for r in restaurants]
 
 @router.post("/restaurants/add_restaurant")
@@ -103,6 +104,8 @@ async def get_restaurant_by_slug(slug : str,
                          service: RestaurantService = Depends(get_restaurant_dependency)):
     await verify_internal_token(internal_token)
     restaurant = await service.get_restaurant_by_slug(slug)
+    if restaurant is None:
+        raise HTTPException(status_code=404, detail="Restaurant not found")
     return RestaurantConstructorDTO.model_validate(restaurant, from_attributes=True)
 
 @router.get("/restaurants/get_restaurant_by_id")
@@ -129,6 +132,8 @@ async def add_membership(identity_id : str,
                          internal_token: str = Header(..., alias="internal_token"),
                          service: RestaurantService = Depends(get_restaurant_dependency)):
     await verify_internal_token(internal_token)
+    restaurant = await service.get_restaurant_by_id(uuid.UUID(restaurant_id))
+    await verify_restaurant_status(restaurant.status)
     await service.create_membership(uuid.UUID(identity_id), uuid.UUID(restaurant_id), role)
 
 @router.get("/restaurants/find_by_name")
@@ -184,6 +189,7 @@ async def get_constructor_page(request : Request, service : RestaurantService = 
     required_roles(IdentityRole.OWNER, IdentityRole.MODERATOR, payload=payload)
     restaurant_id = payload.get("restaurant_id")
     restaurant = await service.get_restaurant_by_id(restaurant_id)
+    await verify_restaurant_status(restaurant.status)
     return templates.TemplateResponse("constructor.html", {"request" : request, "restaurant" : restaurant})
 
 @router.patch("/restaurants/constructor")
@@ -214,6 +220,14 @@ async def get_constructor_page(request : Request,
     required_roles(IdentityRole.OWNER, IdentityRole.MODERATOR, payload=payload)
     await verify_csrf(request)
     restaurant_id = payload.get("restaurant_id")
+    restaurant = await service.get_restaurant_by_id(restaurant_id)
+    await verify_restaurant_status(restaurant.status)
+    plan_id = await get_plan_in_cache(restaurant_id)
+    if plan_id is PlanId.BASIC.value:
+        accepts_delivery = False
+        accepts_reservations = False
+    if plan_id is PlanId.ONLINE.value:
+        accepts_reservations = False
     parsed_working_hours = None
     if working_hours:
         try:
@@ -251,6 +265,7 @@ async def start_connect_onboarding(request: Request, service: RestaurantService 
     required_roles(IdentityRole.OWNER, payload=payload)
     restaurant_id = payload.get("restaurant_id")
     restaurant = await service.get_restaurant_by_id(restaurant_id)
+    await verify_restaurant_status(restaurant.status)
     if not restaurant.stripe_account_id:
         account = stripe.Account.create(
             type="express",

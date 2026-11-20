@@ -83,5 +83,6 @@
 "clear_cart": "Очистити кошик",
 "error_cart_empty": "Кошик порожній.",
   "venue_suspended_note": "Наразі заклад тимчасово не надає онлайн-послуги.",
-"venue_closed_note": "Цей заклад більше не працює."
+"venue_closed_note": "Цей заклад більше не працює.",
+  "go_to_restaurant_home": "На головну сторінку закладу"
 }

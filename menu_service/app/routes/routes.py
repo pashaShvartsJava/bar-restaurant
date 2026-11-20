@@ -11,7 +11,7 @@ from ..security.role.role import IdentityRole
 from ..service.dish_service import MenuService
 from ..service.category_service import CategoryService
 from ..dependencies.dependencies import get_menu_service_dependency, get_category_service_dependency, \
-    get_restaurant_dependency, get_restaurant_dependency_by_id, get_currency_symbol
+    get_restaurant_dependency, get_restaurant_dependency_by_id, get_currency_symbol, verify_restaurant_status
 from decimal import Decimal
 from ..security.jwt.jwt import get_payload
 from ..security.authorization.authorization import required_roles
@@ -33,6 +33,7 @@ async def get_menu_page(request: Request,
     required_roles(IdentityRole.OWNER, IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
     restaurant_id = payload.get("restaurant_id")
     restaurant = await get_restaurant_dependency_by_id(restaurant_id)
+    await verify_restaurant_status(restaurant.status)
     currency_symbol = get_currency_symbol(restaurant.currency)
     categories = await category_service.get_all_categories(restaurant_id)
     return templates.TemplateResponse("menu.html", {"request" : request, "categories" : categories, "currency_symbol" : currency_symbol})
@@ -43,6 +44,8 @@ async def get_categories_page(request: Request,
     payload = get_payload(request)
     required_roles(IdentityRole.OWNER, IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
     restaurant_id = payload.get("restaurant_id")
+    restaurant = await get_restaurant_dependency_by_id(restaurant_id)
+    await verify_restaurant_status(restaurant.status)
     categories = await category_service.get_all_categories(restaurant_id)
     return templates.TemplateResponse("add_category.html", {"request":request,
                                                             "categories" : categories})
@@ -55,6 +58,8 @@ async def create_category(request : Request,
     required_roles(IdentityRole.OWNER, IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
     await verify_csrf(request)
     restaurant_id = payload.get("restaurant_id")
+    restaurant = await get_restaurant_dependency_by_id(restaurant_id)
+    await verify_restaurant_status(restaurant.status)
     await category_service.create_category(category_name, restaurant_id)
     return RedirectResponse(url="/menu_page/add_category", status_code=303)
 
@@ -64,6 +69,8 @@ async def add_dish_page(request: Request,
     payload = get_payload(request)
     required_roles(IdentityRole.OWNER, IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
     restaurant_id = payload.get("restaurant_id")
+    restaurant = await get_restaurant_dependency_by_id(restaurant_id)
+    await verify_restaurant_status(restaurant.status)
     categories = await category_service.get_all_categories(restaurant_id)
     return templates.TemplateResponse("add_dish.html", {"request":request, "categories" : categories})
 
@@ -80,6 +87,8 @@ async def create_dish(request : Request,
     required_roles(IdentityRole.OWNER, IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
     await verify_csrf(request)
     restaurant_id = payload.get("restaurant_id")
+    restaurant = await get_restaurant_dependency_by_id(restaurant_id)
+    await verify_restaurant_status(restaurant.status)
     image_url = None
     if image and image.filename:
         upload_dir = Path(f"app/templates_menu/media/dishes/{restaurant_id}")
@@ -97,6 +106,8 @@ async def take_away_dish_from_menu(request : Request, id : int, menu_service : M
     required_roles(IdentityRole.OWNER, IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
     await verify_csrf(request)
     restaurant_id = payload.get("restaurant_id")
+    restaurant = await get_restaurant_dependency_by_id(restaurant_id)
+    await verify_restaurant_status(restaurant.status)
     await menu_service.update_dish_status(id, restaurant_id)
 
 @router.get("/menu_page/edit_dish/{id}")
@@ -104,6 +115,8 @@ async def show_edit_dish_page(request : Request, id : int, menu_service : MenuSe
     payload = get_payload(request)
     required_roles(IdentityRole.OWNER, IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
     restaurant_id = payload.get("restaurant_id")
+    restaurant = await get_restaurant_dependency_by_id(restaurant_id)
+    await verify_restaurant_status(restaurant.status)
     dish = await menu_service.get_dish_by_id(id, restaurant_id)
     return templates.TemplateResponse("edit_dish.html", {"request":request, "dish" : dish})
 
@@ -119,6 +132,8 @@ async def edit_dish(request : Request,
     required_roles(IdentityRole.OWNER, IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
     await verify_csrf(request)
     restaurant_id = payload.get("restaurant_id")
+    restaurant = await get_restaurant_dependency_by_id(restaurant_id)
+    await verify_restaurant_status(restaurant.status)
     image_url = None
     if image is not None and image.filename:
         upload_dir = f"app/templates_menu/media/dishes/r/{restaurant_id}"
@@ -136,6 +151,9 @@ async def menu_page_for_users(request : Request,
     payload = get_payload(request)
     required_roles(IdentityRole.USER, payload=payload)
     restaurant = await get_restaurant_dependency(slug)
+    if not restaurant.accepts_delivery:
+        raise HTTPException(detail="This establishment doesn't have a delivery service", status_code=403)
+    await verify_restaurant_status(restaurant.status)
     categories = await category_service.get_all_categories_for_users(restaurant.id)
     currency_symbol = get_currency_symbol(restaurant.currency)
     return templates.TemplateResponse("menu_for_users.html", {"request" : request,
@@ -150,6 +168,9 @@ async def create_order_for_guest(request: Request,
                                  slug : str,
                                  category_service : CategoryService = Depends(get_category_service_dependency)):
     restaurant = await get_restaurant_dependency(slug)
+    await verify_restaurant_status(restaurant.status)
+    if not restaurant.accepts_delivery:
+        raise HTTPException(detail="This establishment doesn't have a delivery service", status_code=403)
     categories = await category_service.get_all_categories_for_users(restaurant.id)
     currency_symbol = get_currency_symbol(restaurant.currency)
     return templates.TemplateResponse("order_for_guest.html", {"request": request,
@@ -164,6 +185,7 @@ async def qr_code_menu(request : Request,
                        table_number : int,
                        category_service : CategoryService = Depends(get_category_service_dependency)):
     restaurant = await get_restaurant_dependency(slug)
+    await verify_restaurant_status(restaurant.status)
     categories = await category_service.get_all_categories_for_users(restaurant.id)
     return templates.TemplateResponse("qr_code_menu.html",
                                       {"request" : request,
@@ -181,6 +203,8 @@ async def get_all_available_dishes(request : Request,
     payload = get_payload(request)
     required_roles(IdentityRole.OWNER, IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
     await verify_internal_token(internal_token)
+    restaurant = await get_restaurant_dependency_by_id(str(restaurant_id))
+    await verify_restaurant_status(restaurant.status)
     all_available_dishes = await service.get_all_available_dishes(restaurant_id)
     return all_available_dishes
 

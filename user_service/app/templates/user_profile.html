@@ -669,15 +669,17 @@
     }
 
     .restaurant-btn.menu-gold {
-        border: 1px solid rgba(213, 166, 91, 0.6);
-        color: var(--gold);
-    }
+    border: 1px solid rgba(201, 211, 154, 0.55);
+    color: #c9d39a;
+}
 
-    .restaurant-btn.menu-gold:hover {
-        border-color: #e4b971;
-        color: #e4b971;
-        box-shadow: 0 0 14px rgba(213, 166, 91, 0.25);
-    }
+.restaurant-btn.menu-gold:hover {
+    border-color: #dde6a8;
+    color: #dde6a8;
+    box-shadow: 0 0 14px rgba(201, 211, 154, 0.28);
+}
+
+
 
     .restaurant-btn.support-purple {
         border: 1px solid var(--violet-border);
@@ -1553,6 +1555,7 @@
                 {% set description = restaurant.short_description if restaurant.short_description is defined else restaurant.get('short_description') %}
                 {% set photo = restaurant.photo_url if restaurant.photo_url is defined else restaurant.get('photo_url') %}
                 {% set status = restaurant.status.value if restaurant.status is defined and restaurant.status.value is defined else (restaurant.status if restaurant.status is defined else restaurant.get('status')) %}
+                {% set accepts_delivery = restaurant.accepts_delivery if restaurant.accepts_delivery is defined else restaurant.get('accepts_delivery') %}
 
                 {% if status == 'suspended' %}
                   <div class="restaurant-item restaurant-inactive" data-name="{{ name|lower }}" data-city="{{ city|lower if city else '' }}">
@@ -1641,9 +1644,15 @@
                     </div>
 
                     <div class="restaurant-actions">
-                      <a href="/r/{{ slug }}/menu_page/orders/users" class="restaurant-btn menu-gold">
-                        {{ trans('go_to_menu') }}
-                      </a>
+                      {% if accepts_delivery %}
+                        <a href="/r/{{ slug }}/menu_page/orders/users" class="restaurant-btn menu-gold">
+                          {{ trans('go_to_menu') }}
+                        </a>
+                      {% else %}
+                        <a href="/r/{{ slug }}" class="restaurant-btn menu-gold">
+                          {{ trans('go_to_restaurant_home') }}
+                        </a>
+                      {% endif %}
                       <a href="/r/{{ slug }}/support/user" class="restaurant-btn support-purple">
                         {{ trans('support_button') }}
                       </a>

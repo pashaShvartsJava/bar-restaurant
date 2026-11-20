@@ -1,9 +1,15 @@
 from datetime import datetime
+from enum import Enum
 from uuid import UUID
 
 from pydantic import BaseModel
 from typing import Optional, Any
 
+class RestaurantStatus(str, Enum):
+    PENDING = "pending"
+    ACTIVE = "active"
+    SUSPENDED = "suspended"
+    CLOSED = "closed"
 
 class RestaurantForUserProfileDTO(BaseModel):
     slug: str
@@ -11,6 +17,8 @@ class RestaurantForUserProfileDTO(BaseModel):
     city: Optional[str] = None
     short_description: Optional[str] = None
     photo_url: Optional[str] = None
+    accepts_delivery: bool
+    status: RestaurantStatus
 
 class RestaurantConstructorDTO(BaseModel):
     id: UUID

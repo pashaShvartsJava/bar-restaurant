@@ -13,7 +13,7 @@ from ..security.internal_security import verify_internal_token
 from ..security.jwt.jwt import get_payload
 from ..dependencies.dependencies import get_payment_service_dependency, \
     get_restaurant_dependency_by_id, get_currency_symbol, save_restaurant_dependency, \
-    get_restaurant_dependency_by_stripe_account_id, get_plan_in_cache, required_plans
+    get_restaurant_dependency_by_stripe_account_id, get_plan_in_cache, required_plans, verify_restaurant_status
 from ..security.role.role import IdentityRole
 from ..service.payment_service import PaymentService
 from ..config.config import settings
@@ -82,6 +82,8 @@ async def payments_history(request : Request, service: PaymentService = Depends(
     payload = get_payload(request)
     required_roles(IdentityRole.OWNER, IdentityRole.MODERATOR, payload=payload)
     restaurant_id = payload.get("restaurant_id")
+    restaurant = await get_restaurant_dependency_by_id(restaurant_id)
+    await verify_restaurant_status(restaurant.status)
     current_plan_id = await get_plan_in_cache(restaurant_id)
     await required_plans(current_plan_id, PlanId.ONLINE, PlanId.ADVANCED, PlanId.PROFESSIONAL)
     payments = await service.get_all_payments(restaurant_id)

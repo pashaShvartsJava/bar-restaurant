@@ -113,5 +113,6 @@
 "contact_address_label": "Адреса",
   "select_language": "Вибрати мову",
   "venue_suspended_note": "Наразі заклад тимчасово не надає онлайн-послуги.",
-"venue_closed_note": "Цей заклад більше не працює."
+"venue_closed_note": "Цей заклад більше не працює.",
+  "service_unavailable": "Сервіс тимчасово недоступний"
 }

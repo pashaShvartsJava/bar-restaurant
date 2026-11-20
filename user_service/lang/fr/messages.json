@@ -83,5 +83,6 @@
 "clear_cart": "Vider le panier",
 "error_cart_empty": "Votre panier est vide.",
   "venue_suspended_note": "Cet établissement ne fournit temporairement pas de services en ligne.",
-"venue_closed_note": "Cet établissement n'est plus en activité."
+"venue_closed_note": "Cet établissement n'est plus en activité.",
+  "go_to_restaurant_home": "Page d'accueil de l'établissement"
 }

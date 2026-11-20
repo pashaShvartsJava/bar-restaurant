@@ -2,7 +2,7 @@ import httpx
 
 from ..redis.redis_client import redis
 from ..repositories.user_repository import UserRepository
-from ..schema.restaurant_schema import RestaurantConstructorDTO
+from ..schema.restaurant_schema import RestaurantConstructorDTO, RestaurantStatus
 from ..schema.susbcription_schema import SubscriptionDataDTO, PlanId
 from ..services.user_service import UserService
 from ..repositories.address_repository import AddressRepository
@@ -50,3 +50,7 @@ async def get_plan_in_cache(restaurant_id : str):
 async def required_plans(current_plan_id : PlanId, *allowed_plans : PlanId):
     if current_plan_id not in allowed_plans:
         raise HTTPException(detail="Forbidden. This service is not available for this subscription plan", status_code=403)
+
+async def verify_restaurant_status(status: RestaurantStatus):
+    if status in (RestaurantStatus.CLOSED, RestaurantStatus.SUSPENDED):
+        raise HTTPException(detail="Access temporarily restricted. If you are an owner then ask for help in FDCPlatform technical support.", status_code=403)

@@ -113,5 +113,6 @@
 "contact_address_label": "Адрес",
   "select_language": "Выбрать язык",
   "venue_suspended_note": "Сейчас заведение временно не предоставляет онлайн-услуги.",
-"venue_closed_note": "Данное заведение больше не работает."
+"venue_closed_note": "Данное заведение больше не работает.",
+  "service_unavailable": "Сервис пока недоступен"
 }

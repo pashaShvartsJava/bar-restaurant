@@ -113,5 +113,6 @@
 "contact_address_label": "მისამართი",
   "select_language": "ენის არჩევა",
   "venue_suspended_note": "ეს დაწესებულება დროებით არ ახორციელებს ონლაინ სერვისებს.",
-"venue_closed_note": "ეს დაწესებულება აღარ ფუნქციონირებს."
+"venue_closed_note": "ეს დაწესებულება აღარ ფუნქციონირებს.",
+  "service_unavailable": "სერვისი დროებით მიუწვდომელია"
 }

@@ -83,4 +83,4 @@ async def required_plans(current_plan_id : PlanId, *allowed_plans : PlanId):
 
 async def verify_restaurant_status(status: RestaurantStatus):
     if status in (RestaurantStatus.CLOSED, RestaurantStatus.SUSPENDED):
-        raise HTTPException(detail="Доступ к функциям приложения временно ограничен. Изучите детали в пришедшем письме по почте. В случае чего вы можете обратиться в техническую поддержку или связаться с владельцем платформы по GMail или Telegram. Контакты прилагаются к письму или доступны на общей странице сайта", status_code=403)
+        raise HTTPException(detail="Access temporarily restricted. If you are an owner then ask for help in FDCPlatform technical support.", status_code=403)

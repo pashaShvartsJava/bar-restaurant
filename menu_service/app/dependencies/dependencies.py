@@ -2,11 +2,11 @@ import httpx
 
 from ..repository.menu_repository import MenuRepository
 from ..repository.category_repository import CategoryRepository
-from ..schema.restaurant_schema import RestaurantConstructorDTO, CURRENCY_SYMBOLS
+from ..schema.restaurant_schema import RestaurantConstructorDTO, CURRENCY_SYMBOLS, RestaurantStatus
 from ..service.dish_service import MenuService
 from ..service.category_service import CategoryService
 from ..database.database import get_db
-from fastapi import Depends
+from fastapi import Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from ..config.config import settings
 
@@ -49,3 +49,7 @@ def get_currency_symbol(code: str | None) -> str:
         return ""
     key = code.strip().upper()
     return CURRENCY_SYMBOLS.get(key, key)
+
+async def verify_restaurant_status(status: RestaurantStatus):
+    if status in (RestaurantStatus.CLOSED, RestaurantStatus.SUSPENDED):
+        raise HTTPException(detail="Access temporarily restricted. If you are an owner then ask for help in FDCPlatform technical support.", status_code=403)

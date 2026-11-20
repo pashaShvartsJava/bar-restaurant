@@ -581,6 +581,38 @@
             );
     }
 
+    /* ===== НЕДОСТУПНАЯ КНОПКА ===== */
+
+    .button.disabled {
+        cursor: not-allowed;
+        opacity: 0.45;
+        border-color: rgba(255, 255, 255, 0.12);
+        background:
+            linear-gradient(
+                145deg,
+                rgba(28, 25, 27, 0.85),
+                rgba(20, 18, 20, 0.88)
+            );
+        color: #8f8886;
+        box-shadow: none;
+        pointer-events: none;
+    }
+
+    .button.disabled .icon {
+        background: rgba(255, 255, 255, 0.03);
+        border-color: rgba(255, 255, 255, 0.08);
+        color: #6c6568;
+    }
+
+    .button.disabled h3 {
+        color: #a39c9a;
+    }
+
+    .button.disabled p {
+        color: #8a6b6b;
+        font-weight: 600;
+    }
+
     .icon {
         width: 44px;
         height: 44px;
@@ -1064,6 +1096,8 @@
 
             <div class="buttons buttons-main">
 
+                {# ===== КНОПКА БРОНИРОВАНИЯ ===== #}
+                {% if restaurant.accepts_reservations %}
                 <a
                     href="/r/{{ restaurant.slug }}/tables/get_free_table"
                     class="button button-large booking-card"
@@ -1078,7 +1112,27 @@
                         {{ trans('reserve_table_card_desc') }}
                     </p>
                 </a>
+                {% else %}
+                <div
+                    class="button button-large booking-card disabled"
+                    role="button"
+                    aria-disabled="true"
+                    tabindex="-1"
+                >
+                    <div class="icon">◇</div>
 
+                    <h3>
+                        {{ trans('reserve_table_card_title') }}
+                    </h3>
+
+                    <p>
+                        {{ trans('service_unavailable') }}
+                    </p>
+                </div>
+                {% endif %}
+
+                {# ===== КНОПКА ЗАКАЗА ДОМОЙ ===== #}
+                {% if restaurant.accepts_delivery %}
                 <a
                     href="/r/{{ restaurant.slug }}/delivery"
                     class="button button-large delivery-button"
@@ -1093,6 +1147,24 @@
                         {{ trans('order_home_card_desc') }}
                     </p>
                 </a>
+                {% else %}
+                <div
+                    class="button button-large delivery-button disabled"
+                    role="button"
+                    aria-disabled="true"
+                    tabindex="-1"
+                >
+                    <div class="icon">⌁</div>
+
+                    <h3>
+                        {{ trans('order_home_card_title') }}
+                    </h3>
+
+                    <p>
+                        {{ trans('service_unavailable') }}
+                    </p>
+                </div>
+                {% endif %}
 
             </div>
 
