@@ -3,7 +3,7 @@ from typing import Optional, Any
 from uuid import UUID
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, field_validator, ConfigDict
 import pycountry
 
 from ..models.restaurant_model import RestaurantStatus
@@ -86,6 +86,8 @@ class RestaurantConstructorDTO(BaseModel):
     stripe_account_id: Optional[str] = None
     stripe_charges_enabled: Optional[bool] = False
     stripe_payouts_enabled: Optional[bool] = False
+
+    model_config = ConfigDict(from_attributes=True)
 
 
 class RestaurantForUserProfileDTO(BaseModel):

@@ -5,6 +5,7 @@ from contextvars import ContextVar
 from fastapi import FastAPI, Request
 from .routes.user_routes import templates as user_templates, router as user_router
 from .routes.admin_routes import templates as admin_templates, router as admin_router
+from .routes.platform_chats_routes import templates as platform_chats_templates, router as platform_chats_router
 from .websockets.user_websocket import router as websocket_router
 from .websockets.admin_websocket import router as admin_websocket_router
 
@@ -40,6 +41,7 @@ def trans(key: str, **kwargs) -> str:
 load_translations()
 user_templates.env.globals["trans"] = trans
 admin_templates.env.globals["trans"] = trans
+platform_chats_templates.env.globals["trans"] = trans
 
 
 app = FastAPI()
@@ -47,6 +49,7 @@ app.include_router(user_router)
 app.include_router(admin_router)
 app.include_router(websocket_router)
 app.include_router(admin_websocket_router)
+app.include_router(platform_chats_router)
 
 @app.middleware("http")
 async def language_middleware(request: Request, call_next):

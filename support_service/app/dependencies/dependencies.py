@@ -65,3 +65,9 @@ async def required_plans(current_plan_id : PlanId, *allowed_plans : PlanId):
 async def verify_restaurant_status(status: RestaurantStatus):
     if status in (RestaurantStatus.CLOSED, RestaurantStatus.SUSPENDED):
         raise HTTPException(detail="Access temporarily restricted. If you are an owner then ask for help in FDCPlatform technical support.", status_code=403)
+
+async def get_restaurants_dependency():
+    client = await get_client()
+    response = await client.get(url="http://restaurant-service:8010/restaurants/get_all_restaurants_dto")
+    response.raise_for_status()
+    return response.json()

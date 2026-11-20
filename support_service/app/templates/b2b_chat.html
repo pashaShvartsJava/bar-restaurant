@@ -1,0 +1,520 @@
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Чат с рестораном</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            min-height: 100%;
+            background: #111116;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            padding: 30px 20px;
+            font-family: Arial, sans-serif;
+            background: #111116;
+            color: #e5e5eb;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Основной контейнер */
+
+        .chat-container {
+            width: 100%;
+            max-width: 900px;
+            height: 85vh;
+            min-height: 500px;
+            background: #191920;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid #30303b;
+            border-radius: 18px;
+            overflow: hidden;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Шапка */
+
+        .chat-header {
+            padding: 18px 24px;
+            background: #191920;
+            border-bottom: 1px solid #30303b;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 9px 13px;
+            border: 1px solid #393946;
+            border-radius: 9px;
+            color: #c4b5fd;
+            text-decoration: none;
+            font-size: 13px;
+            white-space: nowrap;
+            transition: 0.2s;
+        }
+
+        .back-button:hover {
+            background: #292532;
+            border-color: #8065ff;
+        }
+
+        .back-button span {
+            font-size: 18px;
+        }
+
+        .chat-header-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .chat-header-info h1 {
+            font-size: 18px;
+            margin: 0 0 5px;
+            color: #f4f4f8;
+        }
+
+        .chat-header-info p {
+            margin: 0;
+            font-size: 12px;
+            color: #9292a3;
+            overflow-wrap: anywhere;
+        }
+
+        .chat-status {
+            font-size: 12px;
+            color: #a78bfa;
+            white-space: nowrap;
+        }
+
+        /* История сообщений */
+
+        .messages {
+            flex: 1;
+            min-height: 0;
+            overflow-y: auto;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            background: #14141a;
+        }
+
+        .messages::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .messages::-webkit-scrollbar-thumb {
+            background: #393946;
+            border-radius: 10px;
+        }
+
+        .messages::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .message {
+            display: flex;
+            flex-direction: column;
+            max-width: 75%;
+        }
+
+        .message.restaurant {
+            align-self: flex-start;
+        }
+
+        .message.superadmin {
+            align-self: flex-end;
+        }
+
+        .message-author {
+            font-size: 12px;
+            color: #9292a3;
+            margin-bottom: 5px;
+        }
+
+        .message-bubble {
+            padding: 12px 15px;
+            border-radius: 14px;
+            font-size: 14px;
+            line-height: 1.5;
+            overflow-wrap: anywhere;
+            white-space: pre-wrap;
+        }
+
+        .restaurant .message-bubble {
+            background: #25252f;
+            border: 1px solid #363642;
+            color: #e5e5eb;
+            border-top-left-radius: 4px;
+        }
+
+        .superadmin .message-bubble {
+            background: #6d4aff;
+            color: #fff;
+            border: 1px solid #8065ff;
+            border-top-right-radius: 4px;
+        }
+
+        .message-time {
+            font-size: 11px;
+            color: #777787;
+            margin-top: 5px;
+        }
+
+        .superadmin .message-time {
+            text-align: right;
+        }
+
+        .empty-chat {
+            margin: auto;
+            text-align: center;
+            color: #777787;
+            font-size: 14px;
+        }
+
+        .empty-chat p {
+            margin: 6px 0;
+        }
+
+        /* Поле отправки */
+
+        .chat-input-container {
+            padding: 16px 20px;
+            background: #191920;
+            border-top: 1px solid #30303b;
+        }
+
+        .chat-form {
+            display: flex;
+            align-items: flex-end;
+            gap: 12px;
+        }
+
+        .chat-input {
+            flex: 1;
+            min-width: 0;
+            min-height: 46px;
+            max-height: 140px;
+            resize: vertical;
+            padding: 12px 14px;
+            border: 1px solid #393946;
+            border-radius: 12px;
+            background: #25252f;
+            color: #f4f4f8;
+            font-size: 14px;
+            font-family: inherit;
+            outline: none;
+        }
+
+        .chat-input::placeholder {
+            color: #777787;
+        }
+
+        .chat-input:focus {
+            border-color: #8065ff;
+            box-shadow: 0 0 0 2px rgba(128, 101, 255, 0.15);
+        }
+
+        .send-button {
+            height: 46px;
+            padding: 0 22px;
+            border: none;
+            border-radius: 12px;
+            background: #6d4aff;
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: background 0.2s ease;
+        }
+
+        .send-button:hover {
+            background: #8065ff;
+        }
+
+        .send-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Планшеты */
+
+        @media (max-width: 800px) {
+            body {
+                padding: 20px 12px;
+            }
+
+            .chat-container {
+                height: 88vh;
+            }
+
+            .chat-header {
+                padding: 16px;
+                gap: 12px;
+            }
+        }
+
+        /* Телефоны */
+
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+                min-height: 100dvh;
+                align-items: stretch;
+            }
+
+            .chat-container {
+                width: 100%;
+                height: calc(100dvh - 20px);
+                min-height: 0;
+                border-radius: 14px;
+            }
+
+            .chat-header {
+                padding: 12px;
+                gap: 10px;
+            }
+
+            .back-button {
+                padding: 8px 10px;
+                font-size: 12px;
+            }
+
+            .back-button span {
+                font-size: 16px;
+            }
+
+            .chat-header-info h1 {
+                font-size: 15px;
+            }
+
+            .chat-header-info p {
+                font-size: 10px;
+            }
+
+            .chat-status {
+                font-size: 11px;
+            }
+
+            .messages {
+                padding: 14px 10px;
+                gap: 14px;
+            }
+
+            .message {
+                max-width: 88%;
+            }
+
+            .message-bubble {
+                font-size: 14px;
+                padding: 11px 13px;
+            }
+
+            .chat-input-container {
+                padding: 10px;
+                padding-bottom: max(10px, env(safe-area-inset-bottom));
+            }
+
+            .chat-form {
+                gap: 8px;
+            }
+
+            .chat-input {
+                min-width: 0;
+                font-size: 16px;
+                max-height: 110px;
+            }
+
+            .send-button {
+                padding: 0 14px;
+                height: 46px;
+                font-size: 13px;
+            }
+        }
+
+        /* Очень узкие телефоны */
+
+        @media (max-width: 380px) {
+            .chat-header {
+                flex-wrap: wrap;
+            }
+
+            .chat-status {
+                display: none;
+            }
+
+            .chat-header-info h1 {
+                font-size: 14px;
+            }
+
+            .back-button {
+                padding: 7px 9px;
+            }
+
+            .send-button {
+                padding: 0 10px;
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="chat-container">
+
+    <!-- Шапка -->
+
+    <header class="chat-header">
+
+        <a href="/support/admin/b2b" class="back-button">
+            <span>←</span>
+            Назад
+        </a>
+
+        <div class="chat-header-info">
+            <h1>Чат с рестораном</h1>
+            <p>
+                Ресторан ID: {{ conversation.restaurant_id }}
+                · Чат #{{ conversation.id }}
+            </p>
+        </div>
+
+        <div class="chat-status">
+            ● Поддержка
+        </div>
+
+    </header>
+
+    <!-- История сообщений -->
+
+    <main class="messages" id="messages">
+
+        {% if conversation.messages %}
+
+            {% for message in conversation.messages %}
+
+                {% set is_admin = message.sender_role == 'superadmin' %}
+
+                <div class="message {{ 'superadmin' if is_admin else 'restaurant' }}">
+
+                    <div class="message-author">
+                        {{ 'Вы · Супер администратор' if is_admin else 'Ресторан' }}
+                    </div>
+
+                    <div class="message-bubble">{{ message.text }}</div>
+
+                    <div class="message-time">
+                        {{ message.created_at.strftime('%d.%m.%Y %H:%M') if message.created_at else '' }}
+                    </div>
+
+                </div>
+
+            {% endfor %}
+
+        {% else %}
+
+            <div class="empty-chat">
+                <p>Пока нет сообщений</p>
+                <p>Напишите первое сообщение ресторану.</p>
+            </div>
+
+        {% endif %}
+
+    </main>
+
+    <!-- Поле отправки -->
+
+    <footer class="chat-input-container">
+
+        <form
+            class="chat-form"
+            method="POST"
+            action="/support/admin/b2b/{{ conversation.restaurant_id }}/messages"
+            id="chatForm"
+        >
+
+            <textarea
+                class="chat-input"
+                name="text"
+                id="messageInput"
+                placeholder="Введите сообщение..."
+                rows="1"
+                required
+            ></textarea>
+
+            <button type="submit" class="send-button" id="sendButton">
+                Отправить
+            </button>
+
+        </form>
+
+    </footer>
+
+</div>
+
+<script>
+    const messages = document.getElementById("messages");
+    const form = document.getElementById("chatForm");
+    const input = document.getElementById("messageInput");
+    const sendButton = document.getElementById("sendButton");
+
+    // Прокрутка к последнему сообщению
+
+    function scrollToBottom() {
+        messages.scrollTop = messages.scrollHeight;
+    }
+
+    window.addEventListener("load", scrollToBottom);
+
+    // Автоматическое изменение высоты поля
+
+    input.addEventListener("input", function () {
+        this.style.height = "auto";
+        this.style.height = Math.min(this.scrollHeight, 110) + "px";
+    });
+
+    // Enter отправляет, Shift + Enter переносит строку
+
+    input.addEventListener("keydown", function (event) {
+        if (event.key === "Enter" && !event.shiftKey) {
+            event.preventDefault();
+
+            if (input.value.trim()) {
+                form.requestSubmit();
+            }
+        }
+    });
+
+    // Защита от повторной отправки
+
+    form.addEventListener("submit", function (event) {
+        if (!input.value.trim()) {
+            event.preventDefault();
+            return;
+        }
+
+        sendButton.disabled = true;
+        sendButton.textContent = "Отправка...";
+    });
+</script>
+
+</body>
+</html>

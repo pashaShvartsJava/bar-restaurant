@@ -24,5 +24,21 @@
 "th_chat_number": "Chat number",
 "open_chat_button": "Open chat",
 "support_empty_title": "No one needs help right now",
-"support_empty_description": "There are no chats with unread messages."
+"support_empty_description": "There are no chats with unread messages.",
+  "b2b_chats_title": "B2B chats",
+  "b2b_chats_subtitle": "All conversations with platform B2B clients",
+  "b2b_chats_empty_title": "No chats yet",
+  "b2b_chats_empty_description": "As soon as the first B2B conversation appears, it will show up here",
+  "b2b_search_placeholder": "Search by client or restaurant",
+  "b2b_th_client": "Client",
+  "b2b_th_restaurant": "Restaurant",
+  "b2b_th_created": "Created",
+  "b2b_th_last_message": "Last message",
+  "b2b_th_unread": "Unread",
+  "b2b_th_actions": "Actions",
+  "b2b_action_open": "Open chat",
+  "b2b_no_unread": "None",
+  "b2b_unread_count": "{n} new",
+  "b2b_platform_chat": "Platform chat",
+  "b2b_search_no_results": "Nothing found"
 }

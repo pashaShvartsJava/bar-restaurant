@@ -37,6 +37,13 @@ async def restaurant_page(request: Request,
         raise HTTPException(status_code=404, detail="Restaurant not found")
     return templates.TemplateResponse("main_page.html", context={"request": request, "restaurant" : restaurant})
 
+@router.get("/restaurants/get_all_restaurants_dto")
+async def get_restaurants_dto(internal_token : str = Header(..., alias="internal_token"),
+                              service : RestaurantService = Depends(get_restaurant_dependency)):
+    await verify_internal_token(internal_token)
+    restaurants = await service.get_all_restaurants()
+    return [RestaurantConstructorDTO.model_validate(restaurant) for restaurant in restaurants]
+
 @router.get("/restaurants")
 async def all_restaurants(request : Request, service : RestaurantService = Depends(get_restaurant_dependency)):
     restaurants = await service.get_all_restaurants()

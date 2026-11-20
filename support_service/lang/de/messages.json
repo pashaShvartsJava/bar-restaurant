@@ -24,5 +24,21 @@
 "th_chat_number": "Chat-Nummer",
 "open_chat_button": "Chat öffnen",
 "support_empty_title": "Derzeit braucht niemand Hilfe",
-"support_empty_description": "Es gibt keine Chats mit ungelesenen Nachrichten."
+"support_empty_description": "Es gibt keine Chats mit ungelesenen Nachrichten.",
+  "b2b_chats_title": "B2B-Chats",
+  "b2b_chats_subtitle": "Alle Gespräche mit B2B-Kunden der Plattform",
+  "b2b_chats_empty_title": "Noch keine Chats",
+  "b2b_chats_empty_description": "Sobald das erste B2B-Gespräch erscheint, wird es hier angezeigt",
+  "b2b_search_placeholder": "Nach Kunde oder Restaurant suchen",
+  "b2b_th_client": "Kunde",
+  "b2b_th_restaurant": "Restaurant",
+  "b2b_th_created": "Erstellt",
+  "b2b_th_last_message": "Letzte Nachricht",
+  "b2b_th_unread": "Ungelesen",
+  "b2b_th_actions": "Aktionen",
+  "b2b_action_open": "Chat öffnen",
+  "b2b_no_unread": "Keine",
+  "b2b_unread_count": "{n} neu",
+  "b2b_platform_chat": "Plattform-Chat",
+  "b2b_search_no_results": "Nichts gefunden"
 }

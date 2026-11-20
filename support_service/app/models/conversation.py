@@ -2,7 +2,7 @@ import uuid
 
 from sqlalchemy.dialects.postgresql import UUID
 
-from sqlalchemy import Column, Integer, ForeignKey, DateTime, String
+from sqlalchemy import Column, Integer, ForeignKey, DateTime, String, Boolean, text
 from sqlalchemy.orm import relationship
 
 
@@ -20,5 +20,6 @@ class Conversation(Base):
     last_read_message_by_user_id = Column(Integer, index=True)
     last_read_message_by_admin_id = Column(Integer, index=True)
     restaurant_id = Column(UUID, nullable=False)
+    is_platform_chat = Column(Boolean, nullable=False, default=False, server_default=text("false"))
 
     messages = relationship("Message", back_populates="conversation")

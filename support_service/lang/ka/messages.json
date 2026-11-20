@@ -24,5 +24,21 @@
 "th_chat_number": "ჩატის ნომერი",
 "open_chat_button": "ჩატის გახსნა",
 "support_empty_title": "ამჟამად არავის სჭირდება დახმარება",
-"support_empty_description": "წაუკითხავი შეტყობინებების მქონე ჩატები არ არის."
+"support_empty_description": "წაუკითხავი შეტყობინებების მქონე ჩატები არ არის.",
+  "b2b_chats_title": "B2B ჩატები",
+  "b2b_chats_subtitle": "ყველა საუბარი პლატფორმის B2B კლიენტებთან",
+  "b2b_chats_empty_title": "ჩატები ჯერ არ არის",
+  "b2b_chats_empty_description": "როგორც კი პირველი B2B საუბარი გამოჩნდება, ის აქ გამოჩნდება",
+  "b2b_search_placeholder": "ძებნა კლიენტის ან რესტორნის მიხედვით",
+  "b2b_th_client": "კლიენტი",
+  "b2b_th_restaurant": "რესტორანი",
+  "b2b_th_created": "შექმნილია",
+  "b2b_th_last_message": "ბოლო შეტყობინება",
+  "b2b_th_unread": "წაუკითხავი",
+  "b2b_th_actions": "მოქმედებები",
+  "b2b_action_open": "ჩატის გახსნა",
+  "b2b_no_unread": "არცერთი",
+  "b2b_unread_count": "{n} ახალი",
+  "b2b_platform_chat": "პლატფორმის ჩატი",
+  "b2b_search_no_results": "ვერაფერი მოიძებნა"
 }

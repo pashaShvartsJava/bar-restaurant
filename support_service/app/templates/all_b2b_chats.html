@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>B2B рестораны</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --bg: #0c0a10;
+            --surface: #15121b;
+            --surface-light: #1e1a26;
+            --border: rgba(255,255,255,.08);
+            --accent: #d8c8a0;
+            --accent-soft: rgba(199,165,106,.06);
+            --accent-border: rgba(199,165,106,.3);
+            --text: #f4f0e9;
+            --muted: #a9a3b3;
+            --green: #9bc8a5;
+            --red: #e08b8b;
+            --purple: #c4a5ed;
+            --gray: #aaa4b2;
+        }
+
+        body {
+            min-height: 100vh;
+            padding: 35px 24px;
+            background: radial-gradient(
+                circle at 50% 0%,
+                rgba(139,92,246,.18),
+                transparent 42%
+            ), var(--bg);
+            color: var(--text);
+            font-family: Inter, -apple-system, BlinkMacSystemFont,
+                         "Segoe UI", sans-serif;
+        }
+
+        button, input, select {
+            font: inherit;
+        }
+
+        button {
+            cursor: pointer;
+        }
+
+        .container {
+            width: min(100%, 1600px);
+            margin: 0 auto;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            margin-bottom: 45px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: 44px;
+            height: 44px;
+            display: grid;
+            place-items: center;
+            border-radius: 13px;
+            background: linear-gradient(145deg,#7c3aed,#a78bfa);
+            color: white;
+            font-size: 22px;
+        }
+
+        .logo-text {
+            font-size: 17px;
+            font-weight: 700;
+        }
+
+        .back-button {
+            padding: 11px 17px;
+            border: 1px solid var(--accent-border);
+            border-radius: 10px;
+            background: var(--accent-soft);
+            color: var(--accent);
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .page-heading {
+            margin-bottom: 30px;
+        }
+
+        .page-title {
+            margin-bottom: 12px;
+            font-family: Georgia, serif;
+            font-size: 36px;
+            font-weight: normal;
+        }
+
+        .page-title span {
+            color: var(--accent);
+        }
+
+        .subtitle {
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.7;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-bottom: 28px;
+        }
+
+        .stat-card {
+            padding: 20px 22px;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            background: linear-gradient(
+                145deg,
+                var(--surface-light),
+                var(--surface)
+            );
+        }
+
+        .stat-label {
+            margin-bottom: 12px;
+            color: var(--muted);
+            font-size: 11px;
+            text-transform: uppercase;
+        }
+
+        .stat-value {
+            font-size: 27px;
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        .toolbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px;
+            flex-wrap: wrap;
+            margin-bottom: 18px;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 220px;
+            max-width: 430px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            outline: none;
+            background: var(--surface);
+            color: var(--text);
+            font-size: 12px;
+        }
+
+        .filter-select {
+            min-width: 190px;
+            padding: 12px 14px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            outline: none;
+            background: var(--surface);
+            color: var(--text);
+            font-size: 12px;
+        }
+
+        .results-count {
+            color: var(--muted);
+            font-size: 11px;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            background: var(--surface);
+            box-shadow: 0 20px 60px rgba(0,0,0,.2);
+        }
+
+        table {
+            width: 100%;
+            min-width: 1250px;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        thead {
+            background: rgba(255,255,255,.025);
+        }
+
+        th {
+            padding: 17px 16px;
+            border-bottom: 1px solid var(--border);
+            color: var(--muted);
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: .8px;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 17px 16px;
+            border-bottom: 1px solid var(--border);
+            color: var(--text);
+            font-size: 12px;
+            vertical-align: middle;
+        }
+
+        tbody tr:hover {
+            background: rgba(255,255,255,.025);
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .restaurant-name {
+            font-weight: 700;
+            font-size: 13px;
+            margin-bottom: 5px;
+        }
+
+        .restaurant-id {
+            color: var(--muted);
+            font-size: 10px;
+            overflow-wrap: anywhere;
+            max-width: 220px;
+        }
+
+        .status {
+            display: inline-flex;
+            padding: 6px 10px;
+            border: 1px solid;
+            border-radius: 20px;
+            font-size: 10px;
+            font-weight: 700;
+        }
+
+        .status-active {
+            color: var(--green);
+            border-color: rgba(155,200,165,.3);
+            background: rgba(155,200,165,.08);
+        }
+
+        .status-inactive {
+            color: var(--red);
+            border-color: rgba(224,139,139,.3);
+            background: rgba(224,139,139,.08);
+        }
+
+        .status-other {
+            color: var(--gray);
+            border-color: rgba(170,164,178,.25);
+            background: rgba(170,164,178,.06);
+        }
+
+        .location {
+            color: var(--muted);
+            line-height: 1.6;
+        }
+
+        .email {
+            overflow-wrap: anywhere;
+        }
+
+        .date {
+            color: var(--muted);
+            font-size: 11px;
+            white-space: nowrap;
+            line-height: 1.6;
+        }
+
+        .last-message {
+            max-width: 280px;
+            line-height: 1.6;
+            overflow-wrap: anywhere;
+        }
+
+        .last-message-date {
+            display: block;
+            margin-top: 5px;
+            color: var(--muted);
+            font-size: 10px;
+        }
+
+        .no-message {
+            color: #77717f;
+            font-style: italic;
+        }
+
+        .action-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 9px 13px;
+            border: 1px solid var(--accent-border);
+            border-radius: 8px;
+            background: var(--accent-soft);
+            color: var(--accent);
+            font-size: 10px;
+            font-weight: 700;
+            text-decoration: none;
+            white-space: nowrap;
+            transition: .2s;
+        }
+
+        .action-button:hover {
+            background: rgba(199,165,106,.16);
+            border-color: var(--accent);
+        }
+
+        .create-button {
+            border-color: rgba(155,200,165,.3);
+            background: rgba(155,200,165,.07);
+            color: var(--green);
+        }
+
+        .create-button:hover {
+            background: rgba(155,200,165,.15);
+            border-color: var(--green);
+        }
+
+        .empty-state {
+            padding: 65px 20px;
+            text-align: center;
+            color: var(--muted);
+        }
+
+        .empty-state h3 {
+            margin-bottom: 8px;
+            color: var(--text);
+            font-family: Georgia, serif;
+            font-size: 20px;
+            font-weight: normal;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        @media(max-width: 700px) {
+            body {
+                padding: 22px 14px;
+            }
+
+            .page-title {
+                font-size: 29px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .search-box {
+                max-width: none;
+                flex-basis: 100%;
+            }
+
+            .filter-select {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <header class="header">
+        <div class="logo">
+            <div class="logo-icon">◈</div>
+            <div class="logo-text">Platform Admin</div>
+        </div>
+
+        <a href="/admin_panel/secret_api" class="back-button">
+            ← Назад
+        </a>
+    </header>
+
+    <div class="page-heading">
+        <h1 class="page-title">B2B <span>рестораны</span></h1>
+
+        <p class="subtitle">
+            Список ресторанов платформы и история общения с каждым из них
+        </p>
+    </div>
+
+    {% set total_restaurants = restaurant_rows | length %}
+    {% set restaurants_with_chat = restaurant_rows | selectattr('conversation') | list | length %}
+
+    <div class="stats-grid">
+
+        <div class="stat-card">
+            <div class="stat-label">Всего ресторанов</div>
+            <div class="stat-value">{{ total_restaurants }}</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-label">Существующие чаты</div>
+            <div class="stat-value">{{ restaurants_with_chat }}</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-label">Без чата</div>
+            <div class="stat-value">
+                {{ total_restaurants - restaurants_with_chat }}
+            </div>
+        </div>
+
+    </div>
+
+    <div class="toolbar">
+
+        <div class="search-box">
+            <input
+                id="restaurantSearch"
+                type="text"
+                placeholder="Поиск по названию, ID, городу или email..."
+                autocomplete="off"
+            >
+        </div>
+
+        <select class="filter-select" id="restaurantFilter">
+            <option value="all">Все рестораны</option>
+            <option value="with-chat">С существующим чатом</option>
+            <option value="without-chat">Без чата</option>
+        </select>
+
+        <div class="results-count" id="resultsCount">
+            Найдено: {{ total_restaurants }}
+        </div>
+
+    </div>
+
+    {% if restaurant_rows %}
+
+    <div class="table-container">
+
+        <table id="restaurantsTable">
+
+            <thead>
+                <tr>
+                    <th>Ресторан / ID</th>
+                    <th>Статус</th>
+                    <th>Страна / Город</th>
+                    <th>Email</th>
+                    <th>Создан</th>
+                    <th>Последнее сообщение</th>
+                    <th>Действия</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                {% for item in restaurant_rows %}
+
+                    {% set restaurant = item.restaurant %}
+                    {% set conversation = item.conversation %}
+                    {% set last_message = item.last_message %}
+
+                    <tr
+                        class="restaurant-row"
+                        data-search="{{ (
+                            (restaurant.restaurant_name or '') ~ ' ' ~
+                            (restaurant.id or '') ~ ' ' ~
+                            (restaurant.city or '') ~ ' ' ~
+                            (restaurant.country or '') ~ ' ' ~
+                            (restaurant.email or '')
+                        ) | lower }}"
+                        data-has-chat="{{ '1' if conversation else '0' }}"
+                    >
+
+                        <td>
+                            <div class="restaurant-name">
+                                {{ restaurant.restaurant_name }}
+                            </div>
+
+                            <div class="restaurant-id">
+                                {{ restaurant.id }}
+                            </div>
+                        </td>
+
+                        <td>
+                            {% set status = (restaurant.status or '') | lower %}
+
+                            {% if status in ['active', 'activated'] %}
+                                <span class="status status-active">
+                                    {{ restaurant.status }}
+                                </span>
+                            {% elif status in ['inactive', 'blocked', 'suspended'] %}
+                                <span class="status status-inactive">
+                                    {{ restaurant.status }}
+                                </span>
+                            {% else %}
+                                <span class="status status-other">
+                                    {{ restaurant.status or 'Не указан' }}
+                                </span>
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            <div class="location">
+                                {{ restaurant.country or '—' }}<br>
+                                {{ restaurant.city or '—' }}
+                            </div>
+                        </td>
+
+                        <td>
+                            <div class="email">
+                                {{ restaurant.email or '—' }}
+                            </div>
+                        </td>
+
+                        <td>
+                            <div class="date">
+                                {% if restaurant.created_at %}
+                                    {{ restaurant.created_at.strftime("%d.%m.%Y") }}<br>
+                                    {{ restaurant.created_at.strftime("%H:%M") }}
+                                {% else %}
+                                    —
+                                {% endif %}
+                            </div>
+                        </td>
+
+                        <td>
+                            {% if last_message %}
+
+                                <div class="last-message">
+                                    {{ last_message.text }}
+                                </div>
+
+                                <span class="last-message-date">
+                                    {{ last_message.created_at.strftime("%d.%m.%Y %H:%M") }}
+                                </span>
+
+                            {% else %}
+
+                                <span class="no-message">
+                                    Сообщений пока нет
+                                </span>
+
+                            {% endif %}
+                        </td>
+
+                        <td>
+
+                            {% if conversation %}
+
+                                <a
+                                    class="action-button"
+                                    href="/support/admin/b2b/{{ restaurant.id }}"
+                                >
+                                    Открыть чат
+                                </a>
+
+                            {% else %}
+
+                                <a
+                                    class="action-button create-button"
+                                    href="/support/admin/b2b/{{ restaurant.id }}"
+                                >
+                                    + Создать чат
+                                </a>
+
+                            {% endif %}
+
+                        </td>
+
+                    </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+    <div class="empty-state hidden" id="noResultsState">
+        <h3>Ничего не найдено</h3>
+        <p>Попробуйте изменить поисковый запрос или фильтр</p>
+    </div>
+
+    {% else %}
+
+    <div class="table-container">
+        <div class="empty-state">
+            <h3>Ресторанов пока нет</h3>
+            <p>Список ресторанов пуст</p>
+        </div>
+    </div>
+
+    {% endif %}
+
+</div>
+
+<script>
+(function () {
+
+    const searchInput = document.getElementById("restaurantSearch");
+    const filterSelect = document.getElementById("restaurantFilter");
+    const table = document.getElementById("restaurantsTable");
+    const resultsCount = document.getElementById("resultsCount");
+    const noResults = document.getElementById("noResultsState");
+
+    if (!table) return;
+
+    const rows = Array.from(
+        table.querySelectorAll("tbody .restaurant-row")
+    );
+
+    function applyFilters() {
+
+        const query = (searchInput?.value || "")
+            .trim()
+            .toLowerCase();
+
+        const filter = filterSelect?.value || "all";
+
+        let visible = 0;
+
+        rows.forEach(row => {
+
+            const haystack = row.dataset.search || "";
+            const hasChat = row.dataset.hasChat === "1";
+
+            const matchesQuery =
+                !query || haystack.includes(query);
+
+            const matchesFilter =
+                filter === "all" ||
+                (filter === "with-chat" && hasChat) ||
+                (filter === "without-chat" && !hasChat);
+
+            const show = matchesQuery && matchesFilter;
+
+            row.classList.toggle("hidden", !show);
+
+            if (show) visible++;
+
+        });
+
+        if (resultsCount) {
+            resultsCount.textContent = "Найдено: " + visible;
+        }
+
+        if (noResults) {
+            noResults.classList.toggle("hidden", visible !== 0);
+        }
+
+    }
+
+    searchInput?.addEventListener("input", applyFilters);
+    filterSelect?.addEventListener("change", applyFilters);
+
+})();
+</script>
+
+</body>
+</html>

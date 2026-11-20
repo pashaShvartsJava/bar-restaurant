@@ -24,5 +24,21 @@
 "th_chat_number": "Номер чата",
 "open_chat_button": "Открыть чат",
 "support_empty_title": "Сейчас помощь никому не требуется",
-"support_empty_description": "Чатов с непрочитанными сообщениями нет."
+"support_empty_description": "Чатов с непрочитанными сообщениями нет.",
+  "b2b_chats_title": "B2B чаты",
+  "b2b_chats_subtitle": "Все диалоги с B2B-клиентами платформы",
+  "b2b_chats_empty_title": "Чатов пока нет",
+  "b2b_chats_empty_description": "Как только появится первый диалог с B2B-клиентом, он отобразится здесь",
+  "b2b_search_placeholder": "Поиск по клиенту или ресторану",
+  "b2b_th_client": "Клиент",
+  "b2b_th_restaurant": "Ресторан",
+  "b2b_th_created": "Создан",
+  "b2b_th_last_message": "Последнее сообщение",
+  "b2b_th_unread": "Непрочитанные",
+  "b2b_th_actions": "Действия",
+  "b2b_action_open": "Открыть чат",
+  "b2b_no_unread": "Нет",
+  "b2b_unread_count": "{n} новых",
+  "b2b_platform_chat": "Платформенный чат",
+  "b2b_search_no_results": "Ничего не найдено"
 }

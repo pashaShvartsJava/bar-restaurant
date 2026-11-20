@@ -24,5 +24,21 @@
 "th_chat_number": "Numéro de chat",
 "open_chat_button": "Ouvrir le chat",
 "support_empty_title": "Personne n'a besoin d'aide pour l'instant",
-"support_empty_description": "Il n'y a pas de chats avec des messages non lus."
+"support_empty_description": "Il n'y a pas de chats avec des messages non lus.",
+  "b2b_chats_title": "Chats B2B",
+  "b2b_chats_subtitle": "Toutes les conversations avec les clients B2B de la plateforme",
+  "b2b_chats_empty_title": "Aucun chat pour l'instant",
+  "b2b_chats_empty_description": "Dès que la première conversation B2B apparaîtra, elle s'affichera ici",
+  "b2b_search_placeholder": "Rechercher par client ou restaurant",
+  "b2b_th_client": "Client",
+  "b2b_th_restaurant": "Restaurant",
+  "b2b_th_created": "Créé",
+  "b2b_th_last_message": "Dernier message",
+  "b2b_th_unread": "Non lus",
+  "b2b_th_actions": "Actions",
+  "b2b_action_open": "Ouvrir le chat",
+  "b2b_no_unread": "Aucun",
+  "b2b_unread_count": "{n} nouveaux",
+  "b2b_platform_chat": "Chat de plateforme",
+  "b2b_search_no_results": "Rien trouvé"
 }

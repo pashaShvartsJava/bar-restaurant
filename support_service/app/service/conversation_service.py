@@ -49,3 +49,19 @@ class ConversationService:
 
     async def count_unread_conversations(self, restaurant_id : UUID):
         return await self.conversation_repository.count_unread_conversations(restaurant_id)
+
+    async def find_b2b_chats(self):
+        return await self.conversation_repository.find_b2b_chats()
+
+    async def find_b2c_chats(self):
+        return await self.conversation_repository.find_b2c_chats()
+
+    async def get_or_create_fdc_conversation(self, id: int | None, restaurant_id: UUID) -> Conversation:
+        if id is not None:
+            conversation = await self.get_conversation_by_id(id, restaurant_id)
+            if conversation is not None:
+                return conversation
+        conversation = await self.conversation_repository.create_fdc_conversation(restaurant_id)
+        if conversation is not None:
+            return conversation
+        return await self.conversation_repository.create_fdc_conversation(restaurant_id)

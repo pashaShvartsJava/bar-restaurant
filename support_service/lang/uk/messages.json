@@ -24,5 +24,21 @@
 "th_chat_number": "Номер чату",
 "open_chat_button": "Відкрити чат",
 "support_empty_title": "Зараз нікому не потрібна допомога",
-"support_empty_description": "Чатів із непрочитаними повідомленнями немає."
+"support_empty_description": "Чатів із непрочитаними повідомленнями немає.",
+  "b2b_chats_title": "B2B чати",
+  "b2b_chats_subtitle": "Усі діалоги з B2B-клієнтами платформи",
+  "b2b_chats_empty_title": "Чатів поки немає",
+  "b2b_chats_empty_description": "Щойно з'явиться перший діалог з B2B-клієнтом, він відобразиться тут",
+  "b2b_search_placeholder": "Пошук за клієнтом або рестораном",
+  "b2b_th_client": "Клієнт",
+  "b2b_th_restaurant": "Ресторан",
+  "b2b_th_created": "Створено",
+  "b2b_th_last_message": "Останнє повідомлення",
+  "b2b_th_unread": "Непрочитані",
+  "b2b_th_actions": "Дії",
+  "b2b_action_open": "Відкрити чат",
+  "b2b_no_unread": "Немає",
+  "b2b_unread_count": "{n} нових",
+  "b2b_platform_chat": "Платформний чат",
+  "b2b_search_no_results": "Нічого не знайдено"
 }
