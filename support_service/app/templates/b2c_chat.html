@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        {% if chat_side == 'admin' %}
+            Чат с клиентом
+        {% else %}
+            Техническая поддержка FDCPlatform
+        {% endif %}
+    </title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            min-height: 100%;
+            background: #111116;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            padding: 30px 20px;
+            font-family: Arial, sans-serif;
+            background: #111116;
+            color: #e5e5eb;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .chat-container {
+            width: 100%;
+            max-width: 900px;
+            height: 85vh;
+            min-height: 500px;
+            background: #191920;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid #30303b;
+            border-radius: 18px;
+            overflow: hidden;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .chat-header {
+            padding: 18px 24px;
+            background: #191920;
+            border-bottom: 1px solid #30303b;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 9px 13px;
+            border: 1px solid #393946;
+            border-radius: 9px;
+            color: #c4b5fd;
+            text-decoration: none;
+            font-size: 13px;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .back-button:hover {
+            background: #292532;
+            border-color: #8065ff;
+        }
+
+        .chat-header-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .chat-header-info h1 {
+            font-size: 18px;
+            margin: 0 0 5px;
+            color: #f4f4f8;
+        }
+
+        .chat-header-info p {
+            margin: 0;
+            font-size: 12px;
+            color: #9292a3;
+            overflow-wrap: anywhere;
+        }
+
+        .chat-status {
+            font-size: 12px;
+            color: #a78bfa;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .messages {
+            flex: 1;
+            min-height: 0;
+            overflow-y: auto;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            background: #14141a;
+        }
+
+        .messages::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .messages::-webkit-scrollbar-thumb {
+            background: #393946;
+            border-radius: 10px;
+        }
+
+        .message {
+            display: flex;
+            flex-direction: column;
+            max-width: 75%;
+        }
+
+        .message.left {
+            align-self: flex-start;
+        }
+
+        .message.right {
+            align-self: flex-end;
+        }
+
+        .message-author {
+            font-size: 12px;
+            color: #9292a3;
+            margin-bottom: 5px;
+        }
+
+        .message-bubble {
+            padding: 12px 15px;
+            border-radius: 14px;
+            font-size: 14px;
+            line-height: 1.5;
+            overflow-wrap: anywhere;
+            white-space: pre-wrap;
+        }
+
+        .message.left .message-bubble {
+            background: #25252f;
+            border: 1px solid #363642;
+            color: #e5e5eb;
+            border-top-left-radius: 4px;
+        }
+
+        .message.right .message-bubble {
+            background: #6d4aff;
+            color: #fff;
+            border: 1px solid #8065ff;
+            border-top-right-radius: 4px;
+        }
+
+        .message-time {
+            font-size: 11px;
+            color: #777787;
+            margin-top: 5px;
+        }
+
+        .message.left .message-time {
+            text-align: left;
+        }
+
+        .message.right .message-time {
+            text-align: right;
+        }
+
+        .empty-chat {
+            margin: auto;
+            text-align: center;
+            color: #777787;
+            font-size: 14px;
+        }
+
+        .empty-chat p {
+            margin: 6px 0;
+        }
+
+        .chat-input-container {
+            padding: 16px 20px;
+            background: #191920;
+            border-top: 1px solid #30303b;
+        }
+
+        .chat-form {
+            display: flex;
+            align-items: flex-end;
+            gap: 12px;
+        }
+
+        .chat-input {
+            flex: 1;
+            min-width: 0;
+            min-height: 46px;
+            max-height: 140px;
+            resize: vertical;
+            padding: 12px 14px;
+            border: 1px solid #393946;
+            border-radius: 12px;
+            background: #25252f;
+            color: #f4f4f8;
+            font-size: 14px;
+            font-family: inherit;
+            outline: none;
+        }
+
+        .chat-input::placeholder {
+            color: #777787;
+        }
+
+        .chat-input:focus {
+            border-color: #8065ff;
+            box-shadow: 0 0 0 2px rgba(128, 101, 255, 0.15);
+        }
+
+        .send-button {
+            height: 46px;
+            padding: 0 22px;
+            border: none;
+            border-radius: 12px;
+            background: #6d4aff;
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .send-button:hover {
+            background: #8065ff;
+        }
+
+        .send-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+                min-height: 100dvh;
+                align-items: stretch;
+            }
+
+            .chat-container {
+                height: calc(100dvh - 20px);
+                min-height: 0;
+                border-radius: 14px;
+            }
+
+            .chat-header {
+                padding: 12px;
+                gap: 10px;
+            }
+
+            .chat-header-info h1 {
+                font-size: 15px;
+            }
+
+            .chat-header-info p {
+                font-size: 10px;
+            }
+
+            .chat-status {
+                display: none;
+            }
+
+            .messages {
+                padding: 14px 10px;
+            }
+
+            .message {
+                max-width: 88%;
+            }
+
+            .chat-input-container {
+                padding: 10px;
+                padding-bottom: max(10px, env(safe-area-inset-bottom));
+            }
+
+            .chat-form {
+                gap: 8px;
+            }
+
+            .chat-input {
+                font-size: 16px;
+            }
+
+            .send-button {
+                padding: 0 14px;
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="chat-container">
+
+    <header class="chat-header">
+
+        {% if chat_side == 'admin' %}
+
+            <a href="/support/admin/b2c" class="back-button">
+                <span>←</span>
+                Назад
+            </a>
+
+        {% elif is_authenticated %}
+
+            <a href="/user/my_profile" class="back-button">
+                <span>←</span>
+                Назад
+            </a>
+
+        {% else %}
+
+            <a href="{{ request.headers.get('referer', '/') }}" class="back-button">
+                <span>←</span>
+                Назад
+            </a>
+
+        {% endif %}
+
+        <div class="chat-header-info">
+
+            {% if chat_side == 'admin' %}
+
+                <h1>Чат с клиентом</h1>
+
+                <p>
+                    Клиент ID: {{ conversation.user_id }}
+                    · Чат #{{ conversation.id }}
+                </p>
+
+            {% else %}
+
+                <h1>Техническая поддержка FDCPlatform</h1>
+
+                <p>
+                    Ваш чат с командой поддержки
+                </p>
+
+            {% endif %}
+
+        </div>
+
+        <div class="chat-status">
+            ● Поддержка
+        </div>
+
+    </header>
+
+    <main class="messages" id="messages">
+
+        {% if conversation.messages %}
+
+            {% for message in conversation.messages %}
+
+                {% set is_platform = message.sender_role == 'superadmin' %}
+
+                {% if chat_side == 'admin' %}
+                    {% set is_mine = is_platform %}
+                {% else %}
+                    {% set is_mine = not is_platform %}
+                {% endif %}
+
+                <div class="message {{ 'right' if is_mine else 'left' }}">
+
+                    <div class="message-author">
+
+                        {% if is_platform %}
+
+                            {% if chat_side == 'admin' %}
+                                Вы · FDCPlatform
+                            {% else %}
+                                FDCPlatform
+                            {% endif %}
+
+                        {% else %}
+
+                            {% if chat_side == 'admin' %}
+                                Клиент
+                            {% else %}
+                                Вы
+                            {% endif %}
+
+                        {% endif %}
+
+                    </div>
+
+                    <div class="message-bubble">{{ message.text }}</div>
+
+                    <div class="message-time">
+                        {{ message.created_at.strftime('%d.%m.%Y %H:%M') if message.created_at else '' }}
+                    </div>
+
+                </div>
+
+            {% endfor %}
+
+        {% else %}
+
+            <div class="empty-chat">
+
+                {% if chat_side == 'admin' %}
+                    <p>Пока нет сообщений</p>
+                    <p>Клиент ещё не отправил сообщение.</p>
+                {% else %}
+                    <p>Здравствуйте!</p>
+                    <p>Напишите нам, если вам нужна помощь.</p>
+                {% endif %}
+
+            </div>
+
+        {% endif %}
+
+    </main>
+
+    <footer class="chat-input-container">
+
+        <form class="chat-form" id="chatForm">
+
+            <textarea
+                class="chat-input"
+                id="messageInput"
+                placeholder="Введите сообщение..."
+                rows="1"
+                required
+            ></textarea>
+
+            <button
+                type="submit"
+                class="send-button"
+                id="sendButton"
+                disabled
+            >
+                Отправить
+            </button>
+
+        </form>
+
+    </footer>
+
+</div>
+
+<script>
+    const messages = document.getElementById("messages");
+    const form = document.getElementById("chatForm");
+    const input = document.getElementById("messageInput");
+    const sendButton = document.getElementById("sendButton");
+
+    const conversationId = {{ conversation.id }};
+    const chatSide = {{ chat_side | tojson }};
+
+    const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+
+    let ws;
+
+    if (chatSide === "admin") {
+        ws = new WebSocket(
+            `${protocol}//${window.location.host}/ws/support/admin/secret_api/b2c/${conversationId}`
+        );
+    } else {
+        ws = new WebSocket(
+            `${protocol}//${window.location.host}/ws/support/b2c/${conversationId}`
+        );
+    }
+
+    ws.onopen = function () {
+        sendButton.disabled = false;
+        sendButton.textContent = "Отправить";
+    };
+
+    ws.onmessage = function (event) {
+        const data = JSON.parse(event.data);
+
+        if (data.type !== "message") {
+            return;
+        }
+
+        const isPlatform = data.sender_role === "superadmin";
+
+        let isMine;
+
+        if (chatSide === "admin") {
+            isMine = isPlatform;
+        } else {
+            isMine = !isPlatform;
+        }
+
+        const message = document.createElement("div");
+        message.className = `message ${isMine ? "right" : "left"}`;
+
+        const author = document.createElement("div");
+        author.className = "message-author";
+
+        if (isPlatform) {
+            author.textContent = chatSide === "admin"
+                ? "Вы · FDCPlatform"
+                : "FDCPlatform";
+        } else {
+            author.textContent = chatSide === "admin"
+                ? "Клиент"
+                : "Вы";
+        }
+
+        const bubble = document.createElement("div");
+        bubble.className = "message-bubble";
+        bubble.textContent = data.text;
+
+        const time = document.createElement("div");
+        time.className = "message-time";
+
+        const date = new Date(data.created_at);
+
+        time.textContent = date.toLocaleString("ru-RU", {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit"
+        });
+
+        message.appendChild(author);
+        message.appendChild(bubble);
+        message.appendChild(time);
+
+        messages.appendChild(message);
+
+        const emptyChat = messages.querySelector(".empty-chat");
+
+        if (emptyChat) {
+            emptyChat.remove();
+        }
+
+        scrollToBottom();
+    };
+
+    ws.onerror = function (error) {
+        console.error("WebSocket error:", error);
+    };
+
+    ws.onclose = function () {
+        sendButton.disabled = true;
+        sendButton.textContent = "Нет соединения";
+    };
+
+    form.addEventListener("submit", function (event) {
+        event.preventDefault();
+
+        const text = input.value.trim();
+
+        if (!text || ws.readyState !== WebSocket.OPEN) {
+            return;
+        }
+
+        ws.send(text);
+
+        input.value = "";
+        input.style.height = "46px";
+    });
+
+    input.addEventListener("keydown", function (event) {
+        if (event.key === "Enter" && !event.shiftKey) {
+            event.preventDefault();
+
+            if (input.value.trim()) {
+                form.requestSubmit();
+            }
+        }
+    });
+
+    input.addEventListener("input", function () {
+        this.style.height = "auto";
+        this.style.height = Math.min(this.scrollHeight, 110) + "px";
+    });
+
+    function scrollToBottom() {
+        messages.scrollTop = messages.scrollHeight;
+    }
+
+    window.addEventListener("load", scrollToBottom);
+</script>
+
+</body>
+</html>

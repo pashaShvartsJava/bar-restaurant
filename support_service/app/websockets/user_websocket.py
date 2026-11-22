@@ -1,4 +1,6 @@
 import json
+import uuid
+from uuid import UUID
 
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect, Depends
 
@@ -52,3 +54,59 @@ async def support_websocket(websocket: WebSocket, conversation_id: int,
             await chat_manager.send_to_conversation(conversation_id=conversation_id, data=message_data)
     except WebSocketDisconnect:
         await chat_manager.disconnect(conversation_id=conversation_id, websocket=websocket)
+
+@router.websocket("/ws/support/b2c/{conversation_id}")
+async def b2c_user_websocket(websocket: WebSocket,
+                             conversation_id: int,
+                             message_service: MessageService = Depends(get_message_service_dependency),
+                             conversation_service: ConversationService = Depends(get_conversation_service_dependency)):
+    token = websocket.cookies.get("access_token")
+    guest_id = websocket.cookies.get("guest_id")
+    if token:
+        payload = decode_access_token(token)
+        required_role(IdentityRole.USER, payload=payload)
+        sender_id = payload["sub"]
+        sender_role = "user"
+    elif guest_id:
+        try:
+            sender_id = uuid.UUID(guest_id)
+        except ValueError:
+            await websocket.close(code=1008)
+            return
+        sender_role = "user"
+    else:
+        await websocket.close(code=1008)
+        return
+    conversation = await conversation_service.get_b2c_conversation_by_id(conversation_id=conversation_id)
+    if conversation is None or str(conversation.user_id) != str(sender_id):
+        await websocket.close(code=1008)
+        return
+    await chat_manager.connect(conversation_id=conversation_id, websocket=websocket)
+    try:
+        while True:
+            text = await websocket.receive_text()
+            try:
+                event = json.loads(text)
+            except json.JSONDecodeError:
+                event = None
+            if event and event.get("type") == "read":
+                message_id = event["message_id"]
+                await conversation_service.mark_as_read_by_user(conversation_id=conversation_id, message_id=message_id)
+                continue
+            message = await message_service.create_message(
+                conversation_id=conversation_id,
+                sender_id=sender_id,
+                sender_role=sender_role,
+                text=text)
+            message_data = {
+                "type": "message",
+                "id": message.id,
+                "conversation_id": conversation_id,
+                "sender_id": sender_id,
+                "sender_role": sender_role,
+                "text": message.text,
+                "created_at": message.created_at.isoformat()}
+            await chat_manager.send_to_conversation(conversation_id=conversation_id, data=message_data)
+    except WebSocketDisconnect:
+        await chat_manager.disconnect(conversation_id=conversation_id, websocket=websocket)
+

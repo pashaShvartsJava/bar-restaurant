@@ -41,9 +41,6 @@ class ConversationService:
     async def mark_as_read_by_admin(self, conversation_id: int, message_id: int):
         return await self.conversation_repository.mark_as_read_by_admin(conversation_id, message_id)
 
-    async def filter_users_by_conversations(self, users : list):
-        return await self.conversation_repository.filter_users_by_conversations(users)
-
     async def get_unread_conversations(self, restaurant_id : UUID):
         return await self.conversation_repository.get_unread_conversations(restaurant_id)
 
@@ -61,10 +58,16 @@ class ConversationService:
             conversation = await self.conversation_repository.get_conversation_by_id(conversation_id, restaurant_id)
             if conversation is not None:
                 return conversation
-        print("conversation_id : ", conversation_id)
         conversation = await self.conversation_repository.get_fdc_conversation_by_restaurant(restaurant_id)
         if conversation is not None:
             return conversation
-        if conversation is None:
-            print("conversation_id : ", None)
         return await self.conversation_repository.create_fdc_conversation(restaurant_id)
+
+    async def get_or_create_b2c_conversation(self, user_id: UUID) -> Conversation:
+        conversation = await self.conversation_repository.get_b2c_conversation(user_id)
+        if conversation is not None:
+            return conversation
+        return await self.conversation_repository.create_b2c_conversation(user_id)
+
+    async def get_b2c_conversation_by_id(self, conversation_id: int) -> Conversation | None:
+        return await self.conversation_repository.get_b2c_conversation_by_id(conversation_id)

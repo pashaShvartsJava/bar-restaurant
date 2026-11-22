@@ -106,7 +106,9 @@ class ConversationRepository:
         return result.scalars().all()
 
     async def find_b2c_chats(self):
-        result = await self.db.execute(select(Conversation).where(Conversation.is_platform_chat==True))
+        result = await self.db.execute(select(Conversation)
+                                       .where(Conversation.is_platform_chat==True)
+                                       .where(Conversation.restaurant_id.is_(None)))
         return result.scalars().all()
 
     async def create_fdc_conversation(self, restaurant_id : UUID) -> Conversation:
@@ -134,4 +136,42 @@ class ConversationRepository:
             .where(
                 Conversation.restaurant_id == restaurant_id,
                 Conversation.is_platform_chat.is_(True)))
+        return result.scalar_one_or_none()
+
+    async def create_b2c_conversation(self, user_id : UUID) -> Conversation:
+        now = datetime.now(timezone.utc)
+        new_b2c_conversation = Conversation(
+            user_id=user_id,
+            admin_id=PLATFORM_USER_ID,
+            created_at=now,
+            restaurant_id=None,
+            is_platform_chat=True
+        )
+        self.db.add(new_b2c_conversation)
+        await self.db.flush()
+        conversation_id = new_b2c_conversation.id
+        await self.db.commit()
+        result = await self.db.execute(select(Conversation)
+                                       .options(selectinload(Conversation.messages))
+                                       .where(Conversation.id == conversation_id))
+        return result.scalar_one()
+
+    async def get_b2c_conversation(self, user_id : UUID) -> Conversation | None:
+        result = await self.db.execute(
+            select(Conversation)
+            .options(selectinload(Conversation.messages))
+            .where(
+                Conversation.user_id == user_id,
+                Conversation.is_platform_chat.is_(True),
+                Conversation.restaurant_id.is_(None)))
+        return result.scalar_one_or_none()
+
+    async def get_b2c_conversation_by_id(self, conversation_id: int) -> Conversation | None:
+        result = await self.db.execute(
+            select(Conversation)
+            .options(selectinload(Conversation.messages))
+            .where(
+                Conversation.id == conversation_id,
+                Conversation.is_platform_chat.is_(True),
+                Conversation.restaurant_id.is_(None)))
         return result.scalar_one_or_none()

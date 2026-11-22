@@ -26,17 +26,6 @@ async def verify_csrf(request: Request):
     if not cookie_token or cookie_token != header_token:
         raise HTTPException(status_code=403)
 
-@router.get("/support/admin/fdcplatform-chat")
-async def show_fdc_platform_chat_page_for_admins(request : Request,
-                                                 conversation_service : ConversationService = Depends(get_conversation_service_dependency)):
-    payload = get_payload(request)
-    required_roles(IdentityRole.OWNER, IdentityRole.ADMIN, IdentityRole.MODERATOR, payload=payload)
-    restaurant_id = payload.get("restaurant_id")
-    restaurant = await get_restaurant_dependency_by_id(restaurant_id)
-    await verify_restaurant_status(restaurant.status)
-    conversation = await conversation_service.get_or_create_conversation_with_platform(UUID(payload["sub"]), restaurant_id)
-    return templates.TemplateResponse("admin_chat_with_platform.html", {"request" : request, "conversation" : conversation})
-
 @router.get("/support/admin/b2b")
 async def show_all_chats_with_b2b_customers(request: Request,
                                             conversation_service: ConversationService = Depends(get_conversation_service_dependency)):
@@ -75,10 +64,19 @@ async def show_b2b_chat(request: Request,
         conversation = await conversation_service.get_or_create_fdc_conversation(conversation_id, restaurant_id)
     return templates.TemplateResponse("b2b_chat.html", {"request": request, "conversation": conversation, "chat_side": "admin"})
 
-@router.get("/support/admin/b2с")
-async def show_all_chats_with_b2b_customers(request : Request,
-                                            conversation_service : ConversationService = Depends(get_conversation_service_dependency)):
+@router.get("/support/admin/b2c")
+async def show_all_chats_with_b2c_customers(request: Request,
+                                            conversation_service: ConversationService = Depends(get_conversation_service_dependency)):
     payload = get_secret_payload(request)
     required_secret_role(IdentityRole.SUPERADMIN, payload)
-    all_chats = await conversation_service.find_b2c_chats()
-    return templates.TemplateResponse("all_b2c_chats.html", {"request" : request, "all_chats" : all_chats})
+    b2c_chats = await conversation_service.find_b2c_chats()
+    return templates.TemplateResponse("all_b2c_chats.html", {"request" : request, "b2c_chats" : b2c_chats})
+
+@router.get("/support/admin/secret_api/b2c/{conversation_id}")
+async def show_b2c_chat(request: Request,
+                        conversation_id: int,
+                        conversation_service: ConversationService = Depends(get_conversation_service_dependency)):
+    payload = get_secret_payload(request)
+    required_secret_role(IdentityRole.SUPERADMIN, payload)
+    conversation = await conversation_service.get_b2c_conversation_by_id(conversation_id)
+    return templates.TemplateResponse("b2c_chat.html", {"request": request, "conversation": conversation, "chat_side": "admin"})

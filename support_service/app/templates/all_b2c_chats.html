@@ -1,10 +1,236 @@
+
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>B2C — Чаты с клиентами</title>
 
+    <style>
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            padding: 35px 20px;
+            font-family: Arial, sans-serif;
+            background: #111116;
+            color: #e5e5eb;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        h1 {
+            margin: 0 0 8px;
+            font-size: 25px;
+            color: #f4f4f8;
+        }
+
+        .subtitle {
+            margin: 0;
+            color: #9292a3;
+            font-size: 14px;
+        }
+
+        .back-button {
+            padding: 10px 15px;
+            border: 1px solid #393946;
+            border-radius: 9px;
+            color: #c4b5fd;
+            text-decoration: none;
+            font-size: 13px;
+            white-space: nowrap;
+        }
+
+        .back-button:hover {
+            background: #292532;
+            border-color: #8065ff;
+        }
+
+        .chat-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .chat-card {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            padding: 19px 20px;
+            background: #191920;
+            border: 1px solid #30303b;
+            border-radius: 13px;
+            transition: border-color 0.2s;
+        }
+
+        .chat-card:hover {
+            border-color: #8065ff;
+        }
+
+        .chat-info {
+            min-width: 0;
+            flex: 1;
+        }
+
+        .chat-title {
+            margin: 0 0 8px;
+            color: #f4f4f8;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .chat-id {
+            margin: 0 0 5px;
+            color: #9292a3;
+            font-size: 12px;
+            overflow-wrap: anywhere;
+        }
+
+        .chat-date {
+            margin: 0;
+            color: #777787;
+            font-size: 12px;
+        }
+
+        .open-button {
+            display: inline-block;
+            padding: 10px 16px;
+            border-radius: 9px;
+            background: #6d4aff;
+            color: white;
+            text-decoration: none;
+            font-size: 13px;
+            white-space: nowrap;
+            transition: background 0.2s;
+        }
+
+        .open-button:hover {
+            background: #8065ff;
+        }
+
+        .empty-state {
+            padding: 55px 20px;
+            text-align: center;
+            background: #191920;
+            border: 1px solid #30303b;
+            border-radius: 13px;
+            color: #9292a3;
+        }
+
+        .empty-state h2 {
+            margin: 0 0 10px;
+            color: #e5e5eb;
+            font-size: 18px;
+        }
+
+        .empty-state p {
+            margin: 0;
+            font-size: 14px;
+        }
+
+        @media (max-width: 600px) {
+            body { padding: 20px 12px; }
+
+            .header {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            h1 { font-size: 21px; }
+
+            .chat-card {
+                align-items: flex-start;
+                flex-direction: column;
+                gap: 14px;
+                padding: 16px;
+            }
+
+            .open-button {
+                width: 100%;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<div class="container">
+
+    <header class="header">
+        <div>
+            <h1>Чаты с клиентами</h1>
+            <p class="subtitle">
+                Все обращения клиентов в FDCPlatform
+            </p>
+        </div>
+
+        <a href="/admin_panel/secret_api" class="back-button">
+            ← Назад в панель
+        </a>
+    </header>
+
+    {% if b2c_chats %}
+
+        <div class="chat-list">
+
+            {% for conversation in b2c_chats %}
+
+                <article class="chat-card">
+
+                    <div class="chat-info">
+                        <h2 class="chat-title">
+                            Клиент
+                        </h2>
+
+                        <p class="chat-id">
+                            ID клиента: {{ conversation.user_id }}
+                        </p>
+
+                        <p class="chat-date">
+                            Чат #{{ conversation.id }}
+                            {% if conversation.created_at %}
+                                · Создан:
+                                {{ conversation.created_at.strftime('%d.%m.%Y %H:%M') }}
+                            {% endif %}
+                        </p>
+                    </div>
+
+                    <a
+                        class="open-button"
+                        href="/support/admin/secret_api/b2c/{{ conversation.id }}"
+                    >
+                        Открыть чат
+                    </a>
+
+                </article>
+
+            {% endfor %}
+
+        </div>
+
+    {% else %}
+
+        <div class="empty-state">
+            <h2>Пока нет обращений</h2>
+            <p>Когда клиент напишет в поддержку, его чат появится здесь.</p>
+        </div>
+
+    {% endif %}
+
+</div>
 </body>
 </html>
