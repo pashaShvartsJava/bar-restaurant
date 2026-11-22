@@ -21,6 +21,7 @@ class Settings(BaseSettings):
     PLATFORM_ADMIN_PASSWORD_HASH: str
     PLATFORM_ADMIN_KEY_HASH: str
     PLATFORM_ADMIN_JWT_SECRET: str
+    SUPER_ADMIN_SUB: str
 
 
     model_config = SettingsConfigDict(

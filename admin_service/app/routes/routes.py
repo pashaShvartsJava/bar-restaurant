@@ -101,7 +101,8 @@ async def show_admin_panel(request: Request):
                                                            "restaurant_name" : restaurant.restaurant_name,
                                                            "restaurant" : restaurant,
                                                            "vat_status" : vat_status,
-                                                           "plan" : plan})
+                                                           "plan" : plan,
+                                                           "restaurant_id" : restaurant_id})
 
 @router.get("/admin_panel/all_admins")
 async def show_all_admins(request: Request, admin_service : AdminService = Depends(get_service_dependency)):

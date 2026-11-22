@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -28,8 +29,6 @@
             align-items: center;
         }
 
-        /* Основной контейнер */
-
         .chat-container {
             width: 100%;
             max-width: 900px;
@@ -43,8 +42,6 @@
             overflow: hidden;
             box-shadow: 0 0 30px rgba(0, 0, 0, 0.3);
         }
-
-        /* Шапка */
 
         .chat-header {
             padding: 18px 24px;
@@ -102,8 +99,6 @@
             white-space: nowrap;
         }
 
-        /* История сообщений */
-
         .messages {
             flex: 1;
             min-height: 0;
@@ -134,11 +129,11 @@
             max-width: 75%;
         }
 
-        .message.restaurant {
+        .message.left {
             align-self: flex-start;
         }
 
-        .message.superadmin {
+        .message.right {
             align-self: flex-end;
         }
 
@@ -157,14 +152,14 @@
             white-space: pre-wrap;
         }
 
-        .restaurant .message-bubble {
+        .message.left .message-bubble {
             background: #25252f;
             border: 1px solid #363642;
             color: #e5e5eb;
             border-top-left-radius: 4px;
         }
 
-        .superadmin .message-bubble {
+        .message.right .message-bubble {
             background: #6d4aff;
             color: #fff;
             border: 1px solid #8065ff;
@@ -177,7 +172,11 @@
             margin-top: 5px;
         }
 
-        .superadmin .message-time {
+        .message.left .message-time {
+            text-align: left;
+        }
+
+        .message.right .message-time {
             text-align: right;
         }
 
@@ -191,8 +190,6 @@
         .empty-chat p {
             margin: 6px 0;
         }
-
-        /* Поле отправки */
 
         .chat-input-container {
             padding: 16px 20px;
@@ -254,8 +251,6 @@
             cursor: not-allowed;
         }
 
-        /* Планшеты */
-
         @media (max-width: 800px) {
             body {
                 padding: 20px 12px;
@@ -270,8 +265,6 @@
                 gap: 12px;
             }
         }
-
-        /* Телефоны */
 
         @media (max-width: 600px) {
             body {
@@ -349,8 +342,6 @@
             }
         }
 
-        /* Очень узкие телефоны */
-
         @media (max-width: 380px) {
             .chat-header {
                 flex-wrap: wrap;
@@ -380,17 +371,20 @@
 
 <div class="chat-container">
 
-    <!-- Шапка -->
-
     <header class="chat-header">
 
-        <a href="/support/admin/b2b" class="back-button">
+        <a
+            href="{{ '/support/admin/b2b' if chat_side == 'admin' else '/admin_panel' }}"
+            class="back-button"
+        >
             <span>←</span>
             Назад
         </a>
 
         <div class="chat-header-info">
-            <h1>Чат с рестораном</h1>
+            <h1>
+                {{ 'Чат с FDCPlatform' if chat_side == 'restaurant' else 'Чат с рестораном' }}
+            </h1>
             <p>
                 Ресторан ID: {{ conversation.restaurant_id }}
                 · Чат #{{ conversation.id }}
@@ -403,20 +397,23 @@
 
     </header>
 
-    <!-- История сообщений -->
-
     <main class="messages" id="messages">
 
         {% if conversation.messages %}
 
             {% for message in conversation.messages %}
 
-                {% set is_admin = message.sender_role == 'superadmin' %}
+                {% set is_platform = message.sender_role == 'superadmin' %}
+                {% set is_mine = (chat_side == 'admin' and is_platform) or (chat_side == 'restaurant' and not is_platform) %}
 
-                <div class="message {{ 'superadmin' if is_admin else 'restaurant' }}">
+                <div class="message {{ 'right' if is_mine else 'left' }}">
 
                     <div class="message-author">
-                        {{ 'Вы · Супер администратор' if is_admin else 'Ресторан' }}
+                        {% if is_platform %}
+                            {{ 'Вы · FDCPlatform' if is_mine else 'FDCPlatform' }}
+                        {% else %}
+                            {{ 'Вы · Ресторан' if is_mine else 'Ресторан' }}
+                        {% endif %}
                     </div>
 
                     <div class="message-bubble">{{ message.text }}</div>
@@ -433,23 +430,16 @@
 
             <div class="empty-chat">
                 <p>Пока нет сообщений</p>
-                <p>Напишите первое сообщение ресторану.</p>
+                <p>Напишите первое сообщение.</p>
             </div>
 
         {% endif %}
 
     </main>
 
-    <!-- Поле отправки -->
-
     <footer class="chat-input-container">
 
-        <form
-            class="chat-form"
-            method="POST"
-            action="/support/admin/b2b/{{ conversation.restaurant_id }}/messages"
-            id="chatForm"
-        >
+        <form class="chat-form" id="chatForm">
 
             <textarea
                 class="chat-input"
@@ -460,7 +450,12 @@
                 required
             ></textarea>
 
-            <button type="submit" class="send-button" id="sendButton">
+            <button
+                type="submit"
+                class="send-button"
+                id="sendButton"
+                disabled
+            >
                 Отправить
             </button>
 
@@ -476,22 +471,115 @@
     const input = document.getElementById("messageInput");
     const sendButton = document.getElementById("sendButton");
 
-    // Прокрутка к последнему сообщению
+    const conversationId = {{ conversation.id }};
+    const restaurantId = "{{ conversation.restaurant_id }}";
+    const chatSide = "{{ chat_side }}";
 
-    function scrollToBottom() {
-        messages.scrollTop = messages.scrollHeight;
+    const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+
+    let ws;
+
+    if (chatSide === "admin") {
+        ws = new WebSocket(
+            `${protocol}//${window.location.host}/ws/support/admin/secret_api/b2b/${restaurantId}/${conversationId}`
+        );
+    } else {
+        ws = new WebSocket(
+            `${protocol}//${window.location.host}/ws/support/restaurant/b2b/${restaurantId}/${conversationId}`
+        );
     }
 
-    window.addEventListener("load", scrollToBottom);
+    sendButton.disabled = true;
 
-    // Автоматическое изменение высоты поля
+    ws.onopen = function () {
+        sendButton.disabled = false;
+        sendButton.textContent = "Отправить";
+    };
 
-    input.addEventListener("input", function () {
-        this.style.height = "auto";
-        this.style.height = Math.min(this.scrollHeight, 110) + "px";
+    ws.onmessage = function (event) {
+        const data = JSON.parse(event.data);
+
+        if (data.type !== "message") {
+            return;
+        }
+
+        const isPlatform = data.sender_role === "superadmin";
+
+        const isMine =
+            (chatSide === "admin" && isPlatform) ||
+            (chatSide === "restaurant" && !isPlatform);
+
+        const message = document.createElement("div");
+        message.className = `message ${isMine ? "right" : "left"}`;
+
+        const author = document.createElement("div");
+        author.className = "message-author";
+
+        if (isPlatform) {
+            author.textContent = isMine
+                ? "Вы · FDCPlatform"
+                : "FDCPlatform";
+        } else {
+            author.textContent = isMine
+                ? "Вы · Ресторан"
+                : "Ресторан";
+        }
+
+        const bubble = document.createElement("div");
+        bubble.className = "message-bubble";
+        bubble.textContent = data.text;
+
+        const time = document.createElement("div");
+        time.className = "message-time";
+
+        const date = new Date(data.created_at);
+
+        time.textContent = date.toLocaleString("ru-RU", {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit"
+        });
+
+        message.appendChild(author);
+        message.appendChild(bubble);
+        message.appendChild(time);
+
+        messages.appendChild(message);
+
+        const emptyChat = messages.querySelector(".empty-chat");
+
+        if (emptyChat) {
+            emptyChat.remove();
+        }
+
+        scrollToBottom();
+    };
+
+    ws.onerror = function (error) {
+        console.error("WebSocket error:", error);
+    };
+
+    ws.onclose = function () {
+        sendButton.disabled = true;
+        sendButton.textContent = "Нет соединения";
+    };
+
+    form.addEventListener("submit", function (event) {
+        event.preventDefault();
+
+        const text = input.value.trim();
+
+        if (!text || ws.readyState !== WebSocket.OPEN) {
+            return;
+        }
+
+        ws.send(text);
+
+        input.value = "";
+        input.style.height = "46px";
     });
-
-    // Enter отправляет, Shift + Enter переносит строку
 
     input.addEventListener("keydown", function (event) {
         if (event.key === "Enter" && !event.shiftKey) {
@@ -503,17 +591,16 @@
         }
     });
 
-    // Защита от повторной отправки
-
-    form.addEventListener("submit", function (event) {
-        if (!input.value.trim()) {
-            event.preventDefault();
-            return;
-        }
-
-        sendButton.disabled = true;
-        sendButton.textContent = "Отправка...";
+    input.addEventListener("input", function () {
+        this.style.height = "auto";
+        this.style.height = Math.min(this.scrollHeight, 110) + "px";
     });
+
+    function scrollToBottom() {
+        messages.scrollTop = messages.scrollHeight;
+    }
+
+    window.addEventListener("load", scrollToBottom);
 </script>
 
 </body>

@@ -60,7 +60,7 @@ async def show_all_chats_with_b2b_customers(request: Request,
         restaurant_rows.append({"restaurant": restaurant, "conversation": conversation, "last_message": last_message})
     return templates.TemplateResponse("all_b2b_chats.html", {"request": request, "restaurant_rows": restaurant_rows})
 
-@router.get("/support/admin/b2b/{restaurant_id}")
+@router.get("/support/admin/secret_api/b2b/{restaurant_id}")
 async def show_b2b_chat(request: Request,
                         restaurant_id: UUID,
                         conversation_id: Optional[int] = None,
@@ -73,7 +73,7 @@ async def show_b2b_chat(request: Request,
             raise HTTPException(status_code=404, detail="Conversation not found")
     else:
         conversation = await conversation_service.get_or_create_fdc_conversation(conversation_id, restaurant_id)
-    return templates.TemplateResponse("b2b_chat.html", {"request": request, "conversation": conversation})
+    return templates.TemplateResponse("b2b_chat.html", {"request": request, "conversation": conversation, "chat_side": "admin"})
 
 @router.get("/support/admin/b2с")
 async def show_all_chats_with_b2b_customers(request : Request,

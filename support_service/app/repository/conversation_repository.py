@@ -111,17 +111,27 @@ class ConversationRepository:
 
     async def create_fdc_conversation(self, restaurant_id : UUID) -> Conversation:
         now = datetime.now(timezone.utc)
-        new_fgc_conversation = Conversation(
+        new_fdc_conversation = Conversation(
             user_id=PLATFORM_USER_ID,
             admin_id=restaurant_id,
             created_at=now,
             restaurant_id=restaurant_id,
             is_platform_chat=True
         )
-        self.db.add(new_fgc_conversation)
+        self.db.add(new_fdc_conversation)
+        await self.db.flush()
+        conversation_id = new_fdc_conversation.id
         await self.db.commit()
-        conversation_id = new_fgc_conversation.id
         result = await self.db.execute(select(Conversation)
                                        .options(selectinload(Conversation.messages))
                                        .where(Conversation.id == conversation_id))
         return result.scalar_one()
+
+    async def get_fdc_conversation_by_restaurant(self, restaurant_id: UUID) -> Conversation | None:
+        result = await self.db.execute(
+            select(Conversation)
+            .options(selectinload(Conversation.messages))
+            .where(
+                Conversation.restaurant_id == restaurant_id,
+                Conversation.is_platform_chat.is_(True)))
+        return result.scalar_one_or_none()

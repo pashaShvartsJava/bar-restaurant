@@ -1,4 +1,6 @@
 from datetime import datetime, timezone
+from uuid import UUID
+
 from ..models.message import Message
 
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -9,7 +11,7 @@ class MessageRepository:
     def __init__(self, db: AsyncSession):
         self.db = db
 
-    async def create_message(self, conversation_id: int, sender_id: int, sender_role, text: str) -> Message:
+    async def create_message(self, conversation_id: int, sender_id: UUID, sender_role, text: str) -> Message:
         now = datetime.now(timezone.utc)
         new_message = Message(
             conversation_id=conversation_id,

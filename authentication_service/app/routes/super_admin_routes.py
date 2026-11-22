@@ -20,11 +20,12 @@ PLATFORM_ADMIN_LOGIN = settings.PLATFORM_ADMIN_LOGIN
 PLATFORM_ADMIN_PASSWORD_HASH = settings.PLATFORM_ADMIN_PASSWORD_HASH
 PLATFORM_ADMIN_KEY_HASH = settings.PLATFORM_ADMIN_KEY_HASH
 PLATFORM_ADMIN_JWT_SECRET = settings.PLATFORM_ADMIN_JWT_SECRET
+SUPER_ADMIN_SUB = settings.SUPER_ADMIN_SUB
 
 def create_platform_admin_token() -> str:
     now = datetime.datetime.now(datetime.timezone.utc)
     payload = {
-        "sub": "platform_admin",
+        "sub": str(SUPER_ADMIN_SUB),
         "role": "superadmin",
         "iat": int(now.timestamp()),
         "exp": int((now + datetime.timedelta(hours=1)).timestamp())}

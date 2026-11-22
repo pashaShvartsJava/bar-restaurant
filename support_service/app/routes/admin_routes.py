@@ -1,4 +1,5 @@
 import uuid
+from typing import Optional
 
 from fastapi import APIRouter, Request, HTTPException
 from fastapi.params import Depends, Header
@@ -80,3 +81,18 @@ async def get_unread_support_count(restaurant_id : str,
     await required_plans(current_plan_id, PlanId.ONLINE, PlanId.ADVANCED, PlanId.PROFESSIONAL)
     count = await conversation_service.count_unread_conversations(uuid.UUID(restaurant_id))
     return {"count": count}
+
+@router.get("/support/admin/b2b/{restaurant_id}")
+async def show_b2b_chat(request: Request,
+                        restaurant_id: UUID,
+                        conversation_id: Optional[int] = None,
+                        conversation_service: ConversationService = Depends(get_conversation_service_dependency)):
+    payload = get_payload(request)
+    required_roles(IdentityRole.OWNER, IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
+    if conversation_id is not None:
+        conversation = await conversation_service.get_conversation_by_id(conversation_id, restaurant_id)
+        if conversation is None:
+            raise HTTPException(status_code=404, detail="Conversation not found")
+    else:
+        conversation = await conversation_service.get_or_create_fdc_conversation(conversation_id, restaurant_id)
+    return templates.TemplateResponse("b2b_chat.html", {"request": request, "conversation": conversation, "chat_side": "restaurant"})
