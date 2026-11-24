@@ -3,7 +3,7 @@ import httpx
 from ..redis.redis_client import redis
 from ..repository.conversation_repository import ConversationRepository
 from ..schema.restaurant_schema import RestaurantConstructorDTO, RestaurantStatus
-from ..schema.susbcription_schema import SubscriptionDataDTO, PlanId
+from ..schema.subscription_schema import SubscriptionDataDTO, PlanId
 from ..service.conversation_service import ConversationService
 from ..repository.message_repository import MessageRepository
 from ..service.message_service import MessageService

@@ -1,0 +1,1370 @@
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>{{ trans('warehouse_page_title') }}</title>
+
+<style>
+    :root {
+        --bg: #09090b;
+        --panel: rgba(27, 25, 27, .96);
+        --panel-light: #252326;
+        --field: #2a282a;
+
+        --purple: #a78bfa;
+        --purple-hover: #c4b5fd;
+        --purple-soft: rgba(139, 92, 246, .12);
+
+        --gold: #d5a65b;
+        --gold-soft: rgba(213, 166, 91, .12);
+
+        --text: #f1eff2;
+        --muted: #85838a;
+        --border: rgba(255, 255, 255, .075);
+
+        --danger: #d98282;
+        --success: #9aaa8b;
+
+        --radius: 14px;
+        --radius-small: 8px;
+    }
+
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        margin: 0;
+        min-height: 100vh;
+        padding: 0 35px 60px;
+        color: var(--text);
+        font-family: Arial, sans-serif;
+        font-weight: 400;
+        letter-spacing: -.1px;
+
+        background:
+            radial-gradient(
+                ellipse at 50% 0%,
+                rgba(145, 85, 75, .20) 0%,
+                rgba(55, 35, 40, .22) 38%,
+                transparent 78%
+            ),
+            linear-gradient(
+                180deg,
+                #211a1c 0%,
+                #121214 50%,
+                #09090b 100%
+            );
+    }
+
+    button, input, select, textarea {
+        font: inherit;
+    }
+
+    button {
+        cursor: pointer;
+    }
+
+    button:focus-visible,
+    a:focus-visible,
+    input:focus-visible,
+    select:focus-visible,
+    textarea:focus-visible {
+        outline: 2px solid var(--purple);
+        outline-offset: 3px;
+    }
+
+    .container {
+        width: 100%;
+        max-width: 1500px;
+        margin: 0 auto;
+        padding: 60px 0;
+    }
+
+    /* HEADER */
+
+    .top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+        margin-bottom: 45px;
+    }
+
+    .back-button {
+        display: inline-flex;
+        align-items: center;
+        gap: 9px;
+        padding: 10px 15px;
+        color: #85838a;
+        text-decoration: none;
+        background: rgba(42, 40, 42, .55);
+        border: 1px solid var(--border);
+        border-radius: 7px;
+        font-size: 11px;
+        transition: .25s ease;
+    }
+
+    .back-button:hover {
+        color: var(--purple-hover);
+        border-color: rgba(167, 139, 250, .4);
+        background: var(--purple-soft);
+    }
+
+    .header {
+        margin-bottom: 35px;
+        text-align: center;
+    }
+
+    .header h1 {
+        margin: 0 0 12px;
+        color: #f1eff2;
+        font-family: Georgia, serif;
+        font-size: 42px;
+        font-weight: normal;
+        letter-spacing: 2px;
+    }
+
+    .header p {
+        margin: 0;
+        color: #85838a;
+        font-size: 12px;
+        font-weight: 300;
+        line-height: 1.7;
+    }
+
+    /* MAIN LAYOUT */
+
+    .warehouse-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 270px;
+        align-items: start;
+        gap: 22px;
+    }
+
+    .products-panel,
+    .sidebar-panel {
+        min-width: 0;
+        background: rgba(27, 25, 27, .96);
+        border: 1px solid rgba(213, 166, 91, .13);
+        border-radius: 14px;
+        box-shadow: 0 15px 45px rgba(0, 0, 0, .22);
+        backdrop-filter: blur(18px);
+    }
+
+    .products-panel {
+        overflow: hidden;
+    }
+
+    .panel-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 18px;
+        padding: 22px 24px;
+        background: rgba(40, 34, 32, .65);
+        border-bottom: 1px solid var(--border);
+    }
+
+    .panel-header h2,
+    .sidebar-panel h3 {
+        margin: 0;
+        color: #e9e5e6;
+        font-family: Georgia, serif;
+        font-size: 17px;
+        font-weight: normal;
+        letter-spacing: .2px;
+    }
+
+    /* SEARCH */
+
+    .search-box {
+        width: min(300px, 100%);
+    }
+
+    .search-box input {
+        width: 100%;
+        min-height: 37px;
+        padding: 9px 13px;
+        color: #fff;
+        background: rgba(42, 40, 42, .95);
+        border: 1px solid rgba(255, 255, 255, .08);
+        border-radius: 7px;
+        outline: none;
+        font-size: 10px;
+        transition: .25s ease;
+    }
+
+    .search-box input::placeholder {
+        color: #77777d;
+    }
+
+    .search-box input:focus,
+    .form-control:focus {
+        border-color: rgba(167, 139, 250, .55);
+        box-shadow: 0 0 0 3px rgba(139, 92, 246, .07);
+    }
+
+    /* TABLE */
+
+    .table-wrapper {
+        width: 100%;
+        overflow-x: auto;
+    }
+
+    table {
+        width: 100%;
+        min-width: 650px;
+        border-collapse: collapse;
+    }
+
+    thead {
+        background: rgba(40, 34, 32, .75);
+    }
+
+    th {
+        padding: 16px 20px;
+        color: #85838a;
+        text-align: left;
+        font-size: 9px;
+        font-weight: 400;
+        text-transform: uppercase;
+        letter-spacing: 1.4px;
+        white-space: nowrap;
+    }
+
+    td {
+        padding: 17px 20px;
+        color: #c7c4ca;
+        border-top: 1px solid rgba(255, 255, 255, .055);
+        vertical-align: middle;
+        font-size: 11px;
+        font-weight: 400;
+    }
+
+    tbody tr.product-row {
+        background: rgba(30, 29, 31, .55);
+        transition: background .25s ease;
+    }
+
+    tbody tr.product-row:hover {
+        background: rgba(42, 38, 42, .85);
+    }
+
+    /* PRODUCT */
+
+    .product-info {
+        display: flex;
+        align-items: center;
+        gap: 13px;
+        min-width: 180px;
+    }
+
+    .product-image {
+        width: 45px;
+        height: 45px;
+        flex-shrink: 0;
+        object-fit: cover;
+        border-radius: 8px;
+        border: 1px solid rgba(213, 166, 91, .16);
+        background: var(--field);
+    }
+
+    .product-image-placeholder {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--purple);
+        font-size: 18px;
+    }
+
+    .product-name {
+        color: #f1eff2;
+        font-size: 12px;
+        font-weight: 500;
+        overflow-wrap: anywhere;
+    }
+
+    .product-id {
+        margin-top: 6px;
+        color: #77777d;
+        font-size: 9px;
+        font-weight: 400;
+    }
+
+    /* UNIT */
+
+    .unit-label {
+        display: inline-block;
+        padding: 7px 10px;
+        color: #b59aff;
+        background: rgba(139, 92, 246, .10);
+        border: 1px solid rgba(167, 139, 250, .22);
+        border-radius: 6px;
+        font-size: 9px;
+        font-weight: 400;
+    }
+
+    /* STATUS */
+
+    .status {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 7px 10px;
+        border-radius: 6px;
+        font-size: 9px;
+        font-weight: 400;
+        white-space: nowrap;
+    }
+
+    .status::before {
+        content: "";
+        width: 5px;
+        height: 5px;
+        flex-shrink: 0;
+        border-radius: 50%;
+        background: currentColor;
+    }
+
+    .status.active {
+        color: #9aaa8b;
+        background: rgba(100, 130, 80, .12);
+        border: 1px solid rgba(120, 150, 95, .25);
+    }
+
+    .status.inactive {
+        color: #d98282;
+        background: rgba(150, 55, 65, .14);
+        border: 1px solid rgba(210, 85, 90, .28);
+    }
+
+    /* ACTION BUTTONS */
+
+    .actions {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 7px;
+        white-space: nowrap;
+    }
+
+    .small-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        min-height: 34px;
+        padding: 8px 12px;
+        color: #aaa9ae;
+        background: rgba(42, 40, 42, .85);
+        border: 1px solid rgba(255, 255, 255, .08);
+        border-radius: 6px;
+        font-size: 9px;
+        font-weight: 400;
+        transition: .22s ease;
+    }
+
+    .small-button:hover {
+        color: var(--purple-hover);
+        background: rgba(139, 92, 246, .10);
+        border-color: rgba(167, 139, 250, .4);
+    }
+
+    .arrow {
+        display: inline-block;
+        transition: transform .25s ease;
+    }
+
+    .arrow.open {
+        transform: rotate(180deg);
+    }
+
+    /* EXPANDED ROWS */
+
+    .details-row,
+    .edit-row {
+        display: none;
+    }
+
+    .details-row.visible,
+    .edit-row.visible {
+        display: table-row;
+    }
+
+    .expanded-content {
+        padding: 24px 25px;
+        background: rgba(15, 13, 16, .75);
+        border-top: 1px solid rgba(213, 166, 91, .12);
+    }
+
+    .details-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 24px;
+    }
+
+    .detail-item label {
+        display: block;
+        margin-bottom: 9px;
+        color: #85838a;
+        font-size: 9px;
+        font-weight: 400;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .detail-item span {
+        color: #e2dfe3;
+        font-size: 11px;
+        font-weight: 400;
+        line-height: 1.7;
+        overflow-wrap: anywhere;
+    }
+
+    .detail-description {
+        grid-column: 1 / -1;
+    }
+
+    .detail-preview {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .detail-preview img {
+        width: 70px;
+        height: 70px;
+        object-fit: cover;
+        border-radius: 8px;
+        border: 1px solid rgba(213, 166, 91, .18);
+    }
+
+    /* EDIT FORM */
+
+    .edit-form {
+        padding: 25px;
+        background: rgba(15, 13, 16, .75);
+        border-top: 1px solid rgba(213, 166, 91, .12);
+    }
+
+    .edit-form h3 {
+        margin: 0 0 24px;
+        color: #e9e5e6;
+        font-family: Georgia, serif;
+        font-size: 19px;
+        font-weight: normal;
+        letter-spacing: .3px;
+    }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 20px;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 9px;
+        min-width: 0;
+    }
+
+    .form-group.full {
+        grid-column: 1 / -1;
+    }
+
+    .form-group label {
+        color: #aaa9ae;
+        font-size: 9px;
+        font-weight: 400;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .form-control {
+        width: 100%;
+        min-height: 40px;
+        padding: 10px 13px;
+        color: #fff;
+        background: rgba(42, 40, 42, .95);
+        border: 1px solid rgba(255, 255, 255, .08);
+        border-radius: 7px;
+        outline: none;
+        font-size: 11px;
+        transition: border-color .22s ease, box-shadow .22s ease;
+    }
+
+    .form-control::placeholder {
+        color: #77777d;
+    }
+
+    textarea.form-control {
+        min-height: 105px;
+        resize: vertical;
+        line-height: 1.7;
+    }
+
+    select.form-control {
+        cursor: pointer;
+    }
+
+    select.form-control option {
+        background: #211f21;
+        color: #fff;
+    }
+
+    input[type="file"].form-control {
+        padding: 7px;
+        font-size: 10px;
+    }
+
+    input[type="file"]::file-selector-button {
+        margin-right: 12px;
+        padding: 8px 12px;
+        color: #b59aff;
+        background: rgba(139, 92, 246, .12);
+        border: 1px solid rgba(167, 139, 250, .25);
+        border-radius: 5px;
+        font-size: 9px;
+        cursor: pointer;
+        transition: .2s;
+    }
+
+    input[type="file"]::file-selector-button:hover {
+        background: rgba(139, 92, 246, .23);
+    }
+
+    /* CHECKBOX */
+
+    .checkbox-group {
+        display: flex;
+        align-items: center;
+        gap: 11px;
+        min-height: 40px;
+    }
+
+    .checkbox-group input {
+        width: 15px;
+        height: 15px;
+        accent-color: var(--purple);
+        cursor: pointer;
+    }
+
+    .checkbox-group label {
+        color: #d0ccd2;
+        font-size: 11px;
+        font-weight: 400;
+        text-transform: none;
+        letter-spacing: 0;
+        cursor: pointer;
+    }
+
+    /* FORM BUTTONS */
+
+    .form-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 9px;
+        margin-top: 24px;
+    }
+
+    .primary-button,
+    .secondary-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        min-height: 38px;
+        padding: 10px 16px;
+        border-radius: 6px;
+        font-size: 10px;
+        font-weight: 400;
+        transition: .23s ease;
+    }
+
+    .primary-button {
+        color: #c4b5fd;
+        background: rgba(139, 92, 246, .13);
+        border: 1px solid rgba(167, 139, 250, .38);
+        box-shadow: none;
+    }
+
+    .primary-button:hover {
+        color: #e0d7ff;
+        background: rgba(139, 92, 246, .23);
+        border-color: rgba(196, 181, 253, .65);
+        transform: translateY(-1px);
+        box-shadow: 0 5px 18px rgba(139, 92, 246, .10);
+    }
+
+    .secondary-button {
+        color: #aaa9ae;
+        background: rgba(42, 40, 42, .85);
+        border: 1px solid rgba(255, 255, 255, .08);
+    }
+
+    .secondary-button:hover {
+        color: #e4e0e5;
+        background: rgba(55, 52, 55, .95);
+        border-color: rgba(255, 255, 255, .17);
+    }
+
+    /* SIDEBAR */
+
+    .sidebar-panel {
+        padding: 24px;
+        position: sticky;
+        top: 20px;
+    }
+
+    .sidebar-panel h3 {
+        margin-bottom: 13px;
+    }
+
+    .sidebar-panel p {
+        margin: 0 0 22px;
+        color: #85838a;
+        font-size: 11px;
+        font-weight: 400;
+        line-height: 1.8;
+    }
+
+    .add-button {
+        width: 100%;
+    }
+
+    .add-button .arrow {
+        margin-left: auto;
+    }
+
+    /* INLINE ADD FORM */
+
+    .add-form-wrap {
+        display: grid;
+        grid-template-rows: 0fr;
+        opacity: 0;
+        margin-top: 0;
+        transition:
+            grid-template-rows .35s ease,
+            opacity .25s ease,
+            margin-top .35s ease;
+    }
+
+    .add-form-wrap.visible {
+        grid-template-rows: 1fr;
+        opacity: 1;
+        margin-top: 19px;
+    }
+
+    .add-form-inner {
+        min-height: 0;
+        overflow: hidden;
+    }
+
+    .add-form {
+        display: flex;
+        flex-direction: column;
+        gap: 17px;
+        padding: 18px 0 0;
+        border-top: 1px solid rgba(213, 166, 91, .15);
+    }
+
+    .add-form-title {
+        margin: 0 0 2px;
+        color: #e9e5e6;
+        font-family: Georgia, serif;
+        font-size: 16px;
+        font-weight: normal;
+        line-height: 1.4;
+    }
+
+    .add-form .form-group {
+        gap: 8px;
+    }
+
+    .add-form .form-control {
+        min-height: 38px;
+        font-size: 10px;
+    }
+
+    .add-form textarea.form-control {
+        min-height: 85px;
+    }
+
+    .add-form .form-actions {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        margin-top: 4px;
+    }
+
+    .add-form .form-actions button {
+        width: 100%;
+        padding: 10px 8px;
+    }
+
+    .product-count {
+        margin-top: 23px;
+        padding-top: 19px;
+        border-top: 1px solid rgba(255, 255, 255, .07);
+        color: #85838a;
+        font-size: 10px;
+        letter-spacing: .3px;
+    }
+
+    .product-count strong {
+        display: block;
+        margin-top: 9px;
+        color: var(--gold);
+        font-family: Georgia, serif;
+        font-size: 29px;
+        font-weight: normal;
+        letter-spacing: 0;
+    }
+
+    /* EMPTY STATE */
+
+    .empty-state {
+        padding: 60px 20px;
+        color: #85838a;
+        text-align: center;
+        font-size: 11px;
+        line-height: 1.7;
+    }
+
+    .empty-state .empty-icon {
+        display: block;
+        margin-bottom: 15px;
+        color: var(--purple);
+        font-size: 32px;
+    }
+
+    /* SCROLLBAR */
+
+    .table-wrapper::-webkit-scrollbar {
+        height: 5px;
+    }
+
+    .table-wrapper::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, .025);
+    }
+
+    .table-wrapper::-webkit-scrollbar-thumb {
+        background: rgba(167, 139, 250, .3);
+        border-radius: 10px;
+    }
+
+    /* RESPONSIVE */
+
+    @media (max-width: 1100px) {
+        .warehouse-layout {
+            grid-template-columns: minmax(0, 1fr) 245px;
+        }
+
+        .details-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+    }
+
+    @media (max-width: 800px) {
+        body {
+            padding: 0 20px 35px;
+        }
+
+        .container {
+            padding: 40px 0;
+        }
+
+        .warehouse-layout {
+            grid-template-columns: 1fr;
+        }
+
+        .sidebar-panel {
+            position: static;
+            order: -1;
+        }
+
+        .sidebar-panel p {
+            margin-bottom: 15px;
+        }
+
+        .add-button {
+            width: auto;
+            min-width: 210px;
+        }
+
+        .add-form {
+            max-width: 520px;
+        }
+
+        .product-count {
+            display: none;
+        }
+    }
+
+    @media (max-width: 600px) {
+        body {
+            padding: 0 15px 30px;
+        }
+
+        .container {
+            padding: 30px 0;
+        }
+
+        .top {
+            margin-bottom: 32px;
+        }
+
+        .header {
+            margin-bottom: 28px;
+        }
+
+        .header h1 {
+            font-size: 31px;
+            letter-spacing: 1px;
+        }
+
+        .header p {
+            font-size: 11px;
+        }
+
+        .panel-header {
+            align-items: stretch;
+            flex-direction: column;
+            padding: 19px;
+        }
+
+        .search-box {
+            width: 100%;
+        }
+
+        .details-grid,
+        .form-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .form-group.full,
+        .detail-description {
+            grid-column: auto;
+        }
+
+        .expanded-content,
+        .edit-form {
+            padding: 17px;
+        }
+
+        .form-actions {
+            flex-wrap: wrap;
+        }
+
+        .form-actions button {
+            flex: 1;
+        }
+
+        .actions {
+            flex-wrap: wrap;
+        }
+
+        .small-button {
+            padding: 8px 10px;
+        }
+
+        .sidebar-panel {
+            padding: 19px;
+        }
+
+        .add-button {
+            width: 100%;
+        }
+
+        .add-form {
+            max-width: none;
+        }
+    }
+
+    /* REDUCED MOTION */
+
+    @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+            scroll-behavior: auto !important;
+            animation-duration: .01ms !important;
+            transition-duration: .01ms !important;
+        }
+    }
+</style>
+</head>
+
+<body>
+<div class="container">
+
+    <div class="top">
+        <a href="/admin_panel" class="back-button">
+            <span>←</span>
+            {{ trans('warehouse_back') }}
+        </a>
+    </div>
+
+    <div class="header">
+        <h1>{{ trans('warehouse_heading') }}</h1>
+        <p>{{ trans('warehouse_subtitle') }}</p>
+    </div>
+
+    <div class="warehouse-layout">
+
+        <section class="products-panel">
+
+            <div class="panel-header">
+                <h2>{{ trans('warehouse_products_title') }}</h2>
+
+                <div class="search-box">
+                    <input
+                        type="search"
+                        id="productSearch"
+                        placeholder="{{ trans('warehouse_search_placeholder') }}"
+                        aria-label="{{ trans('warehouse_search_placeholder') }}"
+                    >
+                </div>
+            </div>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>{{ trans('warehouse_column_product') }}</th>
+                        <th>{{ trans('warehouse_column_unit') }}</th>
+                        <th>{{ trans('warehouse_column_status') }}</th>
+                        <th style="text-align: right;">{{ trans('warehouse_column_actions') }}</th>
+                    </tr>
+                    </thead>
+
+                    <tbody id="productsTable">
+
+                    {% for product in products %}
+
+                    {% set unit_value = product.unit.value if product.unit.value is defined else product.unit %}
+
+                    <tr class="product-row" data-search="{{ product.name | lower }} {{ product.description or '' | lower }}">
+                        <td>
+                            <div class="product-info">
+
+                                {% if product.image_url %}
+                                    <img
+                                        src="{{ product.image_url }}"
+                                        alt="{{ product.name }}"
+                                        class="product-image"
+                                    >
+                                {% else %}
+                                    <div class="product-image product-image-placeholder">
+                                        ◈
+                                    </div>
+                                {% endif %}
+
+                                <div>
+                                    <div class="product-name">{{ product.name }}</div>
+                                    <div class="product-id">ID: {{ product.id }}</div>
+                                </div>
+                            </div>
+                        </td>
+
+                        <td>
+                            {% if unit_value == 'g' %}
+                                <span class="unit-label">г</span>
+                            {% elif unit_value == 'kg' %}
+                                <span class="unit-label">кг</span>
+                            {% elif unit_value == 'ml' %}
+                                <span class="unit-label">мл</span>
+                            {% elif unit_value == 'l' %}
+                                <span class="unit-label">л</span>
+                            {% elif unit_value == 'piece' %}
+                                <span class="unit-label">шт.</span>
+                            {% else %}
+                                <span class="unit-label">{{ unit_value }}</span>
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            {% if product.is_active %}
+                                <span class="status active">{{ trans('warehouse_status_active') }}</span>
+                            {% else %}
+                                <span class="status inactive">{{ trans('warehouse_status_inactive') }}</span>
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            <div class="actions">
+                                <button
+                                    type="button"
+                                    class="small-button"
+                                    onclick="toggleDetails({{ product.id }})"
+                                >
+                                    {{ trans('warehouse_details') }}
+                                    <span class="arrow" id="detailsArrow-{{ product.id }}">⌄</span>
+                                </button>
+
+                                <button
+                                    type="button"
+                                    class="small-button"
+                                    onclick="toggleEdit({{ product.id }})"
+                                >
+                                    {{ trans('warehouse_edit') }}
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr class="details-row" id="details-{{ product.id }}">
+                        <td colspan="4">
+                            <div class="expanded-content">
+                                <div class="details-grid">
+
+                                    <div class="detail-item">
+                                        <label>{{ trans('warehouse_detail_id') }}</label>
+                                        <span>{{ product.id }}</span>
+                                    </div>
+
+                                    <div class="detail-item">
+                                        <label>{{ trans('warehouse_detail_name') }}</label>
+                                        <span>{{ product.name }}</span>
+                                    </div>
+
+                                    <div class="detail-item">
+                                        <label>{{ trans('warehouse_detail_unit') }}</label>
+                                        <span>
+                                            {% if unit_value == 'g' %}
+                                                г
+                                            {% elif unit_value == 'kg' %}
+                                                кг
+                                            {% elif unit_value == 'ml' %}
+                                                мл
+                                            {% elif unit_value == 'l' %}
+                                                л
+                                            {% elif unit_value == 'piece' %}
+                                                шт.
+                                            {% else %}
+                                                {{ unit_value }}
+                                            {% endif %}
+                                        </span>
+                                    </div>
+
+                                    <div class="detail-item detail-description">
+                                        <label>{{ trans('warehouse_detail_description') }}</label>
+                                        <span>{{ product.description or trans('warehouse_no_description') }}</span>
+                                    </div>
+
+                                    {% if product.image_url %}
+                                    <div class="detail-item">
+                                        <label>{{ trans('warehouse_detail_image') }}</label>
+                                        <div class="detail-preview">
+                                            <img src="{{ product.image_url }}" alt="{{ product.name }}">
+                                        </div>
+                                    </div>
+                                    {% endif %}
+
+                                    <div class="detail-item">
+                                        <label>{{ trans('warehouse_detail_restaurant') }}</label>
+                                        <span>{{ product.restaurant_id }}</span>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr class="edit-row" id="edit-{{ product.id }}">
+                        <td colspan="4">
+
+                            <form
+                                class="edit-form"
+                                action="/warehouse/edit_product/{{ product.id }}"
+                                method="POST"
+                                enctype="multipart/form-data"
+                            >
+
+                                <h3>{{ trans('warehouse_edit_title') }}</h3>
+
+                                <div class="form-grid">
+
+                                    <div class="form-group">
+                                        <label>{{ trans('warehouse_field_name') }}</label>
+                                        <input
+                                            class="form-control"
+                                            type="text"
+                                            name="name"
+                                            value="{{ product.name }}"
+                                            required
+                                        >
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label>{{ trans('warehouse_field_unit') }}</label>
+                                        <select class="form-control" name="unit" required>
+                                            <option value="g" {% if unit_value == 'g' %}selected{% endif %}>г</option>
+                                            <option value="kg" {% if unit_value == 'kg' %}selected{% endif %}>кг</option>
+                                            <option value="ml" {% if unit_value == 'ml' %}selected{% endif %}>мл</option>
+                                            <option value="l" {% if unit_value == 'l' %}selected{% endif %}>л</option>
+                                            <option value="piece" {% if unit_value == 'piece' %}selected{% endif %}>шт.</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="form-group full">
+                                        <label>{{ trans('warehouse_field_description') }}</label>
+                                        <textarea
+                                            class="form-control"
+                                            name="description"
+                                        >{{ product.description or '' }}</textarea>
+                                    </div>
+
+                                    <div class="form-group full">
+                                        <label>{{ trans('warehouse_field_image') }}</label>
+                                        <input
+                                            class="form-control"
+                                            type="file"
+                                            name="image"
+                                            accept="image/*"
+                                        >
+                                    </div>
+
+                                    <div class="form-group full">
+                                        <div class="checkbox-group">
+                                            <input
+                                                type="checkbox"
+                                                id="active-{{ product.id }}"
+                                                name="is_active"
+                                                value="true"
+                                                {% if product.is_active %}checked{% endif %}
+                                            >
+                                            <input type="hidden" name="is_active" value="false">
+
+                                            <label for="active-{{ product.id }}">
+                                                {{ trans('warehouse_field_active') }}
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                                <div class="form-actions">
+                                    <button
+                                        type="button"
+                                        class="secondary-button"
+                                        onclick="toggleEdit({{ product.id }})"
+                                    >
+                                        {{ trans('warehouse_cancel') }}
+                                    </button>
+
+                                    <button type="submit" class="primary-button">
+                                        {{ trans('warehouse_save') }}
+                                    </button>
+                                </div>
+
+                            </form>
+
+                        </td>
+                    </tr>
+
+                    {% else %}
+
+                    <tr>
+                        <td colspan="4">
+                            <div class="empty-state">
+                                <span class="empty-icon">◈</span>
+                                {{ trans('warehouse_empty') }}
+                            </div>
+                        </td>
+                    </tr>
+
+                    {% endfor %}
+
+                    </tbody>
+                </table>
+            </div>
+
+        </section>
+
+        <aside class="sidebar-panel">
+            <h3>{{ trans('warehouse_manage_title') }}</h3>
+
+            <p>{{ trans('warehouse_manage_description') }}</p>
+
+            <button
+                type="button"
+                class="primary-button add-button"
+                id="addProductToggle"
+                onclick="toggleAddForm()"
+                aria-expanded="false"
+                aria-controls="addProductForm"
+            >
+                <span id="addButtonText">+ {{ trans('warehouse_add_product') }}</span>
+                <span class="arrow" id="addButtonArrow">⌄</span>
+            </button>
+
+            <!-- Форма добавления: скрыта до нажатия кнопки -->
+
+            <div class="add-form-wrap" id="addProductForm">
+                <div class="add-form-inner">
+
+                    <form
+                        class="add-form"
+                        action="/warehouse/add_product"
+                        method="POST"
+                        enctype="multipart/form-data"
+                    >
+
+                        <h3 class="add-form-title">{{ trans('warehouse_add_title') }}</h3>
+
+                        <div class="form-group">
+                            <label>{{ trans('warehouse_field_name') }}</label>
+                            <input
+                                class="form-control"
+                                type="text"
+                                name="name"
+                                placeholder="{{ trans('warehouse_name_placeholder') }}"
+                                required
+                            >
+                        </div>
+
+                        <div class="form-group">
+                            <label>{{ trans('warehouse_field_unit') }}</label>
+                            <select class="form-control" name="unit" required>
+                <option value="g">{{ trans('warehouse_unit_gram') }}</option>
+    <option value="kg">{{ trans('warehouse_unit_kilogram') }}</option>
+    <option value="ml">{{ trans('warehouse_unit_milliliter') }}</option>
+    <option value="l">{{ trans('warehouse_unit_liter') }}</option>
+    <option value="piece">{{ trans('warehouse_unit_piece') }}</option>
+</select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>{{ trans('warehouse_field_description') }}</label>
+                            <textarea
+                                class="form-control"
+                                name="description"
+                                placeholder="{{ trans('warehouse_description_placeholder') }}"
+                            ></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label>{{ trans('warehouse_field_image') }}</label>
+                            <input
+                                class="form-control"
+                                type="file"
+                                name="image"
+                                accept="image/*"
+                            >
+                        </div>
+
+                        <div class="form-actions">
+                            <button
+                                type="button"
+                                class="secondary-button"
+                                onclick="toggleAddForm(false)"
+                            >
+                                {{ trans('warehouse_cancel') }}
+                            </button>
+
+                            <button type="submit" class="primary-button">
+                                {{ trans('warehouse_create') }}
+                            </button>
+                        </div>
+
+                    </form>
+
+                </div>
+            </div>
+
+            <div class="product-count">
+                {{ trans('warehouse_total_products') }}
+                <strong>{{ products | length }}</strong>
+            </div>
+        </aside>
+
+    </div>
+</div>
+
+<script>
+    function toggleDetails(id) {
+        const row = document.getElementById(`details-${id}`);
+        const arrow = document.getElementById(`detailsArrow-${id}`);
+
+        if (!row) return;
+
+        row.classList.toggle('visible');
+
+        if (arrow) {
+            arrow.classList.toggle('open');
+        }
+    }
+
+    function toggleEdit(id) {
+        const row = document.getElementById(`edit-${id}`);
+
+        if (!row) return;
+
+        row.classList.toggle('visible');
+    }
+
+    // Раскрытие и скрытие формы добавления продукта
+
+    function toggleAddForm(forceState) {
+        const form = document.getElementById('addProductForm');
+        const button = document.getElementById('addProductToggle');
+        const arrow = document.getElementById('addButtonArrow');
+
+        if (!form || !button) return;
+
+        const isCurrentlyOpen = form.classList.contains('visible');
+        const shouldOpen = typeof forceState === 'boolean'
+            ? forceState
+            : !isCurrentlyOpen;
+
+        form.classList.toggle('visible', shouldOpen);
+        button.setAttribute('aria-expanded', String(shouldOpen));
+
+        if (arrow) {
+            arrow.classList.toggle('open', shouldOpen);
+        }
+    }
+
+    // Закрытие формы клавишей Escape
+
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape') {
+            toggleAddForm(false);
+        }
+    });
+
+    // Поиск продуктов
+
+    document.getElementById('productSearch').addEventListener('input', function() {
+        const searchValue = this.value.toLowerCase().trim();
+        const rows = document.querySelectorAll('.product-row');
+
+        rows.forEach(function(row) {
+            const text = row.textContent.toLowerCase();
+            const matches = text.includes(searchValue);
+
+            row.style.display = matches ? '' : 'none';
+
+            const detailsRow = row.nextElementSibling;
+            const editRow = detailsRow ? detailsRow.nextElementSibling : null;
+
+            if (!matches) {
+                if (detailsRow && detailsRow.classList.contains('details-row')) {
+                    detailsRow.classList.remove('visible');
+                }
+
+                if (editRow && editRow.classList.contains('edit-row')) {
+                    editRow.classList.remove('visible');
+                }
+            }
+        });
+    });
+</script>
+
+</body>
+</html>

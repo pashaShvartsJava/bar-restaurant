@@ -7,7 +7,7 @@ from starlette.responses import RedirectResponse
 from starlette.templating import Jinja2Templates
 
 from ..dependencies.dependencies import get_restaurant_dependency_by_id
-from ..schema.susbcription_schema import PlanId
+from ..schema.subscription_schema import PlanId
 from ..security.jwt.jwt import get_payload
 from ..security.authorization.authorization import required_roles
 from ..security.role.role import IdentityRole

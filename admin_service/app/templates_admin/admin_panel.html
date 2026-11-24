@@ -684,7 +684,6 @@
 
 <main class="container">
 
-{# ===== ВЫЧИСЛЯЕМ ДОСТУПНОСТЬ ПО ТАРИФУ ===== #}
 {% set plan_basic = plan in ("basic",) %}
 {% set plan_online = plan in ("basic", "online") %}
 {% set plan_advanced = plan in ("basic", "online", "advanced") %}
@@ -802,6 +801,12 @@
             <div class="icon">♙</div>
             <h3>{{ trans('admins') }}</h3>
             <p>{{ trans('manage_admins') }}</p>
+        </a>
+
+        <a href="/warehouse" class="button">
+            <div class="icon">📦</div>
+            <h3>{{ trans('warehouse') }}</h3>
+            <p>{{ trans('manage_warehouse') }}</p>
         </a>
 
         {% if can_delivery %}

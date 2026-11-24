@@ -1,4 +1,6 @@
 {
+  "warehouse": "Склад",
+  "manage_warehouse": "Керування продуктами та запасами",
   "main_settings": "Основні налаштування",
   "collapse_menu": "Згорнути меню",
   "expand_menu": "Розгорнути меню",

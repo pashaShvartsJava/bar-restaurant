@@ -1,4 +1,6 @@
 {
+  "warehouse": "Lager",
+  "manage_warehouse": "Produkte und Bestände verwalten",
   "main_settings": "Haupteinstellungen",
   "collapse_menu": "Menü einklappen",
   "expand_menu": "Menü ausklappen",

@@ -1,7 +1,6 @@
 import uuid
 from datetime import datetime, timezone, timedelta, date, time
 from decimal import Decimal
-from typing import List
 from uuid import UUID
 
 from sqlalchemy import select, or_, and_, func

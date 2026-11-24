@@ -1,4 +1,6 @@
 {
+  "warehouse": "Warehouse",
+  "manage_warehouse": "Manage products and stock",
   "main_settings": "Main settings",
   "collapse_menu": "Collapse menu",
   "expand_menu": "Expand menu",

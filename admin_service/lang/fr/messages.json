@@ -1,4 +1,6 @@
 {
+  "warehouse": "Stock",
+  "manage_warehouse": "Gérer les produits et les stocks",
   "main_settings": "Paramètres principaux",
   "collapse_menu": "Réduire le menu",
   "expand_menu": "Développer le menu",
