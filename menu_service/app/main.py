@@ -2,10 +2,15 @@ import json
 import os
 from contextvars import ContextVar
 
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, HTTPException
 from fastapi.staticfiles import StaticFiles
+from starlette.responses import RedirectResponse, JSONResponse
 
 from .routes.routes import templates, router as admin_router
+
+import logging
+
+logger = logging.getLogger(__name__)
 
 LANG_DIR = "/menu_service/lang"
 _current_lang = ContextVar("current_lang", default="en")
@@ -56,3 +61,12 @@ async def language_middleware(request: Request, call_next):
         lang = "en"
     _current_lang.set(lang)
     return await call_next(request)
+
+@app.exception_handler(HTTPException)
+async def http_exception_handler(request: Request, exc: HTTPException):
+    if exc.status_code == 401:
+        login_url = (exc.headers or {}).get("X-Auth-Redirect", "/login")
+        response = RedirectResponse(url=login_url, status_code=303)
+        response.delete_cookie(key="access_token", path="/")
+        return response
+    return JSONResponse(status_code=exc.status_code, content={"detail": exc.detail}, headers=exc.headers)

@@ -16,7 +16,6 @@ from typing import Annotated
 from ..dependencies.dependencies import get_service_dependency, get_httpx_async_connection, get_restaurant_dependency, \
     get_restaurant_dependency_by_id, get_authentication_key, get_new_key, get_vat_status_dependency, get_plan_in_cache, \
     required_plans, verify_restaurant_status
-from ..schema.restaurant_schema import RestaurantStatus
 from ..schema.subscription_schema import PlanId
 from ..security.internal_security import verify_internal_token
 from ..security.role.role import IdentityRole
@@ -224,7 +223,8 @@ async def show_edit_page(request : Request, admin_id : int, service : AdminServi
     restaurant = await get_restaurant_dependency(restaurant_id)
     await verify_restaurant_status(restaurant.status)
     admin = await service.find_by_id(admin_id, restaurant_id)
-    return templates.TemplateResponse("edit_admin.html", {"request" : request, "admin" : admin})
+    return templates.TemplateResponse("edit_admin.html", {"request" : request,
+                                                          "admin" : admin})
 
 @router.patch("/admin_panel/edit/{admin_id}")
 async def edit_admin(request : Request, admin_id : int, service : AdminService = Depends(get_service_dependency),
@@ -291,7 +291,8 @@ async def edit_password_page(request : Request, id : int, service : AdminService
     admin = await service.find_by_identity(payload["sub"], restaurant_id)
     if admin.id != id:
         raise HTTPException(status_code=403, detail="Доступ запрещен")
-    return templates.TemplateResponse("edit_password.html", {"request" : request, "admin" : admin})
+    return templates.TemplateResponse("edit_password.html", {"request" : request,
+                                                             "admin" : admin})
 
 @router.patch("/admin_panel/edit/password/{id}")
 async def edit_password(request: Request, service: AdminService = Depends(get_service_dependency),
@@ -349,7 +350,8 @@ async def show_all_customers(request : Request):
     for user in users:
         user["status"] = statuses_by_id.get(str(user["identity_id"]))
 
-    return templates.TemplateResponse("all_users.html", {"request" : request, "users" : users})
+    return templates.TemplateResponse("all_users.html", {"request" : request,
+                                                         "users" : users})
 
 @router.get("/admin_panel/all_customers/found_customer")
 async def search_customer(request : Request, client_id : UUID):
@@ -380,7 +382,8 @@ async def search_customer(request : Request, client_id : UUID):
     for user in users:
         if user["identity_id"] == str(client_id):
             client.append(user)
-    return templates.TemplateResponse("all_users.html", {"request" : request, "users" : client})
+    return templates.TemplateResponse("all_users.html", {"request" : request,
+                                                         "users" : client})
 
 @router.get("/admin_panel/all_customers/{identity_id}")
 async def customer_info(request : Request, identity_id : UUID):
@@ -406,7 +409,8 @@ async def customer_info(request : Request, identity_id : UUID):
         identity = response2.json()
         info_user["status"] = identity["status"]
         info_user["identity_id"] = str(identity_id)
-    return templates.TemplateResponse("user_info.html", {"request" : request, "user" : info_user})
+    return templates.TemplateResponse("user_info.html", {"request" : request,
+                                                         "user" : info_user})
 
 @router.get("/admin_panel/all_customers/orders/{identity_id}")
 async def customer_info(request : Request, identity_id : UUID):
@@ -423,7 +427,8 @@ async def customer_info(request : Request, identity_id : UUID):
                                     cookies={"access_token": request.cookies.get("access_token")},
                                     headers={"internal_token": INTERNAL_TOKEN})
     orders = response.json()
-    return templates.TemplateResponse("user_orders_history.html", {"request" : request, "orders" : orders})
+    return templates.TemplateResponse("user_orders_history.html", {"request" : request,
+                                                                   "orders" : orders})
 
 @router.post("/admins/delete_saga_admin")
 async def delete_saga_admin(admin_id : str,

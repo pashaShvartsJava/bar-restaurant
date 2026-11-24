@@ -36,7 +36,9 @@ async def get_menu_page(request: Request,
     await verify_restaurant_status(restaurant.status)
     currency_symbol = get_currency_symbol(restaurant.currency)
     categories = await category_service.get_all_categories(restaurant_id)
-    return templates.TemplateResponse("menu.html", {"request" : request, "categories" : categories, "currency_symbol" : currency_symbol})
+    return templates.TemplateResponse("menu.html", {"request" : request,
+                                                    "categories" : categories,
+                                                    "currency_symbol" : currency_symbol})
 
 @router.get("/menu_page/add_category", response_class=HTMLResponse)
 async def get_categories_page(request: Request,
@@ -67,12 +69,14 @@ async def create_category(request : Request,
 async def add_dish_page(request: Request,
                         category_service : CategoryService = Depends(get_category_service_dependency)):
     payload = get_payload(request)
+
     required_roles(IdentityRole.OWNER, IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
     restaurant_id = payload.get("restaurant_id")
     restaurant = await get_restaurant_dependency_by_id(restaurant_id)
     await verify_restaurant_status(restaurant.status)
     categories = await category_service.get_all_categories(restaurant_id)
-    return templates.TemplateResponse("add_dish.html", {"request":request, "categories" : categories})
+    return templates.TemplateResponse("add_dish.html", {"request":request,
+                                                        "categories" : categories})
 
 @router.post("/menu_page/add_dish", response_class=HTMLResponse)
 async def create_dish(request : Request,

@@ -44,5 +44,6 @@ async def unblock_customer(request : Request, identity_id: UUID):
 @router.get("/admin_panel/secret_api")
 async def super_admin_panel(request : Request):
     payload = get_secret_payload(request)
+    auth_expires_at = payload.get("exp")
     required_secret_role(IdentityRole.SUPERADMIN, payload=payload)
-    return templates.TemplateResponse("admin_panel_secret.html", {"request" : request})
+    return templates.TemplateResponse("admin_panel_secret.html", {"request" : request, "auth_expires_at" : auth_expires_at})
