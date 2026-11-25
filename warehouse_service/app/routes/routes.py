@@ -1,4 +1,5 @@
 import uuid
+from decimal import Decimal
 from pathlib import Path
 
 from fastapi import APIRouter, Request, HTTPException, UploadFile, File, Form
@@ -8,7 +9,7 @@ from starlette.templating import Jinja2Templates
 
 from ..config.config import settings
 from ..dependencies.dependencies import get_restaurant_dependency_by_id, verify_restaurant_status, \
-    get_service_dependency
+    get_service_dependency, get_admin_data
 from ..models.products_model import Unit
 from ..security.authorization.authorization import required_roles
 from ..security.jwt.jwt import get_payload
@@ -23,7 +24,7 @@ async def verify_csrf(request: Request):
     cookie_token = request.cookies.get("csrf_token")
     header_token = request.headers.get("X-CSRF-Token")
     if not cookie_token or cookie_token != header_token:
-        raise HTTPException(status_code=403)
+        raise HTTPException(status_code=403, detail="CSRF protection was triggered.")
 
 @router.get("/warehouse")
 async def get_warehouse_page(request : Request, service : ProductService = Depends(get_service_dependency)):
@@ -61,8 +62,8 @@ async def add_new_product(request : Request,
 
 @router.post("/warehouse/edit_product/{product_id}")
 async def eit_product(request : Request,
-                      is_active : bool,
                       product_id : int,
+                      is_active : bool = Form(False),
                       name : str | None = Form(None),
                       unit : Unit | None = Form(None),
                       description : str | None = Form(None),
@@ -84,3 +85,45 @@ async def eit_product(request : Request,
         image_url = f"/media/products/{restaurant_id}/{safe_filename}"
     await service.update_product(product_id, name, unit, description, restaurant_id, image_url, is_active)
     return RedirectResponse(url="/warehouse", status_code=303)
+
+@router.post("/warehouse/add_supply/{product_id}")
+async def add_supply(request : Request,
+                     product_id : int,
+                     quantity : Decimal = Form(...,),
+                     service : ProductService = Depends(get_service_dependency)):
+    payload = get_payload(request)
+    required_roles(IdentityRole.OWNER, IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
+    restaurant_id = payload.get("restaurant_id")
+    identity_id = payload.get("sub")
+    token = request.cookies.get("access_token")
+    restaurant = await get_restaurant_dependency_by_id(restaurant_id)
+    await verify_restaurant_status(restaurant.status)
+    await verify_csrf(request)
+    admin_data = await get_admin_data(restaurant_id, identity_id, token)
+    await service.create_supply(product_id, restaurant_id, quantity, admin_data)
+    return RedirectResponse(url="/warehouse", status_code=303)
+
+@router.get("/warehouse/supplies")
+async def supplies_history(request : Request, service : ProductService = Depends(get_service_dependency)):
+    payload = get_payload(request)
+    required_roles(IdentityRole.OWNER, IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
+    restaurant_id = payload.get("restaurant_id")
+    restaurant = await get_restaurant_dependency_by_id(restaurant_id)
+    await verify_restaurant_status(restaurant.status)
+    supplies = await service.find_all_supplies()
+    return templates.TemplateResponse("supplies_page.html", {"request" : request, "supplies" : supplies})
+
+@router.patch("/warehouse/edit_supply/{supply_id}")
+async def edit_supply(request : Request,
+                      supply_id : int,
+                      quantity : Decimal = Form(...,),
+                      reason : str = Form(...,),
+                      service : ProductService = Depends(get_service_dependency)):
+    payload = get_payload(request)
+    required_roles(IdentityRole.OWNER, IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
+    restaurant_id = payload.get("restaurant_id")
+    restaurant = await get_restaurant_dependency_by_id(restaurant_id)
+    await verify_restaurant_status(restaurant.status)
+    await verify_csrf(request)
+    await service.fix_supply(supply_id, restaurant_id, quantity, reason)
+    return RedirectResponse(url="/warehouse/supplies", status_code=303)

@@ -61,7 +61,7 @@ async def verify_csrf(request: Request):
     cookie_token = request.cookies.get("csrf_token")
     header_token = request.headers.get("X-CSRF-Token")
     if not cookie_token or cookie_token != header_token:
-        raise HTTPException(status_code=403)
+        raise HTTPException(status_code=403, detail="CSRF protection was triggered.")
 
 @router.get("/set-language/{lang}")
 async def set_language(lang: str, request: Request):
@@ -437,3 +437,18 @@ async def delete_saga_admin(admin_id : str,
     await verify_internal_token(internal_token)
     await service.delete_admin_by_identity_id(uuid.UUID(admin_id))
 
+@router.get("/admins/get_admin_data")
+async def get_name_and_surname(request : Request,
+                               identity_id : str,
+                               restaurant_id : str,
+                               internal_token : str = Header(..., alias="internal_token"),
+                               service: AdminService = Depends(get_service_dependency)):
+    payload = get_payload(request)
+    required_roles(IdentityRole.OWNER, IdentityRole.ADMIN, IdentityRole.MODERATOR, payload=payload)
+    await verify_internal_token(internal_token)
+    admin = await service.find_by_identity(uuid.UUID(identity_id), uuid.UUID(restaurant_id))
+    return {
+        "name" : admin.name,
+        "surname" : admin.surname,
+        "role" : admin.role.value
+    }

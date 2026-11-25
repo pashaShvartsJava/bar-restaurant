@@ -4,6 +4,7 @@ from contextvars import ContextVar
 
 from fastapi import FastAPI, Request, HTTPException
 from starlette.responses import RedirectResponse, JSONResponse
+from starlette.staticfiles import StaticFiles
 
 from .routes.routes import templates, router as warehouse_router
 
@@ -42,6 +43,7 @@ templates.env.globals["trans"] = trans
 
 app = FastAPI()
 app.include_router(warehouse_router)
+app.mount("/media", StaticFiles(directory="app/templates/media"), name="media")
 
 @app.middleware("http")
 async def language_middleware(request: Request, call_next):

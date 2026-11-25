@@ -1,0 +1,1022 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ trans('warehouse_supplies_title') }}</title>
+<style>
+    :root {
+        --bg: #09090b;
+        --panel: rgba(27, 25, 27, .96);
+        --field: #2a282a;
+        --purple: #a78bfa;
+        --purple-hover: #c4b5fd;
+        --purple-soft: rgba(139, 92, 246, .12);
+        --text: #f1eff2;
+        --muted: #85838a;
+        --border: rgba(255, 255, 255, .075);
+        --danger: #d98282;
+        --success: #9aaa8b;
+    }
+
+    * {
+        box-sizing: border-box;
+        scrollbar-width: thin;
+        scrollbar-color: rgba(167,139,250,.3) transparent;
+    }
+
+    body {
+        margin: 0;
+        min-height: 100vh;
+        padding: 0 35px 60px;
+        color: var(--text);
+        font-family: Arial, sans-serif;
+        letter-spacing: -.1px;
+        background:
+            radial-gradient(ellipse at 50% 0%, rgba(145,85,75,.20) 0%, rgba(55,35,40,.22) 38%, transparent 78%),
+            linear-gradient(180deg, #211a1c 0%, #121214 50%, #09090b 100%);
+    }
+
+    button, input, textarea { font: inherit; }
+    button { cursor: pointer; }
+
+    button:focus-visible, a:focus-visible,
+    input:focus-visible, textarea:focus-visible {
+        outline: 2px solid var(--purple);
+        outline-offset: 3px;
+    }
+
+    .container {
+        width: 100%;
+        max-width: 1500px;
+        margin: 0 auto;
+        padding: 45px 0;
+    }
+
+    .top {
+        display: flex;
+        justify-content: flex-start;
+        margin-bottom: 35px;
+    }
+
+    .back-button {
+        display: inline-flex;
+        align-items: center;
+        gap: 9px;
+        padding: 10px 15px;
+        color: var(--muted);
+        text-decoration: none;
+        background: rgba(42,40,42,.55);
+        border: 1px solid var(--border);
+        border-radius: 7px;
+        font-size: 11px;
+        transition: .25s;
+    }
+
+    .back-button:hover {
+        color: var(--purple-hover);
+        border-color: rgba(167,139,250,.4);
+        background: var(--purple-soft);
+    }
+
+    .header {
+        margin-bottom: 30px;
+        text-align: center;
+    }
+
+    .header h1 {
+        margin: 0 0 12px;
+        color: var(--text);
+        font-family: Georgia, serif;
+        font-size: 40px;
+        font-weight: normal;
+        letter-spacing: 2px;
+    }
+
+    .header p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 12px;
+        line-height: 1.7;
+    }
+
+    .summary {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0,1fr));
+        gap: 14px;
+        margin-bottom: 20px;
+    }
+
+    .summary-card {
+        padding: 17px 19px;
+        background: var(--panel);
+        border: 1px solid rgba(213,166,91,.13);
+        border-radius: 10px;
+        box-shadow: 0 10px 30px rgba(0,0,0,.15);
+        backdrop-filter: blur(18px);
+    }
+
+    .summary-label {
+        color: var(--muted);
+        font-size: 9px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .summary-value {
+        display: block;
+        margin-top: 9px;
+        color: var(--purple-hover);
+        font-family: Georgia, serif;
+        font-size: 27px;
+        font-weight: normal;
+        font-variant-numeric: tabular-nums;
+    }
+
+    .history-panel {
+        overflow: hidden;
+        background: var(--panel);
+        border: 1px solid rgba(213,166,91,.13);
+        border-radius: 14px;
+        box-shadow: 0 15px 45px rgba(0,0,0,.22);
+        backdrop-filter: blur(18px);
+    }
+
+    .panel-header {
+        display: flex;
+        align-items: center;
+        padding: 18px 20px;
+        background: rgba(40,34,32,.65);
+        border-bottom: 1px solid var(--border);
+    }
+
+    .panel-header h2 {
+        margin: 0;
+        color: #e9e5e6;
+        font-family: Georgia, serif;
+        font-size: 18px;
+        font-weight: normal;
+    }
+
+    .day-section { border-bottom: 1px solid var(--border); }
+    .day-section:last-child { border-bottom: none; }
+
+    .day-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 15px 20px;
+        background: rgba(39,34,32,.4);
+        border-bottom: 1px solid var(--border);
+    }
+
+    .day-heading {
+        display: flex;
+        align-items: center;
+        gap: 11px;
+        min-width: 0;
+    }
+
+    .calendar-icon, .product-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 34px;
+        height: 34px;
+        flex-shrink: 0;
+        color: var(--purple);
+        background: var(--purple-soft);
+        border: 1px solid rgba(167,139,250,.2);
+        border-radius: 7px;
+        font-size: 16px;
+    }
+
+    .day-title {
+        margin: 0;
+        color: #e8e4eb;
+        font-family: Georgia, serif;
+        font-size: 15px;
+        font-weight: normal;
+    }
+
+    .day-subtitle {
+        display: block;
+        margin-top: 5px;
+        color: var(--muted);
+        font-size: 10px;
+    }
+
+    .table-wrapper {
+        width: 100%;
+        overflow-x: auto;
+    }
+
+    table {
+        width: 100%;
+        min-width: 1050px;
+        border-collapse: collapse;
+        table-layout: auto;
+    }
+
+    thead { background: rgba(40,34,32,.75); }
+
+    th {
+        padding: 13px;
+        color: var(--muted);
+        text-align: left;
+        font-size: 9px;
+        font-weight: 400;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        white-space: nowrap;
+    }
+
+    td {
+        padding: 12px 13px;
+        color: #c7c4ca;
+        border-top: 1px solid rgba(255,255,255,.055);
+        vertical-align: middle;
+        font-size: 11px;
+    }
+
+    tbody tr {
+        background: rgba(30,29,31,.55);
+        transition: background .25s;
+    }
+
+    tbody tr:hover { background: rgba(42,38,42,.85); }
+
+    .product-info {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        min-width: 150px;
+    }
+
+    .product-icon { font-size: 17px; }
+
+    .product-name {
+        color: var(--text);
+        font-size: 11px;
+        font-weight: 500;
+        overflow-wrap: anywhere;
+    }
+
+    .supply-number {
+        display: block;
+        margin-top: 5px;
+        color: var(--muted);
+        font-size: 9px;
+    }
+
+    /* Отдельная колонка причины */
+    .reason-cell {
+        width: 24%;
+        min-width: 180px;
+        max-width: 340px;
+        color: #d2c8e8;
+        font-size: 10px;
+        line-height: 1.65;
+        white-space: normal;
+        overflow-wrap: anywhere;
+        word-break: normal;
+    }
+
+    .reason-text {
+        display: block;
+        max-width: 100%;
+        white-space: pre-wrap;
+        overflow-wrap: anywhere;
+    }
+
+    .reason-empty {
+        color: #68666e;
+    }
+
+    .quantity {
+        color: #e0dce5;
+        font-size: 12px;
+        font-weight: 500;
+        font-variant-numeric: tabular-nums;
+        white-space: nowrap;
+    }
+
+    .quantity-sign {
+        margin-right: 3px;
+        color: var(--success);
+    }
+
+    .quantity-unit {
+        margin-left: 4px;
+        color: var(--purple-hover);
+        font-size: 10px;
+        font-weight: normal;
+    }
+
+    .employee {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        min-width: 135px;
+    }
+
+    .employee-avatar {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 30px;
+        height: 30px;
+        flex-shrink: 0;
+        color: var(--purple-hover);
+        background: var(--purple-soft);
+        border: 1px solid rgba(167,139,250,.2);
+        border-radius: 50%;
+        font-size: 10px;
+    }
+
+    .employee-name { color: #e2dfe3; font-size: 10px; }
+
+    .employee-role {
+        display: block;
+        margin-top: 4px;
+        color: var(--muted);
+        font-size: 9px;
+    }
+
+    .time {
+        color: #d4ced7;
+        font-size: 10px;
+        font-variant-numeric: tabular-nums;
+        white-space: nowrap;
+    }
+
+    .date-small, .updated-label {
+        display: block;
+        margin-top: 5px;
+        color: var(--muted);
+        font-size: 9px;
+    }
+
+    .edit-button {
+        padding: 8px 11px;
+        color: var(--purple-hover);
+        background: var(--purple-soft);
+        border: 1px solid rgba(167,139,250,.3);
+        border-radius: 6px;
+        font-size: 10px;
+        white-space: nowrap;
+        transition: .22s;
+    }
+
+    .edit-button:hover {
+        color: #e0d7ff;
+        background: rgba(139,92,246,.23);
+        border-color: rgba(196,181,253,.65);
+    }
+
+    .edit-form-row {
+        display: none;
+        background: rgba(15,13,16,.85);
+    }
+
+    .edit-form-row.active { display: table-row; }
+
+    .edit-form-cell {
+        padding: 20px;
+        border-top: 1px solid rgba(213,166,91,.12);
+    }
+
+    .edit-form {
+        width: 100%;
+        padding: 20px 22px;
+        background: rgba(27,25,29,.95);
+        border: 1px solid rgba(213,166,91,.15);
+        border-radius: 10px;
+    }
+
+    .edit-form-title {
+        margin: 0 0 20px;
+        color: #e9e5e6;
+        font-family: Georgia, serif;
+        font-size: 18px;
+        font-weight: normal;
+    }
+
+    .edit-fields {
+        display: grid;
+        grid-template-columns: minmax(180px,.7fr) minmax(250px,2fr);
+        gap: 17px;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        min-width: 0;
+    }
+
+    .form-group label {
+        color: #aaa9ae;
+        font-size: 9px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .form-group input, .form-group textarea {
+        width: 100%;
+        min-height: 38px;
+        padding: 10px 12px;
+        color: white;
+        background: rgba(42,40,42,.95);
+        border: 1px solid var(--border);
+        border-radius: 7px;
+        outline: none;
+        font-size: 11px;
+    }
+
+    .form-group input:focus, .form-group textarea:focus {
+        border-color: rgba(167,139,250,.6);
+        box-shadow: 0 0 0 3px rgba(139,92,246,.07);
+    }
+
+    .form-group textarea {
+        min-height: 80px;
+        resize: vertical;
+        line-height: 1.7;
+    }
+
+    .form-actions {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        flex-wrap: wrap;
+        gap: 9px;
+        margin-top: 18px;
+    }
+
+    .save-button, .cancel-button {
+        min-height: 36px;
+        padding: 9px 15px;
+        border-radius: 6px;
+        font-size: 10px;
+        transition: .23s;
+    }
+
+    .save-button {
+        color: #c4b5fd;
+        background: rgba(139,92,246,.13);
+        border: 1px solid rgba(167,139,250,.38);
+    }
+
+    .save-button:hover {
+        color: #e0d7ff;
+        background: rgba(139,92,246,.23);
+        border-color: rgba(196,181,253,.65);
+    }
+
+    .save-button:disabled {
+        opacity: .5;
+        cursor: not-allowed;
+    }
+
+    .cancel-button {
+        color: #aaa9ae;
+        background: rgba(42,40,42,.85);
+        border: 1px solid var(--border);
+    }
+
+    .cancel-button:hover {
+        color: #e4e0e5;
+        background: rgba(55,52,55,.95);
+    }
+
+    .form-error {
+        display: none;
+        margin-top: 15px;
+        padding: 11px 13px;
+        color: var(--danger);
+        background: rgba(217,130,130,.08);
+        border: 1px solid rgba(217,130,130,.2);
+        border-radius: 7px;
+        font-size: 11px;
+        line-height: 1.6;
+    }
+
+    .form-error.active { display: block; }
+
+    .empty-state {
+        padding: 55px 20px;
+        text-align: center;
+    }
+
+    .empty-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 50px;
+        height: 50px;
+        margin: 0 auto 15px;
+        color: var(--purple);
+        background: var(--purple-soft);
+        border: 1px solid rgba(167,139,250,.2);
+        border-radius: 11px;
+        font-size: 22px;
+    }
+
+    .empty-state h2 {
+        margin: 0 0 9px;
+        color: #e9e5e6;
+        font-family: Georgia, serif;
+        font-size: 19px;
+        font-weight: normal;
+    }
+
+    .empty-state p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 11px;
+        line-height: 1.8;
+    }
+
+    .footer {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        margin-top: 15px;
+        color: var(--muted);
+        font-size: 10px;
+    }
+
+    .modal-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        background: rgba(0,0,0,.72);
+        backdrop-filter: blur(7px);
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity .25s, visibility .25s;
+    }
+
+    .modal-overlay.active {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    .confirm-modal {
+        width: 100%;
+        max-width: 420px;
+        padding: 30px;
+        background: rgba(27,25,29,.98);
+        border: 1px solid rgba(213,166,91,.2);
+        border-radius: 13px;
+        box-shadow: 0 25px 80px rgba(0,0,0,.55);
+        text-align: center;
+        transform: translateY(12px) scale(.98);
+        transition: transform .25s;
+    }
+
+    .modal-overlay.active .confirm-modal {
+        transform: translateY(0) scale(1);
+    }
+
+    .modal-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 54px;
+        height: 54px;
+        margin: 0 auto 18px;
+        color: var(--purple);
+        background: var(--purple-soft);
+        border: 1px solid rgba(167,139,250,.25);
+        border-radius: 50%;
+        font-size: 23px;
+    }
+
+    .confirm-modal h2 {
+        margin: 0 0 12px;
+        color: var(--text);
+        font-family: Georgia, serif;
+        font-size: 22px;
+        font-weight: normal;
+    }
+
+    .confirm-modal p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 12px;
+        line-height: 1.8;
+    }
+
+    .modal-actions {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        margin-top: 25px;
+    }
+
+    .modal-actions button {
+        min-width: 125px;
+        min-height: 38px;
+        padding: 9px 15px;
+        border-radius: 6px;
+        font-size: 10px;
+        transition: .22s;
+    }
+
+    .modal-confirm {
+        color: #c4b5fd;
+        background: rgba(139,92,246,.15);
+        border: 1px solid rgba(167,139,250,.4);
+    }
+
+    .modal-confirm:hover {
+        color: #e0d7ff;
+        background: rgba(139,92,246,.25);
+    }
+
+    .modal-cancel {
+        color: #aaa9ae;
+        background: rgba(42,40,42,.85);
+        border: 1px solid var(--border);
+    }
+
+    .modal-cancel:hover {
+        color: #e4e0e5;
+        background: rgba(55,52,55,.95);
+    }
+
+    .table-wrapper::-webkit-scrollbar { height: 5px; }
+    .table-wrapper::-webkit-scrollbar-track { background: rgba(255,255,255,.025); }
+
+    .table-wrapper::-webkit-scrollbar-thumb {
+        background: rgba(167,139,250,.3);
+        border-radius: 10px;
+    }
+
+    @media (max-width: 800px) {
+        body { padding: 0 20px 35px; }
+        .edit-fields { grid-template-columns: 1fr; }
+        .reason-cell { min-width: 160px; }
+    }
+
+    @media (max-width: 600px) {
+        body { padding: 0 15px 30px; }
+        .container { padding: 28px 0; }
+        .header h1 { font-size: 30px; letter-spacing: 1px; }
+        .summary { gap: 8px; }
+        .summary-card { padding: 13px; }
+        .summary-value { font-size: 22px; }
+        .panel-header { padding: 16px; }
+        .day-header { padding: 13px; }
+        .edit-form-cell { padding: 10px; }
+        .edit-form { padding: 15px; }
+        .form-actions { justify-content: flex-start; }
+        .footer { flex-direction: column; }
+        .confirm-modal { padding: 25px 20px; }
+        .modal-actions { flex-direction: column-reverse; }
+        .modal-actions button { width: 100%; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after {
+            scroll-behavior: auto !important;
+            animation-duration: .01ms !important;
+            transition-duration: .01ms !important;
+        }
+    }
+</style>
+</head>
+<body>
+<main class="container">
+    <div class="top">
+        <a href="/warehouse" class="back-button"><span>←</span>{{ trans('warehouse_supplies_back') }}</a>
+    </div>
+
+    <header class="header">
+        <h1>{{ trans('warehouse_supplies_title') }}</h1>
+        <p>{{ trans('warehouse_supplies_subtitle') }}</p>
+    </header>
+
+    {% if supplies %}
+        {% set ordered_supplies = supplies|sort(attribute='accepted_at', reverse=true) %}
+        {% set total_supplies = supplies|length %}
+        {% set dates = namespace(values=[]) %}
+
+        {% for item in ordered_supplies %}
+            {% set item_date = item.accepted_at.strftime('%Y-%m-%d') %}
+            {% if item_date not in dates.values %}
+                {% set dates.values = dates.values + [item_date] %}
+            {% endif %}
+        {% endfor %}
+
+        <section class="summary">
+            <div class="summary-card">
+                <span class="summary-label">{{ trans('warehouse_supplies_total') }}</span>
+                <strong class="summary-value">{{ total_supplies }}</strong>
+            </div>
+            <div class="summary-card">
+                <span class="summary-label">{{ trans('warehouse_supplies_days') }}</span>
+                <strong class="summary-value">{{ dates.values|length }}</strong>
+            </div>
+        </section>
+
+        <section class="history-panel">
+            <div class="panel-header">
+                <h2>{{ trans('warehouse_supplies_all') }}</h2>
+            </div>
+
+            {% for date in dates.values %}
+                {% set day_total = namespace(count=0) %}
+
+                {% for item in ordered_supplies %}
+                    {% if item.accepted_at.strftime('%Y-%m-%d') == date %}
+                        {% set day_total.count = day_total.count + 1 %}
+                    {% endif %}
+                {% endfor %}
+
+                <section class="day-section">
+                    <div class="day-header">
+                        <div class="day-heading">
+                            <div class="calendar-icon">▦</div>
+                            <div>
+                                <h2 class="day-title">{{ trans('warehouse_supplies_day') }} {{ date[8:10] }}.{{ date[5:7] }}.{{ date[0:4] }}</h2>
+                                <span class="day-subtitle">{{ day_total.count }} {{ trans('warehouse_supplies_day_count') }}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>{{ trans('warehouse_supplies_product') }}</th>
+                                    <th>{{ trans('warehouse_supplies_reason') }}</th>
+                                    <th>{{ trans('warehouse_supplies_amount') }}</th>
+                                    <th>{{ trans('warehouse_supplies_employee') }}</th>
+                                    <th>{{ trans('warehouse_supplies_accepted_at') }}</th>
+                                    <th>{{ trans('warehouse_supplies_updated_at') }}</th>
+                                    <th>{{ trans('warehouse_supplies_edit') }}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for supply in ordered_supplies %}
+                                    {% if supply.accepted_at.strftime('%Y-%m-%d') == date %}
+                                        <tr>
+                                            <td>
+                                                <div class="product-info">
+                                                    <div class="product-icon">◇</div>
+                                                    <div>
+                                                        <span class="product-name">
+                                                            {% if supply.product %}
+                                                                {{ supply.product.name }}
+                                                            {% else %}
+                                                                {{ trans('warehouse_supplies_deleted_product') }}
+                                                            {% endif %}
+                                                        </span>
+                                                        <span class="supply-number">{{ trans('warehouse_supplies_number') }}{{ supply.id }}</span>
+                                                    </div>
+                                                </div>
+                                            </td>
+
+                                            <td class="reason-cell">
+                                                {% if supply.reason and supply.reason.strip() %}
+                                                    <span class="reason-text">{{ supply.reason }}</span>
+                                                {% else %}
+                                                    <span class="reason-empty">—</span>
+                                                {% endif %}
+                                            </td>
+
+                                            <td>
+                                                <span class="quantity"><span class="quantity-sign">+</span>{{ supply.quantity }}</span>
+                                                {% if supply.product and supply.product.unit %}
+                                                    <span class="quantity-unit">{{ trans('unit_' ~ supply.product.unit.name.lower()) }}</span>
+                                                {% endif %}
+                                            </td>
+
+                                            <td>
+                                                <div class="employee">
+                                                    <div class="employee-avatar">
+                                                        {% if supply.payload.get('name') %}
+                                                            {{ supply.payload.get('name')[:1]|upper }}
+                                                        {% else %}
+                                                            ?
+                                                        {% endif %}
+                                                    </div>
+                                                    <div>
+                                                        <span class="employee-name">
+                                                            {% if supply.payload.get('name') or supply.payload.get('surname') %}
+                                                                {{ supply.payload.get('name', '') }} {{ supply.payload.get('surname', '') }}
+                                                            {% else %}
+                                                                {{ trans('warehouse_supplies_unknown_employee') }}
+                                                            {% endif %}
+                                                        </span>
+                                                        {% if supply.payload.get('role') %}
+                                                            <span class="employee-role">{{ supply.payload.get('role') }}</span>
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                            </td>
+
+                                            <td>
+                                                <span class="time">{{ supply.accepted_at.strftime('%H:%M:%S') }}</span>
+                                                <span class="date-small">{{ supply.accepted_at.strftime('%d.%m.%Y') }}</span>
+                                            </td>
+
+                                            <td>
+                                                <span class="time">{{ supply.updated_at.strftime('%H:%M:%S') }}</span>
+                                                <span class="updated-label">{{ supply.updated_at.strftime('%d.%m.%Y') }}</span>
+                                            </td>
+
+                                            <td>
+                                                <button type="button" class="edit-button" onclick="confirmSupplyEdit({{ supply.id }})">{{ trans('warehouse_supplies_edit') }}</button>
+                                            </td>
+                                        </tr>
+
+                                        <tr class="edit-form-row" id="edit-row-{{ supply.id }}">
+                                            <td colspan="7" class="edit-form-cell">
+                                                <form class="edit-form" method="POST" action="/warehouse/edit_supply/{{ supply.id }}" data-supply-id="{{ supply.id }}" onsubmit="submitSupplyEdit(event, this)">
+                                                    <h3 class="edit-form-title">{{ trans('warehouse_supplies_edit_title') }} №{{ supply.id }}</h3>
+
+                                                    <div class="edit-fields">
+                                                        <div class="form-group">
+                                                            <label for="quantity-{{ supply.id }}">{{ trans('warehouse_supplies_amount') }}</label>
+                                                            <input type="number" id="quantity-{{ supply.id }}" name="quantity" value="{{ supply.quantity }}" min="0.01" step="0.01" required>
+                                                        </div>
+
+                                                        <div class="form-group">
+                                                            <label for="reason-{{ supply.id }}">{{ trans('warehouse_supplies_edit_reason') }}</label>
+                                                            <textarea id="reason-{{ supply.id }}" name="reason" required>{{ trans('warehouse_supplies_previous_quantity') }}: {{ supply.quantity }}. {{ trans('warehouse_supplies_edit_reason_placeholder') }}</textarea>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="form-error" id="edit-error-{{ supply.id }}" role="alert"></div>
+
+                                                    <div class="form-actions">
+                                                        <button type="submit" class="save-button">{{ trans('warehouse_supplies_save_changes') }}</button>
+                                                        <button type="button" class="cancel-button" onclick="closeSupplyEdit({{ supply.id }})">{{ trans('warehouse_supplies_cancel') }}</button>
+                                                    </div>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                    {% endif %}
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            {% endfor %}
+        </section>
+
+        <div class="footer">
+            <span>{{ trans('warehouse_supplies_footer') }}</span>
+            <span>{{ trans('warehouse_supplies_total_days') }}: {{ dates.values|length }}</span>
+        </div>
+    {% else %}
+        <section class="history-panel">
+            <div class="empty-state">
+                <div class="empty-icon">▦</div>
+                <h2>{{ trans('warehouse_supplies_empty_title') }}</h2>
+                <p>{{ trans('warehouse_supplies_empty_description') }}</p>
+            </div>
+        </section>
+    {% endif %}
+</main>
+
+<div class="modal-overlay" id="supply-confirm-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" aria-describedby="modal-description" onclick="handleModalBackdrop(event)">
+    <div class="confirm-modal">
+        <div class="modal-icon">!</div>
+        <h2 id="modal-title">{{ trans('warehouse_supplies_edit_title') }}</h2>
+        <p id="modal-description">{{ trans('warehouse_supplies_edit_warning') }}</p>
+        <div class="modal-actions">
+            <button type="button" class="modal-cancel" onclick="closeConfirmModal()">{{ trans('warehouse_supplies_cancel') }}</button>
+            <button type="button" class="modal-confirm" onclick="acceptSupplyEdit()">{{ trans('warehouse_supplies_edit') }}</button>
+        </div>
+    </div>
+</div>
+
+<script src="/static/api.js"></script>
+<script>
+    let selectedSupplyId = null;
+    const confirmModal = document.getElementById('supply-confirm-modal');
+
+    function getCSRFToken() {
+        const cookies = document.cookie.split(';');
+        for (const cookie of cookies) {
+            const [name, ...value] = cookie.trim().split('=');
+            if (name === 'csrf_token') return decodeURIComponent(value.join('='));
+        }
+        return null;
+    }
+
+    function confirmSupplyEdit(supplyId) {
+        selectedSupplyId = supplyId;
+        confirmModal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeConfirmModal() {
+        confirmModal.classList.remove('active');
+        document.body.style.overflow = '';
+        selectedSupplyId = null;
+    }
+
+    function acceptSupplyEdit() {
+        if (selectedSupplyId === null) return;
+
+        const supplyId = selectedSupplyId;
+        closeConfirmModal();
+
+        const row = document.getElementById(`edit-row-${supplyId}`);
+
+        if (row) {
+            row.classList.add('active');
+            row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    }
+
+    async function submitSupplyEdit(event, form) {
+        event.preventDefault();
+
+        const supplyId = form.dataset.supplyId;
+        const errorElement = document.getElementById(`edit-error-${supplyId}`);
+        const submitButton = form.querySelector('.save-button');
+
+        errorElement.textContent = '';
+        errorElement.classList.remove('active');
+
+        const csrfToken = getCSRFToken();
+
+        if (!csrfToken) {
+            errorElement.textContent = 'CSRF-токен не найден. Обновите страницу и попробуйте снова.';
+            errorElement.classList.add('active');
+            return;
+        }
+
+        const formData = new FormData(form);
+
+        submitButton.disabled = true;
+        submitButton.textContent = 'Сохранение...';
+
+        try {
+            const response = await fetch(`/warehouse/edit_supply/${encodeURIComponent(supplyId)}`, {
+                method: 'PATCH',
+                credentials: 'same-origin',
+                headers: { 'X-CSRF-Token': csrfToken },
+                body: formData
+            });
+
+            if (response.redirected) {
+                window.location.assign(response.url);
+                return;
+            }
+
+            if (response.status === 303 || response.ok) {
+                window.location.assign('/warehouse/supplies');
+                return;
+            }
+
+            let errorMessage = 'Не удалось изменить поставку.';
+
+            try {
+                const data = await response.json();
+                errorMessage = data.detail || data.message || errorMessage;
+            } catch (_) {
+                if (response.status === 403) errorMessage = 'Ошибка CSRF-защиты или недостаточно прав.';
+                else if (response.status === 422) errorMessage = 'Проверьте правильность введённых данных.';
+                else if (response.status === 404) errorMessage = 'Поставка не найдена.';
+            }
+
+            throw new Error(errorMessage);
+        } catch (error) {
+            errorElement.textContent = error.message || 'Ошибка соединения с сервером.';
+            errorElement.classList.add('active');
+        } finally {
+            submitButton.disabled = false;
+            submitButton.textContent = '{{ trans("warehouse_supplies_save_changes") }}';
+        }
+    }
+
+    function closeSupplyEdit(supplyId) {
+        const row = document.getElementById(`edit-row-${supplyId}`);
+        if (row) row.classList.remove('active');
+    }
+
+    function handleModalBackdrop(event) {
+        if (event.target === confirmModal) closeConfirmModal();
+    }
+
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape' && confirmModal.classList.contains('active')) {
+            closeConfirmModal();
+        }
+    });
+</script>
+</body>
+</html>

@@ -1,6 +1,8 @@
+from decimal import Decimal
 from uuid import UUID
 
 from ..models.products_model import Product, Unit
+from ..models.supplies_model import Supply
 from ..repository.product_repository import ProductRepository
 
 
@@ -11,6 +13,9 @@ class ProductService:
 
     async def get_all_products(self) -> list[Product]:
         return await self.product_repository.get_all_products()
+
+    async def find_all_supplies(self) -> list[Supply]:
+        return await self.product_repository.find_all_supplies()
 
     async def create_product(self,
                              name: str,
@@ -29,3 +34,9 @@ class ProductService:
                              image_url: str | None,
                              is_active: bool):
         return await self.product_repository.update_product(product_id, name, unit, description, restaurant_id, image_url, is_active)
+
+    async def create_supply(self, product_id: int, restaurant_id: UUID, quantity: Decimal, admin_data : dict):
+        return await self.product_repository.create_supply(product_id, restaurant_id, quantity, admin_data)
+
+    async def fix_supply(self, supply_id: id, restaurant_id: UUID, quantity: Decimal, reason: str):
+        return await self.product_repository.fix_supply(supply_id, restaurant_id, quantity, reason)

@@ -14,7 +14,7 @@ class AdminService:
     async def find_by_id(self, id : int, restaurant_id : UUID) -> Admin:
         return await self.admin_repository.get_by_id(id, restaurant_id)
 
-    async def find_by_identity(self, identity_id : UUID, restaurant_id : UUID):
+    async def find_by_identity(self, identity_id : UUID, restaurant_id : UUID) -> Admin:
         return await self.admin_repository.get_by_identity_id(identity_id, restaurant_id)
 
     async def find_all_admins(self, restaurant_id : UUID) -> List[Admin]:

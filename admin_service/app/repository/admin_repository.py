@@ -26,7 +26,7 @@ class AdminRepository:
         result = await self.db.execute(select(Admin).where(Admin.id == id, Admin.restaurant_id==restaurant_id))
         return result.scalar_one_or_none()
 
-    async def get_by_identity_id(self, identity_id : UUID, restaurant_id : UUID):
+    async def get_by_identity_id(self, identity_id : UUID, restaurant_id : UUID) -> Admin:
         result = await self.db.execute(select(Admin).where(Admin.identity_id == identity_id,
                                                            Admin.restaurant_id==restaurant_id))
         return result.scalar_one_or_none()

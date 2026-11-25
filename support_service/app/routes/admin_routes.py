@@ -26,7 +26,7 @@ async def verify_csrf(request: Request):
     header_token = request.headers.get("X-CSRF-Token")
 
     if not cookie_token or cookie_token != header_token:
-        raise HTTPException(status_code=403)
+        raise HTTPException(status_code=403, detail="CSRF protection was triggered.")
 
 @router.get("/support/admin")
 async def show_admin_chat(request : Request,

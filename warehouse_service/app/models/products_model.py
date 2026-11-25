@@ -25,7 +25,7 @@ class Product(Base):
     description = Column(String, nullable=True)
     image_url = Column(String, nullable=True)
     restaurant_id = Column(UUID(as_uuid=True), nullable=False)
-    is_active = Column(Boolean, default=True, nullable=False)
+    is_active = Column(Boolean, default=False, nullable=False)
     created_at = Column(DateTime(timezone=True), nullable=False, server_default=func.now())
     updated_at = Column(DateTime(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now())
     updated_by_order_online = Column(DateTime(timezone=True), nullable=True)
