@@ -12,6 +12,9 @@ from app.database.database import Base
 from app.database.database import Base
 from app.model.category import Category
 from app.model.menu import Menu
+from app.model.recipe import Recipe
+from app.model.product import Product
+from app.model.recipe_data import RecipeData
 
 from app.config.config import settings
 

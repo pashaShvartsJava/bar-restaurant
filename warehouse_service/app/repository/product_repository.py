@@ -98,5 +98,3 @@ class ProductRepository:
             found_supply.quantity = quantity
             found_supply.reason = reason
         await self.db.refresh(found_supply)
-
-

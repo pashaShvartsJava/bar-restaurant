@@ -6,6 +6,9 @@ from typing import List
 
 from ..model import Menu
 from ..model.category import Category
+from ..model.product import Product
+from ..model.recipe import Recipe
+from ..model.recipe_data import RecipeData
 from sqlalchemy.orm import selectinload
 
 from ..model.menu import DishStatus

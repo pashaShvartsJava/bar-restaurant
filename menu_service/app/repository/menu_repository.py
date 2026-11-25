@@ -3,6 +3,9 @@ from uuid import UUID
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import List
+
+from sqlalchemy.orm import selectinload
+
 from ..model.menu import Menu, DishStatus
 from decimal import Decimal
 

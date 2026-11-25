@@ -26,3 +26,4 @@ class Menu(Base):
     is_drink = Column(Boolean, nullable=False, default=False)
 
     category = relationship("Category", back_populates="dishes")
+    recipe = relationship("Recipe", back_populates="menu", uselist=False)
