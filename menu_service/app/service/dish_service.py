@@ -1,9 +1,12 @@
 from uuid import UUID
 
+from ..model.recipe import Recipe
 from ..repository.menu_repository import MenuRepository
 from ..model.menu import Menu
 from typing import List
 from decimal import Decimal
+
+from ..schema.recipe_schema import RecipeCreate
 
 
 class MenuService:
@@ -34,3 +37,6 @@ class MenuService:
 
     async def delete_dish(self, id : int) -> Menu:
         return await self.menu_repository.delete_dish(id)
+
+    async def create_recipe(self, data : RecipeCreate, restaurant_id : UUID) -> Recipe:
+        return await self.menu_repository.create_recipe(data, restaurant_id)

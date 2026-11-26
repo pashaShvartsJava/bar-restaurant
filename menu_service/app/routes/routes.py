@@ -6,6 +6,7 @@ from fastapi import APIRouter, Request, Depends, Form, UploadFile, File, HTTPExc
 from starlette.responses import HTMLResponse, RedirectResponse
 from starlette.templating import Jinja2Templates
 
+from ..schema.recipe_schema import RecipeCreate
 from ..security.internal_security import verify_internal_token
 from ..security.role.role import IdentityRole
 from ..service.dish_service import MenuService
@@ -151,6 +152,19 @@ async def edit_dish(request : Request,
             file.write(await image.read())
         image_url = f"/media/dishes/{image.filename}"
     await menu_service.update_dish(id, dish_name, description, price, image_url, restaurant_id)
+    return RedirectResponse(url="/menu_page", status_code=303)
+
+@router.post("/menu_page/create_recipe")
+async def add_recipe(request : Request,
+                     data: RecipeCreate,
+                     menu_service : MenuService = Depends(get_menu_service_dependency)):
+    payload = get_payload(request)
+    required_roles(IdentityRole.OWNER, IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
+    await verify_csrf(request)
+    restaurant_id = payload.get("restaurant_id")
+    restaurant = await get_restaurant_dependency_by_id(restaurant_id)
+    await verify_restaurant_status(restaurant.status)
+    await menu_service.create_recipe(data, uuid.UUID(restaurant_id))
     return RedirectResponse(url="/menu_page", status_code=303)
 
 @router.get("/r/{slug}/menu_page/orders/users")
