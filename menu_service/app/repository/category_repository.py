@@ -20,7 +20,12 @@ class CategoryRepository:
         self.db = db
 
     async def get_all_categories(self, restaurant_id : UUID) -> List[Category]:
-        result = await self.db.execute(select(Category).options(selectinload(Category.dishes)).where(Category.restaurant_id==restaurant_id))
+        result = await self.db.execute(select(Category)
+                                       .options(selectinload(Category.dishes)
+                                                .selectinload(Menu.recipe)
+                                                .selectinload(Recipe.recipe_datas)
+                                                .selectinload(RecipeData.product)
+                                                ).where(Category.restaurant_id==restaurant_id))
         return result.scalars().unique().all()
 
     async def create_category(self, category_name : str, restaurant_id : UUID):

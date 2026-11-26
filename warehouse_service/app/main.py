@@ -1,11 +1,15 @@
+import asyncio
 import json
 import os
+from contextlib import asynccontextmanager
 from contextvars import ContextVar
 
 from fastapi import FastAPI, Request, HTTPException
 from starlette.responses import RedirectResponse, JSONResponse
 from starlette.staticfiles import StaticFiles
 
+from .async_processes.async_processes import outbox_publisher
+from .broker.instance import rabbitmq
 from .routes.routes import templates, router as warehouse_router
 
 LANG_DIR = "/warehouse_service/lang"
@@ -41,7 +45,21 @@ load_translations()
 templates.env.globals["trans"] = trans
 
 
-app = FastAPI()
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    await rabbitmq.connect()
+    producer_task = asyncio.create_task(outbox_publisher())
+    try:
+        yield
+    finally:
+        producer_task.cancel()
+        try:
+            await producer_task
+        except asyncio.CancelledError:
+            pass
+        await rabbitmq.close()
+
+app = FastAPI(lifespan=lifespan)
 app.include_router(warehouse_router)
 app.mount("/media", StaticFiles(directory="app/templates/media"), name="media")
 

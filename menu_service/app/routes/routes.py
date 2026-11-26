@@ -10,8 +10,10 @@ from ..security.internal_security import verify_internal_token
 from ..security.role.role import IdentityRole
 from ..service.dish_service import MenuService
 from ..service.category_service import CategoryService
+from ..service.product_service import ProductService
 from ..dependencies.dependencies import get_menu_service_dependency, get_category_service_dependency, \
-    get_restaurant_dependency, get_restaurant_dependency_by_id, get_currency_symbol, verify_restaurant_status
+    get_restaurant_dependency, get_restaurant_dependency_by_id, get_currency_symbol, verify_restaurant_status, \
+    get_product_service_dependency
 from decimal import Decimal
 from ..security.jwt.jwt import get_payload
 from ..security.authorization.authorization import required_roles
@@ -28,7 +30,8 @@ async def verify_csrf(request: Request):
 
 @router.get("/menu_page", response_class=HTMLResponse)
 async def get_menu_page(request: Request,
-                        category_service : CategoryService = Depends(get_category_service_dependency)):
+                        category_service : CategoryService = Depends(get_category_service_dependency),
+                        product_service : ProductService = Depends(get_product_service_dependency)):
     payload = get_payload(request)
     required_roles(IdentityRole.OWNER, IdentityRole.MODERATOR, IdentityRole.ADMIN, payload=payload)
     restaurant_id = payload.get("restaurant_id")
@@ -36,9 +39,11 @@ async def get_menu_page(request: Request,
     await verify_restaurant_status(restaurant.status)
     currency_symbol = get_currency_symbol(restaurant.currency)
     categories = await category_service.get_all_categories(restaurant_id)
+    products = await product_service.get_all_products()
     return templates.TemplateResponse("menu.html", {"request" : request,
                                                     "categories" : categories,
-                                                    "currency_symbol" : currency_symbol})
+                                                    "currency_symbol" : currency_symbol,
+                                                    "products" : products})
 
 @router.get("/menu_page/add_category", response_class=HTMLResponse)
 async def get_categories_page(request: Request,

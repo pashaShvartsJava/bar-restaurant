@@ -15,6 +15,7 @@ from app.model.menu import Menu
 from app.model.recipe import Recipe
 from app.model.product import Product
 from app.model.recipe_data import RecipeData
+from app.model.processed_events import ProcessedEvent
 
 from app.config.config import settings
 

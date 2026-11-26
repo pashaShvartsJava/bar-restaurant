@@ -1,3 +1,5 @@
+import uuid
+from datetime import datetime, timezone
 from decimal import Decimal
 from uuid import UUID
 
@@ -5,6 +7,7 @@ from sqlalchemy import select, or_, and_, func
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
+from ..models.outbox_events_model import OutboxEvent
 from ..models.products_model import Product, Unit
 from ..models.supplies_model import Supply
 
@@ -37,16 +40,34 @@ class ProductRepository:
                              description : str | None,
                              restaurant_id : UUID,
                              image_url : str | None):
-        new_product = Product(
-            name=name,
-            unit=unit,
-            description=description,
-            restaurant_id=restaurant_id,
-            image_url=image_url
-        )
-        self.db.add(new_product)
-        await self.db.commit()
+        async with self.db.begin():
+            new_product = Product(
+                name=name,
+                unit=unit,
+                description=description,
+                restaurant_id=restaurant_id,
+                image_url=image_url
+            )
+            self.db.add(new_product)
+            await self.db.flush()
+            await self.create_outbox_add_product_event(name, unit, restaurant_id, new_product.id)
         await self.db.refresh(new_product)
+
+
+    async def create_outbox_add_product_event(self, name : str, unit : Unit, restaurant_id : UUID, product_id : int) -> OutboxEvent:
+        new_outbox_event = OutboxEvent(
+            event_type="AddProductEvent",
+            payload={
+                "name" : name,
+                "unit" : unit.value,
+                "restaurant_id" : str(restaurant_id),
+                "product_id" : product_id
+            },
+            event_id=str(uuid.uuid4())
+        )
+        self.db.add(new_outbox_event)
+        await self.db.flush()
+        return new_outbox_event
 
     async def update_product(self,
                              product_id : int,
@@ -98,3 +119,11 @@ class ProductRepository:
             found_supply.quantity = quantity
             found_supply.reason = reason
         await self.db.refresh(found_supply)
+
+    async def get_all_unpublished_events(self):
+        result = await self.db.execute(select(OutboxEvent).where(OutboxEvent.published_at.is_(None)))
+        return result.scalars().all()
+
+    async def mark_event_as_published(self, event: OutboxEvent):
+        event.published_at = datetime.now(timezone.utc)
+        await self.db.flush()

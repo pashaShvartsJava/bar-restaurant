@@ -1,11 +1,15 @@
+import asyncio
 import json
 import os
+from contextlib import asynccontextmanager
 from contextvars import ContextVar
 
 from fastapi import FastAPI, Request, HTTPException
 from fastapi.staticfiles import StaticFiles
 from starlette.responses import RedirectResponse, JSONResponse
 
+from .broker.consumer import AddProductConsumer
+from .broker.instance import rabbitmq
 from .routes.routes import templates, router as admin_router
 
 import logging
@@ -44,7 +48,21 @@ def trans(key: str, **kwargs) -> str:
 load_translations()
 templates.env.globals["trans"] = trans
 
-app = FastAPI()
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    await rabbitmq.connect()
+    consumer = AddProductConsumer(rabbitmq)
+    consumer_task = asyncio.create_task(consumer.consume())
+    try:
+        yield
+    finally:
+        consumer_task.cancel()
+        try:
+            await consumer_task
+        except asyncio.CancelledError:
+            pass
+        await rabbitmq.close()
+app = FastAPI(lifespan=lifespan)
 
 app.include_router(admin_router)
 app.mount("/media", StaticFiles(directory="app/templates_menu/media"), name="media")

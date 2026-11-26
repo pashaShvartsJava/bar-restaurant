@@ -19,7 +19,7 @@ class Menu(Base):
     dish_name = Column(String, index=True, nullable=False)
     price = Column(DECIMAL(10, 2), nullable=False, index=True)
     description = Column(String, index=True)
-    dish_status = Column(SQLEnum(DishStatus), default=DishStatus.AVAILABLE)
+    dish_status = Column(SQLEnum(DishStatus), default=DishStatus.UNAVAILABLE)
     category_id = Column(UUID(as_uuid=True), ForeignKey("categories.id"), nullable=False)
     image_url = Column(String)
     restaurant_id = Column(UUID(as_uuid=True), nullable=False)

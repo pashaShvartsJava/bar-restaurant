@@ -1,15 +1,18 @@
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ trans('menu_page_title') }}</title>
+
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
+
         body {
             min-height: 100vh;
             background:
@@ -18,12 +21,14 @@
             color: #ffffff;
             font-family: Arial, sans-serif;
         }
+
         .page {
             width: 100%;
-            max-width: 1200px;
+            max-width: 1650px;
             margin: 0 auto;
-            padding: 60px 35px;
+            padding: 45px 30px;
         }
+
         .back {
             display: inline-flex;
             align-items: center;
@@ -35,35 +40,43 @@
             color: #77777d;
             font-size: 10px;
             text-decoration: none;
-            transition: background 0.2s, border-color 0.2s, color 0.2s, transform 0.15s;
+            transition: 0.2s;
         }
+
         .back-arrow {
             color: #d5a65b;
             font-size: 14px;
             line-height: 1;
             transition: transform 0.2s;
         }
+
         .back:hover {
             background: rgba(52, 49, 52, 0.9);
             border-color: rgba(213, 166, 91, 0.35);
             color: #ffffff;
         }
+
         .back:hover .back-arrow {
             transform: translateX(-3px);
             color: #e4b971;
         }
+
         .back:active {
             transform: translateY(1px);
         }
+
         .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 45px;
+            gap: 20px;
+            margin-bottom: 35px;
         }
+
         .header-info {
             text-align: left;
         }
+
         .title {
             color: #ffffff;
             font-family: Georgia, serif;
@@ -71,15 +84,18 @@
             font-weight: normal;
             letter-spacing: 3px;
         }
+
         .subtitle {
             margin-top: 12px;
             color: #77777d;
             font-size: 13px;
         }
+
         .header-actions {
             display: flex;
             gap: 8px;
         }
+
         .btn {
             display: inline-flex;
             align-items: center;
@@ -95,22 +111,26 @@
             font-weight: 600;
             text-decoration: none;
             cursor: pointer;
-            transition: background 0.2s, border-color 0.2s, color 0.2s;
+            transition: 0.2s;
         }
+
         .btn:hover {
             background: rgba(52, 49, 52, 0.98);
             border-color: #d5a65b;
             color: #ffffff;
         }
+
         .btn.add {
             color: #d5a65b;
         }
+
         .btn.add:hover {
             color: #e4b971;
         }
+
         .form-error {
             display: none;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
             padding: 11px 14px;
             background: rgba(75, 35, 38, 0.45);
             border: 1px solid rgba(200, 90, 95, 0.3);
@@ -119,11 +139,23 @@
             font-size: 10px;
             line-height: 1.5;
         }
+
+        /* Основная область: меню слева, рецепты справа */
+
+        .workspace {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 360px;
+            align-items: start;
+            gap: 22px;
+        }
+
         .menu {
             display: flex;
             flex-direction: column;
             gap: 25px;
+            min-width: 0;
         }
+
         .category {
             width: 100%;
             background: rgba(27, 25, 27, 0.96);
@@ -132,6 +164,7 @@
             overflow: hidden;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
         }
+
         .category-header {
             display: flex;
             align-items: center;
@@ -141,6 +174,7 @@
             background: rgba(40, 34, 32, 0.98);
             border-bottom: 1px solid rgba(255, 255, 255, 0.07);
         }
+
         .category-name {
             color: #d5a65b;
             font-family: Georgia, serif;
@@ -148,61 +182,71 @@
             font-weight: normal;
             letter-spacing: 1px;
         }
+
         .dish-count {
             color: #77777d;
             font-size: 9px;
             letter-spacing: 1px;
             text-transform: uppercase;
         }
+
         .dishes {
             width: 100%;
         }
+
         .dish {
             display: grid;
-            grid-template-columns: 95px minmax(250px, 1fr) 120px 220px;
+            grid-template-columns: 75px minmax(150px, 1fr) 95px 155px;
             align-items: center;
             min-height: 115px;
-            padding: 15px 22px;
+            padding: 15px 18px;
             background: rgba(30, 29, 31, 0.97);
             border-bottom: 1px solid rgba(255, 255, 255, 0.055);
             transition: background 0.2s, border-color 0.2s;
         }
+
         .dish:last-child {
             border-bottom: none;
         }
+
         .dish:hover {
             background: rgba(38, 36, 38, 0.98);
             border-color: rgba(213, 166, 91, 0.18);
         }
+
         .action.delete.restore {
             background: rgba(65, 110, 70, 0.18);
             border-color: rgba(100, 180, 110, 0.28);
             color: #8fbd93;
         }
+
         .action.delete.restore:hover {
             background: rgba(75, 125, 80, 0.30);
             border-color: rgba(110, 190, 120, 0.45);
             color: #a8d3ab;
         }
+
         .dish-image-wrapper {
             display: flex;
             align-items: center;
             justify-content: flex-start;
         }
+
         .dish-image {
-            width: 64px;
-            height: 64px;
+            width: 58px;
+            height: 58px;
             object-fit: cover;
             border-radius: 9px;
             background: #252427;
             border: 1px solid rgba(255, 255, 255, 0.08);
         }
+
         .no-image {
             display: flex;
             align-items: center;
             justify-content: center;
-            width: 64px;
-            height: 64px;
+            width: 58px;
+            height: 58px;
             background: #252427;
             border: 1px dashed rgba(255, 255, 255, 0.08);
             border-radius: 9px;
@@ -210,16 +254,19 @@
             font-size: 9px;
             text-align: center;
         }
+
         .dish-info {
             min-width: 0;
-            padding-right: 20px;
+            padding-right: 12px;
         }
+
         .dish-name {
             margin-bottom: 6px;
             color: #ffffff;
             font-size: 13px;
             font-weight: 600;
         }
+
         .dish-description {
             max-width: 650px;
             color: #77777d;
@@ -227,10 +274,12 @@
             line-height: 1.5;
             word-break: break-word;
         }
+
         .no-description {
             color: #55555b;
             font-style: italic;
         }
+
         .dish-price {
             display: flex;
             align-items: center;
@@ -240,23 +289,26 @@
             font-weight: 600;
             white-space: nowrap;
         }
+
         .currency {
             margin-left: 4px;
             color: #77777d;
             font-size: 9px;
             font-weight: normal;
         }
+
         .dish-actions {
             display: flex;
             justify-content: flex-end;
-            gap: 7px;
+            gap: 6px;
         }
+
         .action {
             display: inline-flex;
             align-items: center;
             justify-content: center;
             min-height: 31px;
-            padding: 8px 11px;
+            padding: 8px 9px;
             background: rgba(42, 40, 42, 0.95);
             border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: 6px;
@@ -265,27 +317,65 @@
             font-size: 9px;
             text-decoration: none;
             cursor: pointer;
-            transition: background 0.2s, border-color 0.2s, color 0.2s;
+            transition: 0.2s;
         }
+
         .action:hover {
             background: rgba(52, 49, 52, 0.98);
             border-color: #d5a65b;
             color: #ffffff;
         }
+
         .action.edit:hover {
             border-color: #d5a65b;
             color: #d5a65b;
         }
+
         .action.delete {
             background: rgba(80, 30, 35, 0.35);
             border-color: rgba(190, 70, 75, 0.28);
             color: #c87878;
         }
+
         .action.delete:hover {
             background: rgba(100, 35, 40, 0.55);
             border-color: #d98282;
             color: #e39a9a;
         }
+
+        /* Отображение рецепта под блюдом */
+
+        .dish-recipe {
+            margin-top: 12px;
+            padding: 10px 12px;
+            background: rgba(213, 166, 91, 0.055);
+            border-left: 2px solid rgba(213, 166, 91, 0.55);
+            border-radius: 0 6px 6px 0;
+        }
+
+        .dish-recipe-title {
+            margin-bottom: 7px;
+            color: #d5a65b;
+            font-size: 9px;
+            font-weight: 600;
+            letter-spacing: 0.7px;
+            text-transform: uppercase;
+        }
+
+        .dish-recipe-item {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            padding: 3px 0;
+            color: #aaa9ae;
+            font-size: 9px;
+        }
+
+        .dish-recipe-quantity {
+            color: #d5a65b;
+            white-space: nowrap;
+        }
+
         .empty-category {
             padding: 35px 25px;
             background: rgba(30, 29, 31, 0.97);
@@ -293,6 +383,7 @@
             font-size: 10px;
             text-align: center;
         }
+
         .empty-menu {
             padding: 55px 30px;
             background: rgba(27, 25, 27, 0.96);
@@ -301,16 +392,275 @@
             text-align: center;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
         }
+
         .empty-title {
             color: #ffffff;
             font-family: Georgia, serif;
             font-size: 18px;
         }
+
         .empty-text {
             margin-top: 9px;
             color: #77777d;
             font-size: 10px;
         }
+
+        /* Панель рецепта */
+
+        .recipe-panel {
+            position: sticky;
+            top: 20px;
+            min-width: 0;
+            background: rgba(27, 25, 27, 0.97);
+            border: 1px solid rgba(213, 166, 91, 0.2);
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+        }
+
+        .recipe-panel-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            padding: 17px 18px;
+            background: rgba(40, 34, 32, 0.98);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+        }
+
+        .recipe-panel-title {
+            color: #d5a65b;
+            font-family: Georgia, serif;
+            font-size: 17px;
+            font-weight: normal;
+        }
+
+        .panel-toggle {
+            width: 30px;
+            height: 30px;
+            background: rgba(42, 40, 42, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            color: #d5a65b;
+            font-size: 17px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .panel-toggle:hover {
+            border-color: #d5a65b;
+            color: #ffffff;
+        }
+
+        .recipe-panel-body {
+            padding: 18px;
+        }
+
+        .recipe-panel.collapsed .recipe-panel-body {
+            display: none;
+        }
+
+        .recipe-panel.collapsed {
+            width: 100%;
+        }
+
+        .field-label {
+            display: block;
+            margin-bottom: 9px;
+            color: #aaa9ae;
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .recipe-select {
+            width: 100%;
+            min-height: 40px;
+            padding: 10px 12px;
+            background: #242225;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 7px;
+            color: #ffffff;
+            font-family: Arial, sans-serif;
+            font-size: 11px;
+            outline: none;
+        }
+
+        .recipe-select:focus {
+            border-color: #d5a65b;
+        }
+
+        .recipe-select option {
+            background: #242225;
+            color: #ffffff;
+        }
+
+        .products-heading {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 22px 0 11px;
+        }
+
+        .products-heading span:first-child {
+            color: #d5a65b;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .products-count {
+            color: #77777d;
+            font-size: 9px;
+        }
+
+        .products-list {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+            max-height: 390px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+
+        .products-list::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        .products-list::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.04);
+            border-radius: 5px;
+        }
+
+        .products-list::-webkit-scrollbar-thumb {
+            background: rgba(213, 166, 91, 0.35);
+            border-radius: 5px;
+        }
+
+        .product-row {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            padding: 10px;
+            background: rgba(40, 38, 40, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 7px;
+            transition: 0.2s;
+        }
+
+        .product-row.selected {
+            background: rgba(213, 166, 91, 0.12);
+            border-color: rgba(213, 166, 91, 0.5);
+        }
+
+        .product-checkbox {
+            width: 15px;
+            height: 15px;
+            accent-color: #d5a65b;
+            flex-shrink: 0;
+            cursor: pointer;
+        }
+
+        .product-name {
+            flex: 1;
+            min-width: 0;
+            color: #d0cdd0;
+            font-size: 10px;
+            line-height: 1.4;
+            overflow-wrap: anywhere;
+        }
+
+        .product-row.selected .product-name {
+            color: #ffffff;
+        }
+
+        .product-quantity-wrap {
+            display: none;
+            align-items: center;
+            gap: 5px;
+            flex-shrink: 0;
+        }
+
+        .product-row.selected .product-quantity-wrap {
+            display: flex;
+        }
+
+        .product-quantity {
+            width: 65px;
+            height: 29px;
+            padding: 5px;
+            background: #171619;
+            border: 1px solid rgba(213, 166, 91, 0.35);
+            border-radius: 5px;
+            color: #ffffff;
+            font-size: 10px;
+            outline: none;
+        }
+
+        .product-quantity:focus {
+            border-color: #d5a65b;
+        }
+
+        .product-unit {
+            color: #d5a65b;
+            font-size: 9px;
+            white-space: nowrap;
+        }
+
+        .empty-products {
+            padding: 20px 10px;
+            color: #77777d;
+            font-size: 10px;
+            text-align: center;
+        }
+
+        .recipe-save {
+            width: 100%;
+            min-height: 40px;
+            margin-top: 18px;
+            background: rgba(213, 166, 91, 0.15);
+            border: 1px solid rgba(213, 166, 91, 0.45);
+            border-radius: 7px;
+            color: #e4b971;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .recipe-save:hover {
+            background: rgba(213, 166, 91, 0.25);
+            border-color: #d5a65b;
+            color: #ffffff;
+        }
+
+        .recipe-save:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .recipe-message {
+            display: none;
+            margin-top: 12px;
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 10px;
+            line-height: 1.5;
+        }
+
+        .recipe-message.error {
+            display: block;
+            background: rgba(100, 35, 40, 0.25);
+            border: 1px solid rgba(190, 70, 75, 0.25);
+            color: #d98282;
+        }
+
+        .recipe-message.success {
+            display: block;
+            background: rgba(65, 110, 70, 0.18);
+            border: 1px solid rgba(100, 180, 110, 0.25);
+            color: #8fbd93;
+        }
+
         .footer {
             padding-top: 35px;
             text-align: center;
@@ -318,69 +668,123 @@
             font-size: 9px;
             letter-spacing: 1px;
         }
-        @media (max-width: 950px) {
-            .dish {
-                grid-template-columns: 80px minmax(200px, 1fr) 100px 170px;
+
+        @media (max-width: 1150px) {
+            .workspace {
+                grid-template-columns: minmax(0, 1fr) 320px;
+                gap: 15px;
             }
+
+            .dish {
+                grid-template-columns: 65px minmax(120px, 1fr) 80px 130px;
+                padding: 15px 12px;
+            }
+
             .dish-actions {
                 flex-direction: column;
                 align-items: stretch;
             }
+
             .action {
                 width: 100%;
             }
         }
+
+        @media (max-width: 850px) {
+            .workspace {
+                grid-template-columns: 1fr;
+            }
+
+            .recipe-panel {
+                position: static;
+                grid-row: 1;
+            }
+
+            .menu {
+                grid-row: 2;
+            }
+
+            .products-list {
+                max-height: 300px;
+            }
+
+            .dish {
+                grid-template-columns: 75px minmax(150px, 1fr) 95px 155px;
+            }
+
+            .dish-actions {
+                flex-direction: row;
+            }
+
+            .action {
+                width: auto;
+            }
+        }
+
         @media (max-width: 750px) {
             .page {
                 padding: 40px 20px;
             }
+
             .header {
                 flex-direction: column;
                 align-items: flex-start;
                 gap: 20px;
             }
+
             .header-actions {
                 width: 100%;
             }
+
             .header-actions .btn {
                 flex: 1;
             }
+
             .dish {
                 grid-template-columns: 75px 1fr;
                 gap: 0 15px;
                 padding: 18px;
             }
+
             .dish-image-wrapper {
                 grid-row: span 2;
                 align-self: start;
             }
+
             .dish-info {
                 padding-right: 0;
             }
+
             .dish-price {
                 justify-content: flex-start;
                 padding-top: 10px;
             }
+
             .dish-actions {
                 grid-column: 1 / -1;
                 flex-direction: row;
                 justify-content: flex-start;
                 padding-top: 12px;
             }
+
             .action {
                 width: auto;
             }
         }
+
         @media (max-width: 500px) {
             .page {
                 padding: 30px 15px;
             }
+
             .title {
                 font-size: 34px;
             }
+
             .category-header {
                 padding: 0 16px;
             }
+
             .dish {
                 display: flex;
                 flex-direction: column;
@@ -388,28 +792,43 @@
                 gap: 12px;
                 padding: 18px 16px;
             }
+
             .dish-image-wrapper {
                 justify-content: flex-start;
             }
+
             .dish-info {
                 padding: 0;
             }
+
             .dish-price {
                 padding: 0;
                 justify-content: flex-start;
             }
+
             .dish-actions {
                 padding: 0;
                 flex-direction: column;
             }
+
             .action {
                 width: 100%;
+            }
+
+            .product-row {
+                flex-wrap: wrap;
+            }
+
+            .product-quantity-wrap {
+                margin-left: auto;
             }
         }
     </style>
 </head>
+
 <body>
 <div class="page">
+
     <header class="header">
         <div>
             <h1 class="title">{{ trans('menu_page_title') }}</h1>
@@ -431,91 +850,244 @@
 
     <div id="formError" class="form-error"></div>
 
-    <main class="menu">
-        {% if categories %}
-            {% set has_dishes = false %}
-            {% for category in categories %}
-                {% if category.dishes %}
-                    {% set has_dishes = true %}
-                {% endif %}
+    <div class="workspace">
 
-                <section class="category">
-                    <div class="category-header">
-                        <h2 class="category-name">{{ category.category_name }}</h2>
-                        <span class="dish-count">
-                            {{ category.dishes|length }}
-                            {% if category.dishes|length == 1 %}
-                                {{ trans('dish_count_one') }}
-                            {% elif category.dishes|length < 5 %}
-                                {{ trans('dish_count_few') }}
-                            {% else %}
-                                {{ trans('dish_count_many') }}
-                            {% endif %}
-                        </span>
-                    </div>
+        <!-- Основной список категорий и блюд -->
 
-                    <div class="dishes">
-                        {% if category.dishes %}
-                            {% for dish in category.dishes %}
-                                <article class="dish" data-dish-id="{{ dish.id }}">
-                                    <div class="dish-image-wrapper">
-                                        {% if dish.image_url %}
-                                            <img src="{{ dish.image_url }}" alt="{{ dish.dish_name }}" class="dish-image">
-                                        {% else %}
-                                            <div class="no-image">{{ trans('no_photo_short') }}</div>
-                                        {% endif %}
-                                    </div>
+        <main class="menu">
+            {% if categories %}
+                {% set has_dishes = false %}
 
-                                    <div class="dish-info">
-                                        <h3 class="dish-name">{{ dish.dish_name }}</h3>
-                                        {% if dish.description %}
-                                            <div class="dish-description">{{ dish.description }}</div>
-                                        {% else %}
-                                            <div class="dish-description no-description">{{ trans('no_description') }}</div>
-                                        {% endif %}
-                                    </div>
+                {% for category in categories %}
+                    {% if category.dishes %}
+                        {% set has_dishes = true %}
+                    {% endif %}
 
-                                    <div class="dish-price">
-                                        {{ "%.2f"|format(dish.price) }}
-                                        <span class="currency">{{ currency_symbol }}</span>
-                                    </div>
+                    <section class="category">
+                        <div class="category-header">
+                            <h2 class="category-name">{{ category.category_name }}</h2>
 
-                                    <div class="dish-actions">
-                                        <button type="button" class="action edit" data-dish-id="{{ dish.id }}">{{ trans('edit') }}</button>
-                                        <button
-                                            type="button"
-                                            class="action delete {% if dish.dish_status.value == 'unavailable' %}restore{% endif %}"
-                                            data-dish-id="{{ dish.id }}"
-                                            data-status="{{ dish.dish_status.value }}">
-                                            {% if dish.dish_status.value == "available" %}
-                                                {{ trans('remove_from_menu') }}
+                            <span class="dish-count">
+                                {{ category.dishes|length }}
+
+                                {% if category.dishes|length == 1 %}
+                                    {{ trans('dish_count_one') }}
+                                {% elif category.dishes|length < 5 %}
+                                    {{ trans('dish_count_few') }}
+                                {% else %}
+                                    {{ trans('dish_count_many') }}
+                                {% endif %}
+                            </span>
+                        </div>
+
+                        <div class="dishes">
+                            {% if category.dishes %}
+                                {% for dish in category.dishes %}
+                                    <article class="dish" data-dish-id="{{ dish.id }}">
+
+                                        <div class="dish-image-wrapper">
+                                            {% if dish.image_url %}
+                                                <img
+                                                    src="{{ dish.image_url }}"
+                                                    alt="{{ dish.dish_name }}"
+                                                    class="dish-image">
                                             {% else %}
-                                                {{ trans('restore_to_menu') }}
+                                                <div class="no-image">
+                                                    {{ trans('no_photo_short') }}
+                                                </div>
                                             {% endif %}
-                                        </button>
-                                    </div>
-                                </article>
-                            {% endfor %}
-                        {% else %}
-                            <div class="empty-category">{{ trans('empty_category') }}</div>
-                        {% endif %}
+                                        </div>
+
+                                        <div class="dish-info">
+                                            <h3 class="dish-name">{{ dish.dish_name }}</h3>
+
+                                            {% if dish.description %}
+                                                <div class="dish-description">
+                                                    {{ dish.description }}
+                                                </div>
+                                            {% else %}
+                                                <div class="dish-description no-description">
+                                                    {{ trans('no_description') }}
+                                                </div>
+                                            {% endif %}
+
+                                            {% if dish.recipe and dish.recipe.recipe_datas %}
+                                                <div class="dish-recipe">
+                                                    <div class="dish-recipe-title">
+                                                        Рецепт
+                                                    </div>
+
+                                                    {% for item in dish.recipe.recipe_datas %}
+                                                        <div class="dish-recipe-item">
+                                                            <span>{{ item.product.name }}</span>
+
+                                                            <span class="dish-recipe-quantity">
+                                                                {{ item.quantity }}
+                                                                {{ item.product.unit.value }}
+                                                            </span>
+                                                        </div>
+                                                    {% endfor %}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+
+                                        <div class="dish-price">
+                                            {{ "%.2f"|format(dish.price) }}
+                                            <span class="currency">{{ currency_symbol }}</span>
+                                        </div>
+
+                                        <div class="dish-actions">
+                                            <button
+                                                type="button"
+                                                class="action edit"
+                                                data-dish-id="{{ dish.id }}">
+                                                {{ trans('edit') }}
+                                            </button>
+
+                                            <button
+                                                type="button"
+                                                class="action delete {% if dish.dish_status.value == 'unavailable' %}restore{% endif %}"
+                                                data-dish-id="{{ dish.id }}"
+                                                data-status="{{ dish.dish_status.value }}">
+
+                                                {% if dish.dish_status.value == "available" %}
+                                                    {{ trans('remove_from_menu') }}
+                                                {% else %}
+                                                    {{ trans('restore_to_menu') }}
+                                                {% endif %}
+                                            </button>
+                                        </div>
+
+                                    </article>
+                                {% endfor %}
+                            {% else %}
+                                <div class="empty-category">
+                                    {{ trans('empty_category') }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </section>
+                {% endfor %}
+
+            {% else %}
+                <div class="empty-menu">
+                    <div class="empty-title">
+                        {{ trans('empty_menu_title') }}
                     </div>
-                </section>
-            {% endfor %}
-        {% else %}
-            <div class="empty-menu">
-                <div class="empty-title">{{ trans('empty_menu_title') }}</div>
-                <div class="empty-text">{{ trans('empty_menu_text') }}</div>
+
+                    <div class="empty-text">
+                        {{ trans('empty_menu_text') }}
+                    </div>
+                </div>
+            {% endif %}
+        </main>
+
+        <!-- Панель создания рецепта -->
+
+        <aside class="recipe-panel" id="recipePanel">
+
+            <div class="recipe-panel-header">
+                <h2 class="recipe-panel-title">Рецепт блюда</h2>
+
+                <button
+                    type="button"
+                    class="panel-toggle"
+                    id="panelToggle"
+                    aria-label="Скрыть панель">
+                    −
+                </button>
             </div>
-        {% endif %}
-    </main>
+
+            <div class="recipe-panel-body">
+
+                <label class="field-label" for="recipeMenu">
+                    Выберите блюдо
+                </label>
+
+                <select class="recipe-select" id="recipeMenu">
+                    <option value="">Выберите блюдо...</option>
+
+                    {% for category in categories %}
+                        {% for dish in category.dishes %}
+                            <option
+                                value="{{ dish.id }}"
+                                data-recipe='[{% if dish.recipe %}{% for item in dish.recipe.recipe_datas %}{"product_id":{{ item.product_id }},"quantity":{{ item.quantity }}}{% if not loop.last %},{% endif %}{% endfor %}{% endif %}]'>
+                                {{ category.category_name }} — {{ dish.dish_name }}
+                            </option>
+                        {% endfor %}
+                    {% endfor %}
+                </select>
+
+                <div class="products-heading">
+                    <span>Продукты</span>
+                    <span class="products-count" id="productsCount">
+                        Выбрано: 0
+                    </span>
+                </div>
+
+                <div class="products-list" id="productsList">
+
+                    {% if products %}
+                        {% for product in products %}
+                            <label
+                                class="product-row"
+                                data-product-id="{{ product.id }}">
+
+                                <input
+                                    type="checkbox"
+                                    class="product-checkbox"
+                                    data-product-id="{{ product.id }}">
+
+                                <span class="product-name">
+                                    {{ product.name }}
+                                </span>
+
+                                <span class="product-quantity-wrap">
+                                    <input
+                                        type="number"
+                                        class="product-quantity"
+                                        min="0.01"
+                                        step="0.01"
+                                        placeholder="Кол-во"
+                                        disabled>
+
+                                    <span class="product-unit">
+                                        {{ product.unit.value }}
+                                    </span>
+                                </span>
+
+                            </label>
+                        {% endfor %}
+                    {% else %}
+                        <div class="empty-products">
+                            Продукты не найдены
+                        </div>
+                    {% endif %}
+
+                </div>
+
+                <button
+                    type="button"
+                    class="recipe-save"
+                    id="saveRecipe">
+                    Сохранить рецепт
+                </button>
+
+                <div class="recipe-message" id="recipeMessage"></div>
+
+            </div>
+        </aside>
+
+    </div>
 
     <footer class="footer">
-        BAR. MENU MANAGEMENT
+        MENU MANAGEMENT
     </footer>
+
 </div>
 
 <script src="/static/api.js"></script>
+
 <script>
 const i18n = {
     confirm_remove: "{{ trans('confirm_remove_dish') | escape }}",
@@ -538,6 +1110,8 @@ function clearFormError() {
     formError.style.display = "none";
 }
 
+/* Редактирование блюда */
+
 document.querySelectorAll(".action.edit").forEach(button => {
     button.addEventListener("click", function() {
         const dishId = this.dataset.dishId;
@@ -545,10 +1119,13 @@ document.querySelectorAll(".action.edit").forEach(button => {
     });
 });
 
+/* Изменение статуса блюда */
+
 document.querySelectorAll(".action.delete").forEach(button => {
     button.addEventListener("click", async function() {
         const dishId = this.dataset.dishId;
         const isAvailable = this.dataset.status === "available";
+
         const message = isAvailable
             ? i18n.confirm_remove
             : i18n.confirm_restore;
@@ -584,7 +1161,9 @@ document.querySelectorAll(".action.delete").forEach(button => {
                 }
 
                 if (Array.isArray(data.detail)) {
-                    showFormError(data.detail.map(error => error.msg).join(", "));
+                    showFormError(
+                        data.detail.map(error => error.msg).join(", ")
+                    );
                     return;
                 }
 
@@ -601,12 +1180,256 @@ document.querySelectorAll(".action.delete").forEach(button => {
                 this.dataset.status = "available";
                 this.classList.remove("restore");
             }
+
         } catch (error) {
             console.error("CHANGE DISH STATUS ERROR:", error);
             showFormError(i18n.error_connection);
         }
     });
 });
+
+/* Сворачивание и раскрытие панели рецептов */
+
+const recipePanel = document.getElementById("recipePanel");
+const panelToggle = document.getElementById("panelToggle");
+
+panelToggle.addEventListener("click", function() {
+    recipePanel.classList.toggle("collapsed");
+
+    const isCollapsed = recipePanel.classList.contains("collapsed");
+
+    this.textContent = isCollapsed ? "+" : "−";
+    this.setAttribute(
+        "aria-label",
+        isCollapsed ? "Раскрыть панель" : "Скрыть панель"
+    );
+});
+
+/* Работа со списком продуктов */
+
+const recipeMenu = document.getElementById("recipeMenu");
+const productsList = document.getElementById("productsList");
+const productsCount = document.getElementById("productsCount");
+const recipeMessage = document.getElementById("recipeMessage");
+const saveRecipeButton = document.getElementById("saveRecipe");
+
+function updateProductsCount() {
+    const checked = productsList.querySelectorAll(
+        ".product-checkbox:checked"
+    ).length;
+
+    productsCount.textContent = `Выбрано: ${checked}`;
+}
+
+function clearRecipeMessage() {
+    recipeMessage.textContent = "";
+    recipeMessage.className = "recipe-message";
+}
+
+function showRecipeMessage(message, type) {
+    recipeMessage.textContent = message;
+    recipeMessage.className = `recipe-message ${type}`;
+}
+
+/* Обработка выбора продукта */
+
+productsList.querySelectorAll(".product-checkbox").forEach(checkbox => {
+    checkbox.addEventListener("change", function() {
+        const row = this.closest(".product-row");
+        const quantityInput = row.querySelector(".product-quantity");
+
+        row.classList.toggle("selected", this.checked);
+        quantityInput.disabled = !this.checked;
+
+        if (this.checked && !quantityInput.value) {
+            quantityInput.value = "1";
+        }
+
+        if (!this.checked) {
+            quantityInput.value = "";
+        }
+
+        updateProductsCount();
+        clearRecipeMessage();
+    });
+});
+
+/* Выбор блюда и загрузка его существующего рецепта в форму */
+
+recipeMenu.addEventListener("change", function() {
+    clearRecipeMessage();
+
+    const selectedOption = this.options[this.selectedIndex];
+
+    let existingRecipe = [];
+
+    try {
+        existingRecipe = JSON.parse(
+            selectedOption.dataset.recipe || "[]"
+        );
+    } catch (error) {
+        console.error("RECIPE PARSE ERROR:", error);
+    }
+
+    // Сначала сбрасываем все продукты
+    productsList.querySelectorAll(".product-row").forEach(row => {
+        const checkbox = row.querySelector(".product-checkbox");
+        const quantityInput = row.querySelector(".product-quantity");
+
+        checkbox.checked = false;
+        quantityInput.value = "";
+        quantityInput.disabled = true;
+
+        row.classList.remove("selected");
+    });
+
+    // Затем отмечаем продукты, которые уже есть в рецепте
+    existingRecipe.forEach(recipeItem => {
+        const checkbox = productsList.querySelector(
+            `.product-checkbox[data-product-id="${recipeItem.product_id}"]`
+        );
+
+        if (!checkbox) {
+            return;
+        }
+
+        const row = checkbox.closest(".product-row");
+        const quantityInput = row.querySelector(".product-quantity");
+
+        checkbox.checked = true;
+        quantityInput.disabled = false;
+        quantityInput.value = recipeItem.quantity;
+
+        row.classList.add("selected");
+    });
+
+    updateProductsCount();
+});
+
+/* Сохранение рецепта */
+
+saveRecipeButton.addEventListener("click", async function() {
+    clearRecipeMessage();
+
+    const menuId = recipeMenu.value;
+
+    if (!menuId) {
+        showRecipeMessage("Сначала выберите блюдо.", "error");
+        return;
+    }
+
+    const selectedProducts = [];
+
+    const checkedProducts = productsList.querySelectorAll(
+        ".product-checkbox:checked"
+    );
+
+    for (const checkbox of checkedProducts) {
+        const row = checkbox.closest(".product-row");
+        const quantityInput = row.querySelector(".product-quantity");
+
+        const quantity = Number(quantityInput.value);
+
+        if (!quantityInput.value || !Number.isFinite(quantity) || quantity <= 0) {
+            showRecipeMessage(
+                "Укажите корректное количество для каждого выбранного продукта.",
+                "error"
+            );
+
+            quantityInput.focus();
+            return;
+        }
+
+        selectedProducts.push({
+            product_id: Number(checkbox.dataset.productId),
+            quantity: quantity
+        });
+    }
+
+    if (selectedProducts.length === 0) {
+        showRecipeMessage(
+            "Выберите хотя бы один продукт для рецепта.",
+            "error"
+        );
+        return;
+    }
+
+    const payload = {
+        menu_id: Number(menuId),
+        products: selectedProducts
+    };
+
+    this.disabled = true;
+    this.textContent = "Сохранение...";
+
+    try {
+        const response = await apiFetch(
+            "/menu_page/create_recipe",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(payload)
+            }
+        );
+
+        if (!response.ok) {
+            const text = await response.text();
+            let data;
+
+            try {
+                data = JSON.parse(text);
+            } catch {
+                showRecipeMessage(
+                    text || "Не удалось сохранить рецепт.",
+                    "error"
+                );
+
+                return;
+            }
+
+            if (typeof data.detail === "string") {
+                showRecipeMessage(data.detail, "error");
+                return;
+            }
+
+            if (Array.isArray(data.detail)) {
+                showRecipeMessage(
+                    data.detail.map(error => error.msg).join(", "),
+                    "error"
+                );
+                return;
+            }
+
+            showRecipeMessage(
+                "Не удалось сохранить рецепт.",
+                "error"
+            );
+
+            return;
+        }
+
+        showRecipeMessage("Рецепт успешно сохранён.", "success");
+
+        setTimeout(() => {
+            window.location.reload();
+        }, 700);
+
+    } catch (error) {
+        console.error("CREATE RECIPE ERROR:", error);
+
+        showRecipeMessage(
+            "Ошибка соединения с сервером.",
+            "error"
+        );
+
+    } finally {
+        this.disabled = false;
+        this.textContent = "Сохранить рецепт";
+    }
+});
 </script>
+
 </body>
 </html>

@@ -2,6 +2,7 @@ import httpx
 
 from ..repository.menu_repository import MenuRepository
 from ..repository.category_repository import CategoryRepository
+from ..repository.product_repository import ProductRepository
 from ..schema.restaurant_schema import RestaurantConstructorDTO, CURRENCY_SYMBOLS, RestaurantStatus
 from ..service.dish_service import MenuService
 from ..service.category_service import CategoryService
@@ -9,6 +10,7 @@ from ..database.database import get_db
 from fastapi import Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from ..config.config import settings
+from ..service.product_service import ProductService
 
 INTERNAL_TOKEN = settings.internal_token
 
@@ -23,6 +25,9 @@ async def get_client() -> httpx.AsyncClient:
         )
     return client_connection
 
+def get_product_service_dependency(db: AsyncSession = Depends(get_db)):
+    product_repository = ProductRepository(db)
+    return ProductService(product_repository)
 
 def get_menu_service_dependency(db: AsyncSession = Depends(get_db)):
     menu_repository = MenuRepository(db)
