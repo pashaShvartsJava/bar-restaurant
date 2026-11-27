@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -723,6 +724,7 @@ body::before {
                                     data-dish-price="{{ dish.price }}"
                                     data-dish-image="{{ dish.image_url or '' }}"
                                     data-dish-is-drink="{{ 'true' if dish.is_drink else 'false' }}"
+                                    data-dish-recipe='{{ dish.recipe_data | tojson | forceescape }}'
                                 >
                                     <div class="dish-image-wrapper">
                                         {% if dish.image_url %}
@@ -834,10 +836,11 @@ function clearFormError() {
 function getCart() {
     try {
         const savedCart = localStorage.getItem(CART_STORAGE_KEY);
-        if (!savedCart) {
-            return [];
-        }
+
+        if (!savedCart) return [];
+
         const cart = JSON.parse(savedCart);
+
         return Array.isArray(cart) ? cart : [];
     } catch (error) {
         console.error("CART LOAD ERROR:", error);
@@ -850,52 +853,81 @@ function saveCart(cart) {
 }
 
 function getDishElement(dishId) {
-    return document.querySelector(`.dish[data-dish-id="${dishId}"]`);
+    return document.querySelector(
+        `.dish[data-dish-id="${dishId}"]`
+    );
 }
 
 function getDishData(dishId) {
     const dish = getDishElement(dishId);
-    if (!dish) {
-        return null;
+
+    if (!dish) return null;
+
+    let recipeData = [];
+
+    try {
+        recipeData = JSON.parse(
+            dish.dataset.dishRecipe || "[]"
+        );
+
+        if (!Array.isArray(recipeData)) {
+            recipeData = [];
+        }
+    } catch (error) {
+        console.error("RECIPE LOAD ERROR:", error);
+        recipeData = [];
     }
+
     return {
         id: Number(dish.dataset.dishId),
         name: dish.dataset.dishName,
         price: Number(dish.dataset.dishPrice),
         image: dish.dataset.dishImage,
-        is_drink: dish.dataset.dishIsDrink === "true"
+        is_drink: dish.dataset.dishIsDrink === "true",
+        recipe_data: recipeData
     };
 }
 
 function getDishQuantity(dishId) {
     const cart = getCart();
-    const item = cart.find(item => Number(item.dish_id) === Number(dishId));
+
+    const item = cart.find(
+        item => Number(item.dish_id) === Number(dishId)
+    );
+
     return item ? Number(item.quantity) : 0;
 }
 
 function setDishQuantity(dishId, quantity) {
-    let cart = getCart();
-    const index = cart.findIndex(item => Number(item.dish_id) === Number(dishId));
+    const cart = getCart();
+
+    const index = cart.findIndex(
+        item => Number(item.dish_id) === Number(dishId)
+    );
 
     if (quantity <= 0) {
         if (index !== -1) {
             cart.splice(index, 1);
         }
-    } else if (index !== -1) {
-        cart[index].quantity = quantity;
     } else {
         const dish = getDishData(dishId);
-        if (!dish) {
-            return;
+
+        if (!dish) return;
+
+        if (index !== -1) {
+            cart[index].quantity = quantity;
+            cart[index].recipe_data = dish.recipe_data;
+        } else {
+            cart.push({
+                dish_id: dish.id,
+                quantity: quantity,
+                dish_name: dish.name,
+                price: dish.price,
+                image: dish.image,
+                is_drink: dish.is_drink,
+                recipe_data: dish.recipe_data
+            });
         }
-        cart.push({
-            dish_id: Number(dishId),
-            quantity,
-            dish_name: dish.name,
-            price: dish.price,
-            image: dish.image,
-            is_drink: dish.is_drink
-        });
     }
 
     saveCart(cart);
@@ -909,7 +941,9 @@ function clearCart() {
 
 function addToCart(dishId, amount = 1) {
     const quantity = getDishQuantity(dishId);
+
     setDishQuantity(dishId, quantity + amount);
+
     openCart();
 }
 
@@ -918,15 +952,18 @@ function removeFromCart(dishId) {
 }
 
 function getTotalQuantity() {
-    return getCart().reduce((total, item) => total + Number(item.quantity), 0);
+    return getCart().reduce(
+        (total, item) => total + Number(item.quantity),
+        0
+    );
 }
 
 function getTotalPrice() {
     return getCart().reduce((total, item) => {
         const dish = getDishData(item.dish_id);
-        if (!dish) {
-            return total;
-        }
+
+        if (!dish) return total;
+
         return total + dish.price * Number(item.quantity);
     }, 0);
 }
@@ -936,6 +973,7 @@ function getItemsText(number) {
     const lastDigit = value % 10;
 
     let template;
+
     if (value >= 11 && value <= 19) {
         template = i18n.cart_items_many;
     } else if (lastDigit === 1) {
@@ -951,14 +989,18 @@ function getItemsText(number) {
 
 function updateDishQuantities() {
     document.querySelectorAll(".quantity-value").forEach(element => {
-        element.textContent = getDishQuantity(element.dataset.quantityId);
+        element.textContent = getDishQuantity(
+            element.dataset.quantityId
+        );
     });
 }
 
 function updateCartHeader() {
     const totalQuantity = getTotalQuantity();
+
     cartBadge.textContent = totalQuantity;
     cartBadge.classList.toggle("visible", totalQuantity > 0);
+
     cartHeaderCount.textContent = getItemsText(totalQuantity);
 }
 
@@ -989,35 +1031,59 @@ function renderCart() {
 
     cart.forEach(item => {
         const dish = getDishData(item.dish_id);
-        if (!dish) {
-            return;
-        }
+
+        if (!dish) return;
 
         const quantity = Number(item.quantity);
         const itemTotal = dish.price * quantity;
+
         const cartItem = document.createElement("div");
         cartItem.className = "cart-item";
 
         const imageHTML = dish.image
-            ? `<img src="${escapeHTML(dish.image)}" alt="${escapeHTML(dish.name)}" class="cart-item-image">`
-            : `<div class="cart-item-no-image">${i18n.no_photo_short}</div>`;
+            ? `<img src="${escapeHTML(dish.image)}"
+                    alt="${escapeHTML(dish.name)}"
+                    class="cart-item-image">`
+            : `<div class="cart-item-no-image">
+                    ${i18n.no_photo_short}
+               </div>`;
 
         cartItem.innerHTML = `
             ${imageHTML}
+
             <div class="cart-item-info">
-                <div class="cart-item-name">${escapeHTML(dish.name)}</div>
+                <div class="cart-item-name">
+                    ${escapeHTML(dish.name)}
+                </div>
+
                 <div class="cart-item-price">
-                    ${quantity} × <strong>${dish.price.toFixed(2)} ${CURRENCY_SYMBOL}</strong><br>
+                    ${quantity} ×
+                    <strong>
+                        ${dish.price.toFixed(2)} ${CURRENCY_SYMBOL}
+                    </strong>
+                    <br>
                     ${itemTotal.toFixed(2)} ${CURRENCY_SYMBOL}
                 </div>
             </div>
+
             <div class="cart-item-controls">
                 <div class="cart-quantity">
-                    <button type="button" data-cart-minus="${dish.id}">−</button>
-                    <span class="cart-quantity-value">${quantity}</span>
-                    <button type="button" data-cart-plus="${dish.id}">+</button>
+                    <button type="button"
+                            data-cart-minus="${dish.id}">−</button>
+
+                    <span class="cart-quantity-value">
+                        ${quantity}
+                    </span>
+
+                    <button type="button"
+                            data-cart-plus="${dish.id}">+</button>
                 </div>
-                <button type="button" class="cart-item-remove" data-cart-remove="${dish.id}">${i18n.remove}</button>
+
+                <button type="button"
+                        class="cart-item-remove"
+                        data-cart-remove="${dish.id}">
+                    ${i18n.remove}
+                </button>
             </div>
         `;
 
@@ -1027,14 +1093,22 @@ function renderCart() {
     cartContent.querySelectorAll("[data-cart-plus]").forEach(button => {
         button.addEventListener("click", () => {
             const dishId = button.dataset.cartPlus;
-            setDishQuantity(dishId, getDishQuantity(dishId) + 1);
+
+            setDishQuantity(
+                dishId,
+                getDishQuantity(dishId) + 1
+            );
         });
     });
 
     cartContent.querySelectorAll("[data-cart-minus]").forEach(button => {
         button.addEventListener("click", () => {
             const dishId = button.dataset.cartMinus;
-            setDishQuantity(dishId, getDishQuantity(dishId) - 1);
+
+            setDishQuantity(
+                dishId,
+                getDishQuantity(dishId) - 1
+            );
         });
     });
 
@@ -1049,7 +1123,9 @@ function updateInterface() {
     updateDishQuantities();
     updateCartHeader();
     renderCart();
-    cartTotalPrice.textContent = `${getTotalPrice().toFixed(2)} ${CURRENCY_SYMBOL}`;
+
+    cartTotalPrice.textContent =
+        `${getTotalPrice().toFixed(2)} ${CURRENCY_SYMBOL}`;
 }
 
 function openCart() {
@@ -1075,7 +1151,11 @@ document.querySelectorAll(".quantity-plus").forEach(button => {
 document.querySelectorAll(".quantity-minus").forEach(button => {
     button.addEventListener("click", () => {
         const dishId = button.dataset.dishId;
-        setDishQuantity(dishId, getDishQuantity(dishId) - 1);
+
+        setDishQuantity(
+            dishId,
+            getDishQuantity(dishId) - 1
+        );
     });
 });
 
@@ -1086,15 +1166,16 @@ document.querySelectorAll(".remove-dish").forEach(button => {
 });
 
 cartButton.addEventListener("click", () => {
-    cartSidebar.classList.contains("open") ? closeCart() : openCart();
+    cartSidebar.classList.contains("open")
+        ? closeCart()
+        : openCart();
 });
 
 cartClose.addEventListener("click", closeCart);
 
 clearCartButton.addEventListener("click", () => {
-    if (getCart().length === 0) {
-        return;
-    }
+    if (getCart().length === 0) return;
+
     clearCart();
 });
 
@@ -1104,8 +1185,12 @@ document.addEventListener("keydown", event => {
     }
 });
 
+let isSubmitting = false;
+
 checkoutButton.addEventListener("click", async () => {
     clearFormError();
+
+    if (isSubmitting) return;
 
     const cart = getCart();
 
@@ -1120,23 +1205,31 @@ checkoutButton.addEventListener("click", async () => {
             dish_name: item.dish_name,
             price: Number(item.price),
             quantity: Number(item.quantity),
-            is_drink: Boolean(item.is_drink)
+            is_drink: Boolean(item.is_drink),
+            recipe_data: Array.isArray(item.recipe_data)
+                ? item.recipe_data
+                : []
         }))
     };
 
+    isSubmitting = true;
     checkoutButton.disabled = true;
 
     try {
-        const response = await apiFetch(`/r/${SLUG}/orders/create`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(orderData)
-        });
+        const response = await apiFetch(
+            `/r/${SLUG}/orders/create`,
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(orderData)
+            }
+        );
 
         if (!response.ok) {
             const text = await response.text();
+
             let data = null;
 
             try {
@@ -1148,7 +1241,9 @@ checkoutButton.addEventListener("click", async () => {
             if (data && typeof data.detail === "string") {
                 showFormError(data.detail);
             } else if (data && Array.isArray(data.detail)) {
-                showFormError(data.detail.map(error => error.msg).join(", "));
+                showFormError(
+                    data.detail.map(error => error.msg).join(", ")
+                );
             } else {
                 showFormError(text || i18n.error_checkout);
             }
@@ -1156,11 +1251,15 @@ checkoutButton.addEventListener("click", async () => {
             return;
         }
 
-        window.location.href = `/r/${SLUG}/users/confirm_address`;
+        window.location.href =
+            `/r/${SLUG}/users/confirm_address`;
+
     } catch (error) {
         console.error("ORDER ERROR:", error);
         showFormError(i18n.error_connection);
+
     } finally {
+        isSubmitting = false;
         checkoutButton.disabled = false;
     }
 });

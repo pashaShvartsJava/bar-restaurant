@@ -1,3 +1,5 @@
+import secrets
+import string
 import uuid
 from datetime import datetime, timezone
 
@@ -9,6 +11,12 @@ from enum import Enum
 
 
 from ..database.database import Base
+
+def generate_order_number() -> str:
+    alphabet = string.ascii_uppercase + string.digits
+    part1 = ''.join(secrets.choice(alphabet) for _ in range(4))
+    part2 = ''.join(secrets.choice(alphabet) for _ in range(4))
+    return f"{part1}-{part2}"
 
 class OrderStatus(str, Enum):
     PENDING = "pending"
@@ -26,7 +34,7 @@ class Order(Base):
     __tablename__ = "orders"
 
     id = Column(Integer, primary_key=True, index=True)
-    order_number = Column(UUID(as_uuid=True), index=True, nullable=False, default=uuid.uuid4)
+    order_number = Column(String(9), unique=True, nullable=False, default=generate_order_number)
     client_id = Column(UUID(as_uuid=True))
     status = Column(SQLEnum(OrderStatus), nullable=False, default=OrderStatus.PENDING)
     created_at = Column(DateTime(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now())

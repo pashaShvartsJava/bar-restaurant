@@ -1,5 +1,6 @@
 import httpx
 from ..repository.product_repository import ProductRepository
+from ..repository.reserved_products_repository import ReservedProductsRepository
 from ..schema.restaurant_schema import RestaurantConstructorDTO, RestaurantStatus
 from ..schema.subscription_schema import SubscriptionDataDTO, PlanId
 from ..service.product_service import ProductService
@@ -8,6 +9,7 @@ from fastapi import Depends, Request, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from ..config.config import settings
 from ..redis.redis_client import redis
+from ..service.reserved_products_service import ReservedProductsService
 
 INTERNAL_TOKEN=settings.internal_token
 
@@ -21,6 +23,9 @@ async def get_client() -> httpx.AsyncClient:
             headers={"internal_token": INTERNAL_TOKEN},
         )
     return client_connection
+
+def get_reserved_products_service_dependency(db : AsyncSession = Depends(get_db)):
+    return ReservedProductsService(ReservedProductsRepository(db), ProductRepository(db))
 
 def get_service_dependency(db : AsyncSession = Depends(get_db)):
     return ProductService(ProductRepository(db))

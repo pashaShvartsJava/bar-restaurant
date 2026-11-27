@@ -7,6 +7,7 @@ from sqlalchemy import select, or_, and_, func
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
+from ..dependencies.warehouse_dependency import send_recipe_data_to_wh_service_dto
 from ..models.delivery_address import DeliveryAddress
 from ..models.order_items import OrderItem
 from ..models.orders import Order, OrderStatus
@@ -79,7 +80,7 @@ class OrderRepository:
         return new_delivery_address
 
     async def create_order(self,
-                           order_items : ListOrderDTO,
+                           data : ListOrderDTO,
                            client_id : UUID,
                            total_sum : Decimal,
                            restaurant_id : UUID,
@@ -96,7 +97,7 @@ class OrderRepository:
             self.db.add(new_order)
             await self.db.flush()
 
-            for order_item in order_items.order_items:
+            for order_item in data.order_items:
                 new_order_item = OrderItem(
                     order_id=new_order.id,
                     dish_id=order_item.dish_id,
@@ -106,6 +107,7 @@ class OrderRepository:
                     restaurant_id=restaurant_id
                 )
                 self.db.add(new_order_item)
+            await send_recipe_data_to_wh_service_dto(data, str(restaurant_id), new_order.order_number)
         await self.db.refresh(new_order)
         return new_order
 
@@ -148,6 +150,7 @@ class OrderRepository:
                     restaurant_id=restaurant_id
                 )
                 self.db.add(new_order_item)
+            await send_recipe_data_to_wh_service_dto(data, str(restaurant_id), new_order.order_number)
         await self.db.refresh(new_order)
         return new_order
 

@@ -18,12 +18,12 @@ class ProductRepository:
         self.db = db
 
     async def get_product_by_id_and_restaurant_id(self, product_id : int, restaurant_id : UUID) -> Product:
-        result = await self.db.execute(select(Product).where(Product.id==product_id, Product.restaurant_id==restaurant_id))
+        result = await self.db.execute(select(Product).where(Product.id==product_id, Product.restaurant_id==restaurant_id).with_for_update())
         return result.scalar_one_or_none()
 
     async def get_supply_by_id_and_restaurant_id(self, supply_id : int, restaurant_id : UUID) -> Supply:
         result = await self.db.execute(
-            select(Supply).where(Supply.id == supply_id, Supply.restaurant_id == restaurant_id))
+            select(Supply).where(Supply.id == supply_id, Supply.restaurant_id == restaurant_id).with_for_update())
         return result.scalar_one_or_none()
 
     async def get_all_products(self) -> list[Product]:
@@ -68,6 +68,10 @@ class ProductRepository:
         self.db.add(new_outbox_event)
         await self.db.flush()
         return new_outbox_event
+
+    async def update(self, product : Product):
+        await self.db.flush()
+        await self.db.refresh(product)
 
     async def update_product(self,
                              product_id : int,

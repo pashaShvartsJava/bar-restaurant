@@ -2,19 +2,23 @@ import uuid
 from decimal import Decimal
 from pathlib import Path
 
-from fastapi import APIRouter, Request, HTTPException, UploadFile, File, Form
+from fastapi import APIRouter, Request, HTTPException, UploadFile, File, Form, Header
 from fastapi.params import Depends
 from starlette.responses import RedirectResponse
 from starlette.templating import Jinja2Templates
 
 from ..config.config import settings
 from ..dependencies.dependencies import get_restaurant_dependency_by_id, verify_restaurant_status, \
-    get_service_dependency, get_admin_data
+    get_service_dependency, get_admin_data, get_reserved_products_service_dependency
 from ..models.products_model import Unit
+from ..schema.order_item_schema import ListOrderDTO, ListOrderGuestDTO
 from ..security.authorization.authorization import required_roles
+from ..security.internal_security import verify_internal_token
 from ..security.jwt.jwt import get_payload
 from ..security.role.role import IdentityRole
 from ..service.product_service import ProductService
+from ..service.reserved_products_service import ReservedProductsService
+from ..exceptions.exceptions import InsufficientStockError
 
 INTERNAL_TOKEN = settings.internal_token
 router = APIRouter()
@@ -127,3 +131,17 @@ async def edit_supply(request : Request,
     await verify_csrf(request)
     await service.fix_supply(supply_id, restaurant_id, quantity, reason)
     return RedirectResponse(url="/warehouse/supplies", status_code=303)
+
+@router.post("/warehouse/check_or_reserve_products_from_warehouse")
+async def check_or_reserve_products_from_warehouse(restaurant_id : str,
+                                                   order_number : str,
+                                                   data : ListOrderDTO | ListOrderGuestDTO,
+                                                   service : ReservedProductsService = Depends(get_reserved_products_service_dependency),
+                                                   internal_token : str = Header(..., alias="internal_token")):
+    await verify_internal_token(internal_token)
+    result = await service.create_reserved_products(uuid.UUID(restaurant_id), data, order_number)
+    if result.get("message") == "InsufficientStockProductsError":
+        raise HTTPException(status_code=409, detail="Недостаточно продуктов для создания заказа")
+    return result.get("message")
+
+

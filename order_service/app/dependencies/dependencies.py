@@ -4,6 +4,7 @@ import httpx
 from httpx import HTTPStatusError
 
 from ..repository.order_repository import OrderRepository
+from ..schema.order_item_schema import  ListOrderDTO
 from ..schema.restaurant_schema import RestaurantConstructorDTO, RestaurantStatus
 from ..service.order_service import OrderService
 from ..repository.guest_repository import GuestRepository
